@@ -42,21 +42,6 @@ namespace Sage.SData.Client.Framework
         /// <param name="resource">The input resource involved in the operation.</param>
         public RequestOperation(HttpMethod method, object resource)
         {
-            if (resource == null)
-            {
-                if (method == HttpMethod.Post || method == HttpMethod.Put)
-                {
-                    throw new InvalidOperationException("Content must be specified for POST and PUT requests");
-                }
-            }
-            else
-            {
-                if (method != HttpMethod.Post && method != HttpMethod.Put)
-                {
-                    throw new InvalidOperationException("Content must only be specified for POST and PUT requests");
-                }
-            }
-
             Method = method;
             Resource = resource;
         }

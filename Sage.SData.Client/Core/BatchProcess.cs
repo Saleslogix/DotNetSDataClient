@@ -40,20 +40,8 @@ namespace Sage.SData.Client.Core
         {
             Guard.ArgumentNotNull(item, "item");
 
-            var uri = new SDataUri(item.Url)
-                      {
-                          CollectionPredicate = null,
-                          Query = null
-                      };
-
-            if (uri.PathSegments.Length > 4)
-            {
-                uri.TrimRange(4, uri.PathSegments.Length - 4);
-            }
-
-            uri.AppendPath("$batch");
-            var baseUri = uri.ToString();
-            var request = _requests.LastOrDefault(x => string.Equals(x.ToString(), baseUri, StringComparison.InvariantCultureIgnoreCase));
+            var id = GetBatchKey(item.Url, "$batch");
+            var request = _requests.LastOrDefault(x => string.Equals(GetBatchKey(x.ToString()), id, StringComparison.InvariantCultureIgnoreCase));
 
             if (request != null)
             {
@@ -62,6 +50,15 @@ namespace Sage.SData.Client.Core
             }
 
             return false;
+        }
+
+        private static string GetBatchKey(string url, params string[] extraSegments)
+        {
+            return new SDataUri(url)
+                   {
+                       CollectionPredicate = null,
+                       Query = null
+                   }.AppendPath(extraSegments).ToString();
         }
     }
 }

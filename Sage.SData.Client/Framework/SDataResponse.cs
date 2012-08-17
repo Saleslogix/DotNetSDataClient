@@ -211,14 +211,7 @@ namespace Sage.SData.Client.Framework
             {
                 using (var memory = new MemoryStream())
                 {
-                    int num;
-                    var buffer = new byte[0x1000];
-
-                    while ((num = stream.Read(buffer, 0, buffer.Length)) != 0)
-                    {
-                        memory.Write(buffer, 0, num);
-                    }
-
+                    stream.CopyTo(memory);
                     memory.Seek(0, SeekOrigin.Begin);
                     var content = LoadTrackingContent(memory);
 

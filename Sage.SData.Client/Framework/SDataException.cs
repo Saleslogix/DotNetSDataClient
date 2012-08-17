@@ -38,7 +38,7 @@ namespace Sage.SData.Client.Framework
                 {
                     using (var responseStream = Response.GetResponseStream())
                     {
-                        CopyStream(responseStream, memoryStream);
+                        responseStream.CopyTo(memoryStream);
                     }
 
                     _diagnoses = Deserialize<Diagnoses>(memoryStream);
@@ -91,16 +91,6 @@ namespace Sage.SData.Client.Framework
                 return _diagnoses != null
                            ? string.Join(Environment.NewLine, _diagnoses.Select(diagnosis => diagnosis.Message).ToArray())
                            : base.Message;
-            }
-        }
-
-        private static void CopyStream(Stream source, Stream destination)
-        {
-            var buffer = new byte[0x1000];
-            int num;
-            while ((num = source.Read(buffer, 0, buffer.Length)) != 0)
-            {
-                destination.Write(buffer, 0, num);
             }
         }
 

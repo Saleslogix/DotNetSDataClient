@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Mime;
+using Sage.SData.Client.Framework;
 
 namespace Sage.SData.Client.Mime
 {
@@ -143,20 +144,10 @@ namespace Sage.SData.Client.Mime
             if (_content != null)
             {
                 writer.Flush();
-                CopyStream(_content, writer.BaseStream);
+                _content.CopyTo(writer.BaseStream);
             }
 
             writer.WriteLine();
-        }
-
-        private static void CopyStream(Stream input, Stream output)
-        {
-            var buffer = new byte[0x1000];
-            int read;
-            while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                output.Write(buffer, 0, read);
-            }
         }
 
         #region IDisposable Members

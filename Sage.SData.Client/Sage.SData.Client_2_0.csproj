@@ -146,6 +146,7 @@
     <Compile Include="Framework\SDataResponse.cs" />
     <Compile Include="Framework\SDataUri.cs" />
     <Compile Include="Framework\Severity.cs" />
+    <Compile Include="Framework\StreamExtensions.cs" />
     <Compile Include="Framework\SyncMode.cs" />
     <Compile Include="Framework\SyncState.cs" />
     <Compile Include="Framework\Tracking.cs" />
