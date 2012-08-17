@@ -81,7 +81,7 @@ namespace Sage.SData.Client.Framework
             _location = response.Headers[HttpResponseHeader.Location] ?? redirectLocation;
             _files = new List<AttachedFile>();
 
-            if (_statusCode != HttpStatusCode.NoContent && _contentType != null)
+            if (_statusCode != HttpStatusCode.NoContent)
             {
                 using (var responseStream = response.GetResponseStream())
                 {
@@ -90,26 +90,23 @@ namespace Sage.SData.Client.Framework
                     if (_contentType == MediaType.Multipart && TryGetMultipartBoundary(response.ContentType, out boundary))
                     {
                         var multipart = MimeMessage.Parse(responseStream, boundary);
-                        var isFirst = true;
 
                         foreach (var part in multipart)
                         {
-                            if (isFirst)
+                            if (_content == null && MediaTypeNames.TryGetMediaType(part.ContentType, out contentType))
                             {
-                                _contentType = MediaTypeNames.GetMediaType(part.ContentType);
+                                _contentType = contentType;
                                 _content = LoadContent(part.Content, _contentType.Value);
-                                isFirst = false;
                             }
                             else
                             {
-                                var fileName = part.ContentDisposition != null ? part.ContentDisposition.FileName : null;
-                                _files.Add(new AttachedFile(part.ContentType, fileName, part.Content));
+                                _files.Add(new AttachedFile(part));
                             }
                         }
                     }
                     else
                     {
-                        _content = LoadContent(responseStream, _contentType.Value);
+                        _content = LoadContent(responseStream, _contentType);
                     }
                 }
             }
@@ -178,7 +175,7 @@ namespace Sage.SData.Client.Framework
             get { return _files; }
         }
 
-        private static object LoadContent(Stream stream, MediaType contentType)
+        private static object LoadContent(Stream stream, MediaType? contentType)
         {
             switch (contentType)
             {
@@ -205,7 +202,7 @@ namespace Sage.SData.Client.Framework
             return entry;
         }
 
-        private static object LoadOtherContent(Stream stream, MediaType contentType)
+        private static object LoadOtherContent(Stream stream, MediaType? contentType)
         {
             if (contentType == MediaType.Xml)
             {
@@ -221,11 +218,20 @@ namespace Sage.SData.Client.Framework
                     }
 
                     memory.Seek(0, SeekOrigin.Begin);
-                    return LoadStringContent(memory);
+                    stream = memory;
                 }
             }
 
-            return LoadStringContent(stream);
+            if (contentType != null)
+            {
+                return LoadStringContent(stream);
+            }
+
+            using (var memory = new MemoryStream())
+            {
+                stream.CopyTo(memory);
+                return memory.ToArray();
+            }
         }
 
         private static Tracking LoadTrackingContent(Stream stream)

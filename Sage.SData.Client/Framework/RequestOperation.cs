@@ -15,6 +15,7 @@ namespace Sage.SData.Client.Framework
     /// </summary>
     public class RequestOperation
     {
+        private IDictionary<string, string> _form;
         private IList<AttachedFile> _files;
 
         /// <summary>
@@ -72,6 +73,14 @@ namespace Sage.SData.Client.Framework
         /// Gets or sets the ETag value for the request.
         /// </summary>
         public string ETag { get; set; }
+
+        /// <summary>
+        /// Gets the form data associated with the request.
+        /// </summary>
+        public IDictionary<string, string> Form
+        {
+            get { return _form ?? (_form = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)); }
+        }
 
         /// <summary>
         /// Gets the files that will be attached to the request content.

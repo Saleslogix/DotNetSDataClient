@@ -9,7 +9,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Mime;
+using System.Text;
 using System.Threading;
+using System.Web;
 using System.Xml;
 using System.Xml.Serialization;
 using Sage.SData.Client.Atom;
@@ -266,6 +268,11 @@ namespace Sage.SData.Client.Framework
 
                 feed.AddEntry(entry);
 
+                foreach (var data in op.Form)
+                {
+                    batchOp.Form.Add(data.Key, data.Value);
+                }
+
                 foreach (var file in op.Files)
                 {
                     batchOp.Files.Add(file);
@@ -341,12 +348,13 @@ namespace Sage.SData.Client.Framework
                 request.Headers[header] = op.ETag;
             }
 
-            if (op.Resource != null)
+            var isMultipart = op.Form.Count > 0 || op.Files.Count > 0;
+            if (op.Resource != null || isMultipart)
             {
                 using (var stream = request.GetRequestStream())
                 {
-                    var requestStream = op.Files.Count > 0 ? new MemoryStream() : stream;
-                    MediaType mediaType;
+                    var requestStream = isMultipart ? new MemoryStream() : stream;
+                    MediaType? mediaType;
 
                     if (op.Resource is ISyndicationResource)
                     {
@@ -373,7 +381,7 @@ namespace Sage.SData.Client.Framework
                     }
                     else
                     {
-                        throw new Exception();
+                        mediaType = null;
                     }
 
                     if (op.ContentType != null)
@@ -381,35 +389,61 @@ namespace Sage.SData.Client.Framework
                         mediaType = op.ContentType.Value;
                     }
 
-                    var contentType = MediaTypeNames.GetMediaType(mediaType);
-
-                    if (op.Files.Count > 0)
+                    if (isMultipart)
                     {
                         requestStream.Seek(0, SeekOrigin.Begin);
-                        var part = new MimePart(requestStream) {ContentType = contentType};
 
-                        using (var multipart = new MimeMessage(part))
+                        using (var multipart = new MimeMessage())
                         {
-                            contentType = new ContentType("multipart/related") {Boundary = multipart.Boundary}.ToString();
+                            if (mediaType != null)
+                            {
+                                var part = new MimePart(requestStream) {ContentType = MediaTypeNames.GetMediaType(mediaType.Value)};
+                                multipart.Add(part);
+                            }
+
+                            foreach (var data in op.Form)
+                            {
+                                var part = new MimePart(new MemoryStream(Encoding.UTF8.GetBytes(data.Value)))
+                                           {
+                                               ContentType = MediaTypeNames.TextMediaType,
+                                               ContentTransferEncoding = "binary",
+                                               ContentDisposition = new ContentDisposition(DispositionTypeNames.Inline) {Parameters = {{"name", data.Key}}}
+                                           };
+                                multipart.Add(part);
+                            }
 
                             foreach (var file in op.Files)
                             {
-                                var type = !string.IsNullOrEmpty(file.ContentType) ? file.ContentType : "application/octet-stream";
-                                var disposition = new ContentDisposition(DispositionTypeNames.Attachment) {FileName = file.FileName};
-                                part = new MimePart(file.Stream)
-                                       {
-                                           ContentType = type,
-                                           ContentTransferEncoding = "binary",
-                                           ContentDisposition = disposition
-                                       };
+                                var contentDisposition = new ContentDisposition(DispositionTypeNames.Attachment);
+                                if (file.FileName != null)
+                                {
+                                    if (file.FileName == Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(file.FileName)))
+                                    {
+                                        contentDisposition.FileName = file.FileName;
+                                    }
+                                    else
+                                    {
+                                        contentDisposition.Parameters["filename*"] = string.Format("{0}''{1}", Encoding.UTF8.WebName, HttpUtility.UrlEncode(file.FileName));
+                                    }
+                                }
+
+                                var part = new MimePart(file.Stream)
+                                           {
+                                               ContentType = !string.IsNullOrEmpty(file.ContentType) ? file.ContentType : "application/octet-stream",
+                                               ContentTransferEncoding = "binary",
+                                               ContentDisposition = contentDisposition
+                                           };
                                 multipart.Add(part);
                             }
 
                             multipart.WriteTo(stream);
+                            request.ContentType = new ContentType("multipart/" + (op.Files.Count > 0 ? "related" : "form-data")) {Boundary = multipart.Boundary}.ToString();
                         }
                     }
-
-                    request.ContentType = contentType;
+                    else if (mediaType != null)
+                    {
+                        request.ContentType = MediaTypeNames.GetMediaType(mediaType.Value);
+                    }
                 }
             }
 
