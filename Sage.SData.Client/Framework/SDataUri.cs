@@ -351,7 +351,7 @@ namespace Sage.SData.Client.Framework
             get
             {
                 var segments = PathSegments;
-                return segments.Length > CollectionTypePathIndex ? segments[CollectionTypePathIndex].HasPredicate : false;
+                return segments.Length > CollectionTypePathIndex && segments[CollectionTypePathIndex].HasPredicate;
             }
         }
 

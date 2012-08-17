@@ -11,11 +11,11 @@ namespace Sage.SData.Client.Metadata
     {
         private SDataSchemaTypeReference _type;
 
-        public SDataSchemaProperty()
+        protected SDataSchemaProperty()
         {
         }
 
-        public SDataSchemaProperty(string name)
+        protected SDataSchemaProperty(string name)
         {
             Name = name;
             MinOccurs = 0;

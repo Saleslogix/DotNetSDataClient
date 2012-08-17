@@ -66,7 +66,6 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets or sets the method for the request.
         /// </summary>
-        /// <value>One of the <see cref="HttpMethod"/> values.</value>
         public HttpMethod Method { get; set; }
 
         /// <summary>
@@ -87,7 +86,6 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets or sets the ETag value for the request.
         /// </summary>
-        /// <value>The ETag value for the request.</value>
         public string ETag { get; set; }
 
         /// <summary>

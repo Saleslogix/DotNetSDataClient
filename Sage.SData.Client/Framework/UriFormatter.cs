@@ -418,12 +418,7 @@ namespace Sage.SData.Client.Framework
                     value = string.Empty;
 
                 CheckParsePath();
-
-                if (string.IsNullOrEmpty(value))
-                    _queryArgs = null;
-                else
-                    _queryArgs = new QueryArgsDictionary(this, value);
-
+                _queryArgs = !string.IsNullOrEmpty(value) ? new QueryArgsDictionary(this, value) : null;
                 RequiresRebuildUri = true;
             }
         }
@@ -571,10 +566,8 @@ namespace Sage.SData.Client.Framework
                 CheckParseUri();
 
                 string value;
-
-                if (QueryArgs.TryGetValue(name, out value))
-                    return value;
-                return null;
+                QueryArgs.TryGetValue(name, out value);
+                return value;
             }
             set
             {

@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Mime;
+using Sage.SData.Client.Common;
 
 namespace Sage.SData.Client.Framework
 {
@@ -298,6 +299,8 @@ namespace Sage.SData.Client.Framework
         /// <returns>The <see cref="MediaType"/> that matches the specified name.</returns>
         public static MediaType GetMediaType(string name)
         {
+            Guard.ArgumentNotNullOrEmptyString(name, "name");
+
             if (name != null && name.StartsWith("multipart/", StringComparison.InvariantCultureIgnoreCase))
             {
                 return MediaType.Multipart;

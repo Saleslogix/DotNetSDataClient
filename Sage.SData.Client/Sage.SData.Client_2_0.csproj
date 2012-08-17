@@ -89,6 +89,7 @@
     <Compile Include="Core\IntermediateDataSetsRequest.cs" />
     <Compile Include="Core\IntermediateResourceCollectionsRequest.cs" />
     <Compile Include="Core\IntermediateServicesRequest.cs" />
+    <Compile Include="Core\ReadCompletedEventArgs.cs" />
     <Compile Include="Core\SDataApplicationRequest.cs" />
     <Compile Include="Core\SDataBaseRequest.cs" />
     <Compile Include="Core\SDataBatchRequest.cs" />

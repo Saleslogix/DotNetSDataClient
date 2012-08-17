@@ -163,15 +163,14 @@ namespace Sage.SData.Client.Extensions
                 return string.IsNullOrEmpty(item.NamespaceURI) ? ItemType.PayloadCollection : ItemType.Property;
             }
 
-            var children = item.SelectChildren(XPathNodeType.Element).Cast<XPathNavigator>();
-            var childCount = children.Count();
+            var children = item.SelectChildren(XPathNodeType.Element).Cast<XPathNavigator>().ToList();
 
-            if (childCount == 0)
+            if (children.Count == 0)
             {
                 return ItemType.Property;
             }
 
-            if (childCount > 1 && children.Select(child => child.LocalName).Distinct().Count() == 1)
+            if (children.Count > 1 && children.Select(child => child.LocalName).Distinct().Count() == 1)
             {
                 if (children.All(child => InferItemType(child) == ItemType.Object))
                 {

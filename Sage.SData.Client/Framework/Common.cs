@@ -7,8 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace Sage.SData.Client.Framework
@@ -224,22 +222,5 @@ namespace Sage.SData.Client.Framework
         }
 
         #endregion
-
-        private class NullXmlResolver : XmlResolver
-        {
-            #region XmlResolver Members
-
-            public override object GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn)
-            {
-                return null;
-            }
-
-            public override ICredentials Credentials
-            {
-                set { }
-            }
-
-            #endregion
-        }
     }
 }

@@ -33,9 +33,9 @@ namespace Sage.SData.Client.Metadata
 
         protected internal override void Read(XmlSchemaObject obj)
         {
-            if (obj is XmlSchemaType)
+            var type = obj as XmlSchemaType;
+            if (type != null)
             {
-                var type = (XmlSchemaType) obj;
                 Name = type.Name;
             }
 
@@ -44,9 +44,9 @@ namespace Sage.SData.Client.Metadata
 
         protected internal override void Write(XmlSchemaObject obj)
         {
-            if (obj is XmlSchemaType)
+            var type = obj as XmlSchemaType;
+            if (type != null)
             {
-                var type = (XmlSchemaType) obj;
                 type.Name = Name;
             }
 

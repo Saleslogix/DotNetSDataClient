@@ -22,14 +22,12 @@ namespace Sage.SData.Client.Metadata
                 }
 
                 var schema = Parent as SDataSchema;
-
                 if (schema != null)
                 {
                     return schema;
                 }
 
                 var item = Parent as SDataSchemaItem;
-
                 if (item != null)
                 {
                     return item.Schema;

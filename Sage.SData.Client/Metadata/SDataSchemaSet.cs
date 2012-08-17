@@ -20,7 +20,7 @@ namespace Sage.SData.Client.Metadata
             Guard.ArgumentNotNull(schemas, "schemas");
             _schemas = new List<SDataSchema>(schemas);
 
-            foreach (var schema in schemas)
+            foreach (var schema in _schemas)
             {
                 schema.Parent = this;
             }

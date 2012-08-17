@@ -373,7 +373,7 @@ namespace Sage.SData.Client.Framework
             }
             if (s[0] == '+')
             {
-                return TimeSpan.Parse(s.Substring(1));
+                s = s.Substring(1);
             }
             return TimeSpan.Parse(s);
         }

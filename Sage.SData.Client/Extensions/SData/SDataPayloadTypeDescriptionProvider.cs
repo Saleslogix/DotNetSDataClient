@@ -85,7 +85,7 @@ namespace Sage.SData.Client.Extensions
                 private readonly PropertyDescriptor _inner;
 
                 public ExistingPropertyDescriptor(PropertyDescriptor inner)
-                    : base(inner, new[] {new CategoryAttribute("SData")})
+                    : base(inner, new Attribute[] {new CategoryAttribute("SData")})
                 {
                     _inner = inner;
                 }
@@ -215,7 +215,7 @@ namespace Sage.SData.Client.Extensions
                     private readonly int _index;
 
                     public PayloadCollectionItemPropertyDescriptor(int index)
-                        : base(string.Format("[{0}]", index), new[] {new TypeConverterAttribute(typeof (ExpandableObjectConverter))})
+                        : base(string.Format("[{0}]", index), new Attribute[] {new TypeConverterAttribute(typeof (ExpandableObjectConverter))})
                     {
                         _index = index;
                     }

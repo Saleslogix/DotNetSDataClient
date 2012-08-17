@@ -72,7 +72,7 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// The amount of time in seconds that the process has been running.
         /// </summary>
-        public int ElapsedSeconds
+        public decimal ElapsedSeconds
         {
             get { return _tracking.ElapsedSeconds; }
         }
@@ -80,7 +80,7 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// The amount of time in seconds that the process has remaining.
         /// </summary>
-        public int RemainingSeconds
+        public decimal RemainingSeconds
         {
             get { return _tracking.RemainingSeconds; }
         }

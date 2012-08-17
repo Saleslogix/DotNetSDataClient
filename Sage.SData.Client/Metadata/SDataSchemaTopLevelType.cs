@@ -8,11 +8,11 @@ namespace Sage.SData.Client.Metadata
     [DebuggerDisplay("{ElementName}")]
     public abstract class SDataSchemaTopLevelType : SDataSchemaComplexType
     {
-        public SDataSchemaTopLevelType()
+        protected SDataSchemaTopLevelType()
         {
         }
 
-        public SDataSchemaTopLevelType(string elementName)
+        protected SDataSchemaTopLevelType(string elementName)
             : base(elementName)
         {
             ElementName = elementName;
@@ -32,9 +32,10 @@ namespace Sage.SData.Client.Metadata
 
         protected internal override void Read(XmlSchemaObject obj)
         {
-            if (obj is XmlSchemaElement)
+            var element = obj as XmlSchemaElement;
+            if (element != null)
             {
-                ElementName = ((XmlSchemaElement) obj).Name;
+                ElementName = element.Name;
             }
 
             base.Read(obj);
@@ -67,9 +68,10 @@ namespace Sage.SData.Client.Metadata
 
         protected internal override void Write(XmlSchemaObject obj)
         {
-            if (obj is XmlSchemaElement)
+            var element = obj as XmlSchemaElement;
+            if (element != null)
             {
-                ((XmlSchemaElement) obj).Name = ElementName;
+                element.Name = ElementName;
             }
 
             base.Write(obj);

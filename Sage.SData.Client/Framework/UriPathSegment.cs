@@ -133,7 +133,7 @@ namespace Sage.SData.Client.Framework
         /// <value><b>true</b> if this segment has a predicate; otherwise, <b>false</b>.</value>
         public bool HasPredicate
         {
-            get { return string.IsNullOrEmpty(Predicate) ? false : true; }
+            get { return !string.IsNullOrEmpty(Predicate); }
         }
 
         /// <summary>

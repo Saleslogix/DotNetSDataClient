@@ -38,13 +38,13 @@ namespace Sage.SData.Client.Framework
         /// Time elapsed since operation started, in seconds.
         /// </summary>
         [XmlElement("elapsedSeconds")]
-        public int ElapsedSeconds { get; set; }
+        public decimal ElapsedSeconds { get; set; }
 
         /// <summary>
         /// Expected remaining time, in seconds
         /// </summary>
         [XmlElement("remainingSeconds")]
-        public int RemainingSeconds { get; set; }
+        public decimal RemainingSeconds { get; set; }
 
         /// <summary>
         /// Delay (in milliseconds) that the consumer should use 

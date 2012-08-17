@@ -17,7 +17,7 @@ using Sage.SData.Client.Mime;
 namespace Sage.SData.Client.Framework
 {
     /// <summary>
-    /// An interfact which encapsulates interesting information returned
+    /// An interface which encapsulates interesting information returned
     /// from a request.
     /// </summary>
     public interface ISDataResponse
@@ -117,11 +117,9 @@ namespace Sage.SData.Client.Framework
 
         private static bool TryGetMultipartBoundary(string contentType, out string boundary)
         {
-            ContentType type;
-
             try
             {
-                type = new ContentType(contentType);
+                var type = new ContentType(contentType);
                 boundary = type.Boundary;
                 return !string.IsNullOrEmpty(boundary);
             }

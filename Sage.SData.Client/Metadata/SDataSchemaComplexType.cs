@@ -56,9 +56,9 @@ namespace Sage.SData.Client.Metadata
 
         protected internal override void Read(XmlSchemaObject obj)
         {
-            if (obj is XmlSchemaComplexType)
+            var type = obj as XmlSchemaComplexType;
+            if (type != null)
             {
-                var type = (XmlSchemaComplexType) obj;
                 AnyAttribute = type.AnyAttribute;
                 var particle = type.Particle;
 
@@ -125,9 +125,9 @@ namespace Sage.SData.Client.Metadata
 
         protected internal override void Write(XmlSchemaObject obj)
         {
-            if (obj is XmlSchemaComplexType)
+            var type = obj as XmlSchemaComplexType;
+            if (type != null)
             {
-                var type = (XmlSchemaComplexType) obj;
                 type.Name = Name;
                 var all = new XmlSchemaAll();
 

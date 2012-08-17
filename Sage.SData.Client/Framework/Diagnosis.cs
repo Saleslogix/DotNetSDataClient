@@ -109,12 +109,6 @@ namespace Sage.SData.Client.Framework
         {
         }
 
-        /// <summary>
-        /// Initialises a new instance of the <see cref="Diagnosis"/> class.
-        /// </summary>
-        /// <param name="severity">One of the <see cref="Severity"/> values.</param>
-        /// <param name="message">A friendly message for the diagnosis.</param>
-        /// <param name="code">The application specific code for the error.</param>
         public Diagnosis(Severity severity, string message, DiagnosisCode code, string applicationCode, string stackTrace, string payloadPath)
         {
             Severity = severity;
