@@ -218,7 +218,7 @@ namespace Sage.SData.Client.Framework
                     }
 
                     memory.Seek(0, SeekOrigin.Begin);
-                    stream = memory;
+                    return LoadStringContent(memory);
                 }
             }
 
