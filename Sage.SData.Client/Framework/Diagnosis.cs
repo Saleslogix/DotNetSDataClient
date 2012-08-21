@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Xml.XPath;
@@ -125,15 +126,33 @@ namespace Sage.SData.Client.Framework
         /// Gets or sets the <see cref="Severity"/> of the error.
         /// </summary>
         /// <value>One of the <see cref="Severity"/> values.</value>
-        [XmlElement("severity")]
+        [XmlIgnore]
         public Severity? Severity { get; set; }
+
+        [XmlElement("severity")]
+        [Browsable(false)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public string SeverityString
+        {
+            get { return Severity != null ? Severity.Value.ToString() : null; }
+            set { Severity = value != null ? (Severity) Enum.Parse(typeof (Severity), value, true) : (Severity?) null; }
+        }
 
         /// <summary>
         /// Gets or sets the SData diagnosis code for the error.
         /// </summary>
         /// <value>An SData diagnosis code for the error.</value>
-        [XmlElement("sdataCode")]
+        [XmlIgnore]
         public DiagnosisCode? SDataCode { get; set; }
+
+        [XmlElement("sdataCode")]
+        [Browsable(false)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public string SDataCodeString
+        {
+            get { return SDataCode != null ? SDataCode.Value.ToString() : null; }
+            set { SDataCode = value != null ? (DiagnosisCode) Enum.Parse(typeof (DiagnosisCode), value, true) : (DiagnosisCode?) null; }
+        }
 
         /// <summary>
         /// Gets or sets the application specific diagnosis code for the error.
@@ -258,12 +277,12 @@ namespace Sage.SData.Client.Framework
 
             if (Severity != null)
             {
-                writer.WriteElementString("severity", xmlNamespace, Severity.ToString());
+                writer.WriteElementString("severity", xmlNamespace, SeverityString);
             }
 
             if (SDataCode != null)
             {
-                writer.WriteElementString("sdataCode", xmlNamespace, SDataCode.ToString());
+                writer.WriteElementString("sdataCode", xmlNamespace, SDataCodeString);
             }
 
             if (ApplicationCode != null)

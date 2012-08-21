@@ -1,5 +1,7 @@
 using System.IO;
+using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
 using System.Xml.XPath;
 using NUnit.Framework;
 using Sage.SData.Client.Framework;
@@ -47,6 +49,24 @@ namespace Sage.SData.Client.Test.Framework
             node = nav.SelectSingleNode("diagnosis/applicationCode");
             Assert.IsNotNull(node);
             Assert.AreEqual("Application error", node.Value);
+        }
+
+        [Test]
+        public void Enum_Properties_Should_Be_Case_Insensitive_Test()
+        {
+            const string xml =
+                @"<diagnosis xmlns=""http://schemas.sage.com/sdata/2008/1"">
+                    <severity>eRrOr</severity>
+                    <sdataCode>bAdUrLsYnTaX</sdataCode>
+                  </diagnosis>";
+            Diagnosis diagnosis;
+            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
+            {
+                diagnosis = (Diagnosis) new XmlSerializer(typeof (Diagnosis)).Deserialize(stream);
+            }
+
+            Assert.That(diagnosis.Severity, Is.EqualTo(Severity.Error));
+            Assert.That(diagnosis.SDataCode, Is.EqualTo(DiagnosisCode.BadUrlSyntax));
         }
     }
 }
