@@ -62,9 +62,10 @@ namespace Sage.SData.Client.Framework
                 catch (ArgumentException)
                 {
                 }
+				fileName = fileName.Substring(pos + 2);
             }
 
-            return HttpUtility.UrlDecode(fileName.Substring(pos + 2), encoding);
+            return HttpUtility.UrlDecode(fileName, encoding);
         }
 
         /// <summary>
