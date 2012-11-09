@@ -478,6 +478,10 @@ namespace Sage.SData.Client.Core
                 var operation = new RequestOperation(HttpMethod.Get) {ETag = eTag};
                 var response = ExecuteRequest(requestUrl, operation, MediaType.Atom, MediaType.Xml);
                 eTag = response.ETag;
+                if (response.Content is string)
+                {
+                    throw new SDataClientException(response.Content.ToString());
+                }
                 return (AtomFeed) response.Content;
             }
             catch (Exception ex)
