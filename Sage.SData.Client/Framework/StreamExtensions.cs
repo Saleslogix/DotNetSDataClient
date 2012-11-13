@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Sage.SData.Client.Framework
 {
@@ -12,6 +15,24 @@ namespace Sage.SData.Client.Framework
             {
                 destination.Write(buffer, 0, num);
             }
+        }
+
+        public static T DeserializeXml<T>(this Stream stream)
+        {
+            var serializer = new XmlSerializer(typeof (T));
+
+            try
+            {
+                return (T) serializer.Deserialize(stream);
+            }
+            catch (XmlException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            return default(T);
         }
     }
 }

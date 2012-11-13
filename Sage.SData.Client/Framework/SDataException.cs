@@ -3,8 +3,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace Sage.SData.Client.Framework
 {
@@ -41,11 +39,13 @@ namespace Sage.SData.Client.Framework
                         responseStream.CopyTo(memoryStream);
                     }
 
-                    _diagnoses = Deserialize<Diagnoses>(memoryStream);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    _diagnoses = memoryStream.DeserializeXml<Diagnoses>();
 
                     if (_diagnoses == null)
                     {
-                        var diagnosis = Deserialize<Diagnosis>(memoryStream);
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        var diagnosis = memoryStream.DeserializeXml<Diagnosis>();
 
                         if (diagnosis != null)
                         {
@@ -54,6 +54,17 @@ namespace Sage.SData.Client.Framework
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="diagnoses"></param>
+        /// <param name="statusCode"></param>
+        public SDataException(Collection<Diagnosis> diagnoses, HttpStatusCode statusCode)
+        {
+            _diagnoses = diagnoses;
+            _statusCode = statusCode;
         }
 
         /// <summary>
@@ -92,25 +103,6 @@ namespace Sage.SData.Client.Framework
                            ? string.Join(Environment.NewLine, _diagnoses.Select(diagnosis => diagnosis.Message).ToArray())
                            : base.Message;
             }
-        }
-
-        private static T Deserialize<T>(Stream stream)
-        {
-            stream.Seek(0, SeekOrigin.Begin);
-            var serializer = new XmlSerializer(typeof (T));
-
-            try
-            {
-                return (T) serializer.Deserialize(stream);
-            }
-            catch (XmlException)
-            {
-            }
-            catch (InvalidOperationException)
-            {
-            }
-
-            return default(T);
         }
     }
 }

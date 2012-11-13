@@ -6,11 +6,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
 using System.Net.Mime;
-using System.Xml;
-using System.Xml.Serialization;
 using Sage.SData.Client.Atom;
 using Sage.SData.Client.Mime;
 
@@ -96,7 +95,7 @@ namespace Sage.SData.Client.Framework
                             if (_content == null && MediaTypeNames.TryGetMediaType(part.ContentType, out contentType))
                             {
                                 _contentType = contentType;
-                                _content = LoadContent(part.Content, _contentType.Value);
+                                _content = LoadContent(part.Content, null, _contentType.Value);
                             }
                             else
                             {
@@ -106,7 +105,7 @@ namespace Sage.SData.Client.Framework
                     }
                     else
                     {
-                        _content = LoadContent(responseStream, _contentType);
+                        _content = LoadContent(responseStream, _statusCode, _contentType);
                     }
                 }
             }
@@ -175,7 +174,7 @@ namespace Sage.SData.Client.Framework
             get { return _files; }
         }
 
-        private static object LoadContent(Stream stream, MediaType? contentType)
+        private static object LoadContent(Stream stream, HttpStatusCode? statusCode, MediaType? contentType)
         {
             switch (contentType)
             {
@@ -183,6 +182,8 @@ namespace Sage.SData.Client.Framework
                     return LoadFeedContent(stream);
                 case MediaType.AtomEntry:
                     return LoadEntryContent(stream);
+                case MediaType.Xml:
+                    return LoadXmlContent(stream, statusCode);
                 default:
                     return LoadOtherContent(stream, contentType);
             }
@@ -202,26 +203,48 @@ namespace Sage.SData.Client.Framework
             return entry;
         }
 
+        private static object LoadXmlContent(Stream stream, HttpStatusCode? statusCode)
+        {
+            using (var memory = new MemoryStream())
+            {
+                stream.CopyTo(memory);
+
+                memory.Seek(0, SeekOrigin.Begin);
+                var tracking = memory.DeserializeXml<Tracking>();
+                if (tracking != null)
+                {
+                    return tracking;
+                }
+
+                memory.Seek(0, SeekOrigin.Begin);
+                var diagnoses = memory.DeserializeXml<Diagnoses>();
+                if (diagnoses != null)
+                {
+                    if (statusCode != null)
+                    {
+                        throw new SDataException(diagnoses, statusCode.Value);
+                    }
+                    return diagnoses;
+                }
+
+                memory.Seek(0, SeekOrigin.Begin);
+                var diagnosis = memory.DeserializeXml<Diagnosis>();
+                if (diagnosis != null)
+                {
+                    if (statusCode != null)
+                    {
+                        throw new SDataException(new Collection<Diagnosis> {diagnosis}, statusCode.Value);
+                    }
+                    return diagnosis;
+                }
+
+                memory.Seek(0, SeekOrigin.Begin);
+                return LoadStringContent(memory);
+            }
+        }
+
         private static object LoadOtherContent(Stream stream, MediaType? contentType)
         {
-            if (contentType == MediaType.Xml)
-            {
-                using (var memory = new MemoryStream())
-                {
-                    stream.CopyTo(memory);
-                    memory.Seek(0, SeekOrigin.Begin);
-                    var content = LoadTrackingContent(memory);
-
-                    if (content != null)
-                    {
-                        return content;
-                    }
-
-                    memory.Seek(0, SeekOrigin.Begin);
-                    return LoadStringContent(memory);
-                }
-            }
-
             if (contentType != null)
             {
                 return LoadStringContent(stream);
@@ -232,24 +255,6 @@ namespace Sage.SData.Client.Framework
                 stream.CopyTo(memory);
                 return memory.ToArray();
             }
-        }
-
-        private static Tracking LoadTrackingContent(Stream stream)
-        {
-            var serializer = new XmlSerializer(typeof (Tracking));
-
-            try
-            {
-                return (Tracking) serializer.Deserialize(stream);
-            }
-            catch (XmlException)
-            {
-            }
-            catch (InvalidOperationException)
-            {
-            }
-
-            return null;
         }
 
         private static string LoadStringContent(Stream stream)
