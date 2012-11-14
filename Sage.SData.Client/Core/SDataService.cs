@@ -200,11 +200,13 @@ namespace Sage.SData.Client.Core
 
             try
             {
-                var requestUrl = request.ToString();
+                var url = request.ToString();
                 var operation = new RequestOperation(HttpMethod.Post, feed);
-                var response = ExecuteRequest(requestUrl, operation, MediaType.Atom, MediaType.Xml);
-                eTag = response.ETag;
-                return (AtomFeed) response.Content;
+                return ExecuteFeedRequest(url, operation, out eTag);
+            }
+            catch (SDataClientException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -220,16 +222,11 @@ namespace Sage.SData.Client.Core
         public virtual AtomEntry CreateEntry(SDataBaseRequest request, AtomEntry entry)
         {
             Guard.ArgumentNotNull(request, "request");
-            var requestUrl = request.ToString();
-            return CreateEntry(requestUrl, entry);
-        }
-
-        private AtomEntry CreateEntry(string url, AtomEntry entry)
-        {
             Guard.ArgumentNotNull(entry, "entry");
 
             try
             {
+                var url = request.ToString();
                 var batchItem = new SDataBatchRequestItem
                                 {
                                     Url = url,
@@ -243,24 +240,11 @@ namespace Sage.SData.Client.Core
                 }
 
                 var operation = new RequestOperation(HttpMethod.Post, entry);
-                var response = ExecuteRequest(url, operation, MediaType.AtomEntry, MediaType.Xml);
-                var result = response.Content as AtomEntry;
-
-                if (result == null)
-                {
-                    var feedResult = response.Content as AtomFeed;
-                    if (feedResult != null)
-                    {
-                        result = feedResult.Entries.FirstOrDefault();
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(response.ETag) && result != null)
-                {
-                    result.SetSDataHttpETag(response.ETag);
-                }
-
-                return result;
+                return ExecuteEntryRequest(url, operation);
+            }
+            catch (SDataClientException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -280,11 +264,19 @@ namespace Sage.SData.Client.Core
 
             try
             {
-                var requestUrl = new SDataUri(request.ToString()) {TrackingId = Guid.NewGuid().ToString()}.ToString();
+                var url = new SDataUri(request.ToString()) {TrackingId = Guid.NewGuid().ToString()}.ToString();
                 var operation = new RequestOperation(HttpMethod.Post, resource);
-                var response = ExecuteRequest(requestUrl, operation, MediaType.Xml);
-                var tracking = (Tracking) response.Content;
+                var response = ExecuteRequest(url, operation, MediaType.Xml);
+                var tracking = response.Content as Tracking;
+                if (tracking == null)
+                {
+                    throw new SDataClientException("Unexpected content: " + response.Content);
+                }
                 return new AsyncRequest(this, response.Location, tracking);
+            }
+            catch (SDataClientException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -332,13 +324,10 @@ namespace Sage.SData.Client.Core
         public virtual bool DeleteEntry(SDataBaseRequest request, AtomEntry entry)
         {
             Guard.ArgumentNotNull(request, "request");
-            return DeleteEntry(request.ToString(), entry);
-        }
 
-        private bool DeleteEntry(string url, AtomEntry entry)
-        {
             try
             {
+                var url = request.ToString();
                 var eTag = entry != null ? entry.GetSDataHttpETag() : null;
                 var batchItem = new SDataBatchRequestItem
                                 {
@@ -392,6 +381,10 @@ namespace Sage.SData.Client.Core
 
                 return response.Content;
             }
+            catch (SDataClientException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new SDataClientException(ex.Message, ex);
@@ -439,6 +432,10 @@ namespace Sage.SData.Client.Core
                             ReadCompleted(this, new ReadCompletedEventArgs(content, null, false, userState));
                         }
                     }
+                    catch (SDataClientException)
+                    {
+                        throw;
+                    }
                     catch (Exception ex)
                     {
                         if (ReadCompleted != null)
@@ -474,11 +471,13 @@ namespace Sage.SData.Client.Core
 
             try
             {
-                var requestUrl = request.ToString();
+                var url = request.ToString();
                 var operation = new RequestOperation(HttpMethod.Get) {ETag = eTag};
-                var response = ExecuteRequest(requestUrl, operation, MediaType.Atom, MediaType.Xml);
-                eTag = response.ETag;
-                return (AtomFeed) response.Content;
+                return ExecuteFeedRequest(url, operation, out eTag);
+            }
+            catch (SDataClientException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -508,11 +507,11 @@ namespace Sage.SData.Client.Core
 
             try
             {
-                var requestUrl = request.ToString();
+                var url = request.ToString();
                 var eTag = entry != null ? entry.GetSDataHttpETag() : null;
                 var batchItem = new SDataBatchRequestItem
                                 {
-                                    Url = requestUrl,
+                                    Url = url,
                                     Method = HttpMethod.Get,
                                     ETag = eTag
                                 };
@@ -523,15 +522,11 @@ namespace Sage.SData.Client.Core
                 }
 
                 var operation = new RequestOperation(HttpMethod.Get) {ETag = eTag};
-                var response = ExecuteRequest(requestUrl, operation, MediaType.AtomEntry, MediaType.Xml);
-                entry = (AtomEntry) response.Content;
-
-                if (!string.IsNullOrEmpty(response.ETag))
-                {
-                    entry.SetSDataHttpETag(response.ETag);
-                }
-
-                return entry;
+                return ExecuteEntryRequest(url, operation);
+            }
+            catch (SDataClientException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -550,10 +545,14 @@ namespace Sage.SData.Client.Core
 
             try
             {
-                var requestUrl = request.ToString();
+                var url = request.ToString();
                 var operation = new RequestOperation(HttpMethod.Get);
-                var response = ExecuteRequest(requestUrl, operation, MediaType.Xml);
+                var response = ExecuteRequest(url, operation, MediaType.Xml);
                 return ReadSchema(response);
+            }
+            catch (SDataClientException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -563,7 +562,13 @@ namespace Sage.SData.Client.Core
 
         private static SDataSchemaObject ReadSchema(ISDataResponse response)
         {
-            using (var reader = new StringReader((string) response.Content))
+            var text = response.Content as string;
+            if (text == null)
+            {
+                throw new SDataClientException("Unexpected content: " + response.Content);
+            }
+
+            using (var reader = new StringReader(text))
             {
                 var schema = SDataSchema.Read(reader);
 
@@ -596,15 +601,11 @@ namespace Sage.SData.Client.Core
         public virtual AtomEntry UpdateEntry(SDataBaseRequest request, AtomEntry entry)
         {
             Guard.ArgumentNotNull(request, "request");
-            return UpdateEntry(request.ToString(), entry);
-        }
-
-        private AtomEntry UpdateEntry(string url, AtomEntry entry)
-        {
             Guard.ArgumentNotNull(entry, "entry");
 
             try
             {
+                var url = request.ToString();
                 var eTag = entry.GetSDataHttpETag();
                 var batchItem = new SDataBatchRequestItem
                                 {
@@ -620,15 +621,11 @@ namespace Sage.SData.Client.Core
                 }
 
                 var operation = new RequestOperation(HttpMethod.Put, entry) {ETag = eTag};
-                var response = ExecuteRequest(url, operation, MediaType.AtomEntry, MediaType.Xml);
-                entry = (AtomEntry) response.Content;
-
-                if (!string.IsNullOrEmpty(response.ETag))
-                {
-                    entry.SetSDataHttpETag(response.ETag);
-                }
-
-                return entry;
+                return ExecuteEntryRequest(url, operation);
+            }
+            catch (SDataClientException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -683,6 +680,42 @@ namespace Sage.SData.Client.Core
         [Obsolete("Explicit initialization is no longer required.")]
         public void Initialize()
         {
+        }
+
+        private AtomFeed ExecuteFeedRequest(string url, RequestOperation operation, out string eTag)
+        {
+            var response = ExecuteRequest(url, operation, MediaType.Atom, MediaType.Xml);
+            var result = response.Content as AtomFeed;
+            if (result == null)
+            {
+                throw new SDataClientException("Unexpected content: " + response.Content);
+            }
+
+            eTag = response.ETag;
+            return result;
+        }
+
+        private AtomEntry ExecuteEntryRequest(string url, RequestOperation operation)
+        {
+            var response = ExecuteRequest(url, operation, MediaType.AtomEntry, MediaType.Xml);
+            var result = response.Content as AtomEntry;
+            if (result == null)
+            {
+                var feedResult = response.Content as AtomFeed;
+                if (feedResult == null)
+                {
+                    throw new SDataClientException("Unexpected content: " + response.Content);
+                }
+
+                result = feedResult.Entries.FirstOrDefault();
+            }
+
+            if (!string.IsNullOrEmpty(response.ETag))
+            {
+                result.SetSDataHttpETag(response.ETag);
+            }
+
+            return result;
         }
 
         protected virtual ISDataResponse ExecuteRequest(string url, RequestOperation operation, params MediaType[] accept)
