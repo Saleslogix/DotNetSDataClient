@@ -7,6 +7,7 @@ using Sage.SData.Client.Common;
 
 namespace Sage.SData.Client.Extensions
 {
+    [Serializable]
     public class SDataPayloadCollection : List<SDataPayload>
     {
         public Uri Uri { get; set; }

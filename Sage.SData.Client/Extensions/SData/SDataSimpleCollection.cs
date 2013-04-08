@@ -7,6 +7,7 @@ using Sage.SData.Client.Common;
 
 namespace Sage.SData.Client.Extensions
 {
+    [Serializable]
     public class SDataSimpleCollection : List<object>
     {
         public SDataSimpleCollection(string itemElementName)

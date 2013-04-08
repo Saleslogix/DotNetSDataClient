@@ -9,6 +9,7 @@ using Sage.SData.Client.Common;
 namespace Sage.SData.Client.Extensions
 {
     [TypeDescriptionProvider(typeof (SDataPayloadTypeDescriptionProvider))]
+    [Serializable]
     public class SDataPayload
     {
         private IDictionary<string, object> _values;
