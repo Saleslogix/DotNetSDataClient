@@ -121,26 +121,6 @@ namespace Sage.SData.Client.Framework
 
         #endregion
 
-        /// <summary>
-        /// Index of the product path segment within a <see cref="Uri"/>
-        /// </summary>
-        public const int ProductPathIndex = 0;
-
-        /// <summary>
-        /// Index of the contract segment within a <see cref="Uri"/>
-        /// </summary>
-        public const int ContractTypePathIndex = 1;
-
-        /// <summary>
-        /// Index of the company-dataset segment within a <see cref="Uri"/>
-        /// </summary>
-        public const int CompanyDatasetPathIndex = 2;
-
-        /// <summary>
-        /// Index of the primary resource path segment within a <see cref="Uri"/>
-        /// </summary>
-        public const int CollectionTypePathIndex = 3;
-
         #region PropertySort
 
         /// <summary>
@@ -248,109 +228,6 @@ namespace Sage.SData.Client.Framework
         }
 
         #region Properties
-
-        /// <summary>
-        /// Gets or sets the value of the Product within the <see cref="Uri"/>.
-        /// </summary>
-        public string Product
-        {
-            get
-            {
-                var segments = PathSegments;
-                return segments.Count > ProductPathIndex ? segments[ProductPathIndex].Text : string.Empty;
-            }
-            set { GetPathSegment(ProductPathIndex).Text = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the value of the Contract type within the <see cref="Uri"/>.
-        /// </summary>
-        public string Contract
-        {
-            get
-            {
-                var segments = PathSegments;
-                return segments.Count > ContractTypePathIndex ? segments[ContractTypePathIndex].Text : string.Empty;
-            }
-            set { GetPathSegment(ContractTypePathIndex).Text = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the value of the Company-Dataset within the <see cref="Uri"/>.
-        /// </summary>
-        public string CompanyDataset
-        {
-            get
-            {
-                var segments = PathSegments;
-                return segments.Count > CompanyDatasetPathIndex ? segments[CompanyDatasetPathIndex].Text : string.Empty;
-            }
-            set { GetPathSegment(CompanyDatasetPathIndex).Text = value; }
-        }
-
-        /// <summary>
-        /// Returns the type of the collection within the <see cref="Uri"/>.
-        /// </summary>
-        /// <value>The type of the collection within the <see cref="Uri"/>.</value>
-        public string CollectionType
-        {
-            get
-            {
-                var segments = PathSegments;
-                return segments.Count > CollectionTypePathIndex ? segments[CollectionTypePathIndex].Text : string.Empty;
-            }
-            set { GetPathSegment(CollectionTypePathIndex).Text = value; }
-        }
-
-        /// <summary>
-        /// Returns the selector associated with the <see cref="CollectionType"/>.
-        /// </summary>
-        /// <value>The selector associated with the <see cref="CollectionType"/>.</value>
-        public string CollectionSelector
-        {
-            get
-            {
-                var segments = PathSegments;
-                var query = segments.Count > CollectionTypePathIndex ? segments[CollectionTypePathIndex].Selector : null;
-
-                return string.IsNullOrEmpty(query) ? null : query;
-            }
-            set { GetPathSegment(CollectionTypePathIndex).Selector = value; }
-        }
-
-        /// <summary>
-        /// Returns a value indicating if there is a selector associated with the <see cref="CollectionType"/>.
-        /// </summary>
-        /// <value><b>true</b> if there is a selector associated with the <see cref="CollectionType"/>, otherwise <b>false</b>.</value>
-        public bool HasCollectionSelector
-        {
-            get
-            {
-                var segments = PathSegments;
-                return segments.Count > CollectionTypePathIndex && segments[CollectionTypePathIndex].HasSelector;
-            }
-        }
-
-        /// <summary>
-        /// Returns the selector associated with the last segment.
-        /// </summary>
-        /// <value>The selector associated with the last segment.</value>
-        public string Selector
-        {
-            get
-            {
-                var segment = LastPathSegment;
-                return segment != null ? segment.Selector : null;
-            }
-            set
-            {
-                var segment = LastPathSegment;
-                if (segment != null)
-                {
-                    segment.Selector = value;
-                }
-            }
-        }
 
         /// <summary>
         /// Returns a value indicating if there is a selector associated with the last segment.

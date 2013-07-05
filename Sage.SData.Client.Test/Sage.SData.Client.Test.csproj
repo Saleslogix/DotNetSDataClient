@@ -69,6 +69,8 @@
     <Compile Include="Extensions\SyndicationExtensionTests.cs" />
     <Compile Include="Framework\DiagnosisTests.cs" />
     <Compile Include="Framework\MediaTypeNamesTests.cs" />
+    <Compile Include="Framework\SDataExceptionTests.cs" />
+    <Compile Include="Framework\SDataUriTests.cs" />
     <Compile Include="Framework\UriFormatterTests.cs" />
     <Compile Include="Framework\UriPathParserTests.cs" />
     <Compile Include="Framework\W3CDateTimeTests.cs" />

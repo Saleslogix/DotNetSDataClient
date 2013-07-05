@@ -7,7 +7,7 @@ using Sage.SData.Client.Framework;
 namespace Sage.SData.Client.Test.Framework
 {
     [TestFixture]
-    public class UriFormatterTests : AssertionHelper
+    public class UriFormatterTests
     {
         /// <summary>
         /// The path segments property should be refreshed when a new uri
@@ -18,11 +18,11 @@ namespace Sage.SData.Client.Test.Framework
         {
             var uri = new UriFormatter("http://m6400/sdata/-/-/-/");
             var expected = new[] {new UriPathSegment("-"), new UriPathSegment("-"), new UriPathSegment("-")};
-            CollectionAssert.AreEquivalent(uri.PathSegments, expected);
+            Assert.That(uri.PathSegments, Is.EquivalentTo(expected));
 
             uri.Uri = new Uri("http://localhost:3333/sdata/aw/dynamic/-/");
             expected = new[] {new UriPathSegment("aw"), new UriPathSegment("dynamic"), new UriPathSegment("-")};
-            CollectionAssert.AreEquivalent(uri.PathSegments, expected);
+            Assert.That(uri.PathSegments, Is.EquivalentTo(expected));
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Sage.SData.Client.Test.Framework
             Assert.That(uri.Fragment, Is.EqualTo("one"));
 
             uri.Fragment = "two";
-            StringAssert.EndsWith("#two", uri.ToString());
+            Assert.That(uri.ToString(), Is.StringEnding("#two"));
         }
 
         [Test]
