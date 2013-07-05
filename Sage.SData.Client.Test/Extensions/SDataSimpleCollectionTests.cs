@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Xml.XPath;
 using NUnit.Framework;
 using Sage.SData.Client.Extensions;
-using System.Linq;
+
+// ReSharper disable InconsistentNaming
 
 namespace Sage.SData.Client.Test.Extensions
 {
@@ -45,8 +47,8 @@ namespace Sage.SData.Client.Test.Extensions
         {
             var payload = Utility.LoadPayload(TestCase1);
 
-            var validatorType = (SDataPayload)payload.Values["validatorType"];
-            var listValidator = (SDataPayload)validatorType.Values["listValidator"];
+            var validatorType = (SDataPayload) payload.Values["validatorType"];
+            var listValidator = (SDataPayload) validatorType.Values["listValidator"];
             Assert.That(listValidator.Values["items"], Is.InstanceOf<SDataSimpleCollection>());
         }
 
@@ -55,11 +57,11 @@ namespace Sage.SData.Client.Test.Extensions
         {
             var payload = Utility.LoadPayload(TestCase1);
 
-            var validatorType = (SDataPayload)payload.Values["validatorType"];
-            var listValidator = (SDataPayload)validatorType.Values["listValidator"];
+            var validatorType = (SDataPayload) payload.Values["validatorType"];
+            var listValidator = (SDataPayload) validatorType.Values["listValidator"];
             Assume.That(listValidator.Values["items"], Is.InstanceOf<SDataSimpleCollection>());
 
-            var items = (SDataSimpleCollection)listValidator.Values["items"];
+            var items = (SDataSimpleCollection) listValidator.Values["items"];
             Assert.That(items, Has.Count.EqualTo(4));
         }
 
@@ -68,11 +70,11 @@ namespace Sage.SData.Client.Test.Extensions
         {
             var payload = Utility.LoadPayload(TestCase1);
 
-            var validatorType = (SDataPayload)payload.Values["validatorType"];
-            var listValidator = (SDataPayload)validatorType.Values["listValidator"];
+            var validatorType = (SDataPayload) payload.Values["validatorType"];
+            var listValidator = (SDataPayload) validatorType.Values["listValidator"];
             Assume.That(listValidator.Values["items"], Is.InstanceOf<SDataSimpleCollection>());
 
-            var items = (SDataSimpleCollection)listValidator.Values["items"];
+            var items = (SDataSimpleCollection) listValidator.Values["items"];
             var res = items.Intersect(ItemValues).Count();
             Assert.That(res, Is.EqualTo(4));
         }
@@ -82,29 +84,29 @@ namespace Sage.SData.Client.Test.Extensions
         #region serialization tests
 
         private readonly SDataPayload SerializationTestCase1 = new SDataPayload
-        {
-            ResourceName = "validationRule",
-            Namespace = "",
-            Values =
-            {
-                { 
-                    "validatorType", 
-                    new SDataPayloadCollection
-                        {
-                            new SDataPayload
-                                {
-                                    ResourceName = "listValidator",
-                                    Values =
-                                    {
-                                        {"items", new SDataSimpleCollection("item") {"Customer", "Prospect", "Lead", "None"}}
-                                    }
-                                }
-                        } 
-                    }
-            }
-        };
+                                                                   {
+                                                                       ResourceName = "validationRule",
+                                                                       Namespace = "",
+                                                                       Values =
+                                                                           {
+                                                                               {
+                                                                                   "validatorType",
+                                                                                   new SDataPayloadCollection
+                                                                                       {
+                                                                                           new SDataPayload
+                                                                                               {
+                                                                                                   ResourceName = "listValidator",
+                                                                                                   Values =
+                                                                                                       {
+                                                                                                           {"items", new SDataSimpleCollection("item") {"Customer", "Prospect", "Lead", "None"}}
+                                                                                                       }
+                                                                                               }
+                                                                                       }
+                                                                               }
+                                                                           }
+                                                                   };
 
-        private readonly string[] ItemValues = new[] { "Customer", "Prospect", "Lead", "None" };
+        private readonly string[] ItemValues = new[] {"Customer", "Prospect", "Lead", "None"};
 
         [Test]
         public void throws_exception_when_ItemElementName_is_not_set()
@@ -115,14 +117,11 @@ namespace Sage.SData.Client.Test.Extensions
                                   Namespace = "",
                                   Values =
                                       {
-                                          { "validatorType", new SDataSimpleCollection() {"item"} }
+                                          {"validatorType", new SDataSimpleCollection {"item"}}
                                       }
                               };
 
-            Assert.Throws(typeof (InvalidOperationException),
-                          delegate { 
-                              var res = Utility.WritePayload(payload);
-                          });
+            Assert.Throws(typeof (InvalidOperationException), () => Utility.WritePayload(payload));
         }
 
         [Test]
@@ -158,39 +157,38 @@ namespace Sage.SData.Client.Test.Extensions
         }
 
         private readonly SDataPayload SerializationTestCase2 = new SDataPayload
-        {
-            ResourceName = "validationRule",
-            Namespace = "",
-            Values =
-            {
-                { 
-                    "validatorType", 
-                    new SDataPayloadCollection
-                        {
-                            new SDataPayload
-                                {
-                                    ResourceName = "listValidator",
-                                    Values =
-                                    {
-                                        {"items", new SDataSimpleCollection("item")}
-                                    }
-                                }
-                        } 
-                    }
-            }
-        };
+                                                                   {
+                                                                       ResourceName = "validationRule",
+                                                                       Namespace = "",
+                                                                       Values =
+                                                                           {
+                                                                               {
+                                                                                   "validatorType",
+                                                                                   new SDataPayloadCollection
+                                                                                       {
+                                                                                           new SDataPayload
+                                                                                               {
+                                                                                                   ResourceName = "listValidator",
+                                                                                                   Values =
+                                                                                                       {
+                                                                                                           {"items", new SDataSimpleCollection("item")}
+                                                                                                       }
+                                                                                               }
+                                                                                       }
+                                                                               }
+                                                                           }
+                                                                   };
 
         [Test]
         public void correctly_serializes_empty_array()
         {
             var res = Utility.WritePayload(SerializationTestCase2);
             var items = res.SelectSingleNode("//items");
-            
+
             Assert.That(items, Is.Not.Null);
             Assert.That(items.HasChildren, Is.False);
         }
 
         #endregion
-
     }
 }

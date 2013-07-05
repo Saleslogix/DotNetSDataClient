@@ -3,6 +3,8 @@ using System.Xml;
 using NUnit.Framework;
 using Sage.SData.Client.Extensions;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Extensions
 {
     [TestFixture]
@@ -11,7 +13,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Typical_Payload()
         {
-            var xml = @"<salesOrder sdata:key=""43660""
+            const string xml = @"<salesOrder sdata:key=""43660""
                                     xmlns=""http://schemas.sage.com/myContract""
                                     xmlns:sdata=""http://schemas.sage.com/sdata/2008/1""
                                     xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
@@ -54,7 +56,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Object_Property_Without_Attributes()
         {
-            var xml = @"<salesOrder>
+            const string xml = @"<salesOrder>
                           <contact>
                             <firstName>John</firstName>
                             <lastName>Smith</lastName>
@@ -81,7 +83,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Empty_Collection_Property_Without_Attributes()
         {
-            var xml = @"<salesOrder>
+            const string xml = @"<salesOrder>
                           <orderLines />
                         </salesOrder>";
             var payload = Utility.LoadPayload(xml);
@@ -99,7 +101,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Empty_Collection_Property_Without_Attributes_Or_Namespace()
         {
-            var xml = @"<x:salesOrder xmlns:x=""http://schemas.sage.com/dynamic/2007"">
+            const string xml = @"<x:salesOrder xmlns:x=""http://schemas.sage.com/dynamic/2007"">
                           <orderLines />
                         </x:salesOrder>";
             var payload = Utility.LoadPayload(xml);
@@ -117,7 +119,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Collection_Of_One_Property_Without_Attributes()
         {
-            var xml = @"<salesOrder xmlns:sdata=""http://schemas.sage.com/sdata/2008/1"">
+            const string xml = @"<salesOrder xmlns:sdata=""http://schemas.sage.com/sdata/2008/1"">
                           <orderLines sdata:url=""http://www.example.com/sdata/myApp/myContract/-/salesOrderLines?where=salesOrderID%20eq%2043660"">
                             <salesOrderLine sdata:key=""43660-1"" />
                           </orderLines>
@@ -142,7 +144,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Collection_Property_Without_Attributes()
         {
-            var xml = @"<salesOrder xmlns:sdata=""http://schemas.sage.com/sdata/2008/1"">
+            const string xml = @"<salesOrder xmlns:sdata=""http://schemas.sage.com/sdata/2008/1"">
                           <orderLines>
                             <salesOrderLine sdata:key=""43660-1"" />
                             <salesOrderLine sdata:key=""43660-2"" />
@@ -173,7 +175,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Unnested_Collection_Items()
         {
-            var xml = @"<digest xmlns=""http://schemas.sage.com/sdata/sync/2008/1"">
+            const string xml = @"<digest xmlns=""http://schemas.sage.com/sdata/sync/2008/1"">
                           <origin>http://www.example.com/sdata/myApp1/myContract/-/accounts</origin>
                           <digestEntry>
                             <tick>5</tick>
@@ -213,7 +215,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Loaded_Collection_Infers_Item_Resource_Name()
         {
-            var xml = @"<salesOrder xmlns:sdata=""http://schemas.sage.com/sdata/2008/1"">
+            const string xml = @"<salesOrder xmlns:sdata=""http://schemas.sage.com/sdata/2008/1"">
                           <orderLines>
                             <salesOrderLine sdata:key=""43660-1"" />
                             <salesOrderLine sdata:key=""43660-2"" />
@@ -229,19 +231,19 @@ namespace Sage.SData.Client.Test.Extensions
         public void Written_Collection_Uses_Item_Resource_Name()
         {
             var payload = new SDataPayload
-                          {
-                              ResourceName = "salesOrder",
-                              Namespace = "",
-                              Values =
-                                  {
+                              {
+                                  ResourceName = "salesOrder",
+                                  Namespace = "",
+                                  Values =
                                       {
-                                          "orderLines", new SDataPayloadCollection("salesOrderLine")
-                                                        {
-                                                            new SDataPayload {Key = "43660-1"}
-                                                        }
+                                          {
+                                              "orderLines", new SDataPayloadCollection("salesOrderLine")
+                                                                {
+                                                                    new SDataPayload {Key = "43660-1"}
+                                                                }
                                           }
-                                  }
-                          };
+                                      }
+                              };
             var nav = Utility.WritePayload(payload);
             var node = nav.SelectSingleNode("*/salesOrder/orderLines/salesOrderLine");
             Assert.That(node, Is.Not.Null);
@@ -251,40 +253,40 @@ namespace Sage.SData.Client.Test.Extensions
         public void Primitive_Values_Formatted_Appropriately()
         {
             var payload = new SDataPayload
-                          {
-                              ResourceName = "salesOrder",
-                              Namespace = "",
-                              Values =
-                                  {
-                                      {"byte", byte.MaxValue},
-                                      {"sbyte", sbyte.MaxValue},
-                                      {"short", short.MaxValue},
-                                      {"ushort", ushort.MaxValue},
-                                      {"int", int.MaxValue},
-                                      {"uint", uint.MaxValue},
-                                      {"long", long.MaxValue},
-                                      {"ulong", ulong.MaxValue},
-                                      {"bool", true},
-                                      {"char", 'z'},
-                                      {"float", float.MaxValue},
-                                      {"double", double.MaxValue},
-                                      {"decimal", decimal.MaxValue},
-                                      {"Guid", Guid.NewGuid()},
-                                      {"DateTime", DateTime.Now},
-                                      {"DateTimeOffset", DateTimeOffset.Now},
-                                      {"TimeSpan", DateTime.Now.TimeOfDay}
-                                  }
-                          };
+                              {
+                                  ResourceName = "salesOrder",
+                                  Namespace = "",
+                                  Values =
+                                      {
+                                          {"byte", byte.MaxValue},
+                                          {"sbyte", sbyte.MaxValue},
+                                          {"short", short.MaxValue},
+                                          {"ushort", ushort.MaxValue},
+                                          {"int", int.MaxValue},
+                                          {"uint", uint.MaxValue},
+                                          {"long", long.MaxValue},
+                                          {"ulong", ulong.MaxValue},
+                                          {"bool", true},
+                                          {"char", 'z'},
+                                          {"float", float.MaxValue},
+                                          {"double", double.MaxValue},
+                                          {"decimal", decimal.MaxValue},
+                                          {"Guid", Guid.NewGuid()},
+                                          {"DateTime", DateTime.Now},
+                                          {"DateTimeOffset", DateTimeOffset.Now},
+                                          {"TimeSpan", DateTime.Now.TimeOfDay}
+                                      }
+                              };
             var nav = Utility.WritePayload(payload);
             nav = nav.SelectSingleNode("*/salesOrder");
 
             var assertDoesNotThrow = new Action<string, Action<string>>(
                 (name, action) =>
-                {
-                    var node = nav.SelectSingleNode(name);
-                    Assert.That(node, Is.Not.Null);
-                    Assert.DoesNotThrow(() => action(node.Value));
-                });
+                    {
+                        var node = nav.SelectSingleNode(name);
+                        Assert.That(node, Is.Not.Null);
+                        Assert.DoesNotThrow(() => action(node.Value));
+                    });
             assertDoesNotThrow("byte", x => XmlConvert.ToByte(x));
             assertDoesNotThrow("sbyte", x => XmlConvert.ToSByte(x));
             assertDoesNotThrow("short", x => XmlConvert.ToInt16(x));
@@ -308,22 +310,22 @@ namespace Sage.SData.Client.Test.Extensions
         public void Collection_Items_Can_Be_In_Different_Namespace()
         {
             var payload = new SDataPayload
-                          {
-                              ResourceName = "tradingAccount",
-                              Namespace = "http://gcrm.com",
-                              Values =
-                                  {
+                              {
+                                  ResourceName = "tradingAccount",
+                                  Namespace = "http://gcrm.com",
+                                  Values =
                                       {
-                                          "emails", new SDataPayloadCollection("email")
-                                                    {
-                                                        new SDataPayload
-                                                        {
-                                                            Namespace = "http://common.com"
-                                                        }
-                                                    }
+                                          {
+                                              "emails", new SDataPayloadCollection("email")
+                                                            {
+                                                                new SDataPayload
+                                                                    {
+                                                                        Namespace = "http://common.com"
+                                                                    }
+                                                            }
                                           }
-                                  }
-                          };
+                                      }
+                              };
             var nav = Utility.WritePayload(payload);
             var mgr = new XmlNamespaceManager(nav.NameTable);
             mgr.AddNamespace("g", "http://gcrm.com");
@@ -335,7 +337,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Object_Property_With_Single_Child_Property()
         {
-            var xml = @"<productComputeSimplePrice>
+            const string xml = @"<productComputeSimplePrice>
                           <response>
                             <unitPrice>100</unitPrice>
                           </response>
@@ -351,11 +353,11 @@ namespace Sage.SData.Client.Test.Extensions
         public void Uri_Property_Should_Be_Escaped_When_Written()
         {
             var payload = new SDataPayload
-                          {
-                              ResourceName = "person",
-                              Namespace = "http://test.com",
-                              Uri = new Uri("http://localhost/person('`%^ []{}<>')")
-                          };
+                              {
+                                  ResourceName = "person",
+                                  Namespace = "http://test.com",
+                                  Uri = new Uri("http://localhost/person('`%^ []{}<>')")
+                              };
             var nav = Utility.WritePayload(payload);
             var mgr = new XmlNamespaceManager(nav.NameTable);
             mgr.AddNamespace("sdata", Client.Framework.Common.SData.Namespace);

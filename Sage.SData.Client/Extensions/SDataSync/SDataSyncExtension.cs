@@ -21,7 +21,7 @@ namespace Sage.SData.Client.Extensions
         /// <summary>
         /// Private member to hold specific information about the extension.
         /// </summary>
-        private SDataSyncExtensionContext extensionContext = new SDataSyncExtensionContext();
+        private SDataSyncExtensionContext _extensionContext = new SDataSyncExtensionContext();
 
         #endregion
 
@@ -62,12 +62,12 @@ namespace Sage.SData.Client.Extensions
         /// <exception cref="ArgumentNullException">The <paramref name="value"/> is a null reference (Nothing in Visual Basic).</exception>
         public SDataSyncExtensionContext Context
         {
-            get { return extensionContext; }
+            get { return _extensionContext; }
 
             set
             {
                 Guard.ArgumentNotNull(value, "value");
-                extensionContext = value;
+                _extensionContext = value;
             }
         }
 
@@ -84,7 +84,7 @@ namespace Sage.SData.Client.Extensions
         /// represents the same <see cref="Type"/> as this <see cref="SyndicationExtension"/>.
         /// </summary>
         /// <param name="extension">The <see cref="ISyndicationExtension"/> to be compared.</param>
-        /// <returns><b>true</b> if the <paramref name="extension"/> is the same <see cref="Type"/> as this <see cref="SyndicationExtension"/>; otherwise, <b>false</b>.</returns>
+        /// <returns><b>true</b> if the <paramref name="extension"/> is the same <see cref="Type"/> as this <see cref="SyndicationExtension"/>, otherwise <b>false</b>.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="extension"/> is a null reference (Nothing in Visual Basic).</exception>
         public static bool MatchByType(ISyndicationExtension extension)
         {
@@ -205,23 +205,17 @@ namespace Sage.SData.Client.Extensions
             using (var stream = new MemoryStream())
             {
                 var settings = new XmlWriterSettings
-                               {
-                                   ConformanceLevel = ConformanceLevel.Fragment,
-                                   Indent = true,
-                                   OmitXmlDeclaration = true
-                               };
-
-                using (var writer = XmlWriter.Create(stream, settings))
-                {
-                    WriteTo(writer);
-                }
-
+                                   {
+                                       ConformanceLevel = ConformanceLevel.Fragment,
+                                       Indent = true,
+                                       OmitXmlDeclaration = true
+                                   };
+                var writer = XmlWriter.Create(stream, settings);
+                WriteTo(writer);
+                writer.Flush();
                 stream.Seek(0, SeekOrigin.Begin);
-
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
+                var reader = new StreamReader(stream);
+                return reader.ReadToEnd();
             }
         }
 

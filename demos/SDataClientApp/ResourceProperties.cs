@@ -21,10 +21,10 @@ namespace SDataClientApp
             try
             {
                 _sdataResourcePropertyRequest = new SDataResourcePropertyRequest(Service)
-                                                {
-                                                    ResourceKind = tbRPResourceKind.Text,
-                                                    ResourceSelector = tbRPResourceSelector.Text
-                                                };
+                                                    {
+                                                        ResourceKind = tbRPResourceKind.Text,
+                                                        ResourceSelector = tbRPResourceSelector.Text
+                                                    };
                 tbResourcePropertiesURL.Text = _sdataResourcePropertyRequest.ToString();
             }
             catch (Exception ex)

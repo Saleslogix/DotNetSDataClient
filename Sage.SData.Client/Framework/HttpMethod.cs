@@ -9,16 +9,19 @@
         /// Get request.
         /// </summary>
         Get,
+
         /// <summary>
         /// Post request.
         /// </summary>
         Post,
+
         /// <summary>
         /// Put request.
         /// </summary>
         Put,
+
         /// <summary>
-        /// Delete requets.
+        /// Delete request.
         /// </summary>
         Delete
     }

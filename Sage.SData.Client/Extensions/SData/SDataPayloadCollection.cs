@@ -75,7 +75,7 @@ namespace Sage.SData.Client.Extensions
                     string nilValue;
                     object value;
 
-                    if (item.TryGetAttribute("nil", Framework.Common.XSI.Namespace, out nilValue) && XmlConvert.ToBoolean(nilValue))
+                    if (item.TryGetAttribute("nil", Framework.Common.Xsi.Namespace, out nilValue) && XmlConvert.ToBoolean(nilValue))
                     {
                         value = null;
                     }
@@ -105,8 +105,14 @@ namespace Sage.SData.Client.Extensions
             {
                 writer.WriteStartElement(name, ns);
 
-                if (Uri != null) writer.WriteAttributeString("uri", xmlNamespace, Uri.AbsoluteUri);
-                if (DeleteMissing != null) writer.WriteAttributeString("deleteMissing", xmlNamespace, XmlConvert.ToString(DeleteMissing.Value));
+                if (Uri != null)
+                {
+                    writer.WriteAttributeString("uri", xmlNamespace, Uri.AbsoluteUri);
+                }
+                if (DeleteMissing != null)
+                {
+                    writer.WriteAttributeString("deleteMissing", xmlNamespace, XmlConvert.ToString(DeleteMissing.Value));
+                }
             }
 
             foreach (var item in this)

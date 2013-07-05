@@ -78,25 +78,21 @@ namespace Sage.SData.Client.Framework
     [XmlType(TypeName = "diagnosis", Namespace = Common.SData.Namespace)]
     public class Diagnosis
     {
-        #region Fields
-
-        #endregion
-
         /// <summary>
-        /// Initialises a new instance of the <see cref="Diagnosis"/> class.
+        /// Initializes a new instance of the <see cref="Diagnosis"/> class.
         /// </summary>
         public Diagnosis()
         {
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="Diagnosis"/> class.
+        /// Initializes a new instance of the <see cref="Diagnosis"/> class.
         /// </summary>
         /// <param name="severity">One of the <see cref="Severity"/> values.</param>
         /// <param name="message">A friendly message for the diagnosis.</param>
         /// <param name="code">One of the <see cref="DiagnosisCode"/> values.</param>
         public Diagnosis(Severity severity, string message, DiagnosisCode code) :
-            this(severity, message, code, String.Empty)
+            this(severity, message, code, string.Empty)
         {
         }
 

@@ -6,6 +6,8 @@ using Sage.SData.Client.Atom;
 using Sage.SData.Client.Extensions;
 using Sage.SData.Client.Framework;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Extensions
 {
     [TestFixture]
@@ -14,7 +16,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Typical_Feed()
         {
-            var xml = @"<feed xmlns=""http://www.w3.org/2005/Atom""
+            const string xml = @"<feed xmlns=""http://www.w3.org/2005/Atom""
                               xmlns:sync=""http://schemas.sage.com/sdata/sync/2008/1"">
                           <sync:syncMode>catchUp</sync:syncMode>
                           <sync:digest>
@@ -63,7 +65,7 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Typical_Entry()
         {
-            var xml = @"<entry xmlns=""http://www.w3.org/2005/Atom""
+            const string xml = @"<entry xmlns=""http://www.w3.org/2005/Atom""
                                xmlns:sync=""http://schemas.sage.com/sdata/sync/2008/1"">
                           <sync:syncState>
                             <sync:endpoint>http://www.example.com/sdata/myApp1/myContract/-/accounts</sync:endpoint>

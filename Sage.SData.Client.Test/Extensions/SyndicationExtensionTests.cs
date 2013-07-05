@@ -21,9 +21,11 @@ namespace Sage.SData.Client.Test.Extensions
             var feed = new AtomFeed();
 
             using (var reader = new StringReader(xml))
-            using (var xmlReader = XmlReader.Create(reader))
             {
-                feed.Load(xmlReader);
+                using (var xmlReader = XmlReader.Create(reader))
+                {
+                    feed.Load(xmlReader);
+                }
             }
 
             Assume.That(feed.Entries, Is.Not.Empty);
@@ -42,9 +44,11 @@ namespace Sage.SData.Client.Test.Extensions
             var feed = new AtomFeed();
 
             using (var reader = new StringReader(xml))
-            using (var xmlReader = XmlReader.Create(reader))
             {
-                feed.Load(xmlReader);
+                using (var xmlReader = XmlReader.Create(reader))
+                {
+                    feed.Load(xmlReader);
+                }
             }
 
             Assume.That(feed.Entries, Is.Not.Empty);
@@ -63,9 +67,11 @@ namespace Sage.SData.Client.Test.Extensions
             var feed = new AtomFeed();
 
             using (var reader = new StringReader(xml))
-            using (var xmlReader = XmlReader.Create(reader))
             {
-                feed.Load(xmlReader);
+                using (var xmlReader = XmlReader.Create(reader))
+                {
+                    feed.Load(xmlReader);
+                }
             }
 
             Assume.That(feed.Entries, Is.Not.Empty);

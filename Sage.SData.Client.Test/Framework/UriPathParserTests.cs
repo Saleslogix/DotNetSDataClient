@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using Sage.SData.Client.Framework;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Framework
 {
     [TestFixture]
@@ -15,7 +17,7 @@ namespace Sage.SData.Client.Test.Framework
         {
             var segments = UriPathParser.Parse("aaa('bbb(ccc')");
             Assert.That(segments, Is.Not.Null);
-            Assert.That(segments.Length, Is.EqualTo(1));
+            Assert.That(segments.Count, Is.EqualTo(1));
 
             var segment = segments[0];
             Assert.That(segment.Text, Is.EqualTo("aaa"));

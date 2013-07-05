@@ -5,6 +5,8 @@ using NUnit.Framework;
 using Sage.SData.Client.Atom;
 using Sage.SData.Client.Extensions;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Extensions
 {
     [TestFixture]

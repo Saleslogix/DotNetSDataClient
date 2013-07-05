@@ -7,7 +7,7 @@ namespace Sage.SData.Client.Metadata
 {
     public abstract class SDataSchemaItem : SDataSchemaObject
     {
-        protected static readonly XmlDocument XmlDoc = new XmlDocument();
+        private static readonly XmlDocument _xmlDoc = new XmlDocument();
 
         private KeyedObjectCollection<SDataSchemaDocumentation> _documentation;
         private KeyedCollection<XmlQualifiedName, XmlAttribute> _unhandledAttributes;
@@ -144,7 +144,7 @@ namespace Sage.SData.Client.Metadata
 
                 if (doc.Text != null)
                 {
-                    xmlDoc.Markup = new XmlNode[] {XmlDoc.CreateTextNode(doc.Text)};
+                    xmlDoc.Markup = new XmlNode[] {_xmlDoc.CreateTextNode(doc.Text)};
                 }
 
                 annotated.Annotation = new XmlSchemaAnnotation {Items = {xmlDoc}};
@@ -208,7 +208,7 @@ namespace Sage.SData.Client.Metadata
                 return;
             }
 
-            var attr = XmlDoc.CreateAttribute(name, SmeNamespaceUri);
+            var attr = _xmlDoc.CreateAttribute(name, SmeNamespaceUri);
             attr.Value = value;
             attributes.Add(attr);
         }

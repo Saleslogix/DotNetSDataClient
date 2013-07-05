@@ -1,13 +1,15 @@
 ﻿using NUnit.Framework;
 using Sage.SData.Client.Framework;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Framework
 {
     [TestFixture]
     public class MediaTypeNamesTests
     {
         /// <summary>
-        /// Extra spaces shouldn't interfer with media type resolution.
+        /// Extra spaces shouldn't interfere with media type resolution.
         /// </summary>
         [Test]
         public void Content_Type_With_Extra_Spaces_Test()
@@ -18,7 +20,7 @@ namespace Sage.SData.Client.Test.Framework
         }
 
         /// <summary>
-        /// Character casing shouldn't interfer with media type resolution.
+        /// Character casing shouldn't interfere with media type resolution.
         /// </summary>
         [Test]
         public void Content_Type_With_Unusual_Character_Casing_Test()
@@ -29,7 +31,7 @@ namespace Sage.SData.Client.Test.Framework
         }
 
         /// <summary>
-        /// Additional content type parameters shouldn't interfer with type resolution.
+        /// Additional content type parameters shouldn't interfere with type resolution.
         /// </summary>
         [Test]
         public void Content_Type_With_Additional_Parameters_Test()

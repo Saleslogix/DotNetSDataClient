@@ -21,47 +21,30 @@ namespace Sage.SData.Client.Framework
     [XmlType(TypeName = "digest", Namespace = Common.SData.Namespace)]
     public class Digest
     {
-        #region Fields
-
-        private string _strOrigin;
-        private DigestEntry[] _oEntries;
-
-        #endregion
-
         /// <summary>
-        /// Initialises a new instance of the <see cref="Digest"/> class.
+        /// Initializes a new instance of the <see cref="Digest"/> class.
         /// </summary>
         public Digest()
         {
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="Digest"/> class with the
+        /// Initializes a new instance of the <see cref="Digest"/> class with the
         /// specified attributes.
         /// </summary>
-        /// <param name="origin"></param>
-        /// <param name="entries"></param>
         public Digest(string origin, params DigestEntry[] entries)
         {
-            _strOrigin = origin;
-            _oEntries = entries;
+            Origin = origin;
+            Entries = entries;
         }
 
         #region Properties
 
         [XmlElement("origin")]
-        public string Origin
-        {
-            get { return _strOrigin; }
-            set { _strOrigin = value; }
-        }
+        public string Origin { get; set; }
 
         [XmlElement("digestEntry")]
-        public DigestEntry[] Entries
-        {
-            get { return _oEntries; }
-            set { _oEntries = value; }
-        }
+        public DigestEntry[] Entries { get; set; }
 
         #endregion
 

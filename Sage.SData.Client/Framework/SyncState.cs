@@ -6,6 +6,7 @@
 // code.
 
 using System;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Xml.XPath;
@@ -20,57 +21,34 @@ namespace Sage.SData.Client.Framework
     [XmlType(TypeName = "syncState", Namespace = Common.SData.Namespace)]
     public class SyncState
     {
-        #region Fields
-
-        private string _strEndPoint;
-        private long _lTick;
-        private DateTime _oStamp;
-
-        #endregion
-
         /// <summary>
-        /// Initialises a new instance of the <see cref="SyncState"/> class.
+        /// Initializes a new instance of the <see cref="SyncState"/> class.
         /// </summary>
         public SyncState()
         {
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="SyncState"/> class with the
+        /// Initializes a new instance of the <see cref="SyncState"/> class with the
         /// specified attributes.
         /// </summary>
-        /// <param name="endPoint"></param>
-        /// <param name="tick"></param>
-        /// <param name="stamp"></param>
         public SyncState(string endPoint, long tick, DateTime stamp)
         {
-            _strEndPoint = endPoint;
-            _lTick = tick;
-            _oStamp = stamp;
+            EndPoint = endPoint;
+            Tick = tick;
+            Stamp = stamp;
         }
 
         #region Properties
 
         [XmlElement("endpoint")]
-        public string EndPoint
-        {
-            get { return _strEndPoint; }
-            set { _strEndPoint = value; }
-        }
+        public string EndPoint { get; set; }
 
         [XmlElement("tick")]
-        public long Tick
-        {
-            get { return _lTick; }
-            set { _lTick = value; }
-        }
+        public long Tick { get; set; }
 
         [XmlElement("stamp")]
-        public DateTime Stamp
-        {
-            get { return _oStamp; }
-            set { _oStamp = value; }
-        }
+        public DateTime Stamp { get; set; }
 
         #endregion
 
@@ -149,7 +127,7 @@ namespace Sage.SData.Client.Framework
                 writer.WriteElementString("endpoint", xmlNamespace, EndPoint);
             }
 
-            writer.WriteElementString("tick", xmlNamespace, Tick.ToString());
+            writer.WriteElementString("tick", xmlNamespace, Tick.ToString(CultureInfo.InvariantCulture));
             writer.WriteElementString("stamp", xmlNamespace, new W3CDateTime(Stamp).ToString());
 
             writer.WriteEndElement();

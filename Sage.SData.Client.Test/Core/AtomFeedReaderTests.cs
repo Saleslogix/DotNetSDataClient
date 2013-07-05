@@ -9,6 +9,8 @@ using Sage.SData.Client.Core;
 using Sage.SData.Client.Extensions;
 using Sage.SData.Client.Test.Properties;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Core
 {
     [TestFixture]

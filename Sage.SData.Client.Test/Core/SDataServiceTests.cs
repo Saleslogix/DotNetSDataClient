@@ -1,13 +1,13 @@
-﻿using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
+using Sage.SData.Client.Atom;
 using Sage.SData.Client.Core;
+using Sage.SData.Client.Framework;
+
+// ReSharper disable InconsistentNaming
 
 namespace Sage.SData.Client.Test.Core
 {
-    using System;
-    using Atom;
-    using Client.Framework;
-    using Moq;
-
     [TestFixture]
     public class SDataServiceTests : AssertionHelper
     {
@@ -66,10 +66,10 @@ namespace Sage.SData.Client.Test.Core
             feed.AddEntry(new AtomEntry());
 
             mock.SetupGet(r => r.Content).Returns(feed);
-            mock.SetupGet(r => r.ETag).Returns(String.Empty);
+            mock.SetupGet(r => r.ETag).Returns(string.Empty);
 
             var service = new MockService(mock);
-            var result = service.CreateEntry(new SDataServiceOperationRequest(service) { OperationName = "computePrice" }, new AtomEntry());
+            var result = service.CreateEntry(new SDataServiceOperationRequest(service) {OperationName = "computePrice"}, new AtomEntry());
             Expect(result, Is.InstanceOf<AtomEntry>());
         }
 
@@ -78,14 +78,14 @@ namespace Sage.SData.Client.Test.Core
         {
             var mock = new Mock<ISDataResponse>(MockBehavior.Strict);
             mock.SetupGet(r => r.Content).Returns(new AtomEntry());
-            mock.SetupGet(r => r.ETag).Returns(String.Empty);
+            mock.SetupGet(r => r.ETag).Returns(string.Empty);
 
             var service = new MockService(mock);
-            var result = service.CreateEntry(new SDataServiceOperationRequest(service) { OperationName = "computePrice" }, new AtomEntry());
+            var result = service.CreateEntry(new SDataServiceOperationRequest(service) {OperationName = "computePrice"}, new AtomEntry());
             Expect(result, Is.InstanceOf<AtomEntry>());
         }
 
-        class MockService : SDataService
+        private class MockService : SDataService
         {
             private readonly Mock<ISDataResponse> _mock;
 
@@ -94,7 +94,7 @@ namespace Sage.SData.Client.Test.Core
                 _mock = mock;
             }
 
-            protected override ISDataResponse ExecuteRequest(string url, RequestOperation operation, MediaType[] accept)
+            protected override ISDataResponse ExecuteRequest(string url, RequestOperation operation, params MediaType[] accept)
             {
                 return _mock.Object;
             }

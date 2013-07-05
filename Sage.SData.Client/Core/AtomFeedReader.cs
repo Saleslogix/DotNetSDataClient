@@ -56,7 +56,7 @@ namespace Sage.SData.Client.Core
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="AtomFeedReader"/> class.
+        /// Initializes a new instance of the <see cref="AtomFeedReader"/> class.
         /// </summary>
         /// <param name="request">The request used to fetch pages of feed entries.</param>
         internal AtomFeedReader(SDataResourceCollectionRequest request)
@@ -118,8 +118,8 @@ namespace Sage.SData.Client.Core
             Guard.ArgumentNotNull(value, "value");
 
             return _listPages.Where(page => page != null)
-                .SelectMany(page => page)
-                .Any(entry => entry == value);
+                             .SelectMany(page => page)
+                             .Any(entry => entry == value);
         }
 
         public AtomEntry this[int index]
@@ -162,8 +162,8 @@ namespace Sage.SData.Client.Core
         public IEnumerator<AtomEntry> GetEnumerator()
         {
             return Enumerable.Range(0, _listPages.Count)
-                .SelectMany(i => GetPage(i))
-                .GetEnumerator();
+                             .SelectMany(GetPage)
+                             .GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

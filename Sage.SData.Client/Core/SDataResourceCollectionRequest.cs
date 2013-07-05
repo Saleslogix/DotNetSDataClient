@@ -57,7 +57,6 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// Performs initial read from AtomFeedReader
         /// </summary>
-        /// <returns></returns>
         public AtomFeedReader ExecuteReader()
         {
             var reader = new AtomFeedReader(this);
@@ -68,7 +67,6 @@ namespace Sage.SData.Client.Core
         /// Performs initial read from AtomFeedReader
         /// </summary>
         /// <param name="feed">the feed</param>
-        /// <returns></returns>
         [Obsolete("Use the ExecuteReader method instead, which automatically fetches the feed's first page.")]
         public bool Read(AtomFeed feed)
         {

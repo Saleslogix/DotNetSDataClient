@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 using Microsoft.Win32;
 
 namespace Sage.SData.Client.Mime
@@ -18,7 +20,7 @@ namespace Sage.SData.Client.Mime
         /// Find the MIME type of a local file using its file extension and the first few kilobytes of its content.
         /// </summary>
         /// <param name="filePath">The local file path.</param>
-        /// <returns></returns>
+        [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public static string FindMimeType(string filePath)
         {
             try
@@ -43,7 +45,7 @@ namespace Sage.SData.Client.Mime
         /// Find the MIME type of a sample of raw file data.
         /// </summary>
         /// <param name="data">The raw file data.</param>
-        /// <returns></returns>
+        [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public static string FindMimeType(byte[] data)
         {
             try
@@ -68,28 +70,30 @@ namespace Sage.SData.Client.Mime
             {
                 if (_knownTypes == null)
                 {
-                    _knownTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    _knownTypes = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
                     using (var classesRoot = Registry.ClassesRoot)
                     using (var typeKey = classesRoot.OpenSubKey(@"MIME\Database\Content Type"))
                     {
-                        foreach (var contentType in typeKey.GetSubKeyNames())
+                        if (typeKey == null)
                         {
-                            if (string.IsNullOrEmpty(contentType))
-                            {
-                                continue;
-                            }
+                            return _knownTypes;
+                        }
 
+                        foreach (var contentType in typeKey.GetSubKeyNames().Where(name => !string.IsNullOrEmpty(name)))
+                        {
                             using (var contentTypeKey = typeKey.OpenSubKey(contentType))
                             {
-                                var extension = contentTypeKey.GetValue("Extension") as string;
-
-                                if (string.IsNullOrEmpty(extension))
+                                if (contentTypeKey == null)
                                 {
                                     continue;
                                 }
 
-                                _knownTypes[extension] = contentType;
+                                var extension = contentTypeKey.GetValue("Extension") as string;
+                                if (!string.IsNullOrEmpty(extension))
+                                {
+                                    _knownTypes[extension] = contentType;
+                                }
                             }
                         }
                     }
@@ -110,6 +114,7 @@ namespace Sage.SData.Client.Mime
             return KnownTypes.TryGetValue(extension, out mimeType);
         }
 
+        [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         private static bool TryFindByContent(string filePath, out string mimeType)
         {
             var file = new FileInfo(filePath);
@@ -143,17 +148,18 @@ namespace Sage.SData.Client.Mime
             return true;
         }
 
+        [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         private static bool TryFindByData(byte[] data, out string mimeType)
         {
             IntPtr outPtr;
-            var result = FindMimeFromData(IntPtr.Zero,
-                                          null,
-                                          data,
-                                          data.Length,
-                                          null,
-                                          0,
-                                          out outPtr,
-                                          0);
+            var result = NativeMethods.FindMimeFromData(IntPtr.Zero,
+                                                        null,
+                                                        data,
+                                                        data.Length,
+                                                        null,
+                                                        0,
+                                                        out outPtr,
+                                                        0);
 
             if (result != 0 || outPtr == IntPtr.Zero)
             {
@@ -166,14 +172,21 @@ namespace Sage.SData.Client.Mime
             return true;
         }
 
-        [DllImport("urlmon.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
-        private static extern int FindMimeFromData(IntPtr pBC,
-                                                   [MarshalAs(UnmanagedType.LPWStr)] string pwzUrl,
-                                                   [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeParamIndex = 3)] byte[] pBuffer,
-                                                   int cbSize,
-                                                   [MarshalAs(UnmanagedType.LPWStr)] string pwzMimeProposed,
-                                                   int dwMimeFlags,
-                                                   out IntPtr ppwzMimeOut,
-                                                   int dwReserved);
+        #region Nested type: NativeMethods
+
+        private static class NativeMethods
+        {
+            [DllImport("urlmon.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+            public static extern int FindMimeFromData(IntPtr pBC,
+                                                      [MarshalAs(UnmanagedType.LPWStr)] string pwzUrl,
+                                                      [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeParamIndex = 3)] byte[] pBuffer,
+                                                      int cbSize,
+                                                      [MarshalAs(UnmanagedType.LPWStr)] string pwzMimeProposed,
+                                                      int dwMimeFlags,
+                                                      out IntPtr ppwzMimeOut,
+                                                      int dwReserved);
+        }
+
+        #endregion
     }
 }

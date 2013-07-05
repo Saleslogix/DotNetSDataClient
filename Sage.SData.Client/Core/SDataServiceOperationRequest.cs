@@ -63,7 +63,6 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// Execute the service operation asynchronously.
         /// </summary>
-        /// <returns></returns>
         public AsyncRequest CreateAsync()
         {
             return Service.CreateAsync(this, Entry);

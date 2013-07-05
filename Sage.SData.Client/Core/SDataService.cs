@@ -179,7 +179,7 @@ namespace Sage.SData.Client.Core
         /// Adds a new syndication resource to the data source.
         /// </summary>
         /// <param name="request">The request that identifies the resource within the syndication data source.</param>
-        /// <param name="feed"></param>
+        /// <param name="feed">The feed to be created.</param>
         public virtual AtomFeed CreateFeed(SDataBaseRequest request, AtomFeed feed)
         {
             string eTag;
@@ -189,10 +189,6 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// Adds a new syndication resource to the data source.
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="feed"></param>
-        /// <param name="eTag"></param>
-        /// <returns></returns>
         public virtual AtomFeed CreateFeed(SDataBaseRequest request, AtomFeed feed, out string eTag)
         {
             Guard.ArgumentNotNull(request, "request");
@@ -228,11 +224,11 @@ namespace Sage.SData.Client.Core
             {
                 var url = request.ToString();
                 var batchItem = new SDataBatchRequestItem
-                                {
-                                    Url = url,
-                                    Method = HttpMethod.Post,
-                                    Entry = entry
-                                };
+                                    {
+                                        Url = url,
+                                        Method = HttpMethod.Post,
+                                        Entry = entry
+                                    };
 
                 if (BatchProcess.Instance.AddToBatch(batchItem))
                 {
@@ -308,8 +304,6 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// Removes a resource from the syndication data source.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
         public virtual bool DeleteEntry(SDataBaseRequest request)
         {
             return DeleteEntry(request, null);
@@ -320,7 +314,7 @@ namespace Sage.SData.Client.Core
         /// </summary>
         /// <param name="request">The request from the syndication data source for the resource to be removed.</param>
         /// <param name="entry">the resource that is being deleted</param>
-        /// <returns><b>true</b> if the syndication resource was successfully deleted; otherwise, <b>false</b>.</returns>
+        /// <returns><b>true</b> if the syndication resource was successfully deleted, otherwise <b>false</b>.</returns>
         public virtual bool DeleteEntry(SDataBaseRequest request, AtomEntry entry)
         {
             Guard.ArgumentNotNull(request, "request");
@@ -330,11 +324,11 @@ namespace Sage.SData.Client.Core
                 var url = request.ToString();
                 var eTag = entry != null ? entry.GetSDataHttpETag() : null;
                 var batchItem = new SDataBatchRequestItem
-                                {
-                                    Url = url,
-                                    Method = HttpMethod.Delete,
-                                    ETag = eTag
-                                };
+                                    {
+                                        Url = url,
+                                        Method = HttpMethod.Delete,
+                                        ETag = eTag
+                                    };
 
                 if (BatchProcess.Instance.AddToBatch(batchItem))
                 {
@@ -397,53 +391,53 @@ namespace Sage.SData.Client.Core
 
             var operation = new RequestOperation(HttpMethod.Get);
             var request = new SDataRequest(url, operation)
-                          {
-                              UserName = UserName,
-                              Password = Password,
-                              Timeout = Timeout,
-                              Cookies = Cookies,
-                              UserAgent = UserAgent
-                          };
+                              {
+                                  UserName = UserName,
+                                  Password = Password,
+                                  Timeout = Timeout,
+                                  Cookies = Cookies,
+                                  UserAgent = UserAgent
+                              };
             request.BeginGetResponse(
                 asyncResult =>
-                {
-                    try
                     {
-                        var response = request.EndGetResponse(asyncResult);
-
-                        if (ReadCompleted != null)
+                        try
                         {
-                            var content = response.Content;
+                            var response = request.EndGetResponse(asyncResult);
 
-                            if (content is string && response.ContentType == MediaType.Xml)
+                            if (ReadCompleted != null)
                             {
-                                try
-                                {
-                                    content = ReadSchema(response);
-                                }
-                                catch (XmlException)
-                                {
-                                }
-                                catch (InvalidOperationException)
-                                {
-                                }
-                            }
+                                var content = response.Content;
 
-                            ReadCompleted(this, new ReadCompletedEventArgs(content, null, false, userState));
+                                if (content is string && response.ContentType == MediaType.Xml)
+                                {
+                                    try
+                                    {
+                                        content = ReadSchema(response);
+                                    }
+                                    catch (XmlException)
+                                    {
+                                    }
+                                    catch (InvalidOperationException)
+                                    {
+                                    }
+                                }
+
+                                ReadCompleted(this, new ReadCompletedEventArgs(content, null, false, userState));
+                            }
                         }
-                    }
-                    catch (SDataClientException)
-                    {
-                        throw;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ReadCompleted != null)
+                        catch (SDataClientException)
                         {
-                            ReadCompleted(this, new ReadCompletedEventArgs(null, ex, false, userState));
+                            throw;
                         }
-                    }
-                }, null);
+                        catch (Exception ex)
+                        {
+                            if (ReadCompleted != null)
+                            {
+                                ReadCompleted(this, new ReadCompletedEventArgs(null, ex, false, userState));
+                            }
+                        }
+                    }, null);
         }
 
         public event EventHandler<ReadCompletedEventArgs> ReadCompleted;
@@ -462,9 +456,6 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// Reads resource information from the data source based on the URL and the specified ETag.
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="eTag"></param>
-        /// <returns></returns>
         public virtual AtomFeed ReadFeed(SDataBaseRequest request, ref string eTag)
         {
             Guard.ArgumentNotNull(request, "request");
@@ -498,9 +489,6 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// Reads resource information from the data source based on the URL and the ETag of the specified entry.
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="entry"></param>
-        /// <returns></returns>
         public virtual AtomEntry ReadEntry(SDataBaseRequest request, AtomEntry entry)
         {
             Guard.ArgumentNotNull(request, "request");
@@ -510,11 +498,11 @@ namespace Sage.SData.Client.Core
                 var url = request.ToString();
                 var eTag = entry != null ? entry.GetSDataHttpETag() : null;
                 var batchItem = new SDataBatchRequestItem
-                                {
-                                    Url = url,
-                                    Method = HttpMethod.Get,
-                                    ETag = eTag
-                                };
+                                    {
+                                        Url = url,
+                                        Method = HttpMethod.Get,
+                                        ETag = eTag
+                                    };
 
                 if (BatchProcess.Instance.AddToBatch(batchItem))
                 {
@@ -608,12 +596,12 @@ namespace Sage.SData.Client.Core
                 var url = request.ToString();
                 var eTag = entry.GetSDataHttpETag();
                 var batchItem = new SDataBatchRequestItem
-                                {
-                                    Url = url,
-                                    Method = HttpMethod.Put,
-                                    Entry = entry,
-                                    ETag = eTag
-                                };
+                                    {
+                                        Url = url,
+                                        Method = HttpMethod.Put,
+                                        Entry = entry,
+                                        ETag = eTag
+                                    };
 
                 if (BatchProcess.Instance.AddToBatch(batchItem))
                 {
@@ -634,7 +622,7 @@ namespace Sage.SData.Client.Core
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="SDataService"/> class.
+        /// Initializes a new instance of the <see cref="SDataService"/> class.
         /// </summary>
         public SDataService()
             : this(null)
@@ -642,31 +630,27 @@ namespace Sage.SData.Client.Core
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="SDataService"/> class, initialized with a target url.
+        /// Initializes a new instance of the <see cref="SDataService"/> class, initialized with a target url.
         /// </summary>
-        /// <param name="url"></param>
         public SDataService(string url)
             : this(url, null, null)
         {
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="SDataService"/> class, initialized with a target url, user name and password.
+        /// Initializes a new instance of the <see cref="SDataService"/> class, initialized with a target url, user name and password.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="userName">user name used for credentials</param>
-        /// <param name="password">password for user</param>
         public SDataService(string url, string userName, string password)
         {
             _uri = url != null
                        ? new SDataUri(url)
                        : new SDataUri
-                         {
-                             Server = "sdata",
-                             Product = "-",
-                             Contract = "-",
-                             CompanyDataset = "-"
-                         };
+                             {
+                                 Server = "sdata",
+                                 Product = "-",
+                                 Contract = "-",
+                                 CompanyDataset = "-"
+                             };
             UserName = userName;
             Password = password;
             Timeout = 120000;
@@ -721,14 +705,14 @@ namespace Sage.SData.Client.Core
         protected virtual ISDataResponse ExecuteRequest(string url, RequestOperation operation, params MediaType[] accept)
         {
             var request = new SDataRequest(url, operation)
-                          {
-                              Accept = accept,
-                              UserName = UserName,
-                              Password = Password,
-                              Timeout = Timeout,
-                              Cookies = Cookies,
-                              UserAgent = UserAgent
-                          };
+                              {
+                                  Accept = accept,
+                                  UserName = UserName,
+                                  Password = Password,
+                                  Timeout = Timeout,
+                                  Cookies = Cookies,
+                                  UserAgent = UserAgent
+                              };
             return request.GetResponse();
         }
     }

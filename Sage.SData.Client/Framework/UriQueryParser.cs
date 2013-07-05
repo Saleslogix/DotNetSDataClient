@@ -35,7 +35,9 @@ namespace Sage.SData.Client.Framework
         public static void Parse(IDictionary<string, string> args, string query)
         {
             if (string.IsNullOrEmpty(query))
+            {
                 return;
+            }
 
             ParserWorker(args, query, null, UriFormatter.QueryArgPrefix);
         }
@@ -61,7 +63,9 @@ namespace Sage.SData.Client.Framework
         public static void Parse(IDictionary<string, string> args, string query, string separator)
         {
             if (string.IsNullOrEmpty(query))
+            {
                 return;
+            }
 
             ParserWorker(args, query, null, separator);
         }
@@ -87,7 +91,9 @@ namespace Sage.SData.Client.Framework
         public static void Parse(IDictionary<string, string> args, string query, IEnumerable<string> complexArgs)
         {
             if (string.IsNullOrEmpty(query))
+            {
                 return;
+            }
 
             ParserWorker(args, query, complexArgs, UriFormatter.QueryArgPrefix);
         }
@@ -115,7 +121,9 @@ namespace Sage.SData.Client.Framework
         public static void Parse(IDictionary<string, string> args, string query, IEnumerable<string> complexArgs, string separator)
         {
             if (string.IsNullOrEmpty(query))
+            {
                 return;
+            }
 
             ParserWorker(args, query, complexArgs, separator);
         }
@@ -128,15 +136,20 @@ namespace Sage.SData.Client.Framework
         {
             var start = -1;
             string complexArgName = null;
+            var complexArgsCol = complexArgs != null
+                                     ? complexArgs as ICollection<string> ?? new List<string>(complexArgs)
+                                     : null;
 
             if (complexArgs != null)
             {
-                foreach (var complexArg in complexArgs)
+                foreach (var complexArg in complexArgsCol)
                 {
                     var index = query.IndexOf(complexArg + UriFormatter.QueryArgValuePrefix, StringComparison.InvariantCultureIgnoreCase);
 
                     if (index < 0)
+                    {
                         continue;
+                    }
 
                     if (start < 0 || index < start)
                     {
@@ -149,7 +162,9 @@ namespace Sage.SData.Client.Framework
             if (complexArgName != null)
             {
                 if (start > 0)
-                    ParserWorker(args, query.Substring(0, start - 1), complexArgs, separator);
+                {
+                    ParserWorker(args, query.Substring(0, start - 1), complexArgsCol, separator);
+                }
 
                 // Move past the complex arg part part
                 start += complexArgName.Length + 1;
@@ -163,10 +178,12 @@ namespace Sage.SData.Client.Framework
                     isComplex = false;
 
                     // Simple expression q=<expression>
-                    end = query.IndexOf(separator, end);
+                    end = query.IndexOf(separator, end, StringComparison.InvariantCulture);
 
                     if (end < 0)
+                    {
                         end = length;
+                    }
                 }
                 else
                 {
@@ -196,7 +213,9 @@ namespace Sage.SData.Client.Framework
 
                         // If its not escape, its the last
                         if (query[end - 1] != '\\')
+                        {
                             break;
+                        }
 
                         end++;
                     }
@@ -206,7 +225,9 @@ namespace Sage.SData.Client.Framework
                 var delta = isComplex ? 1 : 0;
 
                 if (end < length - delta)
-                    ParserWorker(args, query.Substring(end + (delta + 1)), complexArgs, separator);
+                {
+                    ParserWorker(args, query.Substring(end + (delta + 1)), complexArgsCol, separator);
+                }
 
                 // Finally parse the query string
                 var expression = query.Substring(start, end - start);
@@ -221,14 +242,20 @@ namespace Sage.SData.Client.Framework
                     var parts = arg.Split(UriFormatter.QueryArgValuePrefix[0]);
 
                     if (parts[0].Length == 0)
+                    {
                         continue;
+                    }
 
                     var key = Uri.UnescapeDataString(parts[0].Trim());
 
                     if (parts.Length == 1)
+                    {
                         args[key] = string.Empty;
+                    }
                     else
+                    {
                         args[key] = Uri.UnescapeDataString(parts[1]);
+                    }
                 }
             }
         }

@@ -32,7 +32,7 @@ namespace Sage.SData.Client.Metadata
 
         /// <summary>
         /// Does the resource kind use UUIDs to identify resources?
-        /// When this attribute is set, feeds payload MUST carry sdata:uuid attributes.
+        /// When this attribute is set, feed payloads MUST carry sdata:uuid attributes.
         /// </summary>
         public bool HasUuid { get; set; }
 

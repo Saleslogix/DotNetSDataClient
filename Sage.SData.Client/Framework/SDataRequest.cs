@@ -177,7 +177,9 @@ namespace Sage.SData.Client.Framework
                 var statusCode = httpResponse != null ? httpResponse.StatusCode : 0;
 
                 if (statusCode != HttpStatusCode.Found)
+                {
                     return new SDataResponse(response, location);
+                }
 
                 uri = location = response.Headers[HttpResponseHeader.Location];
             }
@@ -227,7 +229,7 @@ namespace Sage.SData.Client.Framework
         {
             var uri = new SDataUri(Uri);
 
-            if (uri.PathSegments.Length != 4)
+            if (uri.PathSegments.Count != 4)
             {
                 throw new InvalidOperationException("Batch requests can only be made on collection end points");
             }
@@ -304,7 +306,7 @@ namespace Sage.SData.Client.Framework
 
                 if (Accept != null)
                 {
-                    httpRequest.Accept = string.Join(",", Array.ConvertAll(Accept, type => MediaTypeNames.GetMediaType(type)));
+                    httpRequest.Accept = string.Join(",", Array.ConvertAll(Accept, MediaTypeNames.GetMediaType));
                 }
 
                 if (Cookies != null)
@@ -327,13 +329,13 @@ namespace Sage.SData.Client.Framework
                 var uriPrefix = new Uri(uri);
                 var cred = new NetworkCredential(UserName, Password);
                 request.Credentials = new CredentialCache
-                                      {
-                                          {uriPrefix, "Basic", cred},
-                                          {uriPrefix, "Digest", cred},
-                                          {uriPrefix, "NTLM", cred},
-                                          {uriPrefix, "Kerberos", cred},
-                                          {uriPrefix, "Negotiate", cred}
-                                      };
+                                          {
+                                              {uriPrefix, "Basic", cred},
+                                              {uriPrefix, "Digest", cred},
+                                              {uriPrefix, "NTLM", cred},
+                                              {uriPrefix, "Kerberos", cred},
+                                              {uriPrefix, "Negotiate", cred}
+                                          };
             }
             else
             {
@@ -364,20 +366,16 @@ namespace Sage.SData.Client.Framework
                     else if (op.Resource is IXmlSerializable)
                     {
                         mediaType = MediaType.Xml;
-
-                        using (var xmlWriter = XmlWriter.Create(requestStream))
-                        {
-                            ((IXmlSerializable) op.Resource).WriteXml(xmlWriter);
-                        }
+                        var xmlWriter = XmlWriter.Create(requestStream);
+                        ((IXmlSerializable) op.Resource).WriteXml(xmlWriter);
+                        xmlWriter.Flush();
                     }
                     else if (op.Resource is string)
                     {
                         mediaType = MediaType.Text;
-
-                        using (var writer = new StreamWriter(requestStream))
-                        {
-                            writer.Write((string) op.Resource);
-                        }
+                        var writer = new StreamWriter(requestStream);
+                        writer.Write((string) op.Resource);
+                        writer.Flush();
                     }
                     else
                     {
@@ -404,11 +402,11 @@ namespace Sage.SData.Client.Framework
                             foreach (var data in op.Form)
                             {
                                 var part = new MimePart(new MemoryStream(Encoding.UTF8.GetBytes(data.Value)))
-                                           {
-                                               ContentType = MediaTypeNames.TextMediaType,
-                                               ContentTransferEncoding = "binary",
-                                               ContentDisposition = new ContentDisposition(DispositionTypeNames.Inline) {Parameters = {{"name", data.Key}}}
-                                           };
+                                               {
+                                                   ContentType = MediaTypeNames.TextMediaType,
+                                                   ContentTransferEncoding = "binary",
+                                                   ContentDisposition = new ContentDisposition(DispositionTypeNames.Inline) {Parameters = {{"name", data.Key}}}
+                                               };
                                 multipart.Add(part);
                             }
 
@@ -428,11 +426,11 @@ namespace Sage.SData.Client.Framework
                                 }
 
                                 var part = new MimePart(file.Stream)
-                                           {
-                                               ContentType = !string.IsNullOrEmpty(file.ContentType) ? file.ContentType : "application/octet-stream",
-                                               ContentTransferEncoding = "binary",
-                                               ContentDisposition = contentDisposition
-                                           };
+                                               {
+                                                   ContentType = !string.IsNullOrEmpty(file.ContentType) ? file.ContentType : "application/octet-stream",
+                                                   ContentTransferEncoding = "binary",
+                                                   ContentDisposition = contentDisposition
+                                               };
                                 multipart.Add(part);
                             }
 

@@ -44,7 +44,7 @@ namespace Sage.SData.Client.Framework
         #endregion
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UriPathSegment"/> class.
+        /// Initializes a new instance of the <see cref="UriPathSegment"/> class.
         /// </summary>
         public UriPathSegment()
             : this(string.Empty)
@@ -52,7 +52,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UriPathSegment"/> class with
+        /// Initializes a new instance of the <see cref="UriPathSegment"/> class with
         /// the specified text.
         /// </summary>
         /// <param name="segment">The text and predicate for the segment.</param>
@@ -62,7 +62,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UriPathSegment"/> class with
+        /// Initializes a new instance of the <see cref="UriPathSegment"/> class with
         /// the specified text and predicate.
         /// </summary>
         /// <param name="text">The text for the segment.</param>
@@ -74,7 +74,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UriPathSegment"/> class with
+        /// Initializes a new instance of the <see cref="UriPathSegment"/> class with
         /// the details of the specified segment.
         /// </summary>
         /// <param name="segment">The segment to copy the details from.</param>
@@ -130,7 +130,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Returns a value indicating if this segment has a predicate.
         /// </summary>
-        /// <value><b>true</b> if this segment has a predicate; otherwise, <b>false</b>.</value>
+        /// <value><b>true</b> if this segment has a predicate, otherwise <b>false</b>.</value>
         public bool HasPredicate
         {
             get { return !string.IsNullOrEmpty(Predicate); }
@@ -158,12 +158,14 @@ namespace Sage.SData.Client.Framework
                     var formatter = _formatter.Target as UriFormatter;
 
                     if (formatter != null)
+                    {
                         formatter.RequiresRebuildPath = true;
+                    }
                 }
             }
         }
 
-        internal bool RequiresRebuild
+        private bool RequiresRebuild
         {
             get { return _requiresRebuild; }
             set
@@ -175,7 +177,9 @@ namespace Sage.SData.Client.Framework
                     var formatter = _formatter.Target as UriFormatter;
 
                     if (formatter != null)
+                    {
                         formatter.RequiresRebuildPath = true;
+                    }
                 }
             }
         }
@@ -199,7 +203,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Returns the haskcode for the <see cref="UriPathSegment"/>.
+        /// Returns the hashcode for the <see cref="UriPathSegment"/>.
         /// </summary>
         /// <returns>The hashcode for the <see cref="UriPathSegment"/>.</returns>
         public override int GetHashCode()
@@ -211,7 +215,7 @@ namespace Sage.SData.Client.Framework
         /// Compares the specified <see cref="object"/> with this <see cref="UriPathSegment"/>.
         /// </summary>
         /// <param name="obj">The <see cref="Object"/> to compare.</param>
-        /// <returns><b>true</b> if <paramref name="obj"/> match this <see cref="UriPathSegment"/>; otherwise, <b>false</b>.</returns>
+        /// <returns><b>true</b> if <paramref name="obj"/> match this <see cref="UriPathSegment"/>, otherwise <b>false</b>.</returns>
         public override bool Equals(object obj)
         {
             return obj.ToString() == ToString();
@@ -229,23 +233,17 @@ namespace Sage.SData.Client.Framework
         /// <returns><see cref="Array"/> of <see cref="UriPathSegment"/> objects.</returns>
         public static IEnumerable<UriPathSegment> FromStrings(IEnumerable<string> segments)
         {
-            return segments.SelectMany(segment => UriPathParser.Parse(segment)).ToArray();
+            return segments.SelectMany(UriPathParser.Parse).ToArray();
         }
 
         /// <summary>
         /// Returns the segments that make up the specified path.
         /// </summary>
-        /// <param name="path">The path to to return the segments for.</param>
+        /// <param name="path">The path to return the segments for.</param>
         /// <returns>Array of segments that make up the specified path.</returns>
         public static IEnumerable<string> GetPathSegments(string path)
         {
-            var segments = UriPathParser.Parse(path);
-            var pathSegments = new string[segments.Length];
-
-            for (var i = 0; i < segments.Length; i++)
-                pathSegments[i] = segments[i].Segment;
-
-            return pathSegments;
+            return UriPathParser.Parse(path).Select(segment => segment.Segment);
         }
 
         /// <summary>
@@ -253,17 +251,21 @@ namespace Sage.SData.Client.Framework
         /// </summary>
         /// <param name="path">The path to append the segment to.</param>
         /// <param name="segment">The segment to append to the path.</param>
-        /// <returns>A <see cref="String"/> containg the segment appended to the path.</returns>
+        /// <returns>A <see cref="String"/> containing the segment appended to the path.</returns>
         /// <remarks>If the <paramref name="segment"/> starts with a forward slash it is assumed that the segment specifies an absolute path.</remarks>
         public static string AppendPath(string path, string segment)
         {
             segment = ValidateSegment(segment);
 
             if (segment.StartsWith(UriFormatter.PathSegmentPrefix))
+            {
                 return segment.Substring(UriFormatter.PathSegmentPrefix.Length);
+            }
 
             if (string.IsNullOrEmpty(path))
+            {
                 return segment;
+            }
 
             return path + UriFormatter.PathSegmentPrefix + segment;
         }
@@ -286,7 +288,9 @@ namespace Sage.SData.Client.Framework
             else
             {
                 if (path.Length != 0)
+                {
                     path.Append(UriFormatter.PathSegmentPrefix);
+                }
 
                 path.Append(segment);
             }
@@ -304,7 +308,9 @@ namespace Sage.SData.Client.Framework
         private void CheckRebuild()
         {
             if (!RequiresRebuild)
+            {
                 return;
+            }
 
             RequiresRebuild = false;
 
@@ -320,7 +326,9 @@ namespace Sage.SData.Client.Framework
             var segment = new StringBuilder(_text);
 
             if (HasPredicate)
+            {
                 segment.AppendFormat("{0}{1}{2}", PredicatePrefix, _predicate, PredicateSuffix);
+            }
 
             _segment = segment.ToString();
         }
@@ -328,7 +336,9 @@ namespace Sage.SData.Client.Framework
         private void CheckParse()
         {
             if (!_requiresParse)
+            {
                 return;
+            }
 
             _requiresParse = false;
 
@@ -348,7 +358,7 @@ namespace Sage.SData.Client.Framework
             {
                 var segments = UriPathParser.Parse(_segment);
 
-                if (segments.Length > 0)
+                if (segments.Count > 0)
                 {
                     var segment = segments[0];
 

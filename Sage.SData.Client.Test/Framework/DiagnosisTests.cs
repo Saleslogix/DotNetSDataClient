@@ -6,6 +6,8 @@ using System.Xml.XPath;
 using NUnit.Framework;
 using Sage.SData.Client.Framework;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Framework
 {
     [TestFixture]
@@ -21,25 +23,29 @@ namespace Sage.SData.Client.Test.Framework
         public void Diagnosis_SDataCode_Should_Be_An_Enum_Test()
         {
             var diagnosis = new Diagnosis
-                            {
-                                SDataCode = DiagnosisCode.ApplicationDiagnosis,
-                                ApplicationCode = "Application error"
-                            };
+                                {
+                                    SDataCode = DiagnosisCode.ApplicationDiagnosis,
+                                    ApplicationCode = "Application error"
+                                };
             string xml;
 
             using (var textWriter = new StringWriter())
-            using (var xmlWriter = new XmlTextWriter(textWriter))
             {
-                diagnosis.WriteTo(xmlWriter, null);
-                xml = textWriter.ToString();
+                using (var xmlWriter = new XmlTextWriter(textWriter))
+                {
+                    diagnosis.WriteTo(xmlWriter, null);
+                    xml = textWriter.ToString();
+                }
             }
 
             XPathNavigator nav;
 
             using (var textReader = new StringReader(xml))
-            using (var xmlReader = new XmlTextReader(textReader))
             {
-                nav = new XPathDocument(xmlReader).CreateNavigator();
+                using (var xmlReader = new XmlTextReader(textReader))
+                {
+                    nav = new XPathDocument(xmlReader).CreateNavigator();
+                }
             }
 
             var node = nav.SelectSingleNode("diagnosis/sdataCode");

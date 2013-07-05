@@ -141,14 +141,14 @@ namespace Sage.SData.Client.Metadata
                 if (BaseType != null)
                 {
                     type.ContentModel = new XmlSchemaComplexContent
-                                        {
-                                            Content = new XmlSchemaComplexContentExtension
-                                                      {
-                                                          BaseTypeName = BaseType.QualifiedName,
-                                                          AnyAttribute = AnyAttribute,
-                                                          Particle = all
-                                                      }
-                                        };
+                                            {
+                                                Content = new XmlSchemaComplexContentExtension
+                                                              {
+                                                                  BaseTypeName = BaseType.QualifiedName,
+                                                                  AnyAttribute = AnyAttribute,
+                                                                  Particle = all
+                                                              }
+                                            };
                 }
                 else
                 {

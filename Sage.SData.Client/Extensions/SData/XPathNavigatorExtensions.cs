@@ -39,8 +39,8 @@ namespace Sage.SData.Client.Extensions
         public static IEnumerable<KeyValuePair<string, string>> GetAllNamespaces(this XPathNavigator source)
         {
             return source.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml)
-                .Concat(source.Select("descendant::*").Cast<XPathNavigator>()
-                            .SelectMany(descendant => descendant.GetNamespacesInScope(XmlNamespaceScope.Local)));
+                         .Concat(source.Select("descendant::*").Cast<XPathNavigator>()
+                                       .SelectMany(descendant => descendant.GetNamespacesInScope(XmlNamespaceScope.Local)));
         }
     }
 }

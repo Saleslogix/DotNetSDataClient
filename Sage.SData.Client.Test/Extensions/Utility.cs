@@ -12,13 +12,15 @@ namespace Sage.SData.Client.Test.Extensions
             var payload = new SDataPayload();
 
             using (var strReader = new StringReader(xml))
-            using (var xmlReader = XmlReader.Create(strReader))
             {
-                var doc = new XPathDocument(xmlReader);
-                var source = doc.CreateNavigator();
-                var manager = new XmlNamespaceManager(source.NameTable);
-                source.MoveToFirstChild();
-                payload.Load(source, manager);
+                using (var xmlReader = XmlReader.Create(strReader))
+                {
+                    var doc = new XPathDocument(xmlReader);
+                    var source = doc.CreateNavigator();
+                    var manager = new XmlNamespaceManager(source.NameTable);
+                    source.MoveToFirstChild();
+                    payload.Load(source, manager);
+                }
             }
 
             return payload;

@@ -2,6 +2,8 @@
 using NUnit.Framework;
 using Sage.SData.Client.Core;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Core
 {
     [TestFixture]

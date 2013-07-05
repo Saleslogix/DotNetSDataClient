@@ -3,12 +3,15 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace Sage.SData.Client.Framework
 {
     /// <summary>
     /// The exception that is thrown when an error occurs on an SData server.
     /// </summary>
+    [Serializable]
     public class SDataException : WebException
     {
         private readonly Collection<Diagnosis> _diagnoses;
@@ -17,7 +20,6 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="innerException"></param>
         public SDataException(WebException innerException)
             : base(innerException.Message, innerException, innerException.Status, innerException.Response)
         {
@@ -59,12 +61,25 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="diagnoses"></param>
-        /// <param name="statusCode"></param>
         public SDataException(Collection<Diagnosis> diagnoses, HttpStatusCode statusCode)
         {
             _diagnoses = diagnoses;
             _statusCode = statusCode;
+        }
+
+        protected SDataException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            _diagnoses = (Collection<Diagnosis>) info.GetValue("Diagnoses", typeof (Collection<Diagnosis>));
+            _statusCode = (HttpStatusCode?) info.GetValue("StatusCode", typeof (HttpStatusCode?));
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue("Diagnoses", _diagnoses);
+            info.AddValue("StatusCode", _statusCode);
         }
 
         /// <summary>

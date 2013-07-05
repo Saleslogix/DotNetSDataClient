@@ -5,6 +5,7 @@ namespace Sage.SData.Client.Core
     /// <summary>
     /// Exception for SDataClient
     /// </summary>
+    [Serializable]
     public class SDataClientException : Exception
     {
         // Base Exception class constructors.
@@ -16,9 +17,8 @@ namespace Sage.SData.Client.Core
         }
 
         /// <summary>
-        /// costructor
+        /// constructor
         /// </summary>
-        /// <param name="message"></param>
         public SDataClientException(string message)
             : base(message)
         {
@@ -27,8 +27,6 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="innerException"></param>
         public SDataClientException(string message, Exception innerException)
             : base(message, innerException)
         {

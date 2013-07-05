@@ -54,10 +54,10 @@ namespace Sage.SData.Client.Metadata
         {
             var resource = type as SDataSchemaResourceType;
             return new SDataSchemaChoiceItem
-                   {
-                       ElementName = resource != null ? resource.ElementName : null,
-                       Type = type
-                   };
+                       {
+                           ElementName = resource != null ? resource.ElementName : null,
+                           Type = type
+                       };
         }
     }
 }

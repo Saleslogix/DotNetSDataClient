@@ -4,7 +4,7 @@ using Sage.SData.Client.Metadata;
 namespace Sage.SData.Client.Core
 {
     /// <summary>
-    /// Request to to get resource schema
+    /// Request to get resource schema
     /// </summary>
     public class SDataResourceSchemaRequest : SDataOperationalRequest
     {

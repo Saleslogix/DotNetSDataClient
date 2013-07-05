@@ -50,20 +50,21 @@ namespace Sage.SData.Client.Extensions
             IsDeleted = source.TryGetAttribute("isDeleted", Framework.Common.SData.Namespace, out value) && !string.IsNullOrEmpty(value) ? XmlConvert.ToBoolean(value) : (bool?) null;
 
             return source.SelectChildren(XPathNodeType.Element)
-                .Cast<XPathNavigator>()
-                .GroupBy(item => item.LocalName)
-                .All(group => LoadItem(group.Key, group, manager));
+                         .Cast<XPathNavigator>()
+                         .GroupBy(item => item.LocalName)
+                         .All(group => LoadItem(group.Key, group, manager));
         }
 
         private bool LoadItem(string name, IEnumerable<XPathNavigator> items, XmlNamespaceManager manager)
         {
             object value;
+            var list = items.ToList();
 
-            if (items.Count() > 1)
+            if (list.Count > 1)
             {
                 var collection = new SDataPayloadCollection();
 
-                if (!collection.Load(items, manager))
+                if (!collection.Load(list, manager))
                 {
                     return false;
                 }
@@ -72,59 +73,61 @@ namespace Sage.SData.Client.Extensions
             }
             else
             {
-                var item = items.First();
+                var item = list[0];
 
                 switch (InferItemType(item))
                 {
                     case ItemType.Property:
-                    {
-                        string nilValue;
-
-                        if (item.TryGetAttribute("nil", Framework.Common.XSI.Namespace, out nilValue) && XmlConvert.ToBoolean(nilValue))
                         {
-                            value = null;
-                        }
-                        else
-                        {
-                            value = item.Value;
-                        }
+                            string nilValue;
 
-                        break;
-                    }
+                            if (item.TryGetAttribute("nil", Framework.Common.Xsi.Namespace, out nilValue) && XmlConvert.ToBoolean(nilValue))
+                            {
+                                value = null;
+                            }
+                            else
+                            {
+                                value = item.Value;
+                            }
+
+                            break;
+                        }
                     case ItemType.Object:
-                    {
-                        var obj = new SDataPayload();
-
-                        if (!obj.Load(item, manager))
                         {
-                            return false;
-                        }
+                            var obj = new SDataPayload();
 
-                        value = obj;
-                        break;
-                    }
+                            if (!obj.Load(item, manager))
+                            {
+                                return false;
+                            }
+
+                            value = obj;
+                            break;
+                        }
                     case ItemType.PayloadCollection:
-                    {
-                        var collection = new SDataPayloadCollection();
-
-                        if (!collection.Load(item, manager))
                         {
-                            return false;
+                            var collection = new SDataPayloadCollection();
+
+                            if (!collection.Load(item, manager))
+                            {
+                                return false;
+                            }
+
+                            value = collection;
+                            break;
                         }
-
-                        value = collection;
-                        break;
-                    }
                     case ItemType.SimpleCollection:
-                    {
-                        var collection = new SDataSimpleCollection();
+                        {
+                            var collection = new SDataSimpleCollection();
 
-                        if (!collection.Load(item))
-                            return false;
+                            if (!collection.Load(item))
+                            {
+                                return false;
+                            }
 
-                        value = collection;
-                        break;
-                    }
+                            value = collection;
+                            break;
+                        }
                     default:
                         return false;
                 }
@@ -138,7 +141,7 @@ namespace Sage.SData.Client.Extensions
         {
             string value;
 
-            if (item.TryGetAttribute("nil", Framework.Common.XSI.Namespace, out value) && XmlConvert.ToBoolean(value))
+            if (item.TryGetAttribute("nil", Framework.Common.Xsi.Namespace, out value) && XmlConvert.ToBoolean(value))
             {
                 return ItemType.Property;
             }
@@ -223,12 +226,30 @@ namespace Sage.SData.Client.Extensions
 
             writer.WriteStartElement(name, ns);
 
-            if (Key != null) writer.WriteAttributeString("key", xmlNamespace, Key);
-            if (Uri != null) writer.WriteAttributeString("uri", xmlNamespace, Uri.AbsoluteUri);
-            if (Uuid != null) writer.WriteAttributeString("uuid", xmlNamespace, Uuid.ToString());
-            if (Descriptor != null) writer.WriteAttributeString("descriptor", xmlNamespace, Descriptor);
-            if (Lookup != null) writer.WriteAttributeString("lookup", xmlNamespace, Lookup);
-            if (IsDeleted != null) writer.WriteAttributeString("isDeleted", xmlNamespace, XmlConvert.ToString(IsDeleted.Value));
+            if (Key != null)
+            {
+                writer.WriteAttributeString("key", xmlNamespace, Key);
+            }
+            if (Uri != null)
+            {
+                writer.WriteAttributeString("uri", xmlNamespace, Uri.AbsoluteUri);
+            }
+            if (Uuid != null)
+            {
+                writer.WriteAttributeString("uuid", xmlNamespace, Uuid.ToString());
+            }
+            if (Descriptor != null)
+            {
+                writer.WriteAttributeString("descriptor", xmlNamespace, Descriptor);
+            }
+            if (Lookup != null)
+            {
+                writer.WriteAttributeString("lookup", xmlNamespace, Lookup);
+            }
+            if (IsDeleted != null)
+            {
+                writer.WriteAttributeString("isDeleted", xmlNamespace, XmlConvert.ToString(IsDeleted.Value));
+            }
 
             foreach (var pair in Values)
             {
@@ -243,7 +264,7 @@ namespace Sage.SData.Client.Extensions
             if (value == null)
             {
                 writer.WriteStartElement(name, Namespace);
-                writer.WriteAttributeString("nil", Framework.Common.XSI.Namespace, XmlConvert.ToString(true));
+                writer.WriteAttributeString("nil", Framework.Common.Xsi.Namespace, XmlConvert.ToString(true));
                 writer.WriteEndElement();
             }
             else if (value is SDataPayload)

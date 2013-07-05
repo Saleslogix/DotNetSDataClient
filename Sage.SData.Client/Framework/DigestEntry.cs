@@ -6,6 +6,7 @@
 // code.
 
 using System;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Xml.XPath;
@@ -20,67 +21,38 @@ namespace Sage.SData.Client.Framework
     [XmlType(TypeName = "digestEntry", Namespace = Common.SData.Namespace)]
     public class DigestEntry
     {
-        #region Fields
-
-        private string _strEndPoint;
-        private long _lTick;
-        private DateTime _oStamp;
-        private int _iConflictPriority;
-
-        #endregion
-
         /// <summary>
-        /// Initialises a new instance of the <see cref="DigestEntry"/> class.
+        /// Initializes a new instance of the <see cref="DigestEntry"/> class.
         /// </summary>
         public DigestEntry()
         {
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="DigestEntry"/> class with the
+        /// Initializes a new instance of the <see cref="DigestEntry"/> class with the
         /// specified attributes.
         /// </summary>
-        /// <param name="endPoint"></param>
-        /// <param name="tick"></param>
-        /// <param name="stamp"></param>
-        /// <param name="conflictPriority"></param>
         public DigestEntry(string endPoint, long tick, DateTime stamp, int conflictPriority)
         {
-            _strEndPoint = endPoint;
-            _lTick = tick;
-            _oStamp = stamp;
-            _iConflictPriority = conflictPriority;
+            EndPoint = endPoint;
+            Tick = tick;
+            Stamp = stamp;
+            ConflictPriority = conflictPriority;
         }
 
         #region Properties
 
         [XmlElement("endpoint")]
-        public string EndPoint
-        {
-            get { return _strEndPoint; }
-            set { _strEndPoint = value; }
-        }
+        public string EndPoint { get; set; }
 
         [XmlElement("tick")]
-        public long Tick
-        {
-            get { return _lTick; }
-            set { _lTick = value; }
-        }
+        public long Tick { get; set; }
 
         [XmlElement("stamp")]
-        public DateTime Stamp
-        {
-            get { return _oStamp; }
-            set { _oStamp = value; }
-        }
+        public DateTime Stamp { get; set; }
 
         [XmlElement("conflictPriority")]
-        public int ConflictPriority
-        {
-            get { return _iConflictPriority; }
-            set { _iConflictPriority = value; }
-        }
+        public int ConflictPriority { get; set; }
 
         #endregion
 
@@ -166,9 +138,9 @@ namespace Sage.SData.Client.Framework
                 writer.WriteElementString("endpoint", xmlNamespace, EndPoint);
             }
 
-            writer.WriteElementString("tick", xmlNamespace, Tick.ToString());
+            writer.WriteElementString("tick", xmlNamespace, Tick.ToString(CultureInfo.InvariantCulture));
             writer.WriteElementString("stamp", xmlNamespace, new W3CDateTime(Stamp).ToString());
-            writer.WriteElementString("conflictPriority", xmlNamespace, ConflictPriority.ToString());
+            writer.WriteElementString("conflictPriority", xmlNamespace, ConflictPriority.ToString(CultureInfo.InvariantCulture));
 
             writer.WriteEndElement();
         }

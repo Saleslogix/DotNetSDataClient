@@ -54,8 +54,6 @@ namespace Sage.SData.Client.Core
         /// </summary>
         /// <remarks>this should be used with the atom entry returned from the 
         /// SDataTemplateResourceRequest</remarks>
-        /// <param name="service"></param>
-        /// <param name="entry"></param>
         public SDataSingleResourceRequest(ISDataService service, AtomEntry entry)
             : base(service)
         {

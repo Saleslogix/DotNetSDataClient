@@ -41,11 +41,11 @@ namespace SDataClientApp
             try
             {
                 _sdataResourceCollectionRequest = new SDataResourceCollectionRequest(Service)
-                                                  {
-                                                      ResourceKind = tbCollectionResourceKind.Text,
-                                                      StartIndex = (int) numStartIndex.Value,
-                                                      Count = (int) numCount.Value
-                                                  };
+                                                      {
+                                                          ResourceKind = tbCollectionResourceKind.Text,
+                                                          StartIndex = (int) numStartIndex.Value,
+                                                          Count = (int) numCount.Value
+                                                      };
 
                 _feed = null;
                 _reader = _sdataResourceCollectionRequest.ExecuteReader();
@@ -161,11 +161,11 @@ namespace SDataClientApp
             try
             {
                 _sdataResourceCollectionRequest = new SDataResourceCollectionRequest(Service)
-                                                  {
-                                                      ResourceKind = tbCollectionResourceKind.Text,
-                                                      StartIndex = (int) numStartIndex.Value,
-                                                      Count = (int) numCount.Value
-                                                  };
+                                                      {
+                                                          ResourceKind = tbCollectionResourceKind.Text,
+                                                          StartIndex = (int) numStartIndex.Value,
+                                                          Count = (int) numCount.Value
+                                                      };
                 _feed = _sdataResourceCollectionRequest.Read();
                 _reader = null;
 

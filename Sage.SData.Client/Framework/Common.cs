@@ -24,18 +24,18 @@ namespace Sage.SData.Client.Framework
         static Common()
         {
             _oSerializerNamespaces = new XmlSerializerNamespaces();
-            _oSerializerNamespaces.Add(SME.Prefix, SME.Namespace);
+            _oSerializerNamespaces.Add(Sme.Prefix, Sme.Namespace);
             _oSerializerNamespaces.Add(SData.Prefix, SData.Namespace);
-            _oSerializerNamespaces.Add(HTTP.Prefix, HTTP.Namespace);
+            _oSerializerNamespaces.Add(Http.Prefix, Http.Namespace);
             _oSerializerNamespaces.Add(Sync.Prefix, Sync.Namespace);
             _oSerializerNamespaces.Add(OpenSearch.Prefix, OpenSearch.Namespace);
-            _oSerializerNamespaces.Add(XSI.Prefix, XSI.Namespace);
+            _oSerializerNamespaces.Add(Xsi.Prefix, Xsi.Namespace);
 
             _oFrameworkNamespaces = new Dictionary<string, bool>(StringComparer.InvariantCultureIgnoreCase);
             _oFrameworkNamespaces[Atom.Namespace] = true;
-            _oFrameworkNamespaces[SME.Namespace] = true;
+            _oFrameworkNamespaces[Sme.Namespace] = true;
             _oFrameworkNamespaces[SData.Namespace] = true;
-            _oFrameworkNamespaces[HTTP.Namespace] = true;
+            _oFrameworkNamespaces[Http.Namespace] = true;
             _oFrameworkNamespaces[Sync.Namespace] = true;
             _oFrameworkNamespaces[OpenSearch.Namespace] = true;
         }
@@ -47,12 +47,12 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Prefix for xml namespace
         /// </summary>
-        public const string XmlNS = "xmlns";
+        public const string XmlNs = "xmlns";
 
         /// <summary>
         /// XS namespace
         /// </summary>
-        public static class XS
+        public static class Xs
         {
             /// <summary>
             /// Xml Schema namespace.
@@ -68,7 +68,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// XSI namespace
         /// </summary>
-        public static class XSI
+        public static class Xsi
         {
             /// <summary>
             /// Namespace for XSI 
@@ -92,7 +92,7 @@ namespace Sage.SData.Client.Framework
         public static class Atom
         {
             /// <summary>
-            /// Uri for Atom namespace
+            /// URI for Atom namespace
             /// </summary>
             public const string Namespace = "http://www.w3.org/2005/Atom";
 
@@ -108,7 +108,7 @@ namespace Sage.SData.Client.Framework
         public static class SData
         {
             /// <summary>
-            /// Uri for SData namespace
+            /// URI for SData namespace
             /// </summary>
             public const string Namespace = "http://schemas.sage.com/sdata/2008/1";
 
@@ -121,10 +121,10 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// SME namespace
         /// </summary>
-        public static class SME
+        public static class Sme
         {
             /// <summary>
-            /// Uri for SME namespace
+            /// URI for SME namespace
             /// </summary>
             public const string Namespace = "http://schemas.sage.com/sdata/sme/2007";
 
@@ -137,7 +137,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// HTTP namespace
         /// </summary>
-        public static class HTTP
+        public static class Http
         {
             /// <summary>
             /// Namespace for SData HTTP elements 
@@ -169,7 +169,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// SLE namespace
         /// </summary>
-        public static class SLE
+        public static class Sle
         {
             /// <summary>
             /// URI for SLE namespace
@@ -215,10 +215,10 @@ namespace Sage.SData.Client.Framework
         /// Returns a value indicating if the specified namespace is a framework namespace.
         /// </summary>
         /// <param name="ns">The namespace to check.</param>
-        /// <returns><b>true</b> if the specified namespace is a framework namespace; otherwise, <b>false</b>.</returns>
+        /// <returns><b>true</b> if the specified namespace is a framework namespace, otherwise <b>false</b>.</returns>
         public static bool IsFrameworkNamespace(string ns)
         {
-            return !String.IsNullOrEmpty(ns) && _oFrameworkNamespaces.ContainsKey(ns);
+            return !string.IsNullOrEmpty(ns) && _oFrameworkNamespaces.ContainsKey(ns);
         }
 
         #endregion

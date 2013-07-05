@@ -118,16 +118,11 @@ namespace Sage.SData.Client.Core
         /// </summary>
         /// <param name="request">The request that identifies the resource within the syndication data source.</param>
         /// <param name="feed">The <see cref="ISyndicationResource"/> to be created within the data source.</param>
-        /// <returns></returns>
         AtomFeed CreateFeed(SDataBaseRequest request, AtomFeed feed);
 
         /// <summary>
         /// Adds new syndication resource to the data source returning an AtomFeed
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="feed"></param>
-        /// <param name="eTag"></param>
-        /// <returns></returns>
         AtomFeed CreateFeed(SDataBaseRequest request, AtomFeed feed, out string eTag);
 
         /// <summary>
@@ -147,8 +142,6 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// Removes a resource from the syndication data source.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
         bool DeleteEntry(SDataBaseRequest request);
 
         /// <summary>
@@ -156,7 +149,7 @@ namespace Sage.SData.Client.Core
         /// </summary>
         /// <param name="request">The request from the syndication data source for the resource to be removed.</param>
         /// <param name="entry">The resource that is being deleted</param>
-        /// <returns><b>true</b> if the syndication resource was successfully deleted; otherwise, <b>false</b>.</returns>
+        /// <returns><b>true</b> if the syndication resource was successfully deleted, otherwise <b>false</b>.</returns>
         bool DeleteEntry(SDataBaseRequest request, AtomEntry entry);
 
         /// <summary>
@@ -180,9 +173,6 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// Reads resource information from the data source based on the URL and the specified ETag.
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="eTag"></param>
-        /// <returns></returns>
         AtomFeed ReadFeed(SDataBaseRequest request, ref string eTag);
 
         /// <summary>
@@ -195,9 +185,6 @@ namespace Sage.SData.Client.Core
         /// <summary>
         /// Reads resource information from the data source based on the URL and the ETag of the specified entry.
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="entry"></param>
-        /// <returns></returns>
         AtomEntry ReadEntry(SDataBaseRequest request, AtomEntry entry);
 
         /// <summary>

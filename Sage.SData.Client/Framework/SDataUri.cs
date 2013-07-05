@@ -32,10 +32,10 @@ namespace Sage.SData.Client.Framework
         public static class QueryArgNames
         {
             /// <summary>
-            /// Specifies the name of the 'orderby' query argument.
+            /// Specifies the name of the 'orderBy' query argument.
             /// </summary>
-            /// <value>The name of the 'orderby' query argument</value>
-            public const string OrderBy = "orderby";
+            /// <value>The name of the 'orderBy' query argument</value>
+            public const string OrderBy = "orderBy";
 
             /// <summary>
             /// Specifies the name of the 'where' query argument.
@@ -177,7 +177,7 @@ namespace Sage.SData.Client.Framework
             #endregion
 
             /// <summary>
-            /// Initialises a new instance of the <see cref="PropertySort"/> class.
+            /// Initializes a new instance of the <see cref="PropertySort"/> class.
             /// </summary>
             /// <param name="property">The name of the property.</param>
             /// <param name="descending">The direction.</param>
@@ -201,7 +201,7 @@ namespace Sage.SData.Client.Framework
             /// <summary>
             /// Returns a value indicating if the order is descending.
             /// </summary>
-            /// <value><b>true</b> for a descending sort; otherwise, <b>false</b> for ascending.</value>
+            /// <value><b>true</b> for a descending sort, otherwise <b>false</b> for ascending.</value>
             public bool Descending
             {
                 get { return _descending; }
@@ -213,15 +213,15 @@ namespace Sage.SData.Client.Framework
         #endregion
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UriFormatter"/> class.
+        /// Initializes a new instance of the <see cref="SDataUri"/> class.
         /// </summary>
-        public SDataUri(SerializationInfo info, StreamingContext context)
+        protected SDataUri(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="SDataUri"/> class.
+        /// Initializes a new instance of the <see cref="SDataUri"/> class.
         /// </summary>
         public SDataUri()
             : this((Uri) null)
@@ -229,7 +229,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="SDataUri"/> class with
+        /// Initializes a new instance of the <see cref="SDataUri"/> class with
         /// the specified <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The <see cref="Uri"/> to assign.</param>
@@ -239,7 +239,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="SDataUri"/> class with
+        /// Initializes a new instance of the <see cref="SDataUri"/> class with
         /// the specified <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The <see cref="Uri"/> to assign.</param>
@@ -249,7 +249,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="SDataUri"/> class with
+        /// Initializes a new instance of the <see cref="SDataUri"/> class with
         /// the specified <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The <see cref="Uri"/> to assign.</param>
@@ -259,7 +259,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="SDataUri"/> class with
+        /// Initializes a new instance of the <see cref="SDataUri"/> class with
         /// the specified <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The <see cref="Uri"/> to assign.</param>
@@ -273,13 +273,12 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets or sets the value of the Product within the <see cref="Uri"/>.
         /// </summary>
-        /// <value></value>
         public string Product
         {
             get
             {
                 var segments = PathSegments;
-                return segments.Length > ProductPathIndex ? segments[ProductPathIndex].Text : string.Empty;
+                return segments.Count > ProductPathIndex ? segments[ProductPathIndex].Text : string.Empty;
             }
             set { GetPathSegment(ProductPathIndex).Text = value; }
         }
@@ -287,13 +286,12 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets or sets the value of the Contract type within the <see cref="Uri"/>.
         /// </summary>
-        /// <value></value>
         public string Contract
         {
             get
             {
                 var segments = PathSegments;
-                return segments.Length > ContractTypePathIndex ? segments[ContractTypePathIndex].Text : string.Empty;
+                return segments.Count > ContractTypePathIndex ? segments[ContractTypePathIndex].Text : string.Empty;
             }
             set { GetPathSegment(ContractTypePathIndex).Text = value; }
         }
@@ -301,13 +299,12 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets or sets the value of the Company-Dataset within the <see cref="Uri"/>.
         /// </summary>
-        /// <value></value>
         public string CompanyDataset
         {
             get
             {
                 var segments = PathSegments;
-                return segments.Length > CompanyDatasetPathIndex ? segments[CompanyDatasetPathIndex].Text : string.Empty;
+                return segments.Count > CompanyDatasetPathIndex ? segments[CompanyDatasetPathIndex].Text : string.Empty;
             }
             set { GetPathSegment(CompanyDatasetPathIndex).Text = value; }
         }
@@ -321,7 +318,7 @@ namespace Sage.SData.Client.Framework
             get
             {
                 var segments = PathSegments;
-                return segments.Length > CollectionTypePathIndex ? segments[CollectionTypePathIndex].Text : string.Empty;
+                return segments.Count > CollectionTypePathIndex ? segments[CollectionTypePathIndex].Text : string.Empty;
             }
             set { GetPathSegment(CollectionTypePathIndex).Text = value; }
         }
@@ -335,7 +332,7 @@ namespace Sage.SData.Client.Framework
             get
             {
                 var segments = PathSegments;
-                var query = segments.Length > CollectionTypePathIndex ? segments[CollectionTypePathIndex].Predicate : null;
+                var query = segments.Count > CollectionTypePathIndex ? segments[CollectionTypePathIndex].Predicate : null;
 
                 return string.IsNullOrEmpty(query) ? null : query;
             }
@@ -345,13 +342,13 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Returns a value indicating if there is a predicate associated with the <see cref="CollectionType"/>.
         /// </summary>
-        /// <value><b>true</b> if there is a predicate associated with the <see cref="CollectionType"/>; otherwise, <b>false</b>.</value>
+        /// <value><b>true</b> if there is a predicate associated with the <see cref="CollectionType"/>, otherwise <b>false</b>.</value>
         public bool HasCollectionPredicate
         {
             get
             {
                 var segments = PathSegments;
-                return segments.Length > CollectionTypePathIndex && segments[CollectionTypePathIndex].HasPredicate;
+                return segments.Count > CollectionTypePathIndex && segments[CollectionTypePathIndex].HasPredicate;
             }
         }
 
@@ -419,7 +416,7 @@ namespace Sage.SData.Client.Framework
         }
 
         private const string OrderByPattern = @"\s?(?<property>[^,\s]*)\s?(?<direction>[^,\s]*)";
-        private static readonly Regex OrderByRegEx = new Regex(OrderByPattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+        private static readonly Regex _orderByRegEx = new Regex(OrderByPattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
 
         /// <summary>
         /// Returns the sort details.
@@ -432,10 +429,12 @@ namespace Sage.SData.Client.Framework
                 var orderBy = OrderBy;
 
                 if (string.IsNullOrEmpty(orderBy))
+                {
                     return null;
+                }
 
                 var properties = new List<PropertySort>();
-                var match = OrderByRegEx.Match(orderBy);
+                var match = _orderByRegEx.Match(orderBy);
 
                 while (match.Success)
                 {
@@ -447,7 +446,9 @@ namespace Sage.SData.Client.Framework
                         var raw = match.Groups["direction"].Value;
 
                         if (!string.IsNullOrEmpty(raw))
+                        {
                             descending = raw.ToUpper() == "DESC";
+                        }
 
                         properties.Add(new PropertySort(property, descending));
                     }
@@ -484,7 +485,9 @@ namespace Sage.SData.Client.Framework
                     bool result;
 
                     if (bool.TryParse(thumbnail, out result))
+                    {
                         return result;
+                    }
                 }
 
                 return false;
@@ -495,7 +498,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets or sets the a value indicating if the content should be included.
         /// </summary>
-        /// <value><b>true</b> to include the content; otherwise, <b>false</b>.</value>
+        /// <value><b>true</b> to include the content, otherwise <b>false</b>.</value>
         public bool? IncludeContent
         {
             get
@@ -507,7 +510,9 @@ namespace Sage.SData.Client.Framework
                     bool result;
 
                     if (bool.TryParse(flag, out result))
+                    {
                         return result;
+                    }
                 }
 
                 return null;
@@ -530,7 +535,9 @@ namespace Sage.SData.Client.Framework
                     long result;
 
                     if (long.TryParse(count, out result))
+                    {
                         return result;
+                    }
                 }
 
                 return null;
@@ -553,12 +560,14 @@ namespace Sage.SData.Client.Framework
                     long result;
 
                     if (long.TryParse(startIndex, out result))
+                    {
                         return result;
+                    }
                 }
 
                 return null;
             }
-            set { this[QueryArgNames.StartIndex] = value.ToString(); }
+            set { this[QueryArgNames.StartIndex] = value != null ? value.ToString() : null; }
         }
 
         /// <summary>
@@ -588,10 +597,12 @@ namespace Sage.SData.Client.Framework
                     MediaType value;
 
                     if (MediaTypeNames.TryGetShortMediaType(formatType, out value))
+                    {
                         return value;
+                    }
                 }
 
-                return PathSegments[PathSegments.Length - 1].HasPredicate ? MediaType.AtomEntry : MediaType.Atom;
+                return PathSegments[PathSegments.Count - 1].HasPredicate ? MediaType.AtomEntry : MediaType.Atom;
             }
             set { this[QueryArgNames.Format] = MediaTypeNames.GetShortMediaType(value); }
         }
@@ -617,12 +628,14 @@ namespace Sage.SData.Client.Framework
                     int result;
 
                     if (int.TryParse(precedence, out result))
+                    {
                         return result;
+                    }
                 }
 
                 return null;
             }
-            set { this[QueryArgNames.Precedence] = (value != null) ? value.ToString() : null; }
+            set { this[QueryArgNames.Precedence] = value != null ? value.ToString() : null; }
         }
 
         /// <summary>
@@ -659,7 +672,9 @@ namespace Sage.SData.Client.Framework
                     bool result;
 
                     if (bool.TryParse(includeSchema, out result))
+                    {
                         return result;
+                    }
                 }
 
                 return false;
@@ -719,7 +734,9 @@ namespace Sage.SData.Client.Framework
                     bool result;
 
                     if (bool.TryParse(returnDelta, out result))
+                    {
                         return result;
+                    }
                 }
 
                 return false;
@@ -785,9 +802,9 @@ namespace Sage.SData.Client.Framework
             var segments = PathSegments;
             var found = false;
 
-            if (segments.Length > CollectionTypePathIndex)
+            if (segments.Count > CollectionTypePathIndex)
             {
-                for (var i = CollectionTypePathIndex; i < segments.Length; i++)
+                for (var i = CollectionTypePathIndex; i < segments.Count; i++)
                 {
                     if (found)
                     {

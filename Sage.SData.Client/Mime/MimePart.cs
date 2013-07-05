@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Mime;
@@ -9,7 +10,7 @@ namespace Sage.SData.Client.Mime
     /// <summary>
     /// Represents a MIME protocol message part.
     /// </summary>
-    public class MimePart : IDisposable
+    public sealed class MimePart : IDisposable
     {
         private readonly Stream _content;
         private readonly WebHeaderCollection _headers;
@@ -136,7 +137,7 @@ namespace Sage.SData.Client.Mime
 
             if (_content != null && _headers[HttpRequestHeader.ContentLength] == null)
             {
-                _headers[HttpRequestHeader.ContentLength] = _content.Length.ToString();
+                _headers[HttpRequestHeader.ContentLength] = _content.Length.ToString(CultureInfo.InvariantCulture);
             }
 
             writer.Write(_headers);

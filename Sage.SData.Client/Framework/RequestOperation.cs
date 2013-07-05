@@ -19,7 +19,7 @@ namespace Sage.SData.Client.Framework
         private IList<AttachedFile> _files;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="RequestOperation"/> class.
+        /// Initializes a new instance of the <see cref="RequestOperation"/> class.
         /// </summary>
         public RequestOperation()
             : this(HttpMethod.Get)
@@ -27,16 +27,15 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="RequestOperation"/> class.
+        /// Initializes a new instance of the <see cref="RequestOperation"/> class.
         /// </summary>
-        /// <param name="method"></param>
         public RequestOperation(HttpMethod method)
             : this(method, null)
         {
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="RequestOperation"/> class with
+        /// Initializes a new instance of the <see cref="RequestOperation"/> class with
         /// the specified <see cref="AtomEntry"/> and method.
         /// </summary>
         /// <param name="method">One of the <see cref="HttpMethod"/> values</param>

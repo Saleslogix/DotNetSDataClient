@@ -21,10 +21,10 @@ namespace SDataClientApp
             try
             {
                 _sdataSingleResourceRequest = new SDataSingleResourceRequest(Service)
-                                              {
-                                                  ResourceKind = tbSingleResourceKind.Text,
-                                                  ResourceSelector = tbSingleResourceSelector.Text
-                                              };
+                                                  {
+                                                      ResourceKind = tbSingleResourceKind.Text,
+                                                      ResourceSelector = tbSingleResourceSelector.Text
+                                                  };
                 tbSingleURL.Text = _sdataSingleResourceRequest.ToString();
             }
             catch (SDataClientException ex)

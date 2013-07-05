@@ -6,8 +6,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 using System.Text;
 
 namespace Sage.SData.Client.Framework
@@ -95,8 +97,6 @@ namespace Sage.SData.Client.Framework
         public static readonly string LocalHost = Dns.GetHostName();
 
         private Uri _uri;
-        private bool _requiresParseUri;
-        private bool _requiresRebuildUri;
 
         private string _scheme;
         private int _port;
@@ -105,9 +105,12 @@ namespace Sage.SData.Client.Framework
         private string _server;
         private string _fragment;
 
+        private string _pathInternal;
         private string _directPath;
-        private bool _requiresParsePath;
+        private bool _requiresRebuildUri;
+        private bool _requiresParseUri;
         private bool _requiresRebuildPath;
+        private bool _requiresParsePath;
         private List<UriPathSegment> _pathSegments;
 
         private QueryArgsDictionary _queryArgs;
@@ -115,9 +118,9 @@ namespace Sage.SData.Client.Framework
         #endregion
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UriFormatter"/> class.
+        /// Initializes a new instance of the <see cref="UriFormatter"/> class.
         /// </summary>
-        public UriFormatter(SerializationInfo info, StreamingContext context)
+        protected UriFormatter(SerializationInfo info, StreamingContext context)
             : this((Uri) null)
         {
             string uri = null;
@@ -135,11 +138,13 @@ namespace Sage.SData.Client.Framework
             }
 
             if (uri != null)
+            {
                 Uri = new Uri(uri);
+            }
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UriFormatter"/> class.
+        /// Initializes a new instance of the <see cref="UriFormatter"/> class.
         /// </summary>
         public UriFormatter()
             : this((Uri) null)
@@ -147,7 +152,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UriFormatter"/> class with
+        /// Initializes a new instance of the <see cref="UriFormatter"/> class with
         /// the specified <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The <see cref="Uri"/> to assign.</param>
@@ -157,7 +162,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UriFormatter"/> class with
+        /// Initializes a new instance of the <see cref="UriFormatter"/> class with
         /// the specified <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The <see cref="Uri"/> to assign.</param>
@@ -167,7 +172,7 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UriFormatter"/> class with
+        /// Initializes a new instance of the <see cref="UriFormatter"/> class with
         /// the specified <see cref="Uri"/>.
         /// </summary>
         /// <param name="uri">The <see cref="Uri"/> to assign.</param>
@@ -183,7 +188,7 @@ namespace Sage.SData.Client.Framework
             _server = uri._server;
             _fragment = uri._fragment;
 
-            PathInternal = uri.PathInternal;
+            _pathInternal = uri._pathInternal;
             _directPath = uri._directPath;
             _requiresParsePath = uri._requiresParsePath;
             _requiresRebuildPath = uri._requiresRebuildPath;
@@ -200,7 +205,9 @@ namespace Sage.SData.Client.Framework
             }
 
             if (uri._queryArgs != null)
+            {
                 _queryArgs = new QueryArgsDictionary(this, uri._queryArgs);
+            }
         }
 
         #region Properties
@@ -246,7 +253,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets or sets the port for the <see cref="Uri"/>.
         /// </summary>
-        /// <value>The port for the <see cref="Uri"/> if one exists; otherwise, <b>-1</b>.</value>
+        /// <value>The port for the <see cref="Uri"/> if one exists, otherwise <b>-1</b>.</value>
         public int Port
         {
             get
@@ -296,7 +303,7 @@ namespace Sage.SData.Client.Framework
             {
                 CheckParseUri();
                 _pathPrefix = value;
-                RequiresRebuildUri = true;
+                _requiresRebuildUri = true;
             }
         }
 
@@ -315,7 +322,7 @@ namespace Sage.SData.Client.Framework
             {
                 CheckParseUri();
                 _server = value;
-                RequiresRebuildUri = true;
+                _requiresRebuildUri = true;
             }
         }
 
@@ -334,7 +341,7 @@ namespace Sage.SData.Client.Framework
             {
                 CheckParseUri();
                 _fragment = value;
-                RequiresRebuildUri = true;
+                _requiresRebuildUri = true;
             }
         }
 
@@ -350,23 +357,25 @@ namespace Sage.SData.Client.Framework
 
                 CheckRebuildPath();
 
-                return PathInternal;
+                return _pathInternal;
             }
             set
             {
                 CheckParsePath();
 
                 if (value != null && value.StartsWith(PathSegmentPrefix))
-                    PathInternal = value.Substring(PathSegmentPrefix.Length);
+                {
+                    _pathInternal = value.Substring(PathSegmentPrefix.Length);
+                }
                 else
-                    PathInternal = value;
+                {
+                    _pathInternal = value;
+                }
 
-                RequiresParsePath = true;
+                _requiresParsePath = true;
                 _directPath = null;
             }
         }
-
-        internal string PathInternal { get; set; }
 
         /// <summary>
         /// Returns the path of the <see cref="Uri"/> with all predicates removed.
@@ -376,19 +385,23 @@ namespace Sage.SData.Client.Framework
         {
             get
             {
-                if (RequiresRebuildPath || _directPath == null)
+                if (_requiresRebuildPath || _directPath == null)
                 {
                     CheckRebuildPath();
 
                     var path = new StringBuilder();
 
-                    foreach (var segment in DirectPathSegments)
+                    foreach (var segment in PathSegments)
                     {
                         if (segment == null)
+                        {
                             continue;
+                        }
 
                         if (path.Length > 0)
+                        {
                             path.Append(PathSegmentPrefix);
+                        }
 
                         path.Append(segment.Text);
                     }
@@ -415,18 +428,20 @@ namespace Sage.SData.Client.Framework
             set
             {
                 if (value == null)
+                {
                     value = string.Empty;
+                }
 
                 CheckParsePath();
                 _queryArgs = !string.IsNullOrEmpty(value) ? new QueryArgsDictionary(this, value) : null;
-                RequiresRebuildUri = true;
+                _requiresRebuildUri = true;
             }
         }
 
         /// <summary>
         /// Returns the query arguments for the <see cref="Uri"/>.
         /// </summary>
-        /// <value>A <see cref="IDictionary{TKey, TValue}"/> containing the query arguments for the <see cref="Uri"/></value>
+        /// <value>A <see cref="IDictionary{TKey, TValue}"/> containing the query arguments for the <see cref="Uri"/>.</value>
         public IDictionary<string, string> QueryArgs
         {
             get { return _queryArgs ?? (_queryArgs = new QueryArgsDictionary(this)); }
@@ -444,12 +459,14 @@ namespace Sage.SData.Client.Framework
                 var query = Query;
 
                 if (string.IsNullOrEmpty(query))
+                {
                     return path;
+                }
                 return path + QueryPrefix + query;
             }
             set
             {
-                var query = value.IndexOf(QueryPrefix);
+                var query = value.IndexOf(QueryPrefix, StringComparison.InvariantCulture);
 
                 if (query < 0)
                 {
@@ -464,7 +481,7 @@ namespace Sage.SData.Client.Framework
             }
         }
 
-        internal List<UriPathSegment> InternalPathSegments
+        private List<UriPathSegment> InternalPathSegments
         {
             get { return _pathSegments ?? (_pathSegments = new List<UriPathSegment>()); }
         }
@@ -473,7 +490,7 @@ namespace Sage.SData.Client.Framework
         /// Returns the components that make up the path.
         /// </summary>
         /// <value>Array of components that make up the path.</value>
-        public UriPathSegment[] PathSegments
+        public IList<UriPathSegment> PathSegments
         {
             get
             {
@@ -485,18 +502,14 @@ namespace Sage.SData.Client.Framework
             {
                 CheckParsePath();
 
-                PathSegmentsInternal = value;
+                InternalPathSegments.Clear();
+                if (value != null)
+                {
+                    AddPathSegments(value);
+                }
+
                 RequiresRebuildPath = true;
             }
-        }
-
-        /// <summary>
-        /// Returns the components that make up the direct path.
-        /// </summary>
-        /// <value>Array of components that make up the direct path.</value>
-        protected virtual UriPathSegment[] DirectPathSegments
-        {
-            get { return PathSegments; }
         }
 
         /// <summary>
@@ -505,50 +518,37 @@ namespace Sage.SData.Client.Framework
         /// <value>The last path segment.</value>
         public UriPathSegment LastPathSegment
         {
-            get { return PathSegments[PathSegments.Length - 1]; }
-        }
-
-        internal UriPathSegment[] PathSegmentsInternal
-        {
-            get { return _pathSegments.ToArray(); }
-            set
+            get
             {
-                var segments = InternalPathSegments;
-
-                segments.Clear();
-
-                if (value != null)
-                {
-                    segments.AddRange(value);
-                    LinkSegment(value);
-                }
+                var segments = PathSegments;
+                return segments.Count > 0 ? segments[segments.Count - 1] : null;
             }
         }
 
         /// <summary>
         /// Gets or sets a flag indicating if the <see cref="Uri"/> uses SSL.
         /// </summary>
-        /// <value><b>true</b> if the <see cref="Uri"/> uses SSL; otherwise, <b>false</b>.</value>
+        /// <value><b>true</b> if the <see cref="Uri"/> uses SSL, otherwise <b>false</b>.</value>
         public bool UseSsl
         {
             get
             {
                 CheckParseUri();
-                return string.Compare(_scheme, Https, StringComparison.InvariantCultureIgnoreCase) == 0;
+                return string.Equals(_scheme, Https, StringComparison.InvariantCultureIgnoreCase);
             }
             set
             {
                 CheckParseUri();
 
                 _scheme = value ? Https : Http;
-                RequiresRebuildUri = true;
+                _requiresRebuildUri = true;
             }
         }
 
         /// <summary>
         /// Returns a flag indicating if the <see cref="Uri"/> is empty.
         /// </summary>
-        /// <value><b>true</b> if the <see cref="Uri"/> is empty; otherwise, <b>false</b>.</value>
+        /// <value><b>true</b> if the <see cref="Uri"/> is empty, otherwise <b>false</b>.</value>
         public bool IsEmpty
         {
             get { return _uri == null; }
@@ -575,101 +575,35 @@ namespace Sage.SData.Client.Framework
 
                 if (value == null)
                 {
-                    if (_queryArgs != null && _queryArgs.ContainsKey(name))
+                    if (_queryArgs != null)
+                    {
                         _queryArgs.Remove(name);
+                    }
                 }
                 else
                 {
                     QueryArgs[name] = value;
                 }
 
-                RequiresRebuildUri = true;
+                _requiresRebuildUri = true;
             }
         }
 
         /// <summary>
         /// Gets or sets a value indicating if the <see cref="Path"/> needs to be rebuilt.
         /// </summary>
-        /// <value><b>true</b> if the <see cref="Path"/> needs to be rebuilt; otherwise, <b>false</b>.</value>
+        /// <value><b>true</b> if the <see cref="Path"/> needs to be rebuilt, otherwise <b>false</b>.</value>
         internal bool RequiresRebuildPath
         {
             get { return _requiresRebuildPath; }
             set
             {
                 _requiresRebuildPath = value;
-                if (value) RequiresRebuildUri = true;
-                OnRequiresRebuildPathChanged();
+                if (value)
+                {
+                    _requiresRebuildUri = true;
+                }
             }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating if the <see cref="Path"/> needs to be parsed.
-        /// </summary>
-        /// <value><b>true</b> if the <see cref="Path"/> needs to be parsed; otherwise, <b>false</b>.</value>
-        internal bool RequiresParsePath
-        {
-            get { return _requiresParsePath; }
-            set
-            {
-                _requiresParsePath = value;
-                OnRequiresParsePathChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating if the <see cref="Uri"/> needs to be rebuilt.
-        /// </summary>
-        /// <value><b>true</b> if the <see cref="Uri"/> needs to be rebuilt; otherwise, <b>false</b>.</value>
-        internal bool RequiresRebuildUri
-        {
-            get { return _requiresRebuildUri; }
-            set
-            {
-                _requiresRebuildUri = value;
-                OnRequiresRebuildUriChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating if the <see cref="Uri"/> needs to be parsed.
-        /// </summary>
-        /// <value><b>true</b> if the <see cref="Uri"/> needs to be parsed; otherwise, <b>false</b>.</value>
-        internal bool RequiresParseUri
-        {
-            get { return _requiresParseUri; }
-            set
-            {
-                _requiresParseUri = value;
-                OnRequiresParseUriChanged();
-            }
-        }
-
-        /// <summary>
-        /// Called when the value of the <see cref="RequiresParsePath"/> value changes.
-        /// </summary>
-        internal virtual void OnRequiresParsePathChanged()
-        {
-        }
-
-        /// <summary>
-        /// Called when the value of the <see cref="RequiresRebuildPath"/> value changes.
-        /// </summary>
-        internal virtual void OnRequiresRebuildPathChanged()
-        {
-        }
-
-        /// <summary>
-        /// Called when the value of the <see cref="RequiresParseUri"/> value changes.
-        /// </summary>
-        internal virtual void OnRequiresParseUriChanged()
-        {
-        }
-
-        /// <summary>
-        /// Called when the value of the <see cref="RequiresRebuildUri"/> value changes.
-        /// </summary>
-        internal virtual void OnRequiresRebuildUriChanged()
-        {
         }
 
         #endregion
@@ -697,14 +631,16 @@ namespace Sage.SData.Client.Framework
             var formatted = name + QueryArgValuePrefix + value;
 
             if (uri.Contains(QueryPrefix))
+            {
                 return uri + QueryArgPrefix + formatted;
+            }
             return uri + QueryPrefix + formatted;
         }
 
         /// <summary>
         /// Adds the specified path segments to the <see cref="Uri"/>.
         /// </summary>
-        /// <param name="segments">The path segments segments to add to the <see cref="Uri"/>.</param>
+        /// <param name="segments">The path segments to add to the <see cref="Uri"/>.</param>
         public UriFormatter AppendPath(params string[] segments)
         {
             return AppendPath(UriPathSegment.FromStrings(segments));
@@ -718,9 +654,7 @@ namespace Sage.SData.Client.Framework
         {
             CheckParsePath();
 
-            InternalPathSegments.Add(segment);
-
-            LinkSegment(segment);
+            AddPathSegments(new[] {segment});
 
             RequiresRebuildPath = true;
 
@@ -734,9 +668,7 @@ namespace Sage.SData.Client.Framework
         public UriFormatter AppendPath(IEnumerable<UriPathSegment> segments)
         {
             CheckParsePath();
-            InternalPathSegments.AddRange(segments);
-
-            LinkSegment(segments);
+            AddPathSegments(segments);
 
             RequiresRebuildPath = true;
 
@@ -760,14 +692,10 @@ namespace Sage.SData.Client.Framework
         {
             CheckParseUri();
 
-            var pathSegments = InternalPathSegments;
+            InternalPathSegments.Clear();
+            AddPathSegments(segments);
 
-            pathSegments.Clear();
-            pathSegments.AddRange(segments);
-
-            LinkSegment(segments);
-
-            RequiresParsePath = false;
+            _requiresParsePath = false;
             RequiresRebuildPath = true;
 
             return this;
@@ -778,7 +706,7 @@ namespace Sage.SData.Client.Framework
         /// </summary>
         public void TrimStart()
         {
-            if (PathSegments.Length > 0)
+            if (PathSegments.Count > 0)
             {
                 _pathSegments.RemoveAt(0);
                 RequiresRebuildPath = true;
@@ -790,7 +718,7 @@ namespace Sage.SData.Client.Framework
         /// </summary>
         public void TrimEnd()
         {
-            if (PathSegments.Length > 0)
+            if (PathSegments.Count > 0)
             {
                 _pathSegments.RemoveAt(_pathSegments.Count - 1);
                 RequiresRebuildPath = true;
@@ -800,13 +728,13 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Removes a range of path segments from the <see cref="Uri"/>.
         /// </summary>
-        ///<param name="iPathSegmentIndex">The zero-based starting index of the range of path segments to remove</param>
-        ///<param name="iPathSegmentCount">The number of path segments to remove from the end of the <see cref="Uri"/>.</param>
-        public void TrimRange(int iPathSegmentIndex, int iPathSegmentCount)
+        ///<param name="pathSegmentIndex">The zero-based starting index of the range of path segments to remove</param>
+        ///<param name="pathSegmentCount">The number of path segments to remove from the end of the <see cref="Uri"/>.</param>
+        public void TrimRange(int pathSegmentIndex, int pathSegmentCount)
         {
-            if (PathSegments.Length >= (iPathSegmentIndex + iPathSegmentCount))
+            if (PathSegments.Count >= (pathSegmentIndex + pathSegmentCount))
             {
-                _pathSegments.RemoveRange(iPathSegmentIndex, iPathSegmentCount);
+                _pathSegments.RemoveRange(pathSegmentIndex, pathSegmentCount);
                 RequiresRebuildPath = true;
             }
         }
@@ -818,7 +746,6 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Returns a <see cref="string"/> representing the <see cref="Uri"/>.
         /// </summary>
-        /// <returns></returns>
         public override string ToString()
         {
             return Uri != null ? Uri.ToString() : base.ToString();
@@ -837,7 +764,7 @@ namespace Sage.SData.Client.Framework
         /// Compares the specified <see cref="object"/> with this <see cref="UriPathSegment"/>.
         /// </summary>
         /// <param name="obj">The <see cref="Object"/> to compare.</param>
-        /// <returns><b>true</b> if <paramref name="obj"/> match this <see cref="UriPathSegment"/>; otherwise, <b>false</b>.</returns>
+        /// <returns><b>true</b> if <paramref name="obj"/> match this <see cref="UriPathSegment"/>, otherwise <b>false</b>.</returns>
         public override bool Equals(object obj)
         {
             return obj.ToString() == ToString();
@@ -847,30 +774,30 @@ namespace Sage.SData.Client.Framework
 
         #region Local Methods
 
-        private void LinkSegment(IEnumerable<UriPathSegment> segments)
+        private void AddPathSegments(IEnumerable<UriPathSegment> segments)
         {
+            var pathSegments = InternalPathSegments;
             foreach (var segment in segments)
             {
+                pathSegments.Add(segment);
                 if (segment != null)
+                {
                     segment.Formatter = this;
+                }
             }
-        }
-
-        private void LinkSegment(UriPathSegment segment)
-        {
-            if (segment != null)
-                segment.Formatter = this;
         }
 
         /// <summary>
         /// Checks if the <see cref="Uri"/> needs rebuilding.
         /// </summary>
-        protected void CheckRebuildUri()
+        private void CheckRebuildUri()
         {
-            if (!RequiresRebuildPath && !RequiresRebuildUri)
+            if (!_requiresRebuildPath && !_requiresRebuildUri)
+            {
                 return;
+            }
 
-            RequiresRebuildUri = false;
+            _requiresRebuildUri = false;
 
             OnBuildUri();
         }
@@ -878,7 +805,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Called when the <see cref="Uri"/> needs to be rebuilt.
         /// </summary>
-        protected virtual void OnBuildUri()
+        private void OnBuildUri()
         {
             // http
             var uri = new StringBuilder(string.IsNullOrEmpty(_scheme) ? Http : _scheme);
@@ -897,14 +824,16 @@ namespace Sage.SData.Client.Framework
             if (_port != UnspecifiedPort)
             {
                 uri.Append(PortPrefix);
-                uri.Append(_port.ToString());
+                uri.Append(_port.ToString(CultureInfo.InvariantCulture));
             }
 
             // http://host<:port>/serverPrefix
             if (!string.IsNullOrEmpty(_pathPrefix))
             {
                 if (!_pathPrefix.StartsWith(PathSegmentPrefix))
+                {
                     uri.Append(PathSegmentPrefix);
+                }
 
                 uri.Append(_pathPrefix);
             }
@@ -913,7 +842,9 @@ namespace Sage.SData.Client.Framework
             if (!string.IsNullOrEmpty(_server))
             {
                 if (!_server.StartsWith(PathSegmentPrefix))
+                {
                     uri.Append(PathSegmentPrefix);
+                }
 
                 uri.Append(_server);
             }
@@ -921,12 +852,14 @@ namespace Sage.SData.Client.Framework
             // http://<host><:port>/<path>
             CheckRebuildPath();
 
-            if (!string.IsNullOrEmpty(PathInternal))
+            if (!string.IsNullOrEmpty(_pathInternal))
             {
-                if (!PathInternal.StartsWith(PathSegmentPrefix))
+                if (!_pathInternal.StartsWith(PathSegmentPrefix))
+                {
                     uri.Append(PathSegmentPrefix);
+                }
 
-                uri.Append(PathInternal);
+                uri.Append(_pathInternal);
             }
 
             // http://<host><:port>/<path><?query>
@@ -941,7 +874,9 @@ namespace Sage.SData.Client.Framework
             if (!string.IsNullOrEmpty(_fragment))
             {
                 if (!_fragment.StartsWith(FragmentPrefix))
+                {
                     uri.Append(FragmentPrefix);
+                }
 
                 uri.Append(_fragment);
             }
@@ -952,12 +887,14 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Checks if the <see cref="Uri"/> needs parsing.
         /// </summary>
-        protected void CheckParseUri()
+        private void CheckParseUri()
         {
-            if (!RequiresParseUri)
+            if (!_requiresParseUri)
+            {
                 return;
+            }
 
-            RequiresParseUri = false;
+            _requiresParseUri = false;
 
             OnParseUri();
         }
@@ -965,9 +902,9 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Called when the <see cref="Uri"/> needs to be parsed.
         /// </summary>
-        protected virtual void OnParseUri()
+        private void OnParseUri()
         {
-            RequiresParsePath = true;
+            _requiresParsePath = true;
             _directPath = null;
 
             if (_uri == null)
@@ -978,7 +915,7 @@ namespace Sage.SData.Client.Framework
                 _pathPrefix = string.Empty;
                 _server = string.Empty;
                 _fragment = string.Empty;
-                PathInternal = string.Empty;
+                _pathInternal = string.Empty;
                 _queryArgs = null;
             }
             else
@@ -990,27 +927,33 @@ namespace Sage.SData.Client.Framework
                 var path = Uri.UnescapeDataString(_uri.AbsolutePath);
 
                 if (path.StartsWith(PathSegmentPrefix))
+                {
                     path = path.Substring(PathSegmentPrefix.Length);
+                }
 
                 var endServer = path.IndexOf(PathSegmentPrefix[0]);
 
                 if (endServer < 0)
                 {
                     _server = path;
-                    PathInternal = string.Empty;
+                    _pathInternal = string.Empty;
                 }
                 else
                 {
                     _server = path.Substring(0, endServer);
-                    PathInternal = path.Substring(endServer + 1);
+                    _pathInternal = path.Substring(endServer + 1);
                 }
 
                 _fragment = _uri.Fragment;
                 if (_fragment.StartsWith(FragmentPrefix))
+                {
                     _fragment = _fragment.Substring(FragmentPrefix.Length);
+                }
 
-                if (PathInternal.StartsWith(PathSegmentPrefix))
-                    PathInternal = PathInternal.Substring(PathSegmentPrefix.Length);
+                if (_pathInternal.StartsWith(PathSegmentPrefix))
+                {
+                    _pathInternal = _pathInternal.Substring(PathSegmentPrefix.Length);
+                }
 
                 _queryArgs = new QueryArgsDictionary(this, _uri.Query);
             }
@@ -1028,7 +971,9 @@ namespace Sage.SData.Client.Framework
             foreach (var pair in args)
             {
                 if (query.Length > 0)
+                {
                     query.Append(QueryArgPrefix);
+                }
 
                 query.Append(Uri.EscapeDataString(pair.Key));
                 query.Append(QueryArgValuePrefix);
@@ -1048,17 +993,16 @@ namespace Sage.SData.Client.Framework
         {
             var segments = PathSegments;
 
-            if (segments.Length < index + 1)
+            if (segments.Count < index + 1)
             {
                 var copySegments = new UriPathSegment[index + 1];
-                Array.Copy(segments, copySegments, segments.Length);
+                segments.CopyTo(copySegments, 0);
                 segments = copySegments;
             }
 
             if (segments[index] == null)
             {
-                segments[index] = new UriPathSegment();
-                LinkSegment(segments[index]);
+                segments[index] = new UriPathSegment {Formatter = this};
                 PathSegments = segments;
             }
 
@@ -1068,12 +1012,14 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Checks if the path part of the <see cref="Uri"/> needs rebuilding.
         /// </summary>
-        protected void CheckRebuildPath()
+        private void CheckRebuildPath()
         {
-            if (!RequiresRebuildPath)
+            if (!_requiresRebuildPath)
+            {
                 return;
+            }
 
-            RequiresRebuildPath = false;
+            _requiresRebuildPath = false;
 
             OnBuildPath();
         }
@@ -1081,17 +1027,19 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Called when the <see cref="Path"/> needs to be rebuilt.
         /// </summary>
-        protected virtual void OnBuildPath()
+        private void OnBuildPath()
         {
             var path = new StringBuilder();
 
             foreach (var segment in _pathSegments)
             {
                 if (segment != null)
+                {
                     UriPathSegment.AppendPath(path, segment.Segment);
+                }
             }
 
-            PathInternal = path.ToString();
+            _pathInternal = path.ToString();
         }
 
         /// <summary>
@@ -1101,10 +1049,12 @@ namespace Sage.SData.Client.Framework
         {
             CheckParseUri();
 
-            if (!RequiresParsePath)
+            if (!_requiresParsePath)
+            {
                 return;
+            }
 
-            RequiresParsePath = false;
+            _requiresParsePath = false;
 
             OnParsePath();
         }
@@ -1112,18 +1062,18 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Called when the <see cref="Path"/> needs to be parsed.
         /// </summary>
-        protected virtual void OnParsePath()
+        private void OnParsePath()
         {
-            if (!string.IsNullOrEmpty(PathInternal))
+            if (!string.IsNullOrEmpty(_pathInternal))
             {
                 var segments = InternalPathSegments;
                 segments.Clear();
 
-                foreach (var segment in UriPathSegment.FromStrings(UriPathSegment.GetPathSegments(PathInternal)))
+                foreach (var segment in UriPathSegment.FromStrings(UriPathSegment.GetPathSegments(_pathInternal)))
                 {
                     if (segment != null)
                     {
-                        LinkSegment(segment);
+                        segment.Formatter = this;
                         segments.Add(segment);
                     }
                 }
@@ -1134,12 +1084,20 @@ namespace Sage.SData.Client.Framework
 
         #region ISerializable Members
 
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             var uri = Uri;
 
             if (uri != null)
+            {
                 info.AddValue(UriName, uri.ToString());
+            }
+        }
+
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            GetObjectData(info, context);
         }
 
         #endregion
@@ -1170,7 +1128,9 @@ namespace Sage.SData.Client.Framework
             private static IDictionary<string, string> Parse(string query)
             {
                 if (query.StartsWith(QueryPrefix))
+                {
                     query = query.Substring(QueryPrefix.Length);
+                }
 
                 return UriQueryParser.Parse(query);
             }
@@ -1183,21 +1143,21 @@ namespace Sage.SData.Client.Framework
                 set
                 {
                     this[key] = value;
-                    _uri.RequiresRebuildUri = true;
+                    _uri._requiresRebuildUri = true;
                 }
             }
 
             void IDictionary<string, string>.Add(string key, string value)
             {
                 Add(key, value);
-                _uri.RequiresRebuildUri = true;
+                _uri._requiresRebuildUri = true;
             }
 
             bool IDictionary<string, string>.Remove(string key)
             {
                 if (Remove(key))
                 {
-                    _uri.RequiresRebuildUri = true;
+                    _uri._requiresRebuildUri = true;
                     return true;
                 }
 
@@ -1211,14 +1171,14 @@ namespace Sage.SData.Client.Framework
             void ICollection<KeyValuePair<string, string>>.Add(KeyValuePair<string, string> item)
             {
                 Add(item.Key, item.Value);
-                _uri.RequiresRebuildUri = true;
+                _uri._requiresRebuildUri = true;
             }
 
             bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
             {
                 if (Remove(item.Key))
                 {
-                    _uri.RequiresRebuildUri = true;
+                    _uri._requiresRebuildUri = true;
                     return true;
                 }
 
@@ -1228,7 +1188,7 @@ namespace Sage.SData.Client.Framework
             void ICollection<KeyValuePair<string, string>>.Clear()
             {
                 Clear();
-                _uri.RequiresRebuildUri = true;
+                _uri._requiresRebuildUri = true;
             }
 
             #endregion

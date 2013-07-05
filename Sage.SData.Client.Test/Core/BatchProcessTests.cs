@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using Sage.SData.Client.Core;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Core
 {
     [TestFixture]
@@ -35,9 +37,9 @@ namespace Sage.SData.Client.Test.Core
             using (var request = new SDataBatchRequest(service) {ResourceKind = "employees"})
             {
                 var item = new SDataBatchRequestItem
-                           {
-                               Url = "http://localhost:59213/sdata/aw/dynamic/-/employees"
-                           };
+                               {
+                                   Url = "http://localhost:59213/sdata/aw/dynamic/-/employees"
+                               };
                 var added = BatchProcess.Instance.AddToBatch(item);
                 Assert.That(added, Is.True);
                 Assert.That(request.Items, Contains.Item(item));
@@ -52,9 +54,9 @@ namespace Sage.SData.Client.Test.Core
             using (var request = new SDataBatchRequest(service) {ResourceKind = "employees"})
             {
                 var item = new SDataBatchRequestItem
-                           {
-                               Url = "http://localhost:59213/sdata/aw/dynamic/-/contacts"
-                           };
+                               {
+                                   Url = "http://localhost:59213/sdata/aw/dynamic/-/contacts"
+                               };
                 var added = BatchProcess.Instance.AddToBatch(item);
                 Assert.That(added, Is.False);
                 Assert.That(request.Items, Is.Empty);

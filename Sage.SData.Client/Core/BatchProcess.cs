@@ -9,7 +9,7 @@ namespace Sage.SData.Client.Core
     /// <summary>
     /// Class used to batch process atom entries for Insert, Update, and Delete
     /// </summary>
-    public sealed class BatchProcess
+    public class BatchProcess
     {
         /// <summary>
         /// The only instance of the BatchProcess class
@@ -55,10 +55,10 @@ namespace Sage.SData.Client.Core
         private static string GetBatchKey(string url, params string[] extraSegments)
         {
             return new SDataUri(url)
-                   {
-                       CollectionPredicate = null,
-                       Query = null
-                   }.AppendPath(extraSegments).ToString();
+                       {
+                           CollectionPredicate = null,
+                           Query = null
+                       }.AppendPath(extraSegments).ToString();
         }
     }
 }

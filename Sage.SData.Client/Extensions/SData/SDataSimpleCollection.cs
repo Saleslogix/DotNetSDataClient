@@ -22,7 +22,7 @@ namespace Sage.SData.Client.Extensions
         /// <summary>
         /// Specifies the local element name of the item when serialized to the XML Array.
         /// </summary>
-        /// <remarks>This is inferred from the first element's <see cref="XPathNavigator.LocalName">local name</see></remarks>
+        /// <remarks>This is inferred from the first element's <see cref="XPathNavigator.LocalName">local name</see>.</remarks>
         public string ItemElementName { get; set; }
 
         public bool Load(XPathNavigator source)
@@ -38,18 +38,20 @@ namespace Sage.SData.Client.Extensions
 
         private bool InternalLoad(IEnumerable<XPathNavigator> items)
         {
-            var firstItem = items.FirstOrDefault();
-            if (firstItem == null)
+            var list = items.ToList();
+            if (list.Count == 0)
+            {
                 return true;
+            }
 
-            ItemElementName = firstItem.LocalName;
+            ItemElementName = list[0].LocalName;
 
-            foreach (var item in items)
+            foreach (var item in list)
             {
                 string nilValue;
                 object value;
 
-                if (item.TryGetAttribute("nil", Framework.Common.XSI.Namespace, out nilValue) && XmlConvert.ToBoolean(nilValue))
+                if (item.TryGetAttribute("nil", Framework.Common.Xsi.Namespace, out nilValue) && XmlConvert.ToBoolean(nilValue))
                 {
                     value = null;
                 }
@@ -66,8 +68,10 @@ namespace Sage.SData.Client.Extensions
 
         public void WriteTo(string name, string ns, XmlWriter writer)
         {
-            if (String.IsNullOrEmpty(ItemElementName))
+            if (string.IsNullOrEmpty(ItemElementName))
+            {
                 throw new InvalidOperationException("ItemElementName must be set");
+            }
 
             writer.WriteStartElement(name, ns);
 
@@ -84,7 +88,7 @@ namespace Sage.SData.Client.Extensions
             if (value == null)
             {
                 writer.WriteStartElement(name, ns);
-                writer.WriteAttributeString("nil", Framework.Common.XSI.Namespace, XmlConvert.ToString(true));
+                writer.WriteAttributeString("nil", Framework.Common.Xsi.Namespace, XmlConvert.ToString(true));
                 writer.WriteEndElement();
             }
             else

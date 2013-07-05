@@ -13,10 +13,8 @@ namespace Sage.SData.Client.Extensions
     public static class SDataHttpExtensionHelper
     {
         /// <summary>
-        /// Extension method to retrieve sdata http method
+        /// Extension method to retrieve SData HTTP method
         /// </summary>
-        /// <param name="entry"></param>
-        /// <returns></returns>
         public static HttpMethod? GetSDataHttpMethod(this AtomEntry entry)
         {
             var context = GetContext(entry, false);
@@ -24,10 +22,8 @@ namespace Sage.SData.Client.Extensions
         }
 
         /// <summary>
-        /// Extension method to retrieve sdata http status
+        /// Extension method to retrieve SData HTTP status
         /// </summary>
-        /// <param name="entry"></param>
-        /// <returns></returns>
         public static HttpStatusCode? GetSDataHttpStatus(this AtomEntry entry)
         {
             var context = GetContext(entry, false);
@@ -35,10 +31,8 @@ namespace Sage.SData.Client.Extensions
         }
 
         /// <summary>
-        /// Extension method to retrieve sdata http message
+        /// Extension method to retrieve SData HTTP message
         /// </summary>
-        /// <param name="entry"></param>
-        /// <returns></returns>
         public static string GetSDataHttpMessage(this AtomEntry entry)
         {
             var context = GetContext(entry, false);
@@ -46,10 +40,8 @@ namespace Sage.SData.Client.Extensions
         }
 
         /// <summary>
-        /// Extension method to retrieve sdata http location
+        /// Extension method to retrieve SData HTTP location
         /// </summary>
-        /// <param name="entry"></param>
-        /// <returns></returns>
         public static Uri GetSDataHttpLocation(this AtomEntry entry)
         {
             var context = GetContext(entry, false);
@@ -57,10 +49,8 @@ namespace Sage.SData.Client.Extensions
         }
 
         /// <summary>
-        /// Extension method to retrieve sdata http etag
+        /// Extension method to retrieve SData HTTP etag
         /// </summary>
-        /// <param name="entry"></param>
-        /// <returns></returns>
         public static string GetSDataHttpETag(this AtomEntry entry)
         {
             var context = GetContext(entry, false);
@@ -68,10 +58,8 @@ namespace Sage.SData.Client.Extensions
         }
 
         /// <summary>
-        /// Extension method to retrieve sdata http if match
+        /// Extension method to retrieve SData HTTP if match
         /// </summary>
-        /// <param name="entry"></param>
-        /// <returns></returns>
         public static string GetSDataHttpIfMatch(this AtomEntry entry)
         {
             var context = GetContext(entry, false);
@@ -79,60 +67,48 @@ namespace Sage.SData.Client.Extensions
         }
 
         /// <summary>
-        /// Extension method to set sdata http method
+        /// Extension method to set SData HTTP method
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="value"></param>
         public static void SetSDataHttpMethod(this AtomEntry entry, HttpMethod? value)
         {
             GetContext(entry, true).HttpMethod = value;
         }
 
         /// <summary>
-        /// Extension method to set sdata http status
+        /// Extension method to set SData HTTP status
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="value"></param>
         public static void SetSDataHttpStatus(this AtomEntry entry, HttpStatusCode? value)
         {
             GetContext(entry, true).HttpStatus = value;
         }
 
         /// <summary>
-        /// Extension method to set sdata http message
+        /// Extension method to set SData HTTP message
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="value"></param>
         public static void SetSDataHttpMessage(this AtomEntry entry, string value)
         {
             GetContext(entry, true).HttpMessage = value;
         }
 
         /// <summary>
-        /// Extension method to set sdata http location
+        /// Extension method to set SData HTTP location
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="value"></param>
         public static void SetSDataHttpLocation(this AtomEntry entry, Uri value)
         {
             GetContext(entry, true).Location = value;
         }
 
         /// <summary>
-        /// Extension method to set sdata http etag
+        /// Extension method to set SData HTTP etag
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="value"></param>
         public static void SetSDataHttpETag(this AtomEntry entry, string value)
         {
             GetContext(entry, true).ETag = value;
         }
 
         /// <summary>
-        /// Extension method to set sdata http if method
+        /// Extension method to set SData HTTP if method
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="value"></param>
         public static void SetSDataHttpIfMatch(this AtomEntry entry, string value)
         {
             GetContext(entry, true).IfMatch = value;

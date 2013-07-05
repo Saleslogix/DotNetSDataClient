@@ -9,14 +9,13 @@ namespace Sage.SData.Client.Mime
     ///<summary>
     /// Represents a MIME protocol message.
     ///</summary>
-    public class MimeMessage : List<MimePart>, IDisposable
+    public sealed class MimeMessage : List<MimePart>, IDisposable
     {
         /// <summary>
         /// Parses a stream into a <see cref="MimeMessage"/>, splitting it into parts based on the specified boundary.
         /// </summary>
         /// <param name="stream">The source stream to parse from.</param>
         /// <param name="boundary">The unique string used to designate boundaries between parts.</param>
-        /// <returns></returns>
         public static MimeMessage Parse(Stream stream, string boundary)
         {
             return new MimeMessage(EnumerateParts(stream, boundary)) {Boundary = boundary};

@@ -345,23 +345,23 @@ namespace Sage.SData.Client.Metadata
                     if (complexType.ListName != null)
                     {
                         xmlComplexType = new XmlSchemaComplexType
-                                         {
-                                             Name = complexType.ListName,
-                                             AnyAttribute = complexType.ListAnyAttribute,
-                                             Particle = new XmlSchemaSequence
-                                                        {
-                                                            Items =
+                                             {
+                                                 Name = complexType.ListName,
+                                                 AnyAttribute = complexType.ListAnyAttribute,
+                                                 Particle = new XmlSchemaSequence
                                                                 {
-                                                                    new XmlSchemaElement
-                                                                    {
-                                                                        Name = complexType.ListItemName,
-                                                                        SchemaTypeName = complexType.QualifiedName,
-                                                                        MinOccurs = 0,
-                                                                        MaxOccurs = decimal.MaxValue
-                                                                    }
+                                                                    Items =
+                                                                        {
+                                                                            new XmlSchemaElement
+                                                                                {
+                                                                                    Name = complexType.ListItemName,
+                                                                                    SchemaTypeName = complexType.QualifiedName,
+                                                                                    MinOccurs = 0,
+                                                                                    MaxOccurs = decimal.MaxValue
+                                                                                }
+                                                                        }
                                                                 }
-                                                        }
-                                         };
+                                             };
                         xmlSchema.Items.Add(xmlComplexType);
                     }
                 }
@@ -387,10 +387,10 @@ namespace Sage.SData.Client.Metadata
         private void Compile()
         {
             var listTypes = ComplexTypes.Where(type => type.ListName != null)
-                .Select(type => new {name = type.ListQualifiedName, type = (SDataSchemaType) type});
+                                        .Select(type => new {name = type.ListQualifiedName, type = (SDataSchemaType) type});
             var types = Types.Select(type => new {name = type.QualifiedName, type})
-                .Concat(listTypes)
-                .ToDictionary(type => type.name, type => type.type);
+                             .Concat(listTypes)
+                             .ToDictionary(type => type.name, type => type.type);
             Compile(types);
         }
 

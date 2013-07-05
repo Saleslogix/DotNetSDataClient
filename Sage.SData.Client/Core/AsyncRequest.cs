@@ -21,7 +21,7 @@ namespace Sage.SData.Client.Core
         private Tracking _tracking;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="AsyncRequest"/> class.
+        /// Initializes a new instance of the <see cref="AsyncRequest"/> class.
         /// </summary>
         /// <param name="service">The service that performs requests.</param>
         /// <param name="trackingUrl">The url used to make progress requests.</param>

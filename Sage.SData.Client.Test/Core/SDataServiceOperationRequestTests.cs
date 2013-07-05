@@ -2,6 +2,8 @@
 using NUnit.Framework;
 using Sage.SData.Client.Core;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Core
 {
     [TestFixture]
@@ -21,13 +23,12 @@ namespace Sage.SData.Client.Test.Core
         public void ServiceOperation_Verify_ToString()
         {
             var request = new SDataServiceOperationRequest(_service)
-                          {
-                              ResourceKind = "employees",
-                              OperationName = "getStats"
-                          };
+                              {
+                                  ResourceKind = "employees",
+                                  OperationName = "getStats"
+                              };
             var url = request.ToString();
             Expect(url, Is.EqualTo("http://localhost:59213/sdata/aw/dynamic/-/employees/$service/getStats"));
         }
-
     }
 }

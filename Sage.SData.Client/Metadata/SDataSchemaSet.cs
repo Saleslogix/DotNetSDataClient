@@ -123,12 +123,12 @@ namespace Sage.SData.Client.Metadata
         {
             var listTypes = _schemas.SelectMany(
                 schema => schema.ComplexTypes
-                              .Where(type => type.ListName != null)
-                              .Select(type => new {name = type.ListQualifiedName, type = (SDataSchemaType) type}));
+                                .Where(type => type.ListName != null)
+                                .Select(type => new {name = type.ListQualifiedName, type = (SDataSchemaType) type}));
             var types = _schemas.SelectMany(
                 schema => schema.Types.Select(type => new {name = type.QualifiedName, type}))
-                .Concat(listTypes)
-                .ToDictionary(type => type.name, type => type.type);
+                                .Concat(listTypes)
+                                .ToDictionary(type => type.name, type => type.type);
 
             foreach (var schema in _schemas)
             {

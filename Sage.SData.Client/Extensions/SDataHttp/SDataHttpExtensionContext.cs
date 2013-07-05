@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Net;
 using System.Xml;
 using System.Xml.XPath;
@@ -156,7 +157,7 @@ namespace Sage.SData.Client.Extensions
 
             if (HttpStatus != null)
             {
-                writer.WriteElementString("httpStatus", xmlNamespace, ((int) HttpStatus).ToString());
+                writer.WriteElementString("httpStatus", xmlNamespace, ((int) HttpStatus).ToString(CultureInfo.InvariantCulture));
             }
 
             if (!string.IsNullOrEmpty(HttpMessage))

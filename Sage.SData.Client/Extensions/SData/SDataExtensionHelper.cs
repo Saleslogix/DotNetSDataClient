@@ -13,10 +13,9 @@ namespace Sage.SData.Client.Extensions
     public static class SDataExtensionHelper
     {
         /// <summary>
-        /// Extension method to retrieve sdata payload
+        /// Extension method to retrieve SData payload
         /// </summary>
         /// <param name="entry">the entry</param>
-        /// <returns></returns>
         public static SDataPayload GetSDataPayload(this AtomEntry entry)
         {
             var context = GetContext(entry, false);
@@ -27,7 +26,6 @@ namespace Sage.SData.Client.Extensions
         /// Retrieves diagnosis from the feed
         /// </summary>
         /// <param name="feed">the AtomFeed</param>
-        /// <returns></returns>
         public static Collection<Diagnosis> GetSDataDiagnoses(this AtomFeed feed)
         {
             var context = GetContext(feed, true);
@@ -38,7 +36,6 @@ namespace Sage.SData.Client.Extensions
         /// Retrieves the diagnosis from an entry
         /// </summary>
         /// <param name="entry">the AtomEntry</param>
-        /// <returns></returns>
         public static Collection<Diagnosis> GetSDataDiagnoses(this AtomEntry entry)
         {
             var context = GetContext(entry, true);
@@ -48,8 +45,6 @@ namespace Sage.SData.Client.Extensions
         /// <summary>
         /// Retrieves the inline XML schema embedded in the feed
         /// </summary>
-        /// <param name="feed"></param>
-        /// <returns></returns>
         public static SDataSchema GetSDataSchema(this AtomFeed feed)
         {
             var context = GetContext(feed, true);
@@ -59,8 +54,6 @@ namespace Sage.SData.Client.Extensions
         /// <summary>
         /// Retrieves the inline XML schema embedded in the feed entry
         /// </summary>
-        /// <param name="entry"></param>
-        /// <returns></returns>
         public static SDataSchema GetSDataSchema(this AtomEntry entry)
         {
             var context = GetContext(entry, true);
@@ -68,10 +61,8 @@ namespace Sage.SData.Client.Extensions
         }
 
         /// <summary>
-        /// Extension method to set sdata payload
+        /// Extension method to set SData payload
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="payload"></param>
         public static void SetSDataPayload(this AtomEntry entry, SDataPayload payload)
         {
             var context = GetContext(entry, true);

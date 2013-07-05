@@ -50,6 +50,8 @@ namespace Sage.SData.Client.Metadata
             return (IEnumData) typeof (EnumData<>).MakeGenericType(new[] {type}).GetField("Instance").GetValue(null);
         }
 
+        #region Nested type: IEnumData
+
         private interface IEnumData
         {
             string Format(object item);
@@ -57,13 +59,19 @@ namespace Sage.SData.Client.Metadata
             object Parse(string value);
         }
 
+        #endregion
+
+        #region Nested type: EnumData
+
         private class EnumData<T> : IEnumData
         {
+// ReSharper disable StaticFieldInGenericType
 #pragma warning disable 169
             public static readonly IEnumData Instance = new EnumData<T>();
 #pragma warning restore 169
-            private static readonly IDictionary<T, string> XmlNames = new Dictionary<T, string>();
-            private static readonly IDictionary<T, string> DisplayNames = new Dictionary<T, string>();
+// ReSharper restore StaticFieldInGenericType
+            private static readonly IDictionary<T, string> _xmlNames = new Dictionary<T, string>();
+            private static readonly IDictionary<T, string> _displayNames = new Dictionary<T, string>();
 
             static EnumData()
             {
@@ -77,18 +85,18 @@ namespace Sage.SData.Client.Metadata
                     var value = (T) field.GetValue(null);
 
                     var enumAttr = (XmlEnumAttribute) Attribute.GetCustomAttribute(field, typeof (XmlEnumAttribute));
-                    XmlNames[value] = (enumAttr != null) ? enumAttr.Name : value.ToString();
+                    _xmlNames[value] = (enumAttr != null) ? enumAttr.Name : value.ToString();
 
                     var displayAttr = (DisplayNameAttribute) Attribute.GetCustomAttribute(field, typeof (DisplayNameAttribute));
-                    DisplayNames[value] = (displayAttr != null) ? displayAttr.DisplayName : null;
+                    _displayNames[value] = (displayAttr != null) ? displayAttr.DisplayName : null;
                 }
             }
 
             public static T Parse(string value, bool ignoreCase)
             {
-                foreach (var pair in XmlNames)
+                foreach (var pair in _xmlNames)
                 {
-                    if (string.Compare(pair.Value, value, ignoreCase) == 0)
+                    if (string.Equals(pair.Value, value, StringComparison.InvariantCultureIgnoreCase))
                     {
                         return pair.Key;
                     }
@@ -99,9 +107,9 @@ namespace Sage.SData.Client.Metadata
 
             public static T Parse(string value, bool ignoreCase, T defaultValue)
             {
-                foreach (var pair in XmlNames)
+                foreach (var pair in _xmlNames)
                 {
-                    if (string.Compare(pair.Value, value, ignoreCase) == 0)
+                    if (string.Equals(pair.Value, value, StringComparison.InvariantCultureIgnoreCase))
                     {
                         return pair.Key;
                     }
@@ -123,7 +131,7 @@ namespace Sage.SData.Client.Metadata
             {
                 string value;
 
-                if (!XmlNames.TryGetValue((T) item, out value))
+                if (!_xmlNames.TryGetValue((T) item, out value))
                 {
                     value = item.ToString();
                 }
@@ -134,13 +142,13 @@ namespace Sage.SData.Client.Metadata
             string IEnumData.GetDisplayName(object item)
             {
                 string value;
-                DisplayNames.TryGetValue((T) item, out value);
+                _displayNames.TryGetValue((T) item, out value);
                 return value;
             }
 
             object IEnumData.Parse(string value)
             {
-                foreach (var pair in XmlNames)
+                foreach (var pair in _xmlNames)
                 {
                     if (pair.Value == value)
                     {
@@ -153,5 +161,7 @@ namespace Sage.SData.Client.Metadata
 
             #endregion
         }
+
+        #endregion
     }
 }

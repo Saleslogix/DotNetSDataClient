@@ -7,6 +7,8 @@ using Sage.SData.Client.Common;
 using Sage.SData.Client.Core;
 using Sage.SData.Client.Extensions;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Core
 {
     [TestFixture]
@@ -42,10 +44,10 @@ namespace Sage.SData.Client.Test.Core
         public void SingleResource_Verify_ToStringWithResourceKind()
         {
             var request = new SDataSingleResourceRequest(_service)
-                          {
-                              ResourceKind = "employees",
-                              ResourceSelector = "id eq '1234'"
-                          };
+                              {
+                                  ResourceKind = "employees",
+                                  ResourceSelector = "id eq '1234'"
+                              };
 
             var url = request.ToString();
             Expect(url, Is.EqualTo("http://localhost:59213/sdata/aw/dynamic/-/employees(id eq '1234')"));
@@ -55,11 +57,11 @@ namespace Sage.SData.Client.Test.Core
         public void SingleResource_Verify_ToStringWithResourceKindAndInclude()
         {
             var request = new SDataSingleResourceRequest(_service)
-                          {
-                              ResourceKind = "employees",
-                              ResourceSelector = "1",
-                              Include = "contact"
-                          };
+                              {
+                                  ResourceKind = "employees",
+                                  ResourceSelector = "1",
+                                  Include = "contact"
+                              };
 
             var url = request.ToString();
             Expect(url, Is.EqualTo("http://localhost:59213/sdata/aw/dynamic/-/employees(1)?include=contact"));
@@ -69,20 +71,20 @@ namespace Sage.SData.Client.Test.Core
         public void SingleResource_Verify_CanProcess_SDataBatchRequest()
         {
             var request1 = new SDataSingleResourceRequest(_service)
-                           {
-                               ResourceKind = "employees",
-                               ResourceSelector = "1"
-                           };
+                               {
+                                   ResourceKind = "employees",
+                                   ResourceSelector = "1"
+                               };
             var request2 = new SDataSingleResourceRequest(_service)
-                           {
-                               ResourceKind = "employees",
-                               ResourceSelector = "2"
-                           };
+                               {
+                                   ResourceKind = "employees",
+                                   ResourceSelector = "2"
+                               };
             var request3 = new SDataSingleResourceRequest(_service)
-                           {
-                               ResourceKind = "employees",
-                               ResourceSelector = "3"
-                           };
+                               {
+                                   ResourceKind = "employees",
+                                   ResourceSelector = "3"
+                               };
             _mock.Setup(s => s.ReadEntry(request1)).Returns(TestData.Entry);
             _mock.Setup(s => s.ReadEntry(request2)).Returns(TestData.Entry);
             _mock.Setup(s => s.ReadEntry(request3)).Returns(TestData.Entry);
@@ -116,10 +118,10 @@ namespace Sage.SData.Client.Test.Core
         public void SingleResource_Verify_CanRead()
         {
             var request = new SDataSingleResourceRequest(_service)
-                          {
-                              ResourceKind = "employees",
-                              ResourceSelector = "1"
-                          };
+                              {
+                                  ResourceKind = "employees",
+                                  ResourceSelector = "1"
+                              };
             _mock.Setup(s => s.ReadEntry(request)).Returns(TestData.Entry);
 
             var entry = request.Read();
@@ -146,10 +148,10 @@ namespace Sage.SData.Client.Test.Core
             payload.Values["RowGuid"] = Guid.NewGuid().ToString();
 
             var entry = new AtomEntry
-                        {
-                            UpdatedOn = DateTime.Now,
-                            PublishedOn = DateTime.Now
-                        };
+                            {
+                                UpdatedOn = DateTime.Now,
+                                PublishedOn = DateTime.Now
+                            };
             entry.SetSDataPayload(payload);
             request.Entry = entry;
             _mock.Setup(s => s.CreateEntry(request, request.Entry)).Returns(TestData.Entry);
@@ -162,10 +164,10 @@ namespace Sage.SData.Client.Test.Core
         public void SingleResource_Verify_CanUpdate()
         {
             var request = new SDataSingleResourceRequest(_service)
-                          {
-                              ResourceKind = "employees",
-                              ResourceSelector = "1"
-                          };
+                              {
+                                  ResourceKind = "employees",
+                                  ResourceSelector = "1"
+                              };
             _mock.Setup(s => s.ReadEntry(request)).Returns(TestData.Entry);
 
             var entry = request.Read();
@@ -182,10 +184,10 @@ namespace Sage.SData.Client.Test.Core
         public void SingleResource_Verify_CanDelete()
         {
             var request = new SDataSingleResourceRequest(_service)
-                          {
-                              ResourceKind = "employees",
-                              ResourceSelector = "1"
-                          };
+                              {
+                                  ResourceKind = "employees",
+                                  ResourceSelector = "1"
+                              };
             _mock.Setup(s => s.ReadEntry(request)).Returns(TestData.Entry);
 
             request.Entry = request.Read();

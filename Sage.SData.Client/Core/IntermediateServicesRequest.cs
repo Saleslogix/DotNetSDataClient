@@ -29,9 +29,8 @@ namespace Sage.SData.Client.Core
         public string ResourceKind { get; set; }
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="IntermediateServicesRequest"/> class.
+        /// Initializes a new instance of the <see cref="IntermediateServicesRequest"/> class.
         /// </summary>
-        /// <param name="service"></param>
         public IntermediateServicesRequest(ISDataService service)
             : base(service)
         {

@@ -12,7 +12,7 @@ using Sage.SData.Client.Common;
 namespace Sage.SData.Client.Framework
 {
     /// <summary>
-    /// Handles the mapping of <see cref="MediaType"/> values to names and vica-versa.
+    /// Handles the mapping of <see cref="MediaType"/> values to names and visa-versa.
     /// </summary>
     public static class MediaTypeNames
     {
@@ -198,88 +198,88 @@ namespace Sage.SData.Client.Framework
 
         #region Fields
 
-        private static readonly IDictionary<MediaType, string> MediaTypeToName;
-        private static readonly IDictionary<ContentType, MediaType> NameToMediaType;
-        private static readonly IDictionary<MediaType, string> MediaTypeToShortName;
-        private static readonly IDictionary<string, MediaType> ShortNameToMediaType;
+        private static readonly IDictionary<MediaType, string> _mediaTypeToName;
+        private static readonly IDictionary<ContentType, MediaType> _nameToMediaType;
+        private static readonly IDictionary<MediaType, string> _mediaTypeToShortName;
+        private static readonly IDictionary<string, MediaType> _shortNameToMediaType;
 
         #endregion
 
         static MediaTypeNames()
         {
-            MediaTypeToName = new Dictionary<MediaType, string>();
-            MediaTypeToName[MediaType.Text] = TextMediaType;
-            MediaTypeToName[MediaType.Html] = HtmlMediaType;
-            MediaTypeToName[MediaType.Atom] = AtomMediaType;
-            MediaTypeToName[MediaType.AtomEntry] = AtomEntryMediaType;
-            MediaTypeToName[MediaType.Rss] = RssMediaType;
-            MediaTypeToName[MediaType.Xml] = XmlMediaType;
-            MediaTypeToName[MediaType.ImagePng] = ImagePngMediaType;
-            MediaTypeToName[MediaType.ImageGif] = ImageGifMediaType;
-            MediaTypeToName[MediaType.ImageTiff] = ImageTiffMediaType;
-            MediaTypeToName[MediaType.ImageBmp] = ImageBmpMediaType;
-            MediaTypeToName[MediaType.ImageJpeg] = ImageJpegMediaType;
-            MediaTypeToName[MediaType.Xslt] = XsltMediaType;
-            MediaTypeToName[MediaType.Css] = CssMediaType;
-            MediaTypeToName[MediaType.Json] = JsonMediaType;
-            MediaTypeToName[MediaType.Bson] = BsonMediaType;
-            MediaTypeToName[MediaType.Form] = FormMediaType;
+            _mediaTypeToName = new Dictionary<MediaType, string>();
+            _mediaTypeToName[MediaType.Text] = TextMediaType;
+            _mediaTypeToName[MediaType.Html] = HtmlMediaType;
+            _mediaTypeToName[MediaType.Atom] = AtomMediaType;
+            _mediaTypeToName[MediaType.AtomEntry] = AtomEntryMediaType;
+            _mediaTypeToName[MediaType.Rss] = RssMediaType;
+            _mediaTypeToName[MediaType.Xml] = XmlMediaType;
+            _mediaTypeToName[MediaType.ImagePng] = ImagePngMediaType;
+            _mediaTypeToName[MediaType.ImageGif] = ImageGifMediaType;
+            _mediaTypeToName[MediaType.ImageTiff] = ImageTiffMediaType;
+            _mediaTypeToName[MediaType.ImageBmp] = ImageBmpMediaType;
+            _mediaTypeToName[MediaType.ImageJpeg] = ImageJpegMediaType;
+            _mediaTypeToName[MediaType.Xslt] = XsltMediaType;
+            _mediaTypeToName[MediaType.Css] = CssMediaType;
+            _mediaTypeToName[MediaType.Json] = JsonMediaType;
+            _mediaTypeToName[MediaType.Bson] = BsonMediaType;
+            _mediaTypeToName[MediaType.Form] = FormMediaType;
 
-            NameToMediaType = new Dictionary<ContentType, MediaType>(new ContentTypeComparer());
-            NameToMediaType[new ContentType(TextMediaType)] = MediaType.Text;
-            NameToMediaType[new ContentType(HtmlMediaType)] = MediaType.Html;
-            NameToMediaType[new ContentType(AtomMediaType)] = MediaType.Atom;
-            NameToMediaType[new ContentType(AtomFeedMediaType)] = MediaType.Atom;
-            NameToMediaType[new ContentType(AtomEntryMediaType)] = MediaType.AtomEntry;
-            NameToMediaType[new ContentType(RssMediaType)] = MediaType.Rss;
-            NameToMediaType[new ContentType(XmlMediaType)] = MediaType.Xml;
-            NameToMediaType[new ContentType(LegacyXmlMediaType)] = MediaType.Xml;
-            NameToMediaType[new ContentType(ImagePngMediaType)] = MediaType.ImagePng;
-            NameToMediaType[new ContentType(ImageJpegMediaType)] = MediaType.ImageJpeg;
-            NameToMediaType[new ContentType(ImageGifMediaType)] = MediaType.ImageGif;
-            NameToMediaType[new ContentType(ImageTiffMediaType)] = MediaType.ImageTiff;
-            NameToMediaType[new ContentType(ImageBmpMediaType)] = MediaType.ImageBmp;
-            NameToMediaType[new ContentType(XsltMediaType)] = MediaType.Xslt;
-            NameToMediaType[new ContentType(CssMediaType)] = MediaType.Css;
-            NameToMediaType[new ContentType(JsonMediaType)] = MediaType.Json;
-            NameToMediaType[new ContentType(BsonMediaType)] = MediaType.Bson;
-            NameToMediaType[new ContentType(FormMediaType)] = MediaType.Form;
+            _nameToMediaType = new Dictionary<ContentType, MediaType>(new ContentTypeComparer());
+            _nameToMediaType[new ContentType(TextMediaType)] = MediaType.Text;
+            _nameToMediaType[new ContentType(HtmlMediaType)] = MediaType.Html;
+            _nameToMediaType[new ContentType(AtomMediaType)] = MediaType.Atom;
+            _nameToMediaType[new ContentType(AtomFeedMediaType)] = MediaType.Atom;
+            _nameToMediaType[new ContentType(AtomEntryMediaType)] = MediaType.AtomEntry;
+            _nameToMediaType[new ContentType(RssMediaType)] = MediaType.Rss;
+            _nameToMediaType[new ContentType(XmlMediaType)] = MediaType.Xml;
+            _nameToMediaType[new ContentType(LegacyXmlMediaType)] = MediaType.Xml;
+            _nameToMediaType[new ContentType(ImagePngMediaType)] = MediaType.ImagePng;
+            _nameToMediaType[new ContentType(ImageJpegMediaType)] = MediaType.ImageJpeg;
+            _nameToMediaType[new ContentType(ImageGifMediaType)] = MediaType.ImageGif;
+            _nameToMediaType[new ContentType(ImageTiffMediaType)] = MediaType.ImageTiff;
+            _nameToMediaType[new ContentType(ImageBmpMediaType)] = MediaType.ImageBmp;
+            _nameToMediaType[new ContentType(XsltMediaType)] = MediaType.Xslt;
+            _nameToMediaType[new ContentType(CssMediaType)] = MediaType.Css;
+            _nameToMediaType[new ContentType(JsonMediaType)] = MediaType.Json;
+            _nameToMediaType[new ContentType(BsonMediaType)] = MediaType.Bson;
+            _nameToMediaType[new ContentType(FormMediaType)] = MediaType.Form;
 
-            MediaTypeToShortName = new Dictionary<MediaType, string>();
-            MediaTypeToShortName[MediaType.Text] = ShortTextMediaType;
-            MediaTypeToShortName[MediaType.Html] = ShortHtmlMediaType;
-            MediaTypeToShortName[MediaType.Atom] = ShortAtomMediaType;
-            MediaTypeToShortName[MediaType.AtomEntry] = ShortAtomEntryMediaType;
-            MediaTypeToShortName[MediaType.Rss] = ShortRssMediaType;
-            MediaTypeToShortName[MediaType.Xml] = ShortXmlMediaType;
-            MediaTypeToShortName[MediaType.ImagePng] = ShortImagePngMediaType;
-            MediaTypeToShortName[MediaType.ImageJpeg] = ShortImageJpegMediaType;
-            MediaTypeToShortName[MediaType.ImageGif] = ShortImageGifMediaType;
-            MediaTypeToShortName[MediaType.ImageTiff] = ShortImageTiffMediaType;
-            MediaTypeToShortName[MediaType.ImageBmp] = ShortImageBmpMediaType;
-            MediaTypeToShortName[MediaType.Xslt] = ShortXsltMediaType;
-            MediaTypeToShortName[MediaType.Css] = ShortCssMediaType;
-            MediaTypeToShortName[MediaType.Json] = ShortJsonMediaType;
-            MediaTypeToShortName[MediaType.Bson] = ShortBsonMediaType;
-            MediaTypeToShortName[MediaType.Form] = ShortFormMediaType;
+            _mediaTypeToShortName = new Dictionary<MediaType, string>();
+            _mediaTypeToShortName[MediaType.Text] = ShortTextMediaType;
+            _mediaTypeToShortName[MediaType.Html] = ShortHtmlMediaType;
+            _mediaTypeToShortName[MediaType.Atom] = ShortAtomMediaType;
+            _mediaTypeToShortName[MediaType.AtomEntry] = ShortAtomEntryMediaType;
+            _mediaTypeToShortName[MediaType.Rss] = ShortRssMediaType;
+            _mediaTypeToShortName[MediaType.Xml] = ShortXmlMediaType;
+            _mediaTypeToShortName[MediaType.ImagePng] = ShortImagePngMediaType;
+            _mediaTypeToShortName[MediaType.ImageJpeg] = ShortImageJpegMediaType;
+            _mediaTypeToShortName[MediaType.ImageGif] = ShortImageGifMediaType;
+            _mediaTypeToShortName[MediaType.ImageTiff] = ShortImageTiffMediaType;
+            _mediaTypeToShortName[MediaType.ImageBmp] = ShortImageBmpMediaType;
+            _mediaTypeToShortName[MediaType.Xslt] = ShortXsltMediaType;
+            _mediaTypeToShortName[MediaType.Css] = ShortCssMediaType;
+            _mediaTypeToShortName[MediaType.Json] = ShortJsonMediaType;
+            _mediaTypeToShortName[MediaType.Bson] = ShortBsonMediaType;
+            _mediaTypeToShortName[MediaType.Form] = ShortFormMediaType;
 
-            ShortNameToMediaType = new Dictionary<string, MediaType>(StringComparer.InvariantCultureIgnoreCase);
-            ShortNameToMediaType[ShortTextMediaType] = MediaType.Text;
-            ShortNameToMediaType[ShortHtmlMediaType] = MediaType.Html;
-            ShortNameToMediaType[ShortAtomMediaType] = MediaType.Atom;
-            ShortNameToMediaType[ShortAtomEntryMediaType] = MediaType.AtomEntry;
-            ShortNameToMediaType[ShortRssMediaType] = MediaType.Rss;
-            ShortNameToMediaType[ShortXmlMediaType] = MediaType.Xml;
-            ShortNameToMediaType[ShortImagePngMediaType] = MediaType.ImagePng;
-            ShortNameToMediaType[ShortImageJpegMediaType] = MediaType.ImageJpeg;
-            ShortNameToMediaType[ShortImageGifMediaType] = MediaType.ImageGif;
-            ShortNameToMediaType[ShortImageTiffMediaType] = MediaType.ImageTiff;
-            ShortNameToMediaType[ShortImageBmpMediaType] = MediaType.ImageBmp;
-            ShortNameToMediaType[ShortXsltMediaType] = MediaType.Xslt;
-            ShortNameToMediaType[ShortCssMediaType] = MediaType.Css;
-            ShortNameToMediaType[ShortJsonMediaType] = MediaType.Json;
-            ShortNameToMediaType[ShortBsonMediaType] = MediaType.Bson;
-            ShortNameToMediaType[ShortFormMediaType] = MediaType.Form;
+            _shortNameToMediaType = new Dictionary<string, MediaType>(StringComparer.InvariantCultureIgnoreCase);
+            _shortNameToMediaType[ShortTextMediaType] = MediaType.Text;
+            _shortNameToMediaType[ShortHtmlMediaType] = MediaType.Html;
+            _shortNameToMediaType[ShortAtomMediaType] = MediaType.Atom;
+            _shortNameToMediaType[ShortAtomEntryMediaType] = MediaType.AtomEntry;
+            _shortNameToMediaType[ShortRssMediaType] = MediaType.Rss;
+            _shortNameToMediaType[ShortXmlMediaType] = MediaType.Xml;
+            _shortNameToMediaType[ShortImagePngMediaType] = MediaType.ImagePng;
+            _shortNameToMediaType[ShortImageJpegMediaType] = MediaType.ImageJpeg;
+            _shortNameToMediaType[ShortImageGifMediaType] = MediaType.ImageGif;
+            _shortNameToMediaType[ShortImageTiffMediaType] = MediaType.ImageTiff;
+            _shortNameToMediaType[ShortImageBmpMediaType] = MediaType.ImageBmp;
+            _shortNameToMediaType[ShortXsltMediaType] = MediaType.Xslt;
+            _shortNameToMediaType[ShortCssMediaType] = MediaType.Css;
+            _shortNameToMediaType[ShortJsonMediaType] = MediaType.Json;
+            _shortNameToMediaType[ShortBsonMediaType] = MediaType.Bson;
+            _shortNameToMediaType[ShortFormMediaType] = MediaType.Form;
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace Sage.SData.Client.Framework
         /// <returns>A <see cref="string"/> containing the name of the specified <see cref="MediaType"/>.</returns>
         public static string GetMediaType(MediaType type)
         {
-            return MediaTypeToName[type];
+            return _mediaTypeToName[type];
         }
 
         /// <summary>
@@ -301,20 +301,20 @@ namespace Sage.SData.Client.Framework
         {
             Guard.ArgumentNotNullOrEmptyString(name, "name");
 
-            if (name != null && name.StartsWith("multipart/", StringComparison.InvariantCultureIgnoreCase))
+            if (name.StartsWith("multipart/", StringComparison.InvariantCultureIgnoreCase))
             {
                 return MediaType.Multipart;
             }
 
-            return NameToMediaType[new ContentType(name)];
+            return _nameToMediaType[new ContentType(name)];
         }
 
         /// <summary>
         /// Returns the <see cref="MediaType"/> for the specified name.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">The media type name.</param>
         /// <param name="mediaType">On return contains the <see cref="MediaType"/> for the specified name.</param>
-        /// <returns><b>true</b> if the content type was found; otherwise, <b>false</b>.</returns>
+        /// <returns><b>true</b> if the content type was found, otherwise <b>false</b>.</returns>
         public static bool TryGetMediaType(string name, out MediaType mediaType)
         {
             if (name != null && name.StartsWith("multipart/", StringComparison.InvariantCultureIgnoreCase))
@@ -340,7 +340,7 @@ namespace Sage.SData.Client.Framework
                 return false;
             }
 
-            if (!NameToMediaType.TryGetValue(key, out mediaType))
+            if (!_nameToMediaType.TryGetValue(key, out mediaType))
             {
                 mediaType = DefaultMediaType;
                 return false;
@@ -356,7 +356,7 @@ namespace Sage.SData.Client.Framework
         /// <returns>A <see cref="string"/> containing the short name of the specified <see cref="MediaType"/>.</returns>
         public static string GetShortMediaType(MediaType type)
         {
-            return MediaTypeToShortName[type];
+            return _mediaTypeToShortName[type];
         }
 
         /// <summary>
@@ -366,25 +366,27 @@ namespace Sage.SData.Client.Framework
         /// <returns>The <see cref="MediaType"/> that matches the specified name.</returns>
         public static MediaType GetShortMediaType(string name)
         {
-            return ShortNameToMediaType[name];
+            return _shortNameToMediaType[name];
         }
 
         /// <summary>
         /// Returns the <see cref="MediaType"/> for the specified short name.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">The short media type name.</param>
         /// <param name="mediaType">On return contains the <see cref="MediaType"/> for the specified name.</param>
-        /// <returns><b>true</b> if the content type was found; otherwise, <b>false</b>.</returns>
+        /// <returns><b>true</b> if the content type was found, otherwise <b>false</b>.</returns>
         public static bool TryGetShortMediaType(string name, out MediaType mediaType)
         {
+            if (_shortNameToMediaType.TryGetValue(name, out mediaType))
+            {
+                return true;
+            }
+
             mediaType = DefaultMediaType;
-
-            if (!ShortNameToMediaType.ContainsKey(name))
-                return false;
-
-            mediaType = ShortNameToMediaType[name];
-            return true;
+            return false;
         }
+
+        #region Nested type: ContentTypeComparer
 
         private class ContentTypeComparer : IEqualityComparer<ContentType>
         {
@@ -411,5 +413,7 @@ namespace Sage.SData.Client.Framework
 
             #endregion
         }
+
+        #endregion
     }
 }

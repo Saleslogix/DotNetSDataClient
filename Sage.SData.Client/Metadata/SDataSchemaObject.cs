@@ -32,7 +32,8 @@ namespace Sage.SData.Client.Metadata
 
         private static IEnumerable<SDataSchemaObject> Descendents(IEnumerable<SDataSchemaObject> items)
         {
-            return items.Concat(items.SelectMany(item => Descendents(item.Children)));
+            var list = items.ToList();
+            return list.Concat(list.SelectMany(item => Descendents(item.Children)));
         }
     }
 }

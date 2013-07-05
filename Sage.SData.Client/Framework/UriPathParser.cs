@@ -34,8 +34,8 @@ namespace Sage.SData.Client.Framework
                                            \)
                                          )?";
 
-        private static readonly Regex Regex = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
-        private static readonly UriPathSegment[] EmptyPath = new UriPathSegment[] {};
+        private static readonly Regex _regex = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+        private static readonly IList<UriPathSegment> _emptyPath = new UriPathSegment[0];
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace Sage.SData.Client.Framework
         /// </summary>
         /// <param name="uri">The <see cref="Uri"/> containing the path to parse into segments.</param>
         /// <returns>An array of segments that form the path for the specified <see cref="Uri"/>.</returns>
-        public static UriPathSegment[] Parse(Uri uri)
+        public static IList<UriPathSegment> Parse(Uri uri)
         {
             return Parse(uri.AbsolutePath);
         }
@@ -54,20 +54,24 @@ namespace Sage.SData.Client.Framework
         /// </summary>
         /// <param name="path">The path to parse into segments.</param>
         /// <returns>An array of segments that form the specified path.</returns>
-        public static UriPathSegment[] Parse(string path)
+        public static IList<UriPathSegment> Parse(string path)
         {
             if (string.IsNullOrEmpty(path))
-                return EmptyPath;
+            {
+                return _emptyPath;
+            }
 
             var segments = new List<UriPathSegment>();
-            var match = Regex.Match(path);
+            var match = _regex.Match(path);
 
             while (match.Success)
             {
                 var segment = match.Groups["segment"].Value;
 
                 if (segment.Length != 0)
+                {
                     segments.Add(new UriPathSegment(segment, match.Groups["predicate"].Value));
+                }
 
                 match = match.NextMatch();
             }

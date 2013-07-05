@@ -11,10 +11,8 @@ namespace Sage.SData.Client.Extensions
     public static class SDataSyncExtensionHelper
     {
         /// <summary>
-        /// Extension method to retrieve sdata sync mode
+        /// Extension method to retrieve SData sync mode
         /// </summary>
-        /// <param name="feed"></param>
-        /// <returns></returns>
         public static SyncMode? GetSDataSyncMode(this AtomFeed feed)
         {
             var context = GetContext(feed, false);
@@ -22,10 +20,8 @@ namespace Sage.SData.Client.Extensions
         }
 
         /// <summary>
-        /// Extension method to retrieve sdata sync digest
+        /// Extension method to retrieve SData sync digest
         /// </summary>
-        /// <param name="feed"></param>
-        /// <returns></returns>
         public static Digest GetSDataSyncDigest(this AtomFeed feed)
         {
             var context = GetContext(feed, false);
@@ -33,10 +29,8 @@ namespace Sage.SData.Client.Extensions
         }
 
         /// <summary>
-        /// Extension method to retrieve sdata sync state
+        /// Extension method to retrieve SData sync state
         /// </summary>
-        /// <param name="entry"></param>
-        /// <returns></returns>
         public static SyncState GetSDataSyncState(this AtomEntry entry)
         {
             var context = GetContext(entry, false);

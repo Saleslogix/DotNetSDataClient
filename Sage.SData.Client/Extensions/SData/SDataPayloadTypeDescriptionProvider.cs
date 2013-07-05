@@ -45,10 +45,10 @@ namespace Sage.SData.Client.Extensions
             public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
             {
                 var properties = _inner.GetProperties()
-                    .Cast<PropertyDescriptor>()
-                    .Where(prop => prop.Name != "Values")
-                    .Select(prop => (PropertyDescriptor) new ExistingPropertyDescriptor(prop))
-                    .ToList();
+                                       .Cast<PropertyDescriptor>()
+                                       .Where(prop => prop.Name != "Values")
+                                       .Select(prop => (PropertyDescriptor) new ExistingPropertyDescriptor(prop))
+                                       .ToList();
 
                 if (_instance != null)
                 {
@@ -198,11 +198,11 @@ namespace Sage.SData.Client.Extensions
                 {
                     return new PropertyDescriptorCollection(
                         TypeDescriptor.GetProperties(value, attributes)
-                            .Cast<PropertyDescriptor>()
-                            .Where(prop => prop.Name != "Capacity" && prop.Name != "Count")
-                            .Concat(((SDataPayloadCollection) value)
-                                        .Select((item, i) => (PropertyDescriptor) new PayloadCollectionItemPropertyDescriptor(i)))
-                            .ToArray());
+                                      .Cast<PropertyDescriptor>()
+                                      .Where(prop => prop.Name != "Capacity" && prop.Name != "Count")
+                                      .Concat(((SDataPayloadCollection) value)
+                                                  .Select((item, i) => (PropertyDescriptor) new PayloadCollectionItemPropertyDescriptor(i)))
+                                      .ToArray());
                 }
 
                 public override bool GetPropertiesSupported(ITypeDescriptorContext context)

@@ -10,7 +10,7 @@ namespace Sage.SData.Client.Core
     /// SData Batch URL class
     /// </summary>
     /// <example>http://sdata/sageApp/test/-/salesOrders/$batch </example>
-    public class SDataBatchRequest : SDataApplicationRequest, IDisposable
+    public sealed class SDataBatchRequest : SDataApplicationRequest, IDisposable
     {
         private const string BatchTerm = "$batch";
 
@@ -107,11 +107,11 @@ namespace Sage.SData.Client.Core
         private AtomFeed GetFeed()
         {
             var feed = new AtomFeed
-                       {
-                           Title = new AtomTextConstruct("Batch"),
-                           Id = new AtomId(new Uri(ToString())),
-                           UpdatedOn = DateTime.Now
-                       };
+                           {
+                               Title = new AtomTextConstruct("Batch"),
+                               Id = new AtomId(new Uri(ToString())),
+                               UpdatedOn = DateTime.Now
+                           };
 
             foreach (var item in Items)
             {

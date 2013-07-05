@@ -2,6 +2,8 @@
 using NUnit.Framework;
 using Sage.SData.Client.Core;
 
+// ReSharper disable InconsistentNaming
+
 namespace Sage.SData.Client.Test.Core
 {
     [TestFixture]
@@ -28,11 +30,11 @@ namespace Sage.SData.Client.Test.Core
         public void ResourceCollection_Verify_ToStringWithPaging()
         {
             var request = new SDataResourceCollectionRequest(_service)
-                          {
-                              ResourceKind = "employees",
-                              StartIndex = 1,
-                              Count = 100
-                          };
+                              {
+                                  ResourceKind = "employees",
+                                  StartIndex = 1,
+                                  Count = 100
+                              };
             var url = request.ToString();
             Expect(url, Is.EqualTo("http://localhost:59213/sdata/aw/dynamic/-/employees?startIndex=1&count=100"));
         }
@@ -41,10 +43,10 @@ namespace Sage.SData.Client.Test.Core
         public void ResourceCollection_Verify_ToStringWithQuery()
         {
             var request = new SDataResourceCollectionRequest(_service)
-                          {
-                              ResourceKind = "employees",
-                              QueryValues = {{"where", "gender eq m"}}
-                          };
+                              {
+                                  ResourceKind = "employees",
+                                  QueryValues = {{"where", "gender eq m"}}
+                              };
             var url = request.ToString();
             Expect(url, Is.EqualTo("http://localhost:59213/sdata/aw/dynamic/-/employees?where=gender eq m"));
         }
@@ -53,14 +55,14 @@ namespace Sage.SData.Client.Test.Core
         public void ResourceCollection_Verify_ToStringWithQuery_MultipleValues()
         {
             var request = new SDataResourceCollectionRequest(_service)
-                          {
-                              ResourceKind = "employees",
-                              QueryValues =
-                                  {
-                                      {"where", "gender eq m"},
-                                      {"orderBy", "orderDate DESC"}
-                                  }
-                          };
+                              {
+                                  ResourceKind = "employees",
+                                  QueryValues =
+                                      {
+                                          {"where", "gender eq m"},
+                                          {"orderBy", "orderDate DESC"}
+                                      }
+                              };
             var url = request.ToString();
             Expect(url, Is.EqualTo("http://localhost:59213/sdata/aw/dynamic/-/employees?where=gender eq m&orderBy=orderDate DESC"));
         }
