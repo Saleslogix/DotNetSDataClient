@@ -1,0 +1,620 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
+using Sage.SData.Client.Framework;
+using Sage.SData.Client.Utilities;
+
+namespace Sage.SData.Client.Content
+{
+    public class AtomContentHandler : IContentHandler
+    {
+        private static readonly XNamespace _atomNs = Common.Atom.Namespace;
+        private static readonly XNamespace _sDataNs = Common.SData.Namespace;
+        private static readonly XNamespace _syncNs = Common.Sync.Namespace;
+        private static readonly XNamespace _httpNs = Common.Http.Namespace;
+        private static readonly XNamespace _openSearchNs = Common.OpenSearch.Namespace;
+        private static readonly XNamespace _xsiNs = Common.Xsi.Namespace;
+
+        public object ReadFrom(Stream stream)
+        {
+            Guard.ArgumentNotNull(stream, "stream");
+
+            XElement root;
+            using (var reader = XmlReader.Create(stream))
+            {
+                root = XDocument.Load(reader).Root;
+            }
+
+            if (root == null)
+            {
+                throw new FormatException("TODO: no root element");
+            }
+
+            if (root.Name == _atomNs + "feed")
+            {
+                return ReadFeed(root);
+            }
+
+            if (root.Name == _atomNs + "entry")
+            {
+                return ReadEntry(root);
+            }
+
+            throw new FormatException("TODO: unexpected root element");
+        }
+
+        private static SDataCollection<SDataResource> ReadFeed(XContainer feed)
+        {
+            var collection = new SDataCollection<SDataResource>(feed.Elements(_atomNs + "entry").Select(ReadEntry))
+                                 {
+                                     Id = ReadElementValue<string>(feed, _atomNs + "id"),
+                                     Title = ReadElementValue<string>(feed, _atomNs + "title"),
+                                     Updated = ReadElementValue<DateTimeOffset?>(feed, _atomNs + "updated"),
+                                     TotalResults = ReadElementValue<int?>(feed, _openSearchNs + "totalResults"),
+                                     StartIndex = ReadElementValue<int?>(feed, _openSearchNs + "startIndex"),
+                                     ItemsPerPage = ReadElementValue<int?>(feed, _openSearchNs + "itemsPerPage"),
+                                     Schema = ReadElementValue<string>(feed, _sDataNs + "schema"),
+                                     SyncMode = ReadElementValue<SyncMode?>(feed, _syncNs + "syncMode")
+                                 };
+
+            var diagnoses = feed.Element(_sDataNs + "diagnoses");
+            if (diagnoses != null)
+            {
+                collection.Diagnoses = DeserializeObject<Diagnoses>(diagnoses);
+            }
+
+            foreach (var diagnosis in feed.Elements(_sDataNs + "diagnosis"))
+            {
+                collection.Diagnoses.Add(DeserializeObject<Diagnosis>(diagnosis));
+            }
+
+            var digest = feed.Element(_syncNs + "digest");
+            if (digest != null)
+            {
+                collection.SyncDigest = DeserializeObject<Digest>(digest);
+            }
+
+            return collection;
+        }
+
+        private static SDataResource ReadEntry(XContainer entry)
+        {
+            var payload = entry.Element(_sDataNs + "payload");
+            if (payload != null)
+            {
+                payload = payload.Elements().FirstOrDefault();
+            }
+
+            return ReadResource(payload, entry);
+        }
+
+        private static SDataResource ReadResource(XElement payload, XContainer entry)
+        {
+            var resource = new SDataResource();
+
+            if (payload != null)
+            {
+                resource.XmlLocalName = payload.Name.LocalName;
+                resource.XmlNamespace = payload.Name.NamespaceName;
+                resource.Key = ReadAttributeValue<string>(payload, _sDataNs + "key");
+                resource.Url = ReadAttributeValue<Uri>(payload, _sDataNs + "uri");
+                resource.Uuid = ReadAttributeValue<Guid?>(payload, _sDataNs + "uuid");
+                resource.Lookup = ReadAttributeValue<string>(payload, _sDataNs + "lookup");
+                resource.Descriptor = ReadAttributeValue<string>(payload, _sDataNs + "descriptor");
+                resource.IsDeleted = ReadAttributeValue<bool?>(payload, _sDataNs + "isDeleted");
+
+                foreach (var group in payload.Elements().GroupBy(item => item.Name))
+                {
+                    object value;
+                    if (group.Count() > 1)
+                    {
+                        value = ReadResourceCollection(payload, group);
+                    }
+                    else
+                    {
+                        var item = group.First();
+                        switch (InferItemType(item))
+                        {
+                            case ItemType.Property:
+                                {
+                                    var nilAttr = item.Attribute(_xsiNs + "nil");
+                                    value = nilAttr != null && XmlConvert.ToBoolean(nilAttr.Value) ? null : item.Value;
+                                    break;
+                                }
+                            case ItemType.Object:
+                                {
+                                    value = ReadResource(item, null);
+                                    break;
+                                }
+                            case ItemType.PayloadCollection:
+                                {
+                                    value = ReadResourceCollection(item, null);
+                                    break;
+                                }
+                            case ItemType.SimpleCollection:
+                                {
+                                    value = ReadSimpleCollection(item);
+                                    break;
+                                }
+                            default:
+                                continue;
+                        }
+                    }
+
+                    resource.Add(group.Key.LocalName, value);
+                }
+            }
+
+            if (entry != null)
+            {
+                resource.Id = ReadElementValue<string>(entry, _atomNs + "id");
+                resource.Title = ReadElementValue<string>(entry, _atomNs + "title");
+                resource.Updated = ReadElementValue<DateTimeOffset?>(entry, _atomNs + "updated");
+                resource.Schema = ReadElementValue<string>(entry, _sDataNs + "schema");
+                resource.HttpMethod = ReadElementValue<HttpMethod?>(entry, _httpNs + "httpMethod");
+                resource.HttpStatus = (HttpStatusCode?) ReadElementValue<int?>(entry, _httpNs + "httpStatus");
+                resource.HttpMessage = ReadElementValue<string>(entry, _httpNs + "httpMessage");
+                resource.Location = ReadElementValue<string>(entry, _httpNs + "location");
+                resource.ETag = ReadElementValue<string>(entry, _httpNs + "etag");
+                resource.IfMatch = ReadElementValue<string>(entry, _httpNs + "ifMatch");
+
+                var diagnoses = entry.Element(_sDataNs + "diagnoses");
+                if (diagnoses != null)
+                {
+                    resource.Diagnoses = DeserializeObject<Diagnoses>(diagnoses);
+                }
+
+                foreach (var diagnosis in entry.Elements(_sDataNs + "diagnosis"))
+                {
+                    resource.Diagnoses.Add(DeserializeObject<Diagnosis>(diagnosis));
+                }
+
+                var syncState = entry.Element(_syncNs + "syncState");
+                if (syncState != null)
+                {
+                    resource.SyncState = DeserializeObject<SyncState>(syncState);
+                }
+            }
+
+            return resource;
+        }
+
+        private static SDataCollection<SDataResource> ReadResourceCollection(XElement source, IEnumerable<XElement> items)
+        {
+            var collection = new SDataCollection<SDataResource>
+                                 {
+                                     Url = ReadAttributeValue<Uri>(source, _sDataNs + "uri"),
+                                     DeleteMissing = ReadAttributeValue<bool?>(source, _sDataNs + "deleteMissing"),
+                                     XmlIsFlat = items != null
+                                 };
+
+            foreach (var item in items ?? source.Elements())
+            {
+                if (string.IsNullOrEmpty(collection.XmlLocalName))
+                {
+                    collection.XmlLocalName = item.Name.LocalName;
+                }
+
+                var child = ReadResource(item, null);
+                if (InferItemType(item) == ItemType.Property)
+                {
+                    var nilAttr = item.Attribute(_xsiNs + "nil");
+                    var value = nilAttr != null && XmlConvert.ToBoolean(nilAttr.Value) ? null : item.Value;
+                    child.Add(item.Name.LocalName, value);
+                    break;
+                }
+                collection.Add(child);
+            }
+
+            return collection;
+        }
+
+        private static SDataCollection<object> ReadSimpleCollection(XContainer source)
+        {
+            var collection = new SDataCollection<object>();
+
+            foreach (var item in source.Elements())
+            {
+                if (string.IsNullOrEmpty(collection.XmlLocalName))
+                {
+                    collection.XmlLocalName = item.Name.LocalName;
+                }
+
+                var nilAttr = item.Attribute(_xsiNs + "nil");
+                var value = nilAttr != null && XmlConvert.ToBoolean(nilAttr.Value) ? null : item.Value;
+                collection.Add(value);
+            }
+
+            return collection;
+        }
+
+        private static ItemType InferItemType(XElement item)
+        {
+            var nilAttr = item.Attribute(_xsiNs + "nil");
+            if (nilAttr != null && XmlConvert.ToBoolean(nilAttr.Value))
+            {
+                return ItemType.Property;
+            }
+
+            if (item.Attribute(_sDataNs + "key") != null ||
+                item.Attribute(_sDataNs + "uuid") != null ||
+                item.Attribute(_sDataNs + "lookup") != null ||
+                item.Attribute(_sDataNs + "descriptor") != null ||
+                item.Attribute(_sDataNs + "isDeleted") != null)
+            {
+                return ItemType.Object;
+            }
+
+            if (item.Attribute(_sDataNs + "url") != null ||
+                item.Attribute(_sDataNs + "uri") != null ||
+                item.Attribute(_sDataNs + "deleteMissing") != null)
+            {
+                return ItemType.PayloadCollection;
+            }
+
+            if (item.IsEmpty)
+            {
+                // workaround: Older versions of the SIF generate payload collections as empty namespace-less elements 
+                return string.IsNullOrEmpty(item.Name.NamespaceName) ? ItemType.PayloadCollection : ItemType.Property;
+            }
+
+            var children = item.Elements().ToList();
+
+            if (children.Count == 0)
+            {
+                return ItemType.Property;
+            }
+
+            if (children.Count > 1 && children.Select(child => child.Name.LocalName).Distinct().Count() == 1)
+            {
+                if (children.All(child => InferItemType(child) == ItemType.Object))
+                {
+                    return ItemType.PayloadCollection;
+                }
+                if (children.All(child => InferItemType(child) == ItemType.Property))
+                {
+                    return ItemType.SimpleCollection;
+                }
+            }
+
+            return ItemType.Object;
+        }
+
+        private enum ItemType
+        {
+            Property,
+            Object,
+            PayloadCollection,
+            SimpleCollection
+        }
+
+        private static T DeserializeObject<T>(XNode node)
+        {
+#if NET_2_0
+            // Deserialization doesn't work with the Mono implementation of XNode.CreateReader
+            using (var reader = new StringReader(node.ToString()))
+            {
+                return (T) new XmlSerializer(typeof (T)).Deserialize(reader);
+            }
+#else
+            using (var reader = node.CreateReader())
+            {
+                return (T) new XmlSerializer(typeof (T)).Deserialize(reader);
+            }
+#endif
+        }
+
+        private static T ReadElementValue<T>(XContainer container, XName name)
+        {
+            var element = container.Element(name);
+            if (element == null)
+            {
+                return default(T);
+            }
+
+            return XmlConvertEx.FromString<T>(element.Value);
+        }
+
+        private static T ReadAttributeValue<T>(XElement element, XName name)
+        {
+            var attr = element.Attribute(name);
+            if (attr == null)
+            {
+                return default(T);
+            }
+
+            if (typeof (T) == typeof (Uri))
+            {
+                return (T) (object) new Uri(attr.Value);
+            }
+
+            return XmlConvertEx.FromString<T>(attr.Value);
+        }
+
+        public void WriteTo(object obj, Stream stream, INamingScheme namingScheme = null)
+        {
+            Guard.ArgumentNotNull(obj, "obj");
+            Guard.ArgumentNotNull(stream, "stream");
+
+            if (namingScheme == null)
+            {
+                namingScheme = NamingScheme.Default;
+            }
+
+            var root = WriteAtomObject(obj, namingScheme) ?? WriteAtomObject(ContentHelper.Serialize(obj, namingScheme), namingScheme);
+            if (root == null)
+            {
+                throw new NotSupportedException("TODO: type not supported");
+            }
+
+            var doc = new XDocument();
+            root.Add(new XAttribute(XNamespace.Xmlns + Common.SData.Prefix, _sDataNs));
+            root.Add(new XAttribute(XNamespace.Xmlns + Common.Sync.Prefix, _syncNs));
+            root.Add(new XAttribute(XNamespace.Xmlns + Common.Http.Prefix, _httpNs));
+            root.Add(new XAttribute(XNamespace.Xmlns + Common.OpenSearch.Prefix, _openSearchNs));
+            root.Add(new XAttribute(XNamespace.Xmlns + Common.Xsi.Prefix, _xsiNs));
+            doc.Add(root);
+
+            var writer = XmlWriter.Create(stream, new XmlWriterSettings {Indent = true});
+            doc.WriteTo(writer);
+            writer.Flush();
+        }
+
+        private static XElement WriteAtomObject(object obj, INamingScheme namingScheme)
+        {
+            var resources = ContentHelper.AsDictionaries(obj);
+            if (resources != null)
+            {
+                return WriteFeed(resources, namingScheme);
+            }
+
+            var resource = ContentHelper.AsDictionary(obj);
+            if (resource != null)
+            {
+                return WriteEntry(resource, namingScheme);
+            }
+
+            return null;
+        }
+
+        private static XElement WriteFeed(IEnumerable<IDictionary<string, object>> resources, INamingScheme namingScheme)
+        {
+            var feed = new XElement(_atomNs + "feed");
+
+            var prot = resources as ISDataProtocolAware;
+            if (prot != null)
+            {
+                WriteElementValue(feed, _atomNs + "id", prot.Info.Id);
+                WriteElementValue(feed, _atomNs + "title", prot.Info.Title);
+                WriteElementValue(feed, _atomNs + "updated", prot.Info.Updated);
+                WriteElementValue(feed, _openSearchNs + "totalResults", prot.Info.TotalResults);
+                WriteElementValue(feed, _openSearchNs + "startIndex", prot.Info.StartIndex);
+                WriteElementValue(feed, _openSearchNs + "itemsPerPage", prot.Info.ItemsPerPage);
+                WriteElementValue(feed, _sDataNs + "syncMode", prot.Info.SyncMode);
+
+                var diagnoses = prot.Info.Diagnoses;
+                if (diagnoses != null && diagnoses.Count > 0)
+                {
+                    foreach (var diagnosis in diagnoses)
+                    {
+                        feed.Add(SerializeObject(diagnosis));
+                    }
+                }
+
+                var schema = prot.Info.Schema;
+                if (!string.IsNullOrEmpty(schema))
+                {
+                    feed.Add(new XElement(_sDataNs + "schema", schema));
+                }
+
+                var syncDigest = prot.Info.SyncDigest;
+                if (syncDigest != null)
+                {
+                    feed.Add(SerializeObject(syncDigest));
+                }
+            }
+
+            feed.Add(resources.Select(resource => WriteEntry(resource, namingScheme)));
+            return feed;
+        }
+
+        private static XElement WriteEntry(IEnumerable<KeyValuePair<string, object>> resource, INamingScheme namingScheme)
+        {
+            var entry = new XElement(_atomNs + "entry");
+
+            var prot = resource as ISDataProtocolAware;
+            if (prot != null)
+            {
+                WriteElementValue(entry, _atomNs + "id", prot.Info.Id);
+                WriteElementValue(entry, _atomNs + "title", prot.Info.Title);
+                WriteElementValue(entry, _atomNs + "updated", prot.Info.Updated);
+                WriteElementValue(entry, _httpNs + "httpMethod", prot.Info.HttpMethod);
+                WriteElementValue(entry, _httpNs + "httpStatus", (int?) prot.Info.HttpStatus);
+                WriteElementValue(entry, _httpNs + "httpMessage", prot.Info.HttpMessage);
+                WriteElementValue(entry, _httpNs + "location", prot.Info.Location);
+                WriteElementValue(entry, _httpNs + "etag", prot.Info.ETag);
+                WriteElementValue(entry, _httpNs + "ifMatch", prot.Info.IfMatch);
+
+                var diagnoses = prot.Info.Diagnoses;
+                if (diagnoses != null && diagnoses.Count > 0)
+                {
+                    foreach (var diagnosis in diagnoses)
+                    {
+                        entry.Add(SerializeObject(diagnosis));
+                    }
+                }
+
+                var schema = prot.Info.Schema;
+                if (!string.IsNullOrEmpty(schema))
+                {
+                    entry.Add(new XElement(_sDataNs + "schema", schema));
+                }
+
+                var syncState = prot.Info.SyncState;
+                if (syncState != null)
+                {
+                    entry.Add(SerializeObject(syncState));
+                }
+
+                if (prot.Info.XmlLocalName != null)
+                {
+                    var name = XName.Get(prot.Info.XmlLocalName, prot.Info.XmlNamespace ?? string.Empty);
+                    entry.Add(new XElement(_sDataNs + "payload", WriteResource(name, resource, namingScheme)));
+                }
+            }
+
+            return entry;
+        }
+
+        private static XElement WriteResource(XName name, IEnumerable<KeyValuePair<string, object>> resource, INamingScheme namingScheme)
+        {
+            var payload = new XElement(name);
+
+            var prot = resource as ISDataProtocolAware;
+            if (prot != null)
+            {
+                WriteAttributeValue(payload, _sDataNs + "key", prot.Info.Key);
+                WriteAttributeValue(payload, _sDataNs + "uri", prot.Info.Url != null ? prot.Info.Url.AbsoluteUri : null);
+                WriteAttributeValue(payload, _sDataNs + "uuid", prot.Info.Uuid);
+                WriteAttributeValue(payload, _sDataNs + "lookup", prot.Info.Lookup);
+                WriteAttributeValue(payload, _sDataNs + "descriptor", prot.Info.Descriptor);
+                WriteAttributeValue(payload, _sDataNs + "isDeleted", prot.Info.IsDeleted);
+            }
+
+            payload.Add(resource.Select(item => WriteItem(name.Namespace + item.Key, item.Value, namingScheme)));
+            return payload;
+        }
+
+        private static object WriteItem(XName name, object value, INamingScheme namingScheme)
+        {
+            var obj = WriteObject(name, value, namingScheme);
+            if (obj != null)
+            {
+                return obj;
+            }
+
+            if (value != null && Type.GetTypeCode(value.GetType()) == TypeCode.Object)
+            {
+                obj = WriteObject(name, ContentHelper.Serialize(value, namingScheme), namingScheme);
+                if (obj != null)
+                {
+                    return obj;
+                }
+            }
+
+            return new XElement(name, value);
+        }
+
+        private static object WriteObject(XName name, object value, INamingScheme namingScheme)
+        {
+            if (value == null)
+            {
+                return new XElement(name, new XAttribute(_xsiNs + "nil", true));
+            }
+
+            if (Equals(value, string.Empty))
+            {
+                return new XElement(name);
+            }
+
+            var resource = ContentHelper.AsDictionary(value);
+            if (resource != null)
+            {
+                var prot = resource as ISDataProtocolAware;
+                var itemName = XName.Get((prot != null ? prot.Info.XmlLocalName : null) ?? name.LocalName,
+                                         (prot != null ? prot.Info.XmlNamespace : null) ?? name.NamespaceName);
+                return WriteResource(itemName, resource, namingScheme);
+            }
+
+            var resources = ContentHelper.AsDictionaries(value);
+            if (resources != null)
+            {
+                return WriteResourceCollection(name, resources, namingScheme);
+            }
+
+            var items = ContentHelper.AsCollection(value);
+            if (items != null)
+            {
+                return WriteSimpleCollection(name, items, namingScheme);
+            }
+
+            return null;
+        }
+
+        private static object WriteResourceCollection(XName name, IEnumerable<IDictionary<string, object>> resources, INamingScheme namingScheme)
+        {
+            var element = new XElement(name);
+            var prot = resources as ISDataProtocolAware;
+            var localName = prot != null ? prot.Info.XmlLocalName : null;
+            var xmlNs = prot != null ? prot.Info.XmlNamespace : null;
+            var elements = resources.Select(item =>
+                                                {
+                                                    var itemProt = item as ISDataProtocolAware;
+                                                    var itemName = XName.Get(localName ?? (itemProt != null ? itemProt.Info.XmlLocalName : null) ?? item.GetType().Name,
+                                                                             xmlNs ?? (itemProt != null ? itemProt.Info.XmlNamespace : null) ?? name.NamespaceName);
+                                                    return WriteResource(itemName, item, namingScheme);
+                                                });
+
+            if (prot != null)
+            {
+                if (prot.Info.XmlIsFlat)
+                {
+                    return elements;
+                }
+
+                WriteAttributeValue(element, _sDataNs + "uri", prot.Info.Url != null ? prot.Info.Url.AbsoluteUri : null);
+                WriteAttributeValue(element, _sDataNs + "deleteMissing", prot.Info.DeleteMissing);
+            }
+
+            element.Add(elements);
+            return element;
+        }
+
+        private static object WriteSimpleCollection(XName name, IEnumerable<object> items, INamingScheme namingScheme)
+        {
+            var element = new XElement(name);
+            var prot = items as ISDataProtocolAware;
+            var localName = prot != null ? prot.Info.XmlLocalName : null;
+            var xmlNs = prot != null ? prot.Info.XmlNamespace : null;
+            element.Add(items.Select(item =>
+                                         {
+                                             var itemProt = item as ISDataProtocolAware;
+                                             var itemName = XName.Get(localName ?? (itemProt != null ? itemProt.Info.XmlLocalName : null) ?? item.GetType().Name,
+                                                                      xmlNs ?? (itemProt != null ? itemProt.Info.XmlNamespace : null) ?? name.NamespaceName);
+                                             return WriteItem(itemName, item, namingScheme);
+                                         }));
+            return element;
+        }
+
+        private static XElement SerializeObject<T>(T obj)
+        {
+            var doc = new XDocument();
+            using (var writer = doc.CreateWriter())
+            {
+                new XmlSerializer(typeof (T)).Serialize(writer, obj);
+            }
+            return doc.Root;
+        }
+
+        private static void WriteElementValue(XContainer container, XName name, object value)
+        {
+            if (value != null)
+            {
+                container.Add(new XElement(name, value));
+            }
+        }
+
+        private static void WriteAttributeValue(XContainer container, XName name, object value)
+        {
+            if (value != null)
+            {
+                container.Add(new XAttribute(name, value));
+            }
+        }
+    }
+}

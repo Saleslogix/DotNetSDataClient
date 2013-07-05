@@ -9,53 +9,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Mime;
-using Sage.SData.Client.Atom;
+using Sage.SData.Client.Content;
 using Sage.SData.Client.Mime;
 
 namespace Sage.SData.Client.Framework
 {
     /// <summary>
-    /// An interface which encapsulates interesting information returned
-    /// from a request.
-    /// </summary>
-    public interface ISDataResponse
-    {
-        /// <summary>
-        /// The response status code.
-        /// </summary>
-        HttpStatusCode StatusCode { get; }
-
-        /// <summary>
-        /// The response content type.
-        /// </summary>
-        MediaType? ContentType { get; }
-
-        /// <summary>
-        /// The response ETag.
-        /// </summary>
-        string ETag { get; }
-
-        /// <summary>
-        /// The response location.
-        /// </summary>
-        string Location { get; }
-
-        /// <summary>
-        /// The response content.
-        /// </summary>
-        object Content { get; }
-
-        /// <summary>
-        /// Gets the files attached to the response.
-        /// </summary>
-        IList<AttachedFile> Files { get; }
-    }
-
-    /// <summary>
     /// The response class which encapsulates interesting information returned
     /// from a request.
     /// </summary>
-    public class SDataResponse : ISDataResponse
+    public class SDataResponse
     {
         private readonly HttpStatusCode _statusCode;
         private readonly MediaType? _contentType;
@@ -94,7 +57,7 @@ namespace Sage.SData.Client.Framework
                             if (_content == null && MediaTypeNames.TryGetMediaType(part.ContentType, out contentType))
                             {
                                 _contentType = contentType;
-                                _content = LoadContent(part.Content, null, _contentType.Value);
+                                _content = LoadContent(part.Content, _contentType.Value);
                             }
                             else
                             {
@@ -104,7 +67,31 @@ namespace Sage.SData.Client.Framework
                     }
                     else
                     {
-                        _content = LoadContent(responseStream, _statusCode, _contentType);
+                        _content = LoadContent(responseStream, _contentType);
+
+                        if (_statusCode == HttpStatusCode.Accepted)
+                        {
+                            var tracking = ContentHelper.Deserialize<Tracking>(_content);
+                            if (tracking != null)
+                            {
+                                _content = tracking;
+                            }
+                        }
+
+                        if (_statusCode >= HttpStatusCode.BadRequest)
+                        {
+                            var diagnoses = ContentHelper.Deserialize<Diagnoses>(_content);
+                            if (diagnoses != null)
+                            {
+                                throw new SDataException(diagnoses, _statusCode);
+                            }
+
+                            var diagnosis = ContentHelper.Deserialize<Diagnosis>(_content);
+                            if (diagnosis != null)
+                            {
+                                throw new SDataException(new Diagnoses {diagnosis}, _statusCode);
+                            }
+                        }
                     }
                 }
             }
@@ -173,94 +160,26 @@ namespace Sage.SData.Client.Framework
             get { return _files; }
         }
 
-        private static object LoadContent(Stream stream, HttpStatusCode? statusCode, MediaType? contentType)
-        {
-            switch (contentType)
-            {
-                case MediaType.Atom:
-                    return LoadFeedContent(stream);
-                case MediaType.AtomEntry:
-                    return LoadEntryContent(stream);
-                case MediaType.Xml:
-                    return LoadXmlContent(stream, statusCode);
-                default:
-                    return LoadOtherContent(stream, contentType);
-            }
-        }
-
-        private static AtomFeed LoadFeedContent(Stream stream)
-        {
-            var feed = new AtomFeed();
-            feed.Load(stream);
-            return feed;
-        }
-
-        private static AtomEntry LoadEntryContent(Stream stream)
-        {
-            var entry = new AtomEntry();
-            entry.Load(stream);
-            return entry;
-        }
-
-        private static object LoadXmlContent(Stream stream, HttpStatusCode? statusCode)
-        {
-            using (var memory = new MemoryStream())
-            {
-                stream.CopyTo(memory);
-
-                memory.Seek(0, SeekOrigin.Begin);
-                var tracking = memory.DeserializeXml<Tracking>();
-                if (tracking != null)
-                {
-                    return tracking;
-                }
-
-                memory.Seek(0, SeekOrigin.Begin);
-                var diagnoses = memory.DeserializeXml<Diagnoses>();
-                if (diagnoses != null)
-                {
-                    if (statusCode != null)
-                    {
-                        throw new SDataException(diagnoses, statusCode.Value);
-                    }
-                    return diagnoses;
-                }
-
-                memory.Seek(0, SeekOrigin.Begin);
-                var diagnosis = memory.DeserializeXml<Diagnosis>();
-                if (diagnosis != null)
-                {
-                    if (statusCode != null)
-                    {
-                        throw new SDataException(new Diagnoses {diagnosis}, statusCode.Value);
-                    }
-                    return diagnosis;
-                }
-
-                memory.Seek(0, SeekOrigin.Begin);
-                return LoadStringContent(memory);
-            }
-        }
-
-        private static object LoadOtherContent(Stream stream, MediaType? contentType)
+        private static object LoadContent(Stream stream, MediaType? contentType)
         {
             if (contentType != null)
             {
-                return LoadStringContent(stream);
+                var handler = ContentManager.GetHandler(contentType.Value);
+                if (handler != null)
+                {
+                    return handler.ReadFrom(stream);
+                }
+
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
             }
 
             using (var memory = new MemoryStream())
             {
                 stream.CopyTo(memory);
                 return memory.ToArray();
-            }
-        }
-
-        private static string LoadStringContent(Stream stream)
-        {
-            using (var reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
             }
         }
     }

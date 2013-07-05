@@ -49,52 +49,38 @@
       <HintPath>..\dependencies\NUnit\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\BatchProcessTests.cs" />
+    <Compile Include="Content\AtomContentHandlerTests.cs" />
+    <Compile Include="Content\ContentHelperTests.cs" />
+    <Compile Include="Content\JsonContentHandlerTests.cs" />
+    <Compile Include="Content\TextContentHandlerTests.cs" />
+    <Compile Include="Content\XmlContentHandlerTests.cs" />
+    <Compile Include="ExtensionsJson\SDataExtensionContextTests.cs" />
+    <Compile Include="ExtensionsJson\SDataPayloadTests.cs" />
+    <Compile Include="ExtensionsJson\SDataSimpleCollectionTests.cs" />
+    <Compile Include="ExtensionsJson\SDataSyncExtensionContextTests.cs" />
     <Compile Include="Extensions\SDataExtensionContextTests.cs" />
     <Compile Include="Extensions\SDataSimpleCollectionTests.cs" />
     <Compile Include="Extensions\SDataPayloadTests.cs" />
     <Compile Include="Extensions\SDataSyncExtensionContextTests.cs" />
     <Compile Include="Extensions\SyndicationExtensionTests.cs" />
-    <Compile Include="Extensions\Utility.cs" />
     <Compile Include="Framework\DiagnosisTests.cs" />
     <Compile Include="Framework\MediaTypeNamesTests.cs" />
     <Compile Include="Framework\UriFormatterTests.cs" />
     <Compile Include="Framework\UriPathParserTests.cs" />
     <Compile Include="Framework\W3CDateTimeTests.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Metadata\SDataSchemaTests.cs" />
     <Compile Include="Mime\MimeMessageTests.cs" />
+    <Compile Include="Model\Address.cs" />
+    <Compile Include="Model\Contact.cs" />
+    <Compile Include="Model\Product.cs" />
+    <Compile Include="Model\SalesOrder.cs" />
+    <Compile Include="Model\SalesOrderLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestData.cs" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Core\AtomFeedReaderTests.cs" />
-    <Compile Include="Core\IntermediateApplicationsRequestTests.cs" />
-    <Compile Include="Core\IntermediateContractsRequestTests.cs" />
-    <Compile Include="Core\IntermediateDataSetsRequestTests.cs" />
-    <Compile Include="Core\IntermediateResourceCollectionsRequestTests.cs" />
-    <Compile Include="Core\IntermediateServicesRequestTests.cs" />
-    <Compile Include="Core\SDataEndPointCollectionRequestTests.cs" />
-    <Compile Include="Core\SDataResourceCollectionRequestTests.cs" />
-    <Compile Include="Core\SDataResourcePropertyRequestTests.cs" />
-    <Compile Include="Core\SDataResourceSchemaRequestTests.cs" />
-    <Compile Include="Core\SDataServiceOperationRequestTests.cs" />
-    <Compile Include="Core\SDataServiceTests.cs" />
-    <Compile Include="Core\SDataSingleResourceRequestTests.cs" />
-    <Compile Include="Core\SDataTemplateResourceRequestTests.cs" />
-    <None Include="TestEntry.xml" />
-    <None Include="TestFeed.xml" />
-    <None Include="TestSchema.xsd" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sage.SData.Client\Sage.SData.Client_3_5.csproj">

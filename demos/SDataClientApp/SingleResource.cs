@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using Sage.SData.Client.Atom;
-using Sage.SData.Client.Core;
-using Sage.SData.Client.Extensions;
 using SDataClientApp.Properties;
 
 namespace SDataClientApp

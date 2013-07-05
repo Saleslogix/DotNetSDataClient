@@ -1,9 +1,5 @@
-﻿using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using NUnit.Framework;
-using Sage.SData.Client.Atom;
-using Sage.SData.Client.Extensions;
 
 // ReSharper disable InconsistentNaming
 
@@ -36,19 +32,15 @@ namespace Sage.SData.Client.Test.Extensions
     </sdata:diagnosis>
   </entry>
 </feed>";
-            var feed = new AtomFeed();
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
-            {
-                feed.Load(stream);
-            }
+            var feed = Helpers.ReadAtom<SDataCollection<SDataResource>>(xml);
 
-            var diagnoses = feed.GetSDataDiagnoses();
+            var diagnoses = feed.Diagnoses;
             Assert.That(diagnoses.Count, Is.EqualTo(2));
             Assert.That(diagnoses[0].Message, Is.EqualTo("one"));
             Assert.That(diagnoses[1].Message, Is.EqualTo("two"));
 
-            Assume.That(feed.Entries.Any());
-            diagnoses = feed.Entries.First().GetSDataDiagnoses();
+            Assume.That(feed.Any());
+            diagnoses = feed.First().Diagnoses;
             Assert.That(diagnoses.Count, Is.EqualTo(2));
             Assert.That(diagnoses[0].Message, Is.EqualTo("three"));
             Assert.That(diagnoses[1].Message, Is.EqualTo("four"));

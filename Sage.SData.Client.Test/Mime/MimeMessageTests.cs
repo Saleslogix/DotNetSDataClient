@@ -19,13 +19,11 @@ namespace Sage.SData.Client.Test.Mime
             string result;
 
             using (var stream = new MemoryStream())
+            using (var reader = new StreamReader(stream))
             {
-                using (var reader = new StreamReader(stream))
-                {
-                    message.WriteTo(stream);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    result = reader.ReadToEnd();
-                }
+                message.WriteTo(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                result = reader.ReadToEnd();
             }
 
             Assert.That(result, Is.EqualTo("--abc123--"));
@@ -38,16 +36,12 @@ namespace Sage.SData.Client.Test.Mime
             string result;
 
             using (var message = new MimeMessage(part) {Boundary = "abc123"})
+            using (var stream = new MemoryStream())
+            using (var reader = new StreamReader(stream))
             {
-                using (var stream = new MemoryStream())
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        message.WriteTo(stream);
-                        stream.Seek(0, SeekOrigin.Begin);
-                        result = reader.ReadToEnd();
-                    }
-                }
+                message.WriteTo(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                result = reader.ReadToEnd();
             }
 
             const string expected = @"--abc123
@@ -66,16 +60,12 @@ plain text
             string result;
 
             using (var message = new MimeMessage(part) {Boundary = "abc123"})
+            using (var stream = new MemoryStream())
+            using (var reader = new StreamReader(stream))
             {
-                using (var stream = new MemoryStream())
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        message.WriteTo(stream);
-                        stream.Seek(0, SeekOrigin.Begin);
-                        result = reader.ReadToEnd();
-                    }
-                }
+                message.WriteTo(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                result = reader.ReadToEnd();
             }
 
             var expected = @"--abc123
@@ -101,13 +91,11 @@ Content-Length: 256
             var message = new MimeMessage(part) {Boundary = "abc123"};
 
             using (var stream = new MemoryStream())
+            using (var reader = new StreamReader(stream))
             {
-                using (var reader = new StreamReader(stream))
-                {
-                    message.WriteTo(stream);
-                    stream.Seek(0, SeekOrigin.Begin);
-                    result = reader.ReadToEnd();
-                }
+                message.WriteTo(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+                result = reader.ReadToEnd();
             }
 
             const string expected = @"--abc123

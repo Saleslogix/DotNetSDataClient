@@ -12,11 +12,8 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Web;
-using System.Xml;
 using System.Xml.Serialization;
-using Sage.SData.Client.Atom;
-using Sage.SData.Client.Common;
-using Sage.SData.Client.Extensions;
+using Sage.SData.Client.Content;
 using Sage.SData.Client.Mime;
 
 namespace Sage.SData.Client.Framework
@@ -43,15 +40,15 @@ namespace Sage.SData.Client.Framework
         /// Initializes a new instance of the <see cref="SDataRequest"/> class.
         /// </summary>
         public SDataRequest(string uri, HttpMethod method)
-            : this(uri, new RequestOperation(method, null))
+            : this(uri, new RequestOperation(method))
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SDataRequest"/> class.
         /// </summary>
-        public SDataRequest(string uri, HttpMethod method, ISyndicationResource resource)
-            : this(uri, new RequestOperation(method, resource))
+        public SDataRequest(string uri, HttpMethod method, object content)
+            : this(uri, new RequestOperation(method, content))
         {
         }
 
@@ -124,6 +121,8 @@ namespace Sage.SData.Client.Framework
         /// Gets of sets the credentials associated with this request.
         /// </summary>
         public ICredentials Credentials { get; set; }
+
+        public INamingScheme NamingScheme { get; set; }
 
         /// <summary>
         /// Lists the operations associated with this request.
@@ -227,48 +226,38 @@ namespace Sage.SData.Client.Framework
 
         private RequestOperation CreateBatchOperation()
         {
-            var uri = new SDataUri(Uri);
-
-            if (uri.PathSegments.Count != 4)
-            {
-                throw new InvalidOperationException("Batch requests can only be made on collection end points");
-            }
-
-            var feed = new AtomFeed();
-            var batchOp = new RequestOperation(HttpMethod.Post, feed);
+            var resources = new SDataCollection<SDataResource>(_operations.Count);
+            var batchOp = new RequestOperation(HttpMethod.Post, resources);
 
             foreach (var op in _operations)
             {
-                AtomEntry entry;
+                //TODO: be more permissive
+                SDataResource resource;
 
                 if (op.Content == null)
                 {
-                    if (op.Method != HttpMethod.Post)
+                    if (op.Method != HttpMethod.Post && string.IsNullOrEmpty(op.Selector))
                     {
-                        throw new InvalidOperationException("A predicate must be specified for GET, PUT and DELETE batch requests");
+                        throw new InvalidOperationException("A selector must be specified for GET, PUT and DELETE batch requests");
                     }
 
-                    var entryUri = new SDataUri(uri) {CollectionSelector = op.Selector};
-                    entry = new AtomEntry {Id = new AtomId(entryUri.Uri)};
+                    var resourceUri = new SDataUri(Uri) {LastPathSegment = {Selector = op.Selector}};
+                    resource = new SDataResource {Id = resourceUri.Uri.ToString()};
                 }
                 else
                 {
-                    entry = op.Content as AtomEntry;
+                    resource = op.Content as SDataResource;
 
-                    if (entry == null)
+                    //TODO: could be a POCO, will need to be wrapped in a surrogate
+                    if (resource == null)
                     {
-                        throw new InvalidOperationException("Only atom entry resources can be submitted in batch requests");
+                        throw new InvalidOperationException("Only resources can be submitted in batch requests");
                     }
                 }
 
-                entry.SetSDataHttpMethod(op.Method);
-
-                if (!string.IsNullOrEmpty(op.ETag))
-                {
-                    entry.SetSDataHttpIfMatch(op.ETag);
-                }
-
-                feed.AddEntry(entry);
+                resource.HttpMethod = op.Method;
+                resource.ETag = op.ETag;
+                resources.Add(resource);
 
                 foreach (var data in op.Form)
                 {
@@ -356,35 +345,37 @@ namespace Sage.SData.Client.Framework
                 using (var stream = request.GetRequestStream())
                 {
                     var requestStream = isMultipart ? new MemoryStream() : stream;
-                    MediaType? mediaType;
+                    var contentType = op.ContentType;
 
-                    if (op.Content is ISyndicationResource)
+                    if (contentType == null)
                     {
-                        mediaType = op.Content is AtomFeed ? MediaType.Atom : MediaType.AtomEntry;
-                        ((ISyndicationResource) op.Content).Save(requestStream);
-                    }
-                    else if (op.Content is IXmlSerializable)
-                    {
-                        mediaType = MediaType.Xml;
-                        var xmlWriter = XmlWriter.Create(requestStream);
-                        ((IXmlSerializable) op.Content).WriteXml(xmlWriter);
-                        xmlWriter.Flush();
-                    }
-                    else if (op.Content is string)
-                    {
-                        mediaType = MediaType.Text;
-                        var writer = new StreamWriter(requestStream);
-                        writer.Write((string) op.Content);
-                        writer.Flush();
-                    }
-                    else
-                    {
-                        mediaType = null;
+                        if (ContentHelper.IsDictionary(op.Content))
+                        {
+                            contentType = MediaType.AtomEntry;
+                        }
+                        else if (ContentHelper.IsCollection(op.Content))
+                        {
+                            contentType = MediaType.Atom;
+                        }
+                        else if (op.Content is IXmlSerializable)
+                        {
+                            contentType = MediaType.Xml;
+                        }
+                        else if (op.Content is string)
+                        {
+                            contentType = MediaType.Text;
+                        }
                     }
 
-                    if (op.ContentType != null)
+                    if (contentType != null && op.Content != null)
                     {
-                        mediaType = op.ContentType.Value;
+                        var handler = ContentManager.GetHandler(contentType.Value);
+                        if (handler == null)
+                        {
+                            throw new InvalidOperationException(string.Format("Content type '{0}' not supported", contentType));
+                        }
+
+                        handler.WriteTo(op.Content, requestStream, NamingScheme);
                     }
 
                     if (isMultipart)
@@ -393,9 +384,9 @@ namespace Sage.SData.Client.Framework
 
                         using (var multipart = new MimeMessage())
                         {
-                            if (mediaType != null)
+                            if (contentType != null)
                             {
-                                var part = new MimePart(requestStream) {ContentType = MediaTypeNames.GetMediaType(mediaType.Value)};
+                                var part = new MimePart(requestStream) {ContentType = MediaTypeNames.GetMediaType(contentType.Value)};
                                 multipart.Add(part);
                             }
 
@@ -438,9 +429,9 @@ namespace Sage.SData.Client.Framework
                             request.ContentType = new ContentType("multipart/" + (op.Files.Count > 0 ? "related" : "form-data")) {Boundary = multipart.Boundary}.ToString();
                         }
                     }
-                    else if (mediaType != null)
+                    else if (contentType != null)
                     {
-                        request.ContentType = MediaTypeNames.GetMediaType(mediaType.Value);
+                        request.ContentType = MediaTypeNames.GetMediaType(contentType.Value);
                     }
                 }
             }

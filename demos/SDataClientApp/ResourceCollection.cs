@@ -2,9 +2,6 @@
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using Sage.SData.Client.Atom;
-using Sage.SData.Client.Core;
-using Sage.SData.Client.Extensions;
 using Sage.SData.Client.Framework;
 
 namespace SDataClientApp

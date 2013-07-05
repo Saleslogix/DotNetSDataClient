@@ -10,7 +10,7 @@ namespace Sage.SData.Client.Test.Framework
     {
         /// <summary>
         /// The URI path parser should handle open parentheses characters
-        /// in literal string predicates.
+        /// in literal string selectors.
         /// </summary>
         [Test]
         public void Literal_String_Selector_With_Open_Paren_Test()

@@ -6,7 +6,6 @@
 // code.
 
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Xml;
 using System.Xml.Serialization;
@@ -248,11 +247,5 @@ namespace Sage.SData.Client.Framework
 
             writer.WriteEndElement();
         }
-    }
-
-    [XmlRoot(Namespace = Common.SData.Namespace)]
-    [XmlType(TypeName = "diagnoses", Namespace = Common.SData.Namespace)]
-    public class Diagnoses : Collection<Diagnosis>
-    {
     }
 }

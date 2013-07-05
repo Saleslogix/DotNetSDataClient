@@ -1,9 +1,5 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using NUnit.Framework;
-using Sage.SData.Client.Atom;
-using Sage.SData.Client.Extensions;
 using Sage.SData.Client.Framework;
 
 // ReSharper disable InconsistentNaming
@@ -16,7 +12,8 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Typical_Feed()
         {
-            const string xml = @"<feed xmlns=""http://www.w3.org/2005/Atom""
+            const string xml = @"
+                        <feed xmlns=""http://www.w3.org/2005/Atom""
                               xmlns:sync=""http://schemas.sage.com/sdata/sync/2008/1"">
                           <sync:syncMode>catchUp</sync:syncMode>
                           <sync:digest>
@@ -35,16 +32,12 @@ namespace Sage.SData.Client.Test.Extensions
                             </sync:digestEntry>
                           </sync:digest>
                         </feed>";
-            var feed = new AtomFeed();
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
-            {
-                feed.Load(stream);
-            }
+            var feed = Helpers.ReadAtom<SDataCollection<SDataResource>>(xml);
 
-            var syncMode = feed.GetSDataSyncMode();
+            var syncMode = feed.SyncMode;
             Assert.That(syncMode, Is.EqualTo(SyncMode.CatchUp));
 
-            var digest = feed.GetSDataSyncDigest();
+            var digest = feed.SyncDigest;
             Assert.That(digest, Is.Not.Null);
             Assert.That(digest.Origin, Is.EqualTo("http://www.example.com/sdata/myApp1/myContract/-/accounts"));
             Assert.That(digest.Entries.Length, Is.EqualTo(2));
@@ -65,7 +58,8 @@ namespace Sage.SData.Client.Test.Extensions
         [Test]
         public void Typical_Entry()
         {
-            const string xml = @"<entry xmlns=""http://www.w3.org/2005/Atom""
+            const string xml = @"
+                        <entry xmlns=""http://www.w3.org/2005/Atom""
                                xmlns:sync=""http://schemas.sage.com/sdata/sync/2008/1"">
                           <sync:syncState>
                             <sync:endpoint>http://www.example.com/sdata/myApp1/myContract/-/accounts</sync:endpoint>
@@ -73,13 +67,9 @@ namespace Sage.SData.Client.Test.Extensions
                             <sync:stamp>2008-10-30T14:55:43Z</sync:stamp>
                           </sync:syncState>
                         </entry>";
-            var entry = new AtomEntry();
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(xml)))
-            {
-                entry.Load(stream);
-            }
+            var entry = Helpers.ReadAtom<SDataResource>(xml);
 
-            var syncState = entry.GetSDataSyncState();
+            var syncState = entry.SyncState;
             Assert.That(syncState.EndPoint, Is.EqualTo("http://www.example.com/sdata/myApp1/myContract/-/accounts"));
             Assert.That(syncState.Tick, Is.EqualTo(5L));
             Assert.That(syncState.Stamp, Is.EqualTo(new DateTime(2008, 10, 30, 14, 55, 43)));

@@ -26,20 +26,12 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RequestOperation"/> class.
-        /// </summary>
-        public RequestOperation(HttpMethod method)
-            : this(method, null)
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="RequestOperation"/> class with
         /// the specified method and content.
         /// </summary>
         /// <param name="method">One of the <see cref="HttpMethod"/> values</param>
         /// <param name="content">The input content involved in the operation.</param>
-        public RequestOperation(HttpMethod method, object content)
+        public RequestOperation(HttpMethod method, object content = null)
         {
             Method = method;
             Content = content;
