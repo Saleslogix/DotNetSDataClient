@@ -20,6 +20,7 @@ namespace Sage.SData.Client.Framework
     /// </summary>
     [XmlRoot(Namespace = Common.SData.Namespace)]
     [XmlType(TypeName = "diagnosis", Namespace = Common.SData.Namespace)]
+    [Serializable]
     public class Diagnosis
     {
         /// <summary>

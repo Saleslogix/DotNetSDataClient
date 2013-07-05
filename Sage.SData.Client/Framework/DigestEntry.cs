@@ -17,8 +17,9 @@ namespace Sage.SData.Client.Framework
     /// <summary>
     /// Provides details of a DigestEntry for sync.
     /// </summary>
-    [XmlRoot(Namespace = Common.SData.Namespace)]
-    [XmlType(TypeName = "digestEntry", Namespace = Common.SData.Namespace)]
+    [Serializable]
+    [XmlRoot(Namespace = Common.Sync.Namespace)]
+    [XmlType(TypeName = "digestEntry", Namespace = Common.Sync.Namespace)]
     public class DigestEntry
     {
         /// <summary>

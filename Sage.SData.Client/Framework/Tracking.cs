@@ -4,6 +4,7 @@
 // code. Please contact Sage (UK) if you do not have such a licence. Sage will take
 // appropriate legal action against those who make unauthorised use of this code.
 
+using System;
 using System.Xml.Serialization;
 
 namespace Sage.SData.Client.Framework
@@ -12,6 +13,7 @@ namespace Sage.SData.Client.Framework
     /// Represents tracking information used to track the progress of an
     /// asynchronous operation.
     /// </summary>
+    [Serializable]
     [XmlRoot(Namespace = Common.SData.Namespace)]
     [XmlType(TypeName = "tracking", Namespace = Common.SData.Namespace)]
     public class Tracking

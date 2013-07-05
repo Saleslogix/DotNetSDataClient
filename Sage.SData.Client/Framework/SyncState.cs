@@ -17,8 +17,9 @@ namespace Sage.SData.Client.Framework
     /// <summary>
     /// Provides details of a SyncState for sync.
     /// </summary>
-    [XmlRoot(Namespace = Common.SData.Namespace)]
-    [XmlType(TypeName = "syncState", Namespace = Common.SData.Namespace)]
+    [Serializable]
+    [XmlRoot(Namespace = Common.Sync.Namespace)]
+    [XmlType(TypeName = "syncState", Namespace = Common.Sync.Namespace)]
     public class SyncState
     {
         /// <summary>

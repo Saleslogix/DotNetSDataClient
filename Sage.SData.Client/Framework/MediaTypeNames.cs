@@ -312,7 +312,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Returns the <see cref="MediaType"/> for the specified name.
         /// </summary>
-        /// <param name="name">The media type name.</param>
+        /// <param name="name">The name of the content type.</param>
         /// <param name="mediaType">On return contains the <see cref="MediaType"/> for the specified name.</param>
         /// <returns><b>true</b> if the content type was found, otherwise <b>false</b>.</returns>
         public static bool TryGetMediaType(string name, out MediaType mediaType)
@@ -372,7 +372,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Returns the <see cref="MediaType"/> for the specified short name.
         /// </summary>
-        /// <param name="name">The short media type name.</param>
+        /// <param name="name">The short name of the content type.</param>
         /// <param name="mediaType">On return contains the <see cref="MediaType"/> for the specified name.</param>
         /// <returns><b>true</b> if the content type was found, otherwise <b>false</b>.</returns>
         public static bool TryGetShortMediaType(string name, out MediaType mediaType)

@@ -13,7 +13,7 @@ namespace Sage.SData.Client.Test.Framework
         /// in literal string predicates.
         /// </summary>
         [Test]
-        public void Literal_String_Predicate_With_Open_Paren_Test()
+        public void Literal_String_Selector_With_Open_Paren_Test()
         {
             var segments = UriPathParser.Parse("aaa('bbb(ccc')");
             Assert.That(segments, Is.Not.Null);

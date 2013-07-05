@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
 using System.Net.Mime;
@@ -233,7 +232,7 @@ namespace Sage.SData.Client.Framework
                 {
                     if (statusCode != null)
                     {
-                        throw new SDataException(new Collection<Diagnosis> {diagnosis}, statusCode.Value);
+                        throw new SDataException(new Diagnoses {diagnosis}, statusCode.Value);
                     }
                     return diagnosis;
                 }

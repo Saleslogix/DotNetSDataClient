@@ -241,19 +241,19 @@ namespace Sage.SData.Client.Framework
             {
                 AtomEntry entry;
 
-                if (op.Resource == null)
+                if (op.Content == null)
                 {
                     if (op.Method != HttpMethod.Post)
                     {
                         throw new InvalidOperationException("A predicate must be specified for GET, PUT and DELETE batch requests");
                     }
 
-                    var entryUri = new SDataUri(uri) {CollectionSelector = op.Predicate};
+                    var entryUri = new SDataUri(uri) {CollectionSelector = op.Selector};
                     entry = new AtomEntry {Id = new AtomId(entryUri.Uri)};
                 }
                 else
                 {
-                    entry = op.Resource as AtomEntry;
+                    entry = op.Content as AtomEntry;
 
                     if (entry == null)
                     {
@@ -351,30 +351,30 @@ namespace Sage.SData.Client.Framework
             }
 
             var isMultipart = op.Form.Count > 0 || op.Files.Count > 0;
-            if (op.Resource != null || isMultipart)
+            if (op.Content != null || isMultipart)
             {
                 using (var stream = request.GetRequestStream())
                 {
                     var requestStream = isMultipart ? new MemoryStream() : stream;
                     MediaType? mediaType;
 
-                    if (op.Resource is ISyndicationResource)
+                    if (op.Content is ISyndicationResource)
                     {
-                        mediaType = op.Resource is AtomFeed ? MediaType.Atom : MediaType.AtomEntry;
-                        ((ISyndicationResource) op.Resource).Save(requestStream);
+                        mediaType = op.Content is AtomFeed ? MediaType.Atom : MediaType.AtomEntry;
+                        ((ISyndicationResource) op.Content).Save(requestStream);
                     }
-                    else if (op.Resource is IXmlSerializable)
+                    else if (op.Content is IXmlSerializable)
                     {
                         mediaType = MediaType.Xml;
                         var xmlWriter = XmlWriter.Create(requestStream);
-                        ((IXmlSerializable) op.Resource).WriteXml(xmlWriter);
+                        ((IXmlSerializable) op.Content).WriteXml(xmlWriter);
                         xmlWriter.Flush();
                     }
-                    else if (op.Resource is string)
+                    else if (op.Content is string)
                     {
                         mediaType = MediaType.Text;
                         var writer = new StreamWriter(requestStream);
-                        writer.Write((string) op.Resource);
+                        writer.Write((string) op.Content);
                         writer.Flush();
                     }
                     else

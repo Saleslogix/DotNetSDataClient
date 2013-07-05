@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -14,7 +13,7 @@ namespace Sage.SData.Client.Framework
     [Serializable]
     public class SDataException : WebException
     {
-        private readonly Collection<Diagnosis> _diagnoses;
+        private readonly Diagnoses _diagnoses;
         private readonly HttpStatusCode? _statusCode;
 
         /// <summary>
@@ -30,9 +29,9 @@ namespace Sage.SData.Client.Framework
 
             var httpResponse = Response as HttpWebResponse;
             _statusCode = httpResponse != null ? httpResponse.StatusCode : (HttpStatusCode?) null;
-            MediaType mediaType;
+            MediaType contentType;
 
-            if (MediaTypeNames.TryGetMediaType(Response.ContentType, out mediaType) && mediaType == MediaType.Xml)
+            if (MediaTypeNames.TryGetMediaType(Response.ContentType, out contentType) && contentType == MediaType.Xml)
             {
                 using (var memoryStream = new MemoryStream())
                 {
@@ -51,7 +50,7 @@ namespace Sage.SData.Client.Framework
 
                         if (diagnosis != null)
                         {
-                            _diagnoses = new Collection<Diagnosis> {diagnosis};
+                            _diagnoses = new Diagnoses {diagnosis};
                         }
                     }
                 }
@@ -61,7 +60,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public SDataException(Collection<Diagnosis> diagnoses, HttpStatusCode statusCode)
+        public SDataException(Diagnoses diagnoses, HttpStatusCode statusCode)
         {
             _diagnoses = diagnoses;
             _statusCode = statusCode;
@@ -70,7 +69,7 @@ namespace Sage.SData.Client.Framework
         protected SDataException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            _diagnoses = (Collection<Diagnosis>) info.GetValue("Diagnoses", typeof (Collection<Diagnosis>));
+            _diagnoses = (Diagnoses) info.GetValue("Diagnoses", typeof (Diagnoses));
             _statusCode = (HttpStatusCode?) info.GetValue("StatusCode", typeof (HttpStatusCode?));
         }
 
@@ -83,18 +82,9 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Gets the high level diagnostic information returned from the server.
-        /// </summary>
-        [Obsolete("Use the Diagnoses property instead.")]
-        public Diagnosis Diagnosis
-        {
-            get { return _diagnoses != null && _diagnoses.Count > 0 ? _diagnoses[0] : null; }
-        }
-
-        /// <summary>
         /// 
         /// </summary>
-        public Collection<Diagnosis> Diagnoses
+        public Diagnoses Diagnoses
         {
             get { return _diagnoses; }
         }

@@ -14,6 +14,7 @@ namespace Sage.SData.Client.Framework
     /// <summary>
     /// Defines a path segment within a <see cref="Uri"/>
     /// </summary>
+    [Serializable]
     public class UriPathSegment
     {
         #region Constants
