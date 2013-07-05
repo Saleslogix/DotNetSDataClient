@@ -29,30 +29,27 @@ namespace Sage.SData.Client.Test.Framework
                                 };
             string xml;
 
-            using (var textWriter = new StringWriter())
+            using (var stream = new MemoryStream())
             {
-                using (var xmlWriter = new XmlTextWriter(textWriter))
-                {
-                    diagnosis.WriteTo(xmlWriter, null);
-                    xml = textWriter.ToString();
-                }
+                new XmlSerializer(typeof (Diagnosis)).Serialize(stream, diagnosis);
+                xml = Encoding.UTF8.GetString(stream.ToArray());
             }
 
             XPathNavigator nav;
-
             using (var textReader = new StringReader(xml))
+            using (var xmlReader = new XmlTextReader(textReader))
             {
-                using (var xmlReader = new XmlTextReader(textReader))
-                {
-                    nav = new XPathDocument(xmlReader).CreateNavigator();
-                }
+                nav = new XPathDocument(xmlReader).CreateNavigator();
             }
 
-            var node = nav.SelectSingleNode("diagnosis/sdataCode");
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("sdata", Common.SData.Namespace);
+
+            var node = nav.SelectSingleNode("sdata:diagnosis/sdata:sdataCode", mgr);
             Assert.IsNotNull(node);
             Assert.AreEqual("ApplicationDiagnosis", node.Value);
 
-            node = nav.SelectSingleNode("diagnosis/applicationCode");
+            node = nav.SelectSingleNode("sdata:diagnosis/sdata:applicationCode", mgr);
             Assert.IsNotNull(node);
             Assert.AreEqual("Application error", node.Value);
         }

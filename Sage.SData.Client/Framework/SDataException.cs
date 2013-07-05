@@ -1,9 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using Sage.SData.Client.Content;
 
 namespace Sage.SData.Client.Framework
 {
@@ -33,21 +33,23 @@ namespace Sage.SData.Client.Framework
 
             if (MediaTypeNames.TryGetMediaType(Response.ContentType, out contentType) && contentType == MediaType.Xml)
             {
-                using (var memoryStream = new MemoryStream())
+                var handler = ContentManager.GetHandler(contentType);
+                if (handler != null)
                 {
+                    object obj;
                     using (var responseStream = Response.GetResponseStream())
                     {
-                        responseStream.CopyTo(memoryStream);
+                        obj = handler.ReadFrom(responseStream);
                     }
 
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    _diagnoses = memoryStream.DeserializeXml<Diagnoses>();
-
-                    if (_diagnoses == null)
+                    var diagnoses = ContentHelper.Deserialize<Diagnoses>(obj);
+                    if (diagnoses != null)
                     {
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                        var diagnosis = memoryStream.DeserializeXml<Diagnosis>();
-
+                        _diagnoses = diagnoses;
+                    }
+                    else
+                    {
+                        var diagnosis = ContentHelper.Deserialize<Diagnosis>(obj);
                         if (diagnosis != null)
                         {
                             _diagnoses = new Diagnoses {diagnosis};
