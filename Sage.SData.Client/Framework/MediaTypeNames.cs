@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Mime;
-using Sage.SData.Client.Common;
+using Sage.SData.Client.Utilities;
 
 namespace Sage.SData.Client.Framework
 {

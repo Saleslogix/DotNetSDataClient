@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
+using Sage.SData.Client.Utilities;
 
 namespace Sage.SData.Client.Metadata
 {

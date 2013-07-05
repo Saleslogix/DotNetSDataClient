@@ -8,7 +8,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Sage.SData.Client.Common;
+using Sage.SData.Client.Utilities;
 
 namespace Sage.SData.Client.Framework
 {

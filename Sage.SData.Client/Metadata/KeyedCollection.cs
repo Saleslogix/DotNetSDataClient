@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using Sage.SData.Client.Common;
+using Sage.SData.Client.Utilities;
 
 namespace Sage.SData.Client.Metadata
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using Sage.SData.Client.Common;
+using Sage.SData.Client.Utilities;
 
 namespace Sage.SData.Client.Metadata
 {

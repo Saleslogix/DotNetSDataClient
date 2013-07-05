@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
+using Sage.SData.Client.Utilities;
 
 namespace Sage.SData.Client.Metadata
 {

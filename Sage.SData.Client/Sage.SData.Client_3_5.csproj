@@ -132,6 +132,7 @@
     <Compile Include="Framework\AttachedFile.cs" />
     <Compile Include="Framework\Common.cs" />
     <Compile Include="Framework\Diagnosis.cs" />
+    <Compile Include="Framework\DiagnosisCode.cs" />
     <Compile Include="Framework\Digest.cs" />
     <Compile Include="Framework\DigestEntry.cs" />
     <Compile Include="Framework\HttpMethod.cs" />
@@ -155,7 +156,6 @@
     <Compile Include="Metadata\BatchingMode.cs" />
     <Compile Include="Metadata\CollectionDebugView.cs" />
     <Compile Include="Metadata\ComplianceLevel.cs" />
-    <Compile Include="Metadata\EnumEx.cs" />
     <Compile Include="Metadata\InvocationMode.cs" />
     <Compile Include="Metadata\KeyedCollection.cs" />
     <Compile Include="Metadata\KeyedEnumerable.cs" />
@@ -186,6 +186,8 @@
     <Compile Include="Mime\MimeMessage.cs" />
     <Compile Include="Mime\MimePart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\EnumEx.cs" />
+    <Compile Include="Utilities\Guard.cs" />
     <None Include="Examplecs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

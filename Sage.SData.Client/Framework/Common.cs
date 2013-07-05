@@ -5,45 +5,13 @@
 // Sage will take appropriate legal action against those who make unauthorised use of this
 // code.
 
-using System;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-
 namespace Sage.SData.Client.Framework
 {
     /// <summary>
     /// Provides the common elements for Syndication
     /// </summary>
-    public static class Common
+    internal static class Common
     {
-        #region Fields
-
-        private static readonly XmlSerializerNamespaces _oSerializerNamespaces;
-        private static readonly Dictionary<string, bool> _oFrameworkNamespaces;
-
-        static Common()
-        {
-            _oSerializerNamespaces = new XmlSerializerNamespaces();
-            _oSerializerNamespaces.Add(Sme.Prefix, Sme.Namespace);
-            _oSerializerNamespaces.Add(SData.Prefix, SData.Namespace);
-            _oSerializerNamespaces.Add(Http.Prefix, Http.Namespace);
-            _oSerializerNamespaces.Add(Sync.Prefix, Sync.Namespace);
-            _oSerializerNamespaces.Add(OpenSearch.Prefix, OpenSearch.Namespace);
-            _oSerializerNamespaces.Add(Xsi.Prefix, Xsi.Namespace);
-
-            _oFrameworkNamespaces = new Dictionary<string, bool>(StringComparer.InvariantCultureIgnoreCase);
-            _oFrameworkNamespaces[Atom.Namespace] = true;
-            _oFrameworkNamespaces[Sme.Namespace] = true;
-            _oFrameworkNamespaces[SData.Namespace] = true;
-            _oFrameworkNamespaces[Http.Namespace] = true;
-            _oFrameworkNamespaces[Sync.Namespace] = true;
-            _oFrameworkNamespaces[OpenSearch.Namespace] = true;
-        }
-
-        #endregion
-
-        #region Namespaces
-
         /// <summary>
         /// Prefix for xml namespace
         /// </summary>
@@ -197,30 +165,5 @@ namespace Sage.SData.Client.Framework
             /// </summary>
             public const string Prefix = "opensearch";
         }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Returns the <see cref="XmlSerializerNamespaces"/> for the Accounts types.
-        /// </summary>
-        /// <returns>The <see cref="XmlSerializerNamespaces"/> for the Accounts types.</returns>
-        public static XmlSerializerNamespaces GetSerializerNamespaces()
-        {
-            return _oSerializerNamespaces;
-        }
-
-        /// <summary>
-        /// Returns a value indicating if the specified namespace is a framework namespace.
-        /// </summary>
-        /// <param name="ns">The namespace to check.</param>
-        /// <returns><b>true</b> if the specified namespace is a framework namespace, otherwise <b>false</b>.</returns>
-        public static bool IsFrameworkNamespace(string ns)
-        {
-            return !string.IsNullOrEmpty(ns) && _oFrameworkNamespaces.ContainsKey(ns);
-        }
-
-        #endregion
     }
 }
