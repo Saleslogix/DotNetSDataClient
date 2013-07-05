@@ -56,7 +56,7 @@ namespace Sage.SData.Client.Core
         {
             return new SDataUri(url)
                        {
-                           CollectionPredicate = null,
+                           CollectionSelector = null,
                            Query = null
                        }.AppendPath(extraSegments).ToString();
         }

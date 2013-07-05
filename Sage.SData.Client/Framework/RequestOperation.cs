@@ -6,12 +6,11 @@
 
 using System;
 using System.Collections.Generic;
-using Sage.SData.Client.Atom;
 
 namespace Sage.SData.Client.Framework
 {
     /// <summary>
-    /// Defines an operation to peform during a request.
+    /// Defines an operation to perform during a request.
     /// </summary>
     public class RequestOperation
     {
@@ -36,14 +35,14 @@ namespace Sage.SData.Client.Framework
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestOperation"/> class with
-        /// the specified <see cref="AtomEntry"/> and method.
+        /// the specified method and content.
         /// </summary>
         /// <param name="method">One of the <see cref="HttpMethod"/> values</param>
-        /// <param name="resource">The input resource involved in the operation.</param>
-        public RequestOperation(HttpMethod method, object resource)
+        /// <param name="content">The input content involved in the operation.</param>
+        public RequestOperation(HttpMethod method, object content)
         {
             Method = method;
-            Resource = resource;
+            Content = content;
         }
 
         #region Properties
@@ -54,14 +53,14 @@ namespace Sage.SData.Client.Framework
         public HttpMethod Method { get; set; }
 
         /// <summary>
-        /// Gets or sets the predicate for the request.
+        /// Gets or sets the selector for the request.
         /// </summary>
-        public string Predicate { get; set; }
+        public string Selector { get; set; }
 
         /// <summary>
         /// Gets or sets the input resource for the request.
         /// </summary>
-        public object Resource { get; set; }
+        public object Content { get; set; }
 
         /// <summary>
         /// Gets or sets the input content type for the request.

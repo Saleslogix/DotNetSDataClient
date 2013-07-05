@@ -22,8 +22,6 @@ namespace Sage.SData.Client.Framework
     [Serializable]
     public class SDataUri : UriFormatter
     {
-        #region Constants
-
         #region QueryArgNames
 
         /// <summary>
@@ -42,12 +40,6 @@ namespace Sage.SData.Client.Framework
             /// </summary>
             /// <value>The name of the 'where' query argument</value>
             public const string Where = "where";
-
-            /// <summary>
-            /// Specifies the name of the 'thumbnail' query argument.
-            /// </summary>
-            /// <value>The name of the 'thumbnail' query argument</value>
-            public const string Thumbnail = "thumbnail";
 
             /// <summary>
             /// Specifies the name of the 'count' query argument.
@@ -86,12 +78,6 @@ namespace Sage.SData.Client.Framework
             public const string Include = "include";
 
             /// <summary>
-            /// Specifies the name of the exclude query argument.
-            /// </summary>
-            /// <value>The name of the exclude query argument.</value>
-            public const string Exclude = "exclude";
-
-            /// <summary>
             /// Specifies the name of the includeSchema query argument.
             /// </summary>
             /// <value>The name of the includeSchema query argument.</value>
@@ -108,11 +94,6 @@ namespace Sage.SData.Client.Framework
             public const string Search = "search";
 
             /// <summary>
-            /// Specifies the name of the include content argument
-            /// </summary>
-            public const string IncludeContent = "_includeContent";
-
-            /// <summary>
             /// Specifies the name of the return delta argument
             /// </summary>
             public const string ReturnDelta = "returnDelta";
@@ -121,6 +102,11 @@ namespace Sage.SData.Client.Framework
             /// Specifies the name of the select argument
             /// </summary>
             public const string Select = "select";
+
+            /// <summary>
+            /// Specifies the name of the version argument
+            /// </summary>
+            public const string Version = "version";
 
             /// <summary>
             /// Specifies the name of the runName argument
@@ -154,13 +140,6 @@ namespace Sage.SData.Client.Framework
         /// Index of the primary resource path segment within a <see cref="Uri"/>
         /// </summary>
         public const int CollectionTypePathIndex = 3;
-
-        /// <summary>
-        /// Name of the service method segment.
-        /// </summary>
-        public const string ServiceMethodSegment = "$service";
-
-        #endregion
 
         #region PropertySort
 
@@ -324,82 +303,65 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Returns the predicate associated with the <see cref="CollectionType"/>.
+        /// Returns the selector associated with the <see cref="CollectionType"/>.
         /// </summary>
-        /// <value>The predicate associated with the <see cref="CollectionType"/>.</value>
-        public string CollectionPredicate
+        /// <value>The selector associated with the <see cref="CollectionType"/>.</value>
+        public string CollectionSelector
         {
             get
             {
                 var segments = PathSegments;
-                var query = segments.Count > CollectionTypePathIndex ? segments[CollectionTypePathIndex].Predicate : null;
+                var query = segments.Count > CollectionTypePathIndex ? segments[CollectionTypePathIndex].Selector : null;
 
                 return string.IsNullOrEmpty(query) ? null : query;
             }
-            set { GetPathSegment(CollectionTypePathIndex).Predicate = value; }
+            set { GetPathSegment(CollectionTypePathIndex).Selector = value; }
         }
 
         /// <summary>
-        /// Returns a value indicating if there is a predicate associated with the <see cref="CollectionType"/>.
+        /// Returns a value indicating if there is a selector associated with the <see cref="CollectionType"/>.
         /// </summary>
-        /// <value><b>true</b> if there is a predicate associated with the <see cref="CollectionType"/>, otherwise <b>false</b>.</value>
-        public bool HasCollectionPredicate
+        /// <value><b>true</b> if there is a selector associated with the <see cref="CollectionType"/>, otherwise <b>false</b>.</value>
+        public bool HasCollectionSelector
         {
             get
             {
                 var segments = PathSegments;
-                return segments.Count > CollectionTypePathIndex && segments[CollectionTypePathIndex].HasPredicate;
+                return segments.Count > CollectionTypePathIndex && segments[CollectionTypePathIndex].HasSelector;
             }
         }
 
         /// <summary>
-        /// Gets or sets the name of the service method.
+        /// Returns the selector associated with the last segment.
         /// </summary>
-        /// <value>The name of the service method.</value>
-        public string ServiceMethod
+        /// <value>The selector associated with the last segment.</value>
+        public string Selector
         {
             get
             {
-                var serviceSegment = FindServiceSegment();
-
-                return serviceSegment != null ? serviceSegment.Text : string.Empty;
+                var segment = LastPathSegment;
+                return segment != null ? segment.Selector : null;
             }
             set
             {
-                var serviceSegment = FindServiceSegment();
-
-                if (serviceSegment != null)
+                var segment = LastPathSegment;
+                if (segment != null)
                 {
-                    serviceSegment.Text = value;
-                }
-                else
-                {
-                    AppendPath(ServiceMethodSegment);
-                    AppendPath(value);
+                    segment.Selector = value;
                 }
             }
         }
 
         /// <summary>
-        /// Gets or sets the predicate for the service method.
+        /// Returns a value indicating if there is a selector associated with the last segment.
         /// </summary>
-        /// <value>The predicate for the service method.</value>
-        public string ServiceMethodPredicate
+        /// <value><b>true</b> if there is a selector associated with the last segment; otherwise <b>false</b>.</value>
+        public bool HasSelector
         {
             get
             {
-                var serviceSegment = FindServiceSegment();
-
-                return serviceSegment != null ? serviceSegment.Predicate : string.Empty;
-            }
-            set
-            {
-                var serviceSegment = FindServiceSegment();
-
-                if (serviceSegment != null)
-                {
-                    serviceSegment.Predicate = value;
-                }
+                var segment = LastPathSegment;
+                return segment != null && segment.HasSelector;
             }
         }
 
@@ -468,56 +430,6 @@ namespace Sage.SData.Client.Framework
         {
             get { return this[QueryArgNames.Where]; }
             set { this[QueryArgNames.Where] = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the value indicating whether or not thumbnail representations should be returned.
-        /// </summary>
-        /// <value><b>true</b> if thumbnail representations should be returned; otherwise <b>false</b>.  The default is <b>false</b>.</value>
-        public bool Thumbnail
-        {
-            get
-            {
-                var thumbnail = this[QueryArgNames.Thumbnail];
-
-                if (!string.IsNullOrEmpty(thumbnail))
-                {
-                    bool result;
-
-                    if (bool.TryParse(thumbnail, out result))
-                    {
-                        return result;
-                    }
-                }
-
-                return false;
-            }
-            set { this[QueryArgNames.Thumbnail] = value.ToString(); }
-        }
-
-        /// <summary>
-        /// Gets or sets the a value indicating if the content should be included.
-        /// </summary>
-        /// <value><b>true</b> to include the content, otherwise <b>false</b>.</value>
-        public bool? IncludeContent
-        {
-            get
-            {
-                var flag = this[QueryArgNames.IncludeContent];
-
-                if (flag != null)
-                {
-                    bool result;
-
-                    if (bool.TryParse(flag, out result))
-                    {
-                        return result;
-                    }
-                }
-
-                return null;
-            }
-            set { this[QueryArgNames.IncludeContent] = value != null ? value.ToString() : null; }
         }
 
         /// <summary>
@@ -602,7 +514,7 @@ namespace Sage.SData.Client.Framework
                     }
                 }
 
-                return PathSegments[PathSegments.Count - 1].HasPredicate ? MediaType.AtomEntry : MediaType.Atom;
+                return HasSelector ? MediaType.AtomEntry : MediaType.Atom;
             }
             set { this[QueryArgNames.Format] = MediaTypeNames.GetShortMediaType(value); }
         }
@@ -613,9 +525,6 @@ namespace Sage.SData.Client.Framework
         /// <value>0 to return no entity information (only name and id). 
         /// Higher values will return entity information for the properties 
         /// with an equal or lower precedence value.</value>
-        /// <remarks>If <see cref="Thumbnail"/> is set to <b>true</b>, this
-        /// will take no effect. Setting <see cref="Thumbnail"/> to <b>true</b>
-        /// is equivalent to specifying a Precedence of 0.</remarks>
         public int? Precedence
         {
             get
@@ -649,18 +558,9 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Specifies which related objects should be excluded from the payload. 
-        /// </summary>
-        public string Exclude
-        {
-            get { return this[QueryArgNames.Exclude]; }
-            set { this[QueryArgNames.Exclude] = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the value indicating whether or not the schema should be returned.
         /// </summary>
-        /// <value><b>true</b> if the schema should be returned; otherwise <b>false</b>.  The default is <b>false</b>.</value>
+        /// <value><b>true</b> if the schema should be returned, otherwise <b>false</b>.  The default is <b>false</b>.</value>
         public bool IncludeSchema
         {
             get
@@ -722,7 +622,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets or sets the value indicating whether the server should only include properties that have been modified in its response.
         /// </summary>
-        /// <value><b>true</b> if the server should only include properties that have been modified in its response; otherwise <b>false</b>.  The default is <b>false</b>.</value>
+        /// <value><b>true</b> if the server should only include properties that have been modified in its response, otherwise <b>false</b>.  The default is <b>false</b>.</value>
         public bool ReturnDelta
         {
             get
@@ -742,6 +642,16 @@ namespace Sage.SData.Client.Framework
                 return false;
             }
             set { this[QueryArgNames.ReturnDelta] = value.ToString(); }
+        }
+
+        /// <summary>
+        /// Gets or sets a specific version of the resource.
+        /// </summary>
+        /// <value>The version of the resources.</value>
+        public string Version
+        {
+            get { return this[QueryArgNames.Version]; }
+            set { this[QueryArgNames.Version] = value; }
         }
 
         /// <summary>
@@ -795,27 +705,6 @@ namespace Sage.SData.Client.Framework
             AppendPath(segments);
 
             return this;
-        }
-
-        private UriPathSegment FindServiceSegment()
-        {
-            var segments = PathSegments;
-            var found = false;
-
-            if (segments.Count > CollectionTypePathIndex)
-            {
-                for (var i = CollectionTypePathIndex; i < segments.Count; i++)
-                {
-                    if (found)
-                    {
-                        return segments[i];
-                    }
-
-                    found = (segments[i].Text == ServiceMethodSegment);
-                }
-            }
-
-            return null;
         }
 
         #endregion

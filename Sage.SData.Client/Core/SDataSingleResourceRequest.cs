@@ -144,9 +144,9 @@ namespace Sage.SData.Client.Core
 
             if (!string.IsNullOrEmpty(ResourceSelector))
             {
-                uri.CollectionPredicate = ResourceSelector.StartsWith("(") && ResourceSelector.EndsWith(")")
-                                              ? ResourceSelector.Substring(1, ResourceSelector.Length - 2)
-                                              : ResourceSelector;
+                uri.CollectionSelector = ResourceSelector.StartsWith("(") && ResourceSelector.EndsWith(")")
+                                             ? ResourceSelector.Substring(1, ResourceSelector.Length - 2)
+                                             : ResourceSelector;
             }
             else if (Entry != null)
             {
@@ -154,7 +154,7 @@ namespace Sage.SData.Client.Core
 
                 if (payload != null)
                 {
-                    uri.CollectionPredicate = string.Format("'{0}'", payload.Key);
+                    uri.CollectionSelector = string.Format("'{0}'", payload.Key);
                 }
             }
         }

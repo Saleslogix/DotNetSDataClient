@@ -291,7 +291,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets or sets the path prefix for the <see cref="Uri"/>.
         /// </summary>
-        /// <remarks>Represents the virtual root when hosting in IIS; otherwise empty.</remarks>
+        /// <remarks>Represents the virtual root when hosting in IIS, otherwise empty.</remarks>
         public string PathPrefix
         {
             get
@@ -378,9 +378,9 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Returns the path of the <see cref="Uri"/> with all predicates removed.
+        /// Returns the path of the <see cref="Uri"/> with all selectors removed.
         /// </summary>
-        /// <value>The path for the <see cref="Uri"/> with all predicates removed</value>
+        /// <value>The path for the <see cref="Uri"/> with all selectors removed</value>
         public string DirectPath
         {
             get

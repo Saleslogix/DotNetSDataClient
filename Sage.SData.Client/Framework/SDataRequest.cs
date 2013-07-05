@@ -248,7 +248,7 @@ namespace Sage.SData.Client.Framework
                         throw new InvalidOperationException("A predicate must be specified for GET, PUT and DELETE batch requests");
                     }
 
-                    var entryUri = new SDataUri(uri) {CollectionPredicate = op.Predicate};
+                    var entryUri = new SDataUri(uri) {CollectionSelector = op.Predicate};
                     entry = new AtomEntry {Id = new AtomId(entryUri.Uri)};
                 }
                 else

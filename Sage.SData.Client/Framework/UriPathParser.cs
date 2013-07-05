@@ -22,7 +22,7 @@ namespace Sage.SData.Client.Framework
                                          )
                                          (
                                            \(
-                                             (?<predicate>
+                                             (?<selector>
                                                (
                                                  ('([^']|(''))*')       # single quoted literal string
                                                  |
@@ -70,7 +70,7 @@ namespace Sage.SData.Client.Framework
 
                 if (segment.Length != 0)
                 {
-                    segments.Add(new UriPathSegment(segment, match.Groups["predicate"].Value));
+                    segments.Add(new UriPathSegment(segment, match.Groups["selector"].Value));
                 }
 
                 match = match.NextMatch();

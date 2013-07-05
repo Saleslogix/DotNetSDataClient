@@ -19,23 +19,23 @@ namespace Sage.SData.Client.Framework
         #region Constants
 
         /// <summary>
-        /// Returns the prefix to use for a predicate.
+        /// Returns the prefix to use for a selector.
         /// </summary>
-        /// <value>The prefix to use for a predicate.</value>
-        public const string PredicatePrefix = "(";
+        /// <value>The prefix to use for a selector.</value>
+        public const string SelectorPrefix = "(";
 
         /// <summary>
-        /// Returns the suffix to use for a predicate.
+        /// Returns the suffix to use for a selector.
         /// </summary>
-        /// <value>The suffix to use for a predicate.</value>
-        public const string PredicateSuffix = ")";
+        /// <value>The suffix to use for a selector.</value>
+        public const string SelectorSuffix = ")";
 
         #endregion
 
         #region Fields
 
         private string _segment;
-        private string _predicate;
+        private string _selector;
         private string _text;
         private bool _requiresParse;
         private bool _requiresRebuild;
@@ -55,7 +55,7 @@ namespace Sage.SData.Client.Framework
         /// Initializes a new instance of the <see cref="UriPathSegment"/> class with
         /// the specified text.
         /// </summary>
-        /// <param name="segment">The text and predicate for the segment.</param>
+        /// <param name="segment">The text and selector for the segment.</param>
         public UriPathSegment(string segment)
         {
             Segment = segment;
@@ -63,14 +63,14 @@ namespace Sage.SData.Client.Framework
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UriPathSegment"/> class with
-        /// the specified text and predicate.
+        /// the specified text and selector.
         /// </summary>
         /// <param name="text">The text for the segment.</param>
-        /// <param name="predicate">The predicate for the segment.</param>
-        public UriPathSegment(string text, string predicate)
+        /// <param name="selector">The selector for the segment.</param>
+        public UriPathSegment(string text, string selector)
         {
             Text = text;
-            Predicate = predicate;
+            Selector = selector;
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Sage.SData.Client.Framework
         public UriPathSegment(UriPathSegment segment)
         {
             _segment = segment._segment;
-            _predicate = segment._predicate;
+            _selector = segment._selector;
             _text = segment._text;
             _requiresParse = segment._requiresParse;
             _requiresRebuild = segment._requiresRebuild;
@@ -109,37 +109,37 @@ namespace Sage.SData.Client.Framework
         }
 
         /// <summary>
-        /// Gets or sets the predicate for the segment.
+        /// Gets or sets the selector for the segment.
         /// </summary>
-        /// <value>The predicate for the segment.</value>
-        public string Predicate
+        /// <value>The selector for the segment.</value>
+        public string Selector
         {
             get
             {
                 CheckParse();
-                return _predicate;
+                return _selector;
             }
             set
             {
                 CheckParse();
-                _predicate = value;
+                _selector = value;
                 RequiresRebuild = true;
             }
         }
 
         /// <summary>
-        /// Returns a value indicating if this segment has a predicate.
+        /// Returns a value indicating if this segment has a selector.
         /// </summary>
-        /// <value><b>true</b> if this segment has a predicate, otherwise <b>false</b>.</value>
-        public bool HasPredicate
+        /// <value><b>true</b> if this segment has a selector, otherwise <b>false</b>.</value>
+        public bool HasSelector
         {
-            get { return !string.IsNullOrEmpty(Predicate); }
+            get { return !string.IsNullOrEmpty(Selector); }
         }
 
         /// <summary>
-        /// Gets or sets the text and predicate for the segment.
+        /// Gets or sets the text and selector for the segment.
         /// </summary>
-        /// <value>The text and predicate for the segment.</value>
+        /// <value>The text and selector for the segment.</value>
         public string Segment
         {
             get
@@ -319,15 +319,15 @@ namespace Sage.SData.Client.Framework
 
         /// <summary>
         /// Called when the <see cref="Segment"/> needs rebuilding using the <see cref="Text"/>
-        /// and <see cref="Predicate"/> values.
+        /// and <see cref="Selector"/> values.
         /// </summary>
         protected virtual void OnRebuild()
         {
             var segment = new StringBuilder(_text);
 
-            if (HasPredicate)
+            if (HasSelector)
             {
-                segment.AppendFormat("{0}{1}{2}", PredicatePrefix, _predicate, PredicateSuffix);
+                segment.AppendFormat("{0}{1}{2}", SelectorPrefix, _selector, SelectorSuffix);
             }
 
             _segment = segment.ToString();
@@ -347,12 +347,12 @@ namespace Sage.SData.Client.Framework
 
         /// <summary>
         /// Called when the <see cref="Segment"/> needs parsing to extract the
-        /// <see cref="Text"/> and <see cref="Predicate"/> values.
+        /// <see cref="Text"/> and <see cref="Selector"/> values.
         /// </summary>
         protected virtual void OnParse()
         {
             _text = string.Empty;
-            _predicate = string.Empty;
+            _selector = string.Empty;
 
             if (!string.IsNullOrEmpty(_segment))
             {
@@ -363,7 +363,7 @@ namespace Sage.SData.Client.Framework
                     var segment = segments[0];
 
                     _text = segment.Text;
-                    _predicate = segment.Predicate;
+                    _selector = segment.Selector;
                 }
             }
         }
