@@ -1,5 +1,6 @@
 ﻿namespace Sage.SData.Client.Test.Model
 {
+    [SDataResource("contacts")]
     public class Contact
     {
         public ContactCivility? Civility { get; set; }

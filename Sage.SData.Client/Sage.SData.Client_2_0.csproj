@@ -75,7 +75,10 @@
     <Compile Include="Framework\UriQueryParser.cs" />
     <Compile Include="Framework\W3CDateTime.cs" />
     <Compile Include="INamingScheme.cs" />
+    <Compile Include="ISDataClient.cs" />
+    <Compile Include="ISDataParameters.cs" />
     <Compile Include="ISDataProtocolAware.cs" />
+    <Compile Include="ISDataResults.cs" />
     <Compile Include="LinqBridge.cs" />
     <Compile Include="LinqToXml\Extensions.cs" />
     <Compile Include="LinqToXml\LoadOptions.cs" />
@@ -138,11 +141,14 @@
     <Compile Include="Mime\MimePart.cs" />
     <Compile Include="NamingScheme.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SDataClientException.cs" />
     <Compile Include="SDataCollection.cs" />
+    <Compile Include="SDataParameters.cs" />
     <Compile Include="SDataProtocolInfo.cs" />
     <Compile Include="SDataProtocolProperty.cs" />
     <Compile Include="SDataProtocolPropertyAttribute.cs" />
     <Compile Include="SDataResource.cs" />
+    <Compile Include="SDataResourceAttribute.cs" />
     <Compile Include="SimpleJson.cs" />
     <Compile Include="Utilities\EnumEx.cs" />
     <Compile Include="Utilities\Guard.cs" />

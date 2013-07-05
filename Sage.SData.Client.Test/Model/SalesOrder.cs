@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Sage.SData.Client.Test.Model
 {
+    [SDataResource("salesOrders")]
     public class SalesOrder
     {
         public string OrderNumber { get; set; }

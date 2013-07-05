@@ -1,5 +1,6 @@
 ﻿namespace Sage.SData.Client.Test.Model
 {
+    [SDataResource("salesOrderLines")]
     public class SalesOrderLine
     {
         public decimal? OrderQty { get; set; }
