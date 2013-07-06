@@ -15,6 +15,7 @@ using System.Web;
 using System.Xml.Serialization;
 using Sage.SData.Client.Content;
 using Sage.SData.Client.Mime;
+using Sage.SData.Client.Utilities;
 
 namespace Sage.SData.Client.Framework
 {
@@ -152,10 +153,18 @@ namespace Sage.SData.Client.Framework
 
             string location = null;
             var attempts = TimeoutRetryAttempts;
+            var hasContent = operation.Content != null || operation.Form.Count > 0 || operation.Files.Count > 0;
 
             while (true)
             {
                 var request = CreateRequest(uri, operation);
+                if (hasContent)
+                {
+                    using (var stream = request.GetRequestStream())
+                    {
+                        WriteRequestContent(operation, request, stream);
+                    }
+                }
 
                 WebResponse response;
                 try
@@ -199,29 +208,87 @@ namespace Sage.SData.Client.Framework
                 uri = new SDataUri(uri).AppendPath("$batch").ToString();
             }
 
-            var request = CreateRequest(uri, operation);
-            return new AsyncResultWrapper<WebResponse>(request.BeginGetResponse, request.EndGetResponse, callback, state);
+            string location = null;
+            var attempts = TimeoutRetryAttempts;
+            var hasContent = operation.Content != null || operation.Form.Count > 0 || operation.Files.Count > 0;
+            var result = new AsyncResult<SDataResponse>(callback, state);
+            Action<WebRequest> getResponse = null;
+            Action loop =
+                () =>
+                    {
+                        var request = CreateRequest(uri, operation);
+                        if (hasContent)
+                        {
+                            request.BeginGetRequestStream(
+                                async =>
+                                    {
+                                        try
+                                        {
+                                            using (var stream = request.EndGetRequestStream(async))
+                                            {
+                                                WriteRequestContent(operation, request, stream);
+                                            }
+                                            getResponse(request);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            result.Failure(ex, async.CompletedSynchronously);
+                                        }
+                                    }, null);
+                        }
+                        else
+                        {
+                            getResponse(request);
+                        }
+                    };
+            getResponse =
+                request => request.BeginGetResponse(
+                    async =>
+                        {
+                            try
+                            {
+                                WebResponse response;
+                                try
+                                {
+                                    response = request.EndGetResponse(async);
+                                }
+                                catch (WebException webEx)
+                                {
+                                    if (webEx.Status == WebExceptionStatus.Timeout && attempts > 0)
+                                    {
+                                        attempts--;
+                                        loop();
+                                        return;
+                                    }
+                                    throw new SDataException(webEx);
+                                }
+
+                                var httpResponse = response as HttpWebResponse;
+                                var statusCode = httpResponse != null ? httpResponse.StatusCode : 0;
+
+                                if (statusCode != HttpStatusCode.Found)
+                                {
+                                    result.Success(new SDataResponse(response, location), async.CompletedSynchronously);
+                                }
+                                else
+                                {
+                                    uri = location = response.Headers["Location"];
+                                    loop();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                result.Failure(ex, async.CompletedSynchronously);
+                            }
+                        }, null);
+            loop();
+            return result;
         }
 
         public SDataResponse EndGetResponse(IAsyncResult asyncResult)
         {
-            var result = asyncResult as AsyncResultWrapper<WebResponse>;
-            if (result == null)
-            {
-                throw new ArgumentException();
-            }
-
-            WebResponse response;
-            try
-            {
-                response = result.GetResult();
-            }
-            catch (WebException ex)
-            {
-                throw new SDataException(ex);
-            }
-
-            return new SDataResponse(response, null);
+            Guard.ArgumentIsType<AsyncResult<SDataResponse>>(asyncResult, "asyncResult");
+            return ((AsyncResult<SDataResponse>) asyncResult).End();
         }
 
         private RequestOperation CreateBatchOperation()
@@ -339,147 +406,205 @@ namespace Sage.SData.Client.Framework
                 request.Headers[header] = op.ETag;
             }
 
-            var isMultipart = op.Form.Count > 0 || op.Files.Count > 0;
-            if (op.Content != null || isMultipart)
-            {
-                using (var stream = request.GetRequestStream())
-                {
-                    var requestStream = isMultipart ? new MemoryStream() : stream;
-                    var contentType = op.ContentType;
-
-                    if (contentType == null)
-                    {
-                        if (ContentHelper.IsDictionary(op.Content))
-                        {
-                            contentType = MediaType.AtomEntry;
-                        }
-                        else if (ContentHelper.IsCollection(op.Content))
-                        {
-                            contentType = MediaType.Atom;
-                        }
-                        else if (op.Content is IXmlSerializable)
-                        {
-                            contentType = MediaType.Xml;
-                        }
-                        else if (op.Content is string)
-                        {
-                            contentType = MediaType.Text;
-                        }
-                    }
-
-                    if (contentType != null && op.Content != null)
-                    {
-                        var handler = ContentManager.GetHandler(contentType.Value);
-                        if (handler == null)
-                        {
-                            throw new InvalidOperationException(string.Format("Content type '{0}' not supported", contentType));
-                        }
-
-                        handler.WriteTo(op.Content, requestStream, NamingScheme);
-                    }
-
-                    if (isMultipart)
-                    {
-                        requestStream.Seek(0, SeekOrigin.Begin);
-
-                        using (var multipart = new MimeMessage())
-                        {
-                            if (contentType != null)
-                            {
-                                var part = new MimePart(requestStream) {ContentType = MediaTypeNames.GetMediaType(contentType.Value)};
-                                multipart.Add(part);
-                            }
-
-                            foreach (var data in op.Form)
-                            {
-                                var part = new MimePart(new MemoryStream(Encoding.UTF8.GetBytes(data.Value)))
-                                               {
-                                                   ContentType = MediaTypeNames.TextMediaType,
-                                                   ContentTransferEncoding = "binary",
-                                                   ContentDisposition = new ContentDisposition(DispositionTypeNames.Inline) {Parameters = {{"name", data.Key}}}
-                                               };
-                                multipart.Add(part);
-                            }
-
-                            foreach (var file in op.Files)
-                            {
-                                var contentDisposition = new ContentDisposition(DispositionTypeNames.Attachment);
-                                if (file.FileName != null)
-                                {
-                                    if (file.FileName == Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(file.FileName)))
-                                    {
-                                        contentDisposition.FileName = file.FileName;
-                                    }
-                                    else
-                                    {
-                                        contentDisposition.Parameters["filename*"] = string.Format("{0}''{1}", Encoding.UTF8.WebName, HttpUtility.UrlEncode(file.FileName));
-                                    }
-                                }
-
-                                var part = new MimePart(file.Stream)
-                                               {
-                                                   ContentType = !string.IsNullOrEmpty(file.ContentType) ? file.ContentType : "application/octet-stream",
-                                                   ContentTransferEncoding = "binary",
-                                                   ContentDisposition = contentDisposition
-                                               };
-                                multipart.Add(part);
-                            }
-
-                            multipart.WriteTo(stream);
-                            request.ContentType = new ContentType("multipart/" + (op.Files.Count > 0 ? "related" : "form-data")) {Boundary = multipart.Boundary}.ToString();
-                        }
-                    }
-                    else if (contentType != null)
-                    {
-                        request.ContentType = MediaTypeNames.GetMediaType(contentType.Value);
-                    }
-                }
-            }
-
             return request;
         }
 
-        #region Nested type: AsyncResultWrapper
-
-        private class AsyncResultWrapper<T> : IAsyncResult
+        private void WriteRequestContent(RequestOperation op, WebRequest request, Stream stream)
         {
-            private readonly IAsyncResult _inner;
-            private readonly Func<IAsyncResult, T> _end;
+            var isMultipart = op.Form.Count > 0 || op.Files.Count > 0;
+            var requestStream = isMultipart ? new MemoryStream() : stream;
+            var contentType = op.ContentType;
 
-            public AsyncResultWrapper(Func<AsyncCallback, object, IAsyncResult> begin, Func<IAsyncResult, T> end, AsyncCallback callback, object state)
+            if (contentType == null)
             {
-                _inner = begin(callback != null ? asyncResult => callback(this) : (AsyncCallback) null, state);
-                _end = end;
+                if (ContentHelper.IsDictionary(op.Content))
+                {
+                    contentType = MediaType.AtomEntry;
+                }
+                else if (ContentHelper.IsCollection(op.Content))
+                {
+                    contentType = MediaType.Atom;
+                }
+                else if (op.Content is IXmlSerializable)
+                {
+                    contentType = MediaType.Xml;
+                }
+                else if (op.Content is string)
+                {
+                    contentType = MediaType.Text;
+                }
             }
 
-            public T GetResult()
+            if (contentType != null && op.Content != null)
             {
-                return _end(_inner);
+                var handler = ContentManager.GetHandler(contentType.Value);
+                if (handler == null)
+                {
+                    throw new InvalidOperationException(string.Format("Content type '{0}' not supported", contentType));
+                }
+
+                handler.WriteTo(op.Content, requestStream, NamingScheme);
             }
 
-            #region IAsyncResult Members
-
-            public bool IsCompleted
+            if (isMultipart)
             {
-                get { return _inner.IsCompleted; }
+                requestStream.Seek(0, SeekOrigin.Begin);
+
+                using (var multipart = new MimeMessage())
+                {
+                    if (contentType != null)
+                    {
+                        var part = new MimePart(requestStream) {ContentType = MediaTypeNames.GetMediaType(contentType.Value)};
+                        multipart.Add(part);
+                    }
+
+                    foreach (var data in op.Form)
+                    {
+                        var part = new MimePart(new MemoryStream(Encoding.UTF8.GetBytes(data.Value)))
+                                       {
+                                           ContentType = MediaTypeNames.TextMediaType,
+                                           ContentTransferEncoding = "binary",
+                                           ContentDisposition = new ContentDisposition(DispositionTypeNames.Inline) {Parameters = {{"name", data.Key}}}
+                                       };
+                        multipart.Add(part);
+                    }
+
+                    foreach (var file in op.Files)
+                    {
+                        var contentDisposition = new ContentDisposition(DispositionTypeNames.Attachment);
+                        if (file.FileName != null)
+                        {
+                            if (file.FileName == Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(file.FileName)))
+                            {
+                                contentDisposition.FileName = file.FileName;
+                            }
+                            else
+                            {
+                                contentDisposition.Parameters["filename*"] = string.Format("{0}''{1}", Encoding.UTF8.WebName, HttpUtility.UrlEncode(file.FileName));
+                            }
+                        }
+
+                        var part = new MimePart(file.Stream)
+                                       {
+                                           ContentType = !string.IsNullOrEmpty(file.ContentType) ? file.ContentType : "application/octet-stream",
+                                           ContentTransferEncoding = "binary",
+                                           ContentDisposition = contentDisposition
+                                       };
+                        multipart.Add(part);
+                    }
+
+                    multipart.WriteTo(stream);
+                    request.ContentType = new ContentType("multipart/" + (op.Files.Count > 0 ? "related" : "form-data")) {Boundary = multipart.Boundary}.ToString();
+                }
             }
-
-            public WaitHandle AsyncWaitHandle
+            else if (contentType != null)
             {
-                get { return _inner.AsyncWaitHandle; }
+                request.ContentType = MediaTypeNames.GetMediaType(contentType.Value);
+            }
+        }
+
+        #region Nested type: AsyncResult
+
+        private class AsyncResult<T> : IAsyncResult
+        {
+            private readonly AsyncCallback _callback;
+            private readonly object _state;
+            private ManualResetEvent _waitHandle;
+            private T _result;
+            private Exception _exception;
+            private volatile bool _isCompleted;
+            private volatile bool _completedSynchronously;
+
+            public AsyncResult(AsyncCallback callback, object state)
+            {
+                _callback = callback;
+                _state = state;
             }
 
             public object AsyncState
             {
-                get { return _inner.AsyncState; }
+                get { return _state; }
+            }
+
+            public WaitHandle AsyncWaitHandle
+            {
+                get
+                {
+                    if (_waitHandle == null)
+                    {
+                        var isCompleted = _isCompleted;
+                        var waitHandle = new ManualResetEvent(isCompleted);
+                        if (Interlocked.Exchange(ref _waitHandle, waitHandle) != null)
+                        {
+                            waitHandle.Close();
+                        }
+                        else if (!isCompleted && _isCompleted)
+                        {
+                            waitHandle.Set();
+                        }
+                    }
+                    return _waitHandle;
+                }
+            }
+
+            public bool IsCompleted
+            {
+                get { return _isCompleted; }
             }
 
             public bool CompletedSynchronously
             {
-                get { return _inner.CompletedSynchronously; }
+                get { return _completedSynchronously; }
             }
 
-            #endregion
+            public void Success(T result, bool completedSynchronously)
+            {
+                Complete(result, null, completedSynchronously);
+            }
+
+            public void Failure(Exception exception, bool completedSynchronously)
+            {
+                Complete(default(T), exception, completedSynchronously);
+            }
+
+            private void Complete(T result, Exception exception, bool completedSynchronously)
+            {
+                _isCompleted = true;
+                _completedSynchronously = completedSynchronously;
+                _result = result;
+                _exception = exception;
+
+                if (_waitHandle != null)
+                {
+                    _waitHandle.Set();
+                }
+
+                if (_callback != null)
+                {
+                    _callback(this);
+                }
+            }
+
+            public T End()
+            {
+                if (!_isCompleted)
+                {
+                    AsyncWaitHandle.WaitOne();
+                }
+
+                if (_waitHandle != null)
+                {
+                    _waitHandle.Close();
+                    _waitHandle = null;
+                }
+
+                if (_exception != null)
+                {
+                    throw _exception;
+                }
+
+                return _result;
+            }
         }
 
         #endregion
