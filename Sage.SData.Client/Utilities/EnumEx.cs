@@ -80,7 +80,7 @@ namespace Sage.SData.Client.Utilities
             {
                 foreach (var pair in _xmlNames)
                 {
-                    if (string.Equals(pair.Value, value, StringComparison.InvariantCultureIgnoreCase))
+                    if (string.Equals(pair.Value, value, StringComparison.OrdinalIgnoreCase))
                     {
                         return pair.Key;
                     }
@@ -93,7 +93,7 @@ namespace Sage.SData.Client.Utilities
             {
                 foreach (var pair in _xmlNames)
                 {
-                    if (string.Equals(pair.Value, value, StringComparison.InvariantCultureIgnoreCase))
+                    if (string.Equals(pair.Value, value, StringComparison.OrdinalIgnoreCase))
                     {
                         return pair.Key;
                     }

@@ -466,7 +466,7 @@ namespace Sage.SData.Client.Framework
             }
             set
             {
-                var query = value.IndexOf(QueryPrefix, StringComparison.InvariantCulture);
+                var query = value.IndexOf(QueryPrefix, StringComparison.Ordinal);
 
                 if (query < 0)
                 {
@@ -534,7 +534,7 @@ namespace Sage.SData.Client.Framework
             get
             {
                 CheckParseUri();
-                return string.Equals(_scheme, Https, StringComparison.InvariantCultureIgnoreCase);
+                return string.Equals(_scheme, Https, StringComparison.OrdinalIgnoreCase);
             }
             set
             {
@@ -1109,7 +1109,7 @@ namespace Sage.SData.Client.Framework
             private readonly UriFormatter _uri;
 
             public QueryArgsDictionary(UriFormatter uri)
-                : base(StringComparer.InvariantCultureIgnoreCase)
+                : base(StringComparer.OrdinalIgnoreCase)
             {
                 _uri = uri;
             }
@@ -1120,7 +1120,7 @@ namespace Sage.SData.Client.Framework
             }
 
             public QueryArgsDictionary(UriFormatter uri, IDictionary<string, string> items)
-                : base(items, StringComparer.InvariantCultureIgnoreCase)
+                : base(items, StringComparer.OrdinalIgnoreCase)
             {
                 _uri = uri;
             }

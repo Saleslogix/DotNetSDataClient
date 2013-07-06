@@ -69,7 +69,7 @@ namespace Sage.SData.Client.Framework
         /// </summary>
         public IDictionary<string, string> Form
         {
-            get { return _form ?? (_form = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)); }
+            get { return _form ?? (_form = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)); }
         }
 
         /// <summary>

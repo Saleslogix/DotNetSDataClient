@@ -263,7 +263,7 @@ namespace Sage.SData.Client.Framework
             _mediaTypeToShortName[MediaType.Bson] = ShortBsonMediaType;
             _mediaTypeToShortName[MediaType.Form] = ShortFormMediaType;
 
-            _shortNameToMediaType = new Dictionary<string, MediaType>(StringComparer.InvariantCultureIgnoreCase);
+            _shortNameToMediaType = new Dictionary<string, MediaType>(StringComparer.OrdinalIgnoreCase);
             _shortNameToMediaType[ShortTextMediaType] = MediaType.Text;
             _shortNameToMediaType[ShortHtmlMediaType] = MediaType.Html;
             _shortNameToMediaType[ShortAtomMediaType] = MediaType.Atom;
@@ -301,7 +301,7 @@ namespace Sage.SData.Client.Framework
         {
             Guard.ArgumentNotNullOrEmptyString(name, "name");
 
-            if (name.StartsWith("multipart/", StringComparison.InvariantCultureIgnoreCase))
+            if (name.StartsWith("multipart/", StringComparison.OrdinalIgnoreCase))
             {
                 return MediaType.Multipart;
             }
@@ -317,7 +317,7 @@ namespace Sage.SData.Client.Framework
         /// <returns><b>true</b> if the content type was found, otherwise <b>false</b>.</returns>
         public static bool TryGetMediaType(string name, out MediaType mediaType)
         {
-            if (name != null && name.StartsWith("multipart/", StringComparison.InvariantCultureIgnoreCase))
+            if (name != null && name.StartsWith("multipart/", StringComparison.OrdinalIgnoreCase))
             {
                 mediaType = MediaType.Multipart;
                 return true;
@@ -394,8 +394,8 @@ namespace Sage.SData.Client.Framework
 
             public bool Equals(ContentType x, ContentType y)
             {
-                return string.Equals(x.MediaType, y.MediaType, StringComparison.InvariantCultureIgnoreCase) &&
-                       string.Equals(x.Parameters["type"], y.Parameters["type"], StringComparison.InvariantCultureIgnoreCase);
+                return string.Equals(x.MediaType, y.MediaType, StringComparison.OrdinalIgnoreCase) &&
+                       string.Equals(x.Parameters["type"], y.Parameters["type"], StringComparison.OrdinalIgnoreCase);
             }
 
             public int GetHashCode(ContentType obj)

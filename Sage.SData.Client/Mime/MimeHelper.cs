@@ -70,7 +70,7 @@ namespace Sage.SData.Client.Mime
             {
                 if (_knownTypes == null)
                 {
-                    _knownTypes = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+                    _knownTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
                     using (var classesRoot = Registry.ClassesRoot)
                     using (var typeKey = classesRoot.OpenSubKey(@"MIME\Database\Content Type"))

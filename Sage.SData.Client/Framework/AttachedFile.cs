@@ -49,7 +49,7 @@ namespace Sage.SData.Client.Framework
                 return null;
             }
 
-            var pos = fileName.IndexOf("''", StringComparison.InvariantCulture);
+            var pos = fileName.IndexOf("''", StringComparison.Ordinal);
             if (pos >= 0)
             {
                 fileName = fileName.Substring(pos + 2);

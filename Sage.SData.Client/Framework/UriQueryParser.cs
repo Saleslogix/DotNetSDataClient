@@ -22,7 +22,7 @@ namespace Sage.SData.Client.Framework
         /// <param name="query">The query to parse.</param>
         public static IDictionary<string, string> Parse(string query)
         {
-            var args = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var args = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             Parse(args, query);
             return args;
         }
@@ -49,7 +49,7 @@ namespace Sage.SData.Client.Framework
         /// <param name="separator">The character separating the arguments.</param>
         public static IDictionary<string, string> Parse(string query, string separator)
         {
-            var args = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var args = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             Parse(args, query, null, separator);
             return args;
         }
@@ -77,7 +77,7 @@ namespace Sage.SData.Client.Framework
         /// <param name="complexArgs">Array of arguments that can be quoted.</param>
         public static IDictionary<string, string> Parse(string query, IEnumerable<string> complexArgs)
         {
-            var args = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var args = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             Parse(args, query, complexArgs);
             return args;
         }
@@ -106,7 +106,7 @@ namespace Sage.SData.Client.Framework
         /// <param name="separator">The character separating the arguments.</param>
         public static IDictionary<string, string> Parse(string query, IEnumerable<string> complexArgs, string separator)
         {
-            var args = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var args = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             Parse(args, query, complexArgs, separator);
             return args;
         }
@@ -144,7 +144,7 @@ namespace Sage.SData.Client.Framework
             {
                 foreach (var complexArg in complexArgsCol)
                 {
-                    var index = query.IndexOf(complexArg + UriFormatter.QueryArgValuePrefix, StringComparison.InvariantCultureIgnoreCase);
+                    var index = query.IndexOf(complexArg + UriFormatter.QueryArgValuePrefix, StringComparison.OrdinalIgnoreCase);
 
                     if (index < 0)
                     {
@@ -178,7 +178,7 @@ namespace Sage.SData.Client.Framework
                     isComplex = false;
 
                     // Simple expression q=<expression>
-                    end = query.IndexOf(separator, end, StringComparison.InvariantCulture);
+                    end = query.IndexOf(separator, end, StringComparison.Ordinal);
 
                     if (end < 0)
                     {
