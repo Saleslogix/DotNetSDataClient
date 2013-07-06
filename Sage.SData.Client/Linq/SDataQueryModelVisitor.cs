@@ -153,6 +153,13 @@ namespace Sage.SData.Client.Linq
                 return;
             }
 
+#if !NET_3_5
+            if (resultOperator is ToCollectionAsyncResultOperator)
+            {
+                return;
+            }
+#endif
+
             throw new NotSupportedException();
         }
 

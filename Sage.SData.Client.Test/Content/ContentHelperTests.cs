@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using NUnit.Framework;
 using Sage.SData.Client.Content;
+
+#if !NET_2_0
+using System.Runtime.Serialization;
+#endif
 
 // ReSharper disable InconsistentNaming
 
