@@ -23,12 +23,15 @@ namespace Sage.SData.Client
         public string UserAgent { get; set; }
         public int? Timeout { get; set; }
         public int? TimeoutRetryAttempts { get; set; }
+#if !PCL && !SILVERLIGHT
         public IWebProxy Proxy { get; set; }
+#endif
         public ICredentials Credentials { get; set; }
         public INamingScheme NamingScheme { get; set; }
         public MediaType? Format { get; set; }
         public string Language { get; set; }
 
+#if !PCL && !SILVERLIGHT
         public ISDataResults Execute(ISDataParameters parms)
         {
             var request = CreateRequest(parms);
@@ -41,6 +44,7 @@ namespace Sage.SData.Client
             var response = request.GetResponse();
             return CreateResults<T>(response);
         }
+#endif
 
 #if !NET_2_0 && !NET_3_5
         public Task<ISDataResults> ExecuteAsync(ISDataParameters parms)
@@ -115,7 +119,9 @@ namespace Sage.SData.Client
                                   UserName = UserName,
                                   Password = Password,
                                   UserAgent = UserAgent,
+#if !PCL && !SILVERLIGHT
                                   Proxy = Proxy,
+#endif
                                   Credentials = Credentials,
                                   NamingScheme = NamingScheme,
                                   Cookies = _cookies,

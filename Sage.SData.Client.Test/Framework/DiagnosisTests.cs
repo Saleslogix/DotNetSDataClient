@@ -6,6 +6,10 @@ using System.Xml.XPath;
 using NUnit.Framework;
 using Sage.SData.Client.Framework;
 
+#if !NET_2_0 && !NET_3_5
+using System.Xml.Linq;
+#endif
+
 // ReSharper disable InconsistentNaming
 
 namespace Sage.SData.Client.Test.Framework
@@ -31,16 +35,26 @@ namespace Sage.SData.Client.Test.Framework
 
             using (var stream = new MemoryStream())
             {
-                new XmlSerializer(typeof (Diagnosis)).Serialize(stream, diagnosis);
+                var settings = new XmlWriterSettings
+                                   {
+                                       Indent = true,
+                                       Encoding = new UTF8Encoding(false)
+                                   };
+                var xmlWriter = XmlWriter.Create(stream, settings);
+                new XmlSerializer(typeof (Diagnosis)).Serialize(xmlWriter, diagnosis);
                 xml = Encoding.UTF8.GetString(stream.ToArray());
             }
 
+#if NET_2_0 || NET_3_5
             XPathNavigator nav;
             using (var textReader = new StringReader(xml))
             using (var xmlReader = new XmlTextReader(textReader))
             {
                 nav = new XPathDocument(xmlReader).CreateNavigator();
             }
+#else
+            var nav = XDocument.Parse(xml).CreateNavigator();
+#endif
 
             var mgr = new XmlNamespaceManager(nav.NameTable);
             mgr.AddNamespace("sdata", Common.SData.Namespace);

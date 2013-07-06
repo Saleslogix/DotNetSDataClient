@@ -5,45 +5,66 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{023CCD73-35A5-44C2-8435-0CC1F34E81F5}</ProjectGuid>
+    <ProjectGuid>{C1AA65BF-0AFE-43D9-B3F1-B3E8C42F4F26}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sage.SData.Client.Test</RootNamespace>
     <AssemblyName>Sage.SData.Client.Test</AssemblyName>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <!-- This property group is only here to support building this project using the 
+       MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
+       to set the TargetFrameworkVersion to v3.5 -->
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Net35\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET_3_5</DefineConstants>
+    <OutputPath>bin\Debug\Silverlight\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Net35\</OutputPath>
-    <DefineConstants>TRACE;NET_3_5</DefineConstants>
+    <OutputPath>bin\Release\Silverlight\</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Moq">
-      <HintPath>..\dependencies\Moq\NET35\Moq.dll</HintPath>
+    <Reference Include="Moq.Silverlight">
+      <HintPath>..\dependencies\Moq\Silverlight4\Moq.Silverlight.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\dependencies\NUnit\nunit.framework.dll</HintPath>
+    <Reference Include="mscorlib" />
+    <Reference Include="NUnit.Silverlight.Framework">
+      <HintPath>..\dependencies\NUnit\NUnit.Silverlight.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+      <HintPath>$(TargetFrameworkDirectory)System.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml.Serialization" />
+    <Reference Include="System.Xml.XPath" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Content\AtomContentHandlerTests.cs" />
@@ -62,7 +83,6 @@
     <Compile Include="Extensions\SyndicationExtensionTests.cs" />
     <Compile Include="Framework\DiagnosisTests.cs" />
     <Compile Include="Framework\MediaTypeNamesTests.cs" />
-    <Compile Include="Framework\SDataExceptionTests.cs" />
     <Compile Include="Framework\SDataUriTests.cs" />
     <Compile Include="Framework\UriFormatterTests.cs" />
     <Compile Include="Framework\UriPathParserTests.cs" />
@@ -71,7 +91,6 @@
     <Compile Include="Linq\SDataExpressionBuilderVisitorTests.cs" />
     <Compile Include="Linq\SDataQueryExecutorTests.cs" />
     <Compile Include="Linq\SDataQueryModelVisitorTests.cs" />
-    <Compile Include="Metadata\SDataSchemaTests.cs" />
     <Compile Include="Mime\MimeMessageTests.cs" />
     <Compile Include="Model\Address.cs" />
     <Compile Include="Model\Contact.cs" />
@@ -81,12 +100,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Sage.SData.Client\Sage.SData.Client_3_5.csproj">
-      <Project>{590B03D1-FC26-4AFD-98F8-421E6E8DDBA8}</Project>
-      <Name>Sage.SData.Client_3_5</Name>
+    <ProjectReference Include="..\Sage.SData.Client\Sage.SData.Client_SL5.csproj">
+      <Project>{4e4091c1-7099-4136-a8f7-2edb27cc4db6}</Project>
+      <Name>Sage.SData.Client_SL5</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

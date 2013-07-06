@@ -6,8 +6,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+
+#if !PCL && !SILVERLIGHT
+using System.Runtime.Serialization;
+#endif
 
 namespace Sage.SData.Client.Framework
 {
@@ -171,6 +174,7 @@ namespace Sage.SData.Client.Framework
 
         #endregion
 
+#if !PCL && !SILVERLIGHT
         /// <summary>
         /// Initializes a new instance of the <see cref="SDataUri"/> class.
         /// </summary>
@@ -178,6 +182,7 @@ namespace Sage.SData.Client.Framework
             : base(info, context)
         {
         }
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SDataUri"/> class.
@@ -254,8 +259,15 @@ namespace Sage.SData.Client.Framework
             set { this[QueryArgNames.OrderBy] = value; }
         }
 
-        private const string OrderByPattern = @"\s?(?<property>[^,\s]*)\s?(?<direction>[^,\s]*)";
-        private static readonly Regex _orderByRegEx = new Regex(OrderByPattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+        private static readonly Regex _orderByFormat = new Regex(
+            @"\s?(?<property>[^,\s]*)\s?(?<direction>[^,\s]*)",
+            RegexOptions.IgnoreCase |
+            RegexOptions.CultureInvariant |
+            RegexOptions.IgnorePatternWhitespace
+#if !PCL && !SILVERLIGHT
+            | RegexOptions.Compiled
+#endif
+            );
 
         /// <summary>
         /// Returns the sort details.
@@ -273,22 +285,16 @@ namespace Sage.SData.Client.Framework
                 }
 
                 var properties = new List<PropertySort>();
-                var match = _orderByRegEx.Match(orderBy);
+                var match = _orderByFormat.Match(orderBy);
 
                 while (match.Success)
                 {
                     var property = match.Groups["property"].Value;
 
-                    if (property.Length != 0)
+                    if (property.Length > 0)
                     {
-                        var descending = false;
                         var raw = match.Groups["direction"].Value;
-
-                        if (!string.IsNullOrEmpty(raw))
-                        {
-                            descending = raw.ToUpper() == "DESC";
-                        }
-
+                        var descending = string.Equals(raw, "desc", StringComparison.OrdinalIgnoreCase);
                         properties.Add(new PropertySort(property, descending));
                     }
 

@@ -1,5 +1,8 @@
 ﻿using System;
+
+#if !PCL && !SILVERLIGHT
 using System.Runtime.Serialization;
+#endif
 
 namespace Sage.SData.Client
 {
@@ -20,9 +23,11 @@ namespace Sage.SData.Client
         {
         }
 
+#if !PCL && !SILVERLIGHT
         protected SDataClientException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+#endif
     }
 }

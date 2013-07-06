@@ -15,7 +15,9 @@ namespace Sage.SData.Client.Content
     {
         private static readonly Regex _microsoftDateFormat = new Regex(
             @"\\?/Date\((-?\d+)(-|\+)?([0-9]{4})?\)\\?/",
-            RegexOptions.CultureInvariant
+            RegexOptions.IgnoreCase |
+            RegexOptions.CultureInvariant |
+            RegexOptions.IgnorePatternWhitespace
 #if !PCL && !SILVERLIGHT
             | RegexOptions.Compiled
 #endif

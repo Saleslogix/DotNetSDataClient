@@ -17,26 +17,25 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\Net20\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET_2_0;SIMPLE_JSON_NO_LINQ_EXPRESSION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Sage.SData.Client.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Net20\Sage.SData.Client.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release\Net20\</OutputPath>
     <DefineConstants>TRACE;NET_2_0;SIMPLE_JSON_NO_LINQ_EXPRESSION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Sage.SData.Client.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Net20\Sage.SData.Client.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -49,12 +48,15 @@
     <Compile Include="Content\XmlContentHandler.cs" />
     <Compile Include="Framework\AttachedFile.cs" />
     <Compile Include="Framework\Common.cs" />
+    <Compile Include="Framework\ContentDisposition.cs" />
+    <Compile Include="Framework\ContentType.cs" />
     <Compile Include="Framework\Diagnoses.cs" />
     <Compile Include="Framework\Diagnosis.cs" />
     <Compile Include="Framework\DiagnosisCode.cs" />
     <Compile Include="Framework\Digest.cs" />
     <Compile Include="Framework\DigestEntry.cs" />
     <Compile Include="Framework\HttpMethod.cs" />
+    <Compile Include="Framework\MailBnfHelper.cs" />
     <Compile Include="Framework\MediaType.cs" />
     <Compile Include="Framework\MediaTypeNames.cs" />
     <Compile Include="Framework\RequestOperation.cs" />
@@ -63,7 +65,6 @@
     <Compile Include="Framework\SDataResponse.cs" />
     <Compile Include="Framework\SDataUri.cs" />
     <Compile Include="Framework\Severity.cs" />
-    <Compile Include="Framework\StreamExtensions.cs" />
     <Compile Include="Framework\SyncMode.cs" />
     <Compile Include="Framework\SyncState.cs" />
     <Compile Include="Framework\Tracking.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="SDataResourceAttribute.cs" />
     <Compile Include="SDataResults.cs" />
     <Compile Include="SimpleJson.cs" />
+    <Compile Include="Stubs.cs" />
     <Compile Include="Utilities\EnumEx.cs" />
     <Compile Include="Utilities\Guard.cs" />
     <Compile Include="Utilities\XmlConvertEx.cs" />

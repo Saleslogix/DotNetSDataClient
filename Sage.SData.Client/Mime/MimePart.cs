@@ -2,8 +2,6 @@
 using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Net.Mime;
-using Sage.SData.Client.Framework;
 
 namespace Sage.SData.Client.Mime
 {
@@ -77,21 +75,10 @@ namespace Sage.SData.Client.Mime
         /// <summary>
         /// Gets the content disposition of the MIME part.
         /// </summary>
-        public ContentDisposition ContentDisposition
+        public string ContentDisposition
         {
-            get
-            {
-                var value = _headers["Content-Disposition"];
-                try
-                {
-                    return value != null ? new ContentDisposition(value) : null;
-                }
-                catch (FormatException)
-                {
-                    return null;
-                }
-            }
-            set { SetHeaderValue("Content-Disposition", value != null ? value.ToString() : null); }
+            get { return _headers["Content-Disposition"]; }
+            set { SetHeaderValue("Content-Disposition", value); }
         }
 
         /// <summary>
@@ -110,7 +97,11 @@ namespace Sage.SData.Client.Mime
             }
             else
             {
+#if PCL || SILVERLIGHT
+                throw new NotSupportedException();
+#else
                 _headers.Remove(name);
+#endif
             }
         }
 
@@ -122,7 +113,11 @@ namespace Sage.SData.Client.Mime
             }
             else
             {
+#if PCL || SILVERLIGHT
+                throw new NotSupportedException();
+#else
                 _headers.Remove(name);
+#endif
             }
         }
 
@@ -140,7 +135,22 @@ namespace Sage.SData.Client.Mime
                 _headers[HttpRequestHeader.ContentLength] = _content.Length.ToString(CultureInfo.InvariantCulture);
             }
 
-            writer.Write(_headers);
+            var value = _headers[string.Empty];
+            if (value != null)
+            {
+                writer.WriteLine(value);
+            }
+            foreach (string key in _headers)
+            {
+                if (!string.IsNullOrEmpty(key))
+                {
+                    writer.Write(key);
+                    writer.Write(": ");
+                    writer.Write(_headers[key]);
+                    writer.WriteLine();
+                }
+            }
+            writer.WriteLine();
 
             if (_content != null)
             {

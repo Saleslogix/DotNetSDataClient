@@ -4,6 +4,10 @@ using System.Xml.XPath;
 using Sage.SData.Client.Content;
 using SimpleJson;
 
+#if !NET_2_0 && !NET_3_5
+using System.Xml.Linq;
+#endif
+
 namespace Sage.SData.Client.Test
 {
     internal static class Helpers
@@ -22,7 +26,11 @@ namespace Sage.SData.Client.Test
             {
                 new AtomContentHandler().WriteTo(obj, stream);
                 stream.Seek(0, SeekOrigin.Begin);
+#if NET_2_0 || NET_3_5
                 return new XPathDocument(stream).CreateNavigator();
+#else
+                return XDocument.Load(stream).CreateNavigator();
+#endif
             }
         }
 

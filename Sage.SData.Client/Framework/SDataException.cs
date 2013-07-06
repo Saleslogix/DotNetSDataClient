@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using Sage.SData.Client.Content;
+
+#if !PCL && !SILVERLIGHT
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using Sage.SData.Client.Content;
+#endif
 
 namespace Sage.SData.Client.Framework
 {
@@ -68,6 +71,7 @@ namespace Sage.SData.Client.Framework
             _statusCode = statusCode;
         }
 
+#if !PCL && !SILVERLIGHT
         protected SDataException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
@@ -82,6 +86,7 @@ namespace Sage.SData.Client.Framework
             info.AddValue("Diagnoses", _diagnoses);
             info.AddValue("StatusCode", _statusCode);
         }
+#endif
 
         /// <summary>
         /// 

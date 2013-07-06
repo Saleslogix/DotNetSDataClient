@@ -36,6 +36,11 @@ namespace Sage.SData.Client.Linq
         public T ExecuteScalar<T>(QueryModel queryModel)
         {
             int? takeCount;
+#if PCL || SILVERLIGHT
+            PreExecuteScalar(queryModel, out takeCount);
+            var alternative = queryModel.ResultOperators.Last().ToString().TrimEnd('(', ')') + "Async";
+            throw new PlatformNotSupportedException(string.Format("Synchronous execution not supported on this platform, please use {0} instead", alternative));
+#else
             var allOperator = queryModel.ResultOperators.Last() as AllResultOperator;
             if (allOperator != null)
             {
@@ -55,11 +60,17 @@ namespace Sage.SData.Client.Linq
                                  ? _client.Execute<SDataCollection<object>>(parms).Content
                                  : new SDataCollection<object>(0) {TotalResults = 0};
             return PostExecuteScalar<T>(queryModel, collection, startIndex, takeCount);
+#endif
         }
 
         public T ExecuteSingle<T>(QueryModel queryModel, bool returnDefaultWhenEmpty)
         {
             int? takeCount;
+#if PCL || SILVERLIGHT
+            PreExecuteScalar(queryModel, out takeCount);
+            var alternative = queryModel.ResultOperators.Last().ToString().TrimEnd('(', ')') + "Async";
+            throw new PlatformNotSupportedException(string.Format("Synchronous execution not supported on this platform, please use {0} instead", alternative));
+#else
             var lastOperator = queryModel.ResultOperators.Last() as LastResultOperator;
             if (lastOperator != null)
             {
@@ -102,10 +113,14 @@ namespace Sage.SData.Client.Linq
                                  ? PrepareExecuteDelegate<T>(queryModel)(parms)
                                  : new SDataCollection<T>(0) {TotalResults = 0};
             return PostExecuteSingle(queryModel, collection);
+#endif
         }
 
         public IEnumerable<T> ExecuteCollection<T>(QueryModel queryModel)
         {
+#if PCL || SILVERLIGHT
+            throw new PlatformNotSupportedException("Synchronous execution not supported on this platform");
+#else
             int? takeCount;
             var parms = PreExecuteCollection(queryModel, out takeCount);
             var execute = PrepareExecuteDelegate<T>(queryModel);
@@ -139,8 +154,10 @@ namespace Sage.SData.Client.Linq
                     parms.Count = takeCount;
                 }
             }
+#endif
         }
 
+#if !PCL && !SILVERLIGHT
         private Func<ISDataParameters, SDataCollection<T>> PrepareExecuteDelegate<T>(QueryModel queryModel)
         {
             if (queryModel.MainFromClause.ItemType != typeof (T))
@@ -178,6 +195,7 @@ namespace Sage.SData.Client.Linq
         {
             return _client.Execute<SDataCollection<T>>(parms).Content;
         }
+#endif
 
 #if !NET_3_5
         public Task<T> ExecuteScalarAsync<T>(QueryModel queryModel)

@@ -22,6 +22,7 @@ namespace Sage.SData.Client.Test.Linq
     [TestFixture]
     public class SDataQueryExecutorTests
     {
+#if !PCL && !SILVERLIGHT
         [Test]
         public void Scalar_All_Same_Test()
         {
@@ -354,6 +355,7 @@ namespace Sage.SData.Client.Test.Linq
 
             Assert.That(result, Is.EquivalentTo(expected));
         }
+#endif
 
 #if !NET_3_5
         [Test]
@@ -717,6 +719,7 @@ namespace Sage.SData.Client.Test.Linq
             return list;
         }
 
+#if !PCL && !SILVERLIGHT
         private static ISDataClient CreateClient<T>(ICollection<ISDataParameters> parmsList, params T[] responseDataSequence)
         {
             var clientMock = new Mock<ISDataClient>();
@@ -739,6 +742,7 @@ namespace Sage.SData.Client.Test.Linq
                                     });
             return clientMock.Object;
         }
+#endif
 
 #if !NET_3_5
         private static ISDataClient CreateClientAsync<T>(ICollection<ISDataParameters> parmsList, params T[] responseDataSequence)

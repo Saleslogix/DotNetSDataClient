@@ -6,6 +6,10 @@ using NUnit.Framework;
 using Sage.SData.Client.Content;
 using Sage.SData.Client.Framework;
 
+#if !NET_2_0 && !NET_3_5
+using System.Xml.Linq;
+#endif
+
 // ReSharper disable InconsistentNaming
 
 namespace Sage.SData.Client.Test.Content
@@ -70,7 +74,11 @@ namespace Sage.SData.Client.Test.Content
             {
                 new XmlContentHandler().WriteTo(tracking, stream);
                 stream.Seek(0, SeekOrigin.Begin);
+#if NET_2_0 || NET_3_5
                 nav = new XPathDocument(stream).CreateNavigator();
+#else
+                nav = XDocument.Load(stream).CreateNavigator();
+#endif
             }
             var mgr = new XmlNamespaceManager(nav.NameTable);
             mgr.AddNamespace("sdata", "http://schemas.sage.com/sdata/2008/1");
@@ -93,7 +101,11 @@ namespace Sage.SData.Client.Test.Content
             {
                 new XmlContentHandler().WriteTo(xml, stream);
                 stream.Seek(0, SeekOrigin.Begin);
+#if NET_2_0 || NET_3_5
                 nav = new XPathDocument(stream).CreateNavigator();
+#else
+                nav = XDocument.Load(stream).CreateNavigator();
+#endif
             }
             var node = nav.SelectSingleNode("dummy");
             Assert.That(node, Is.Not.Null);

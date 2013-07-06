@@ -7,10 +7,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Net;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 using System.Text;
+
+#if !PCL && !SILVERLIGHT
+using System.Net;
+using System.Security.Permissions;
+#endif
 
 namespace Sage.SData.Client.Framework
 {
@@ -94,7 +97,11 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets the identifier/IPAddress to use for the Local Host.
         /// </summary>
+#if PCL || SILVERLIGHT
+        public const string LocalHost = "localhost";
+#else
         public static readonly string LocalHost = Dns.GetHostName();
+#endif
 
         private Uri _uri;
 
@@ -117,6 +124,7 @@ namespace Sage.SData.Client.Framework
 
         #endregion
 
+#if !PCL && !SILVERLIGHT
         /// <summary>
         /// Initializes a new instance of the <see cref="UriFormatter"/> class.
         /// </summary>
@@ -142,6 +150,7 @@ namespace Sage.SData.Client.Framework
                 Uri = new Uri(uri);
             }
         }
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UriFormatter"/> class.
@@ -1082,6 +1091,7 @@ namespace Sage.SData.Client.Framework
 
         #endregion
 
+#if !PCL && !SILVERLIGHT
         #region ISerializable Members
 
         protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -1101,6 +1111,7 @@ namespace Sage.SData.Client.Framework
         }
 
         #endregion
+#endif
 
         #region Nested type: QueryArgsDictionary
 

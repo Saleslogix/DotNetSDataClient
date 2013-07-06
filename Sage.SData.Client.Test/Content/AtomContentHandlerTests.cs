@@ -280,7 +280,8 @@ namespace Sage.SData.Client.Test.Content
             mgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
             mgr.AddNamespace("sdata", "http://schemas.sage.com/sdata/2008/1");
             var nodes = nav.Select("atom:entry/sdata:payload/SalesOrder/OrderLines/SalesOrderLine", mgr);
-            Assert.That(nodes, Has.Count.EqualTo(2));
+            Assert.That(nodes, Is.Not.Null);
+            Assert.That(nodes.Count, Is.EqualTo(2));
         }
 
         [Test]
@@ -298,7 +299,8 @@ namespace Sage.SData.Client.Test.Content
             mgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
             mgr.AddNamespace("sdata", "http://schemas.sage.com/sdata/2008/1");
             var nodes = nav.Select("atom:entry/sdata:payload/SalesOrder/SalesOrderLine", mgr);
-            Assert.That(nodes, Has.Count.EqualTo(2));
+            Assert.That(nodes, Is.Not.Null);
+            Assert.That(nodes.Count, Is.EqualTo(2));
         }
 
         [Test]

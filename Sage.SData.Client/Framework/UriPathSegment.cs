@@ -288,7 +288,7 @@ namespace Sage.SData.Client.Framework
             }
             else
             {
-                if (path.Length != 0)
+                if (path.Length > 0)
                 {
                     path.Append(UriFormatter.PathSegmentPrefix);
                 }
@@ -322,7 +322,7 @@ namespace Sage.SData.Client.Framework
         /// Called when the <see cref="Segment"/> needs rebuilding using the <see cref="Text"/>
         /// and <see cref="Selector"/> values.
         /// </summary>
-        protected virtual void OnRebuild()
+        private void OnRebuild()
         {
             var segment = new StringBuilder(_text);
 
@@ -350,7 +350,7 @@ namespace Sage.SData.Client.Framework
         /// Called when the <see cref="Segment"/> needs parsing to extract the
         /// <see cref="Text"/> and <see cref="Selector"/> values.
         /// </summary>
-        protected virtual void OnParse()
+        private void OnParse()
         {
             _text = string.Empty;
             _selector = string.Empty;

@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Mime;
 using Sage.SData.Client.Content;
 using Sage.SData.Client.Mime;
 
@@ -38,8 +37,8 @@ namespace Sage.SData.Client.Framework
                 _contentType = contentType;
             }
 
-            _eTag = response.Headers[HttpResponseHeader.ETag];
-            _location = response.Headers[HttpResponseHeader.Location] ?? redirectLocation;
+            _eTag = response.Headers["ETag"];
+            _location = response.Headers["Location"] ?? redirectLocation;
             _files = new List<AttachedFile>();
 
             if (_statusCode != HttpStatusCode.NoContent)
@@ -102,7 +101,7 @@ namespace Sage.SData.Client.Framework
             try
             {
                 var type = new ContentType(contentType);
-                boundary = type.Boundary;
+                boundary = type["boundary"];
                 return !string.IsNullOrEmpty(boundary);
             }
             catch (FormatException)

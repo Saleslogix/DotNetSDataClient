@@ -62,7 +62,9 @@ namespace Sage.SData.Client.Linq
                     {new MethodMappingKey(typeof (Math), "Abs"), RenderAbsFunction},
                     {new MethodMappingKey(typeof (Math), "Sign"), RenderSignFunction},
                     {new MethodMappingKey(typeof (Math), "Round"), RenderRoundFunction},
+#if !SILVERLIGHT
                     {new MethodMappingKey(typeof (Math), "Truncate"), RenderTruncateFunction},
+#endif
                     {new MethodMappingKey(typeof (Math), "Floor"), RenderFloorFunction},
                     {new MethodMappingKey(typeof (Math), "Ceiling"), RenderCeilingFunction},
                     {new MethodMappingKey(typeof (Math), "Pow"), RenderPowFunction},
@@ -498,7 +500,7 @@ namespace Sage.SData.Client.Linq
 
         private static IEnumerable RenderTrimFunction(MethodCallExpression expression)
         {
-            if (expression.Arguments.Count != 0)
+            if (expression.Arguments.Count > 0)
             {
                 throw new NotSupportedException();
             }

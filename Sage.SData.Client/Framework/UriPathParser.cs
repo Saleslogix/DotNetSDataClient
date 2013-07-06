@@ -34,7 +34,15 @@ namespace Sage.SData.Client.Framework
                                            \)
                                          )?";
 
-        private static readonly Regex _regex = new Regex(Pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+        private static readonly Regex _segmentFormat = new Regex(
+            Pattern,
+            RegexOptions.IgnoreCase |
+            RegexOptions.CultureInvariant |
+            RegexOptions.IgnorePatternWhitespace
+#if !PCL && !SILVERLIGHT
+            | RegexOptions.Compiled
+#endif
+            );
         private static readonly IList<UriPathSegment> _emptyPath = new UriPathSegment[0];
 
         #endregion
@@ -62,13 +70,13 @@ namespace Sage.SData.Client.Framework
             }
 
             var segments = new List<UriPathSegment>();
-            var match = _regex.Match(path);
+            var match = _segmentFormat.Match(path);
 
             while (match.Success)
             {
                 var segment = match.Groups["segment"].Value;
 
-                if (segment.Length != 0)
+                if (segment.Length > 0)
                 {
                     segments.Add(new UriPathSegment(segment, match.Groups["selector"].Value));
                 }

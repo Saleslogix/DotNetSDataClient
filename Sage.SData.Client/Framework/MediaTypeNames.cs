@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net.Mime;
 using Sage.SData.Client.Utilities;
 
 namespace Sage.SData.Client.Framework
@@ -395,13 +394,13 @@ namespace Sage.SData.Client.Framework
             public bool Equals(ContentType x, ContentType y)
             {
                 return string.Equals(x.MediaType, y.MediaType, StringComparison.OrdinalIgnoreCase) &&
-                       string.Equals(x.Parameters["type"], y.Parameters["type"], StringComparison.OrdinalIgnoreCase);
+                       string.Equals(x["type"], y["type"], StringComparison.OrdinalIgnoreCase);
             }
 
             public int GetHashCode(ContentType obj)
             {
                 var code = obj.MediaType.ToLowerInvariant().GetHashCode();
-                var type = obj.Parameters["type"];
+                var type = obj["type"];
 
                 if (type != null)
                 {

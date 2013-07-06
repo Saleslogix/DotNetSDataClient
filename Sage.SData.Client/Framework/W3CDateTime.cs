@@ -36,7 +36,11 @@ namespace Sage.SData.Client.Framework
             }
             else
             {
+#if NET_2_0
                 _utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(dateTime);
+#else
+                _utcOffset = TimeZoneInfo.Local.GetUtcOffset(dateTime);
+#endif
                 _utcDateTime -= _utcOffset;
             }
         }
@@ -76,14 +80,15 @@ namespace Sage.SData.Client.Framework
             get { return _utcDateTime; }
         }
 
-        private const string W3CDateFormat = @"^(?<year>\d\d\d\d)(-(?<month>\d\d)(-(?<day>\d\d)?)?)?(T(?<hour>\d\d)(:(?<min>\d\d)(:(?<sec>\d\d)(?<ms>\.\d+)?)?)?)?(?<ofs>(Z|[+\-]\d\d:\d\d))?$";
-
-        private static readonly Regex _regex = new Regex(
-            W3CDateFormat,
+        private static readonly Regex _dateFormat = new Regex(
+            @"^(?<year>\d\d\d\d)(-(?<month>\d\d)(-(?<day>\d\d)?)?)?(T(?<hour>\d\d)(:(?<min>\d\d)(:(?<sec>\d\d)(?<ms>\.\d+)?)?)?)?(?<ofs>(Z|[+\-]\d\d:\d\d))?$",
             RegexOptions.IgnoreCase |
             RegexOptions.CultureInvariant |
-            RegexOptions.IgnorePatternWhitespace |
-            RegexOptions.Compiled);
+            RegexOptions.IgnorePatternWhitespace
+#if !PCL && !SILVERLIGHT
+            | RegexOptions.Compiled
+#endif
+            );
 
         /// <summary>
         /// Converts the specified string representation of a W3C date and time to its <see cref="W3CDateTime"/> equivalent.
@@ -94,7 +99,7 @@ namespace Sage.SData.Client.Framework
         {
             Guard.ArgumentNotNullOrEmptyString(s, "s");
 
-            var match = _regex.Match(s);
+            var match = _dateFormat.Match(s);
             if (!match.Success)
             {
                 throw new FormatException("DateTime is not in a valid format");

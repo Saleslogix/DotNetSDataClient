@@ -7,8 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
-using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Xml.Serialization;
@@ -25,8 +25,10 @@ namespace Sage.SData.Client.Framework
     public class SDataRequest
     {
         private readonly IList<RequestOperation> _operations;
+#if !PCL && !SILVERLIGHT
         private bool _proxySet;
         private IWebProxy _proxy;
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SDataRequest"/> class.
@@ -94,6 +96,7 @@ namespace Sage.SData.Client.Framework
         /// </summary>
         public int TimeoutRetryAttempts { get; set; }
 
+#if !PCL && !SILVERLIGHT
         /// <summary>
         /// Gets or sets the proxy used by requests.
         /// </summary>
@@ -106,6 +109,7 @@ namespace Sage.SData.Client.Framework
                 _proxy = value;
             }
         }
+#endif
 
         /// <summary>
         /// Gets or sets the accept media types accepted by requests.
@@ -132,6 +136,7 @@ namespace Sage.SData.Client.Framework
             get { return _operations; }
         }
 
+#if !PCL && !SILVERLIGHT
         /// <summary>
         /// Execute the request and return a response object.
         /// </summary>
@@ -188,9 +193,10 @@ namespace Sage.SData.Client.Framework
                     return new SDataResponse(response, location);
                 }
 
-                uri = location = response.Headers[HttpResponseHeader.Location];
+                uri = location = response.Headers["Location"];
             }
         }
+#endif
 
         public IAsyncResult BeginGetResponse(AsyncCallback callback, object state)
         {
@@ -253,7 +259,11 @@ namespace Sage.SData.Client.Framework
                                 }
                                 catch (WebException webEx)
                                 {
+#if PCL || SILVERLIGHT
+                                    if (attempts > 0)
+#else
                                     if (webEx.Status == WebExceptionStatus.Timeout && attempts > 0)
+#endif
                                     {
                                         attempts--;
                                         loop();
@@ -342,7 +352,8 @@ namespace Sage.SData.Client.Framework
         private WebRequest CreateRequest(string uri, RequestOperation op)
         {
             var request = WebRequest.Create(uri);
-            request.Method = op.Method.ToString().ToUpper();
+            request.Method = op.Method.ToString().ToUpperInvariant();
+#if !PCL && !SILVERLIGHT
             request.Timeout = Timeout;
             request.PreAuthenticate = true;
 
@@ -350,28 +361,30 @@ namespace Sage.SData.Client.Framework
             {
                 request.Proxy = _proxy;
             }
+#endif
 
             var httpRequest = request as HttpWebRequest;
             if (httpRequest != null)
             {
+#if !PCL && !SILVERLIGHT
                 httpRequest.AllowAutoRedirect = false;
                 httpRequest.ReadWriteTimeout = Timeout;
                 httpRequest.KeepAlive = false;
                 httpRequest.ProtocolVersion = HttpVersion.Version10;
 
+                if (!string.IsNullOrEmpty(UserAgent))
+                {
+                    httpRequest.UserAgent = UserAgent;
+                }
+#endif
                 if (Accept != null)
                 {
-                    httpRequest.Accept = string.Join(",", Array.ConvertAll(Accept, MediaTypeNames.GetMediaType));
+                    httpRequest.Accept = string.Join(",", Accept.Select(MediaTypeNames.GetMediaType).ToArray());
                 }
 
                 if (Cookies != null)
                 {
                     httpRequest.CookieContainer = Cookies;
-                }
-
-                if (!string.IsNullOrEmpty(UserAgent))
-                {
-                    httpRequest.UserAgent = UserAgent;
                 }
             }
 
@@ -381,21 +394,14 @@ namespace Sage.SData.Client.Framework
             }
             else if (!string.IsNullOrEmpty(UserName) || !string.IsNullOrEmpty(Password))
             {
-                var uriPrefix = new Uri(uri);
-                var cred = new NetworkCredential(UserName, Password);
-                request.Credentials = new CredentialCache
-                                          {
-                                              {uriPrefix, "Basic", cred},
-                                              {uriPrefix, "Digest", cred},
-                                              {uriPrefix, "NTLM", cred},
-                                              {uriPrefix, "Kerberos", cred},
-                                              {uriPrefix, "Negotiate", cred}
-                                          };
+                request.Credentials = new NetworkCredential(UserName, Password);
             }
+#if !PCL && !SILVERLIGHT
             else
             {
                 request.Credentials = CredentialCache.DefaultCredentials;
             }
+#endif
 
             if (!string.IsNullOrEmpty(op.ETag))
             {
@@ -463,23 +469,23 @@ namespace Sage.SData.Client.Framework
                                        {
                                            ContentType = MediaTypeNames.TextMediaType,
                                            ContentTransferEncoding = "binary",
-                                           ContentDisposition = new ContentDisposition(DispositionTypeNames.Inline) {Parameters = {{"name", data.Key}}}
+                                           ContentDisposition = "inline; name=" + data.Key
                                        };
                         multipart.Add(part);
                     }
 
                     foreach (var file in op.Files)
                     {
-                        var contentDisposition = new ContentDisposition(DispositionTypeNames.Attachment);
+                        var contentDisposition = "attachment";
                         if (file.FileName != null)
                         {
-                            if (file.FileName == Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(file.FileName)))
+                            if (file.FileName == Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(file.FileName)))
                             {
-                                contentDisposition.FileName = file.FileName;
+                                contentDisposition += "; filename=" + file.FileName;
                             }
                             else
                             {
-                                contentDisposition.Parameters["filename*"] = string.Format("{0}''{1}", Encoding.UTF8.WebName, System.Uri.EscapeDataString(file.FileName));
+                                contentDisposition += "; filename*=" + string.Format("{0}''{1}", Encoding.UTF8.WebName, System.Uri.EscapeDataString(file.FileName));
                             }
                         }
 
@@ -493,7 +499,7 @@ namespace Sage.SData.Client.Framework
                     }
 
                     multipart.WriteTo(stream);
-                    request.ContentType = new ContentType("multipart/" + (op.Files.Count > 0 ? "related" : "form-data")) {Boundary = multipart.Boundary}.ToString();
+                    request.ContentType = string.Format("multipart/{0}; boundary={1}", (op.Files.Count > 0 ? "related" : "form-data"), multipart.Boundary);
                 }
             }
             else if (contentType != null)
@@ -535,7 +541,11 @@ namespace Sage.SData.Client.Framework
                         var waitHandle = new ManualResetEvent(isCompleted);
                         if (Interlocked.Exchange(ref _waitHandle, waitHandle) != null)
                         {
+#if NET_2_0 || NET_3_5
                             waitHandle.Close();
+#else
+                            waitHandle.Dispose();
+#endif
                         }
                         else if (!isCompleted && _isCompleted)
                         {
@@ -593,7 +603,11 @@ namespace Sage.SData.Client.Framework
 
                 if (_waitHandle != null)
                 {
+#if NET_2_0 || NET_3_5
                     _waitHandle.Close();
+#else
+                    _waitHandle.Dispose();
+#endif
                     _waitHandle = null;
                 }
 

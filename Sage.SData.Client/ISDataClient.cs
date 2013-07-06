@@ -15,14 +15,18 @@ namespace Sage.SData.Client
         string UserAgent { get; set; }
         int? Timeout { get; set; }
         int? TimeoutRetryAttempts { get; set; }
+#if !PCL && !SILVERLIGHT
         IWebProxy Proxy { get; set; }
+#endif
         ICredentials Credentials { get; set; }
         INamingScheme NamingScheme { get; set; }
         MediaType? Format { get; set; }
         string Language { get; set; }
 
+#if !PCL && !SILVERLIGHT
         ISDataResults Execute(ISDataParameters parms);
         ISDataResults<T> Execute<T>(ISDataParameters parms);
+#endif
 
 #if !NET_2_0 && !NET_3_5
         Task<ISDataResults> ExecuteAsync(ISDataParameters parms);

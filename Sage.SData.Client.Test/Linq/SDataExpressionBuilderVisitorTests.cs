@@ -399,11 +399,13 @@ namespace Sage.SData.Client.Test.Linq
             AssertObject((SalesOrder o) => Math.Round(o.SubTotal.Value, 3), "round(SubTotal,3)");
         }
 
+#if !SILVERLIGHT
         [Test]
         public void Function_Truncate_Test()
         {
             AssertObject((SalesOrder o) => Math.Truncate(o.SubTotal.Value), "trunc(SubTotal)");
         }
+#endif
 
         [Test]
         public void Function_Floor_Test()

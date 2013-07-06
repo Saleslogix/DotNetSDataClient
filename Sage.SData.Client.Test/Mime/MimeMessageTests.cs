@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Text;
 using NUnit.Framework;
 using Sage.SData.Client.Mime;
@@ -85,7 +84,7 @@ Content-Length: 256
                                ContentType = "plain/xml",
                                ContentLength = 20,
                                ContentTransferEncoding = "binary",
-                               ContentDisposition = new ContentDisposition(DispositionTypeNames.Attachment)
+                               ContentDisposition = "attachment"
                            };
 
             var message = new MimeMessage(part) {Boundary = "abc123"};
@@ -242,7 +241,7 @@ Content-Disposition: attachment
             Assert.That(part.ContentType, Is.EqualTo("plain/xml"));
             Assert.That(part.ContentLength, Is.EqualTo(20));
             Assert.That(part.ContentTransferEncoding, Is.EqualTo("binary"));
-            Assert.That(part.ContentDisposition, Is.EqualTo(new ContentDisposition(DispositionTypeNames.Attachment)));
+            Assert.That(part.ContentDisposition, Is.EqualTo("attachment"));
             Assert.That(part.Headers.Count, Is.EqualTo(4));
             Assert.That(part.Content.Length, Is.EqualTo(0));
         }

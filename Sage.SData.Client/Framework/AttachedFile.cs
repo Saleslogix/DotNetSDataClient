@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net.Mime;
 using Sage.SData.Client.Mime;
 
 namespace Sage.SData.Client.Framework
@@ -36,14 +35,16 @@ namespace Sage.SData.Client.Framework
             _stream = stream;
         }
 
-        private static string GetFileName(ContentDisposition contentDisposition)
+        private static string GetFileName(string disposition)
         {
-            if (contentDisposition.FileName != null)
+            var contentDisposition = ContentDisposition.Parse(disposition);
+            var fileName = contentDisposition["filename"];
+            if (fileName != null)
             {
-                return contentDisposition.FileName;
+                return fileName;
             }
 
-            var fileName = contentDisposition.Parameters["filename*"];
+            fileName = contentDisposition["filename*"];
             if (fileName == null)
             {
                 return null;

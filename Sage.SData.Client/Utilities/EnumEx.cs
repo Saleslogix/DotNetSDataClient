@@ -133,7 +133,7 @@ namespace Sage.SData.Client.Utilities
                     }
                 }
 
-                return Enum.Parse(typeof (T), value);
+                return Enum.Parse(typeof (T), value, false);
             }
 
             #endregion
