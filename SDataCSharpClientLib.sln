@@ -10,6 +10,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.SData.Client_2_0", "Sage.SData.Client\Sage.SData.Client_2_0.csproj", "{CAD51DA5-A6D2-4BFC-9D81-23F4F474615B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.SData.Client.Test_4_0", "Sage.SData.Client.Test\Sage.SData.Client.Test_4_0.csproj", "{92C27580-82D9-46FC-8E4A-9B75E6FF6C2B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{023CCD73-35A5-44C2-8435-0CC1F34E81F5} = {023CCD73-35A5-44C2-8435-0CC1F34E81F5}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.SData.Client_4_0", "Sage.SData.Client\Sage.SData.Client_4_0.csproj", "{FEECA9B9-980E-470F-81BA-C56ABD8D520E}"
 	ProjectSection(ProjectDependencies) = postProject

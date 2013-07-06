@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Net.Mime;
-using System.Text;
-using System.Web;
 using Sage.SData.Client.Mime;
 
 namespace Sage.SData.Client.Framework
@@ -52,20 +50,12 @@ namespace Sage.SData.Client.Framework
             }
 
             var pos = fileName.IndexOf("''", StringComparison.InvariantCulture);
-            var encoding = Encoding.UTF8;
             if (pos >= 0)
             {
-                try
-                {
-                    encoding = Encoding.GetEncoding(fileName.Substring(0, pos));
-                }
-                catch (ArgumentException)
-                {
-                }
                 fileName = fileName.Substring(pos + 2);
             }
 
-            return HttpUtility.UrlDecode(fileName, encoding);
+            return Uri.UnescapeDataString(fileName);
         }
 
         /// <summary>

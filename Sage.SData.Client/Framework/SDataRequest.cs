@@ -11,7 +11,6 @@ using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Threading;
-using System.Web;
 using System.Xml.Serialization;
 using Sage.SData.Client.Content;
 using Sage.SData.Client.Mime;
@@ -480,7 +479,7 @@ namespace Sage.SData.Client.Framework
                             }
                             else
                             {
-                                contentDisposition.Parameters["filename*"] = string.Format("{0}''{1}", Encoding.UTF8.WebName, HttpUtility.UrlEncode(file.FileName));
+                                contentDisposition.Parameters["filename*"] = string.Format("{0}''{1}", Encoding.UTF8.WebName, System.Uri.EscapeDataString(file.FileName));
                             }
                         }
 
