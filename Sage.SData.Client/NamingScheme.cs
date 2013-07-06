@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Xml.Serialization;
+
+#if !NET_2_0
+using System.Runtime.Serialization;
+#endif
 
 namespace Sage.SData.Client
 {

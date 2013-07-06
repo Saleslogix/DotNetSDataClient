@@ -2,6 +2,10 @@
 using Sage.SData.Client.Content;
 using Sage.SData.Client.Framework;
 
+#if !NET_2_0 && !NET_3_5
+using System.Threading.Tasks;
+#endif
+
 namespace Sage.SData.Client
 {
     public class SDataClient : ISDataClient
@@ -37,6 +41,24 @@ namespace Sage.SData.Client
             var response = request.GetResponse();
             return CreateResults<T>(response);
         }
+
+#if !NET_2_0 && !NET_3_5
+        public Task<ISDataResults> ExecuteAsync(ISDataParameters parms)
+        {
+            var request = CreateRequest(parms);
+            return Task.Factory
+                       .FromAsync<SDataResponse>(request.BeginGetResponse, request.EndGetResponse, null)
+                       .ContinueWith(task => SDataResults.FromResponse(task.Result));
+        }
+
+        public Task<ISDataResults<T>> ExecuteAsync<T>(ISDataParameters parms)
+        {
+            var request = CreateRequest(parms);
+            return Task.Factory
+                       .FromAsync<SDataResponse>(request.BeginGetResponse, request.EndGetResponse, null)
+                       .ContinueWith(task => CreateResults<T>(task.Result));
+        }
+#endif
 
         private SDataRequest CreateRequest(ISDataParameters parms)
         {
