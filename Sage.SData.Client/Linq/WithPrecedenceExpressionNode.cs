@@ -12,7 +12,7 @@ namespace Sage.SData.Client.Linq
         public static readonly MethodInfo[] SupportedMethods =
             new[]
                 {
-                    new Func<IQueryable<object>, int, IQueryable<object>>(SDataQueryableExtensions.WithPrecedence).Method.GetGenericMethodDefinition()
+                    new Func<IQueryable<object>, int, IQueryable<object>>(SDataQueryableExtensions.WithPrecedence).GetMethodInfo().GetGenericMethodDefinition()
                 };
 
         private readonly int _precedence;

@@ -174,7 +174,7 @@ namespace Sage.SData.Client.Framework
 
         #endregion
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         /// <summary>
         /// Initializes a new instance of the <see cref="SDataUri"/> class.
         /// </summary>
@@ -264,7 +264,7 @@ namespace Sage.SData.Client.Framework
             RegexOptions.IgnoreCase |
             RegexOptions.CultureInvariant |
             RegexOptions.IgnorePatternWhitespace
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
             | RegexOptions.Compiled
 #endif
             );

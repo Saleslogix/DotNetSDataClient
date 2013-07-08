@@ -84,7 +84,7 @@ namespace Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation.Predefined
     private static IMethodCallExpressionTransformerAttribute GetTransformerProvider (MethodInfo methodInfo)
     {
       var attributes =
-          (IMethodCallExpressionTransformerAttribute[]) methodInfo.GetCustomAttributes (typeof (IMethodCallExpressionTransformerAttribute), true);
+        methodInfo.GetCustomAttributes(true).OfType<IMethodCallExpressionTransformerAttribute>().ToArray();
 
       if (attributes.Length > 1)
       {

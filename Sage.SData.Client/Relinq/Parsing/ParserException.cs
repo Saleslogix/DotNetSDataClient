@@ -57,7 +57,7 @@ namespace Remotion.Linq.Parsing
     {
     }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
     protected ParserException (SerializationInfo info, StreamingContext context)
         : base (info, context)
     {
@@ -67,7 +67,7 @@ namespace Remotion.Linq.Parsing
 
     public object ParsedExpression { get; private set; }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
     public override void GetObjectData (SerializationInfo info, StreamingContext context)
     {
       base.GetObjectData (info, context);

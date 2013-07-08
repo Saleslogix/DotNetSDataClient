@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
@@ -651,7 +652,7 @@ namespace Sage.SData.Client.Linq
             {
                 return "null";
             }
-#if !PCL
+#if !PCL && !NETFX_CORE
             if (value is DBNull)
             {
                 return "null";
@@ -676,7 +677,7 @@ namespace Sage.SData.Client.Linq
             {
                 return string.Format(CultureInfo.InvariantCulture, "@{0:hh':'mm':'ss}@", value);
             }
-            if (type == typeof (Guid) || type == typeof (char) || type.IsEnum)
+            if (type == typeof (Guid) || type == typeof (char) || type.GetTypeInfo().IsEnum)
             {
                 return string.Format(CultureInfo.InvariantCulture, "'{0}'", value);
             }

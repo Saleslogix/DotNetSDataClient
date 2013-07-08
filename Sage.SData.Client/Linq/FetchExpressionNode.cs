@@ -12,7 +12,7 @@ namespace Sage.SData.Client.Linq
         public static readonly MethodInfo[] SupportedMethods =
             new[]
                 {
-                    new Func<IQueryable<object>, Expression<Func<object, object>>, IQueryable<object>>(SDataQueryableExtensions.Fetch).Method.GetGenericMethodDefinition()
+                    new Func<IQueryable<object>, Expression<Func<object, object>>, IQueryable<object>>(SDataQueryableExtensions.Fetch).GetMethodInfo().GetGenericMethodDefinition()
                 };
 
         private readonly Expression _selector;

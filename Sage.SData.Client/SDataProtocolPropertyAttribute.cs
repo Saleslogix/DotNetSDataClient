@@ -8,7 +8,7 @@ namespace Sage.SData.Client
     {
         public static SDataProtocolProperty? GetProperty(MemberInfo info)
         {
-            var attr = (SDataProtocolPropertyAttribute) GetCustomAttribute(info, typeof (SDataProtocolPropertyAttribute));
+            var attr = info.GetCustomAttribute<SDataProtocolPropertyAttribute>();
             return attr != null ? attr.Value : (SDataProtocolProperty?) null;
         }
 

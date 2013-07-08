@@ -11,7 +11,7 @@ namespace Sage.SData.Client.Linq
 {
     internal class StreamedAsyncCollectionInfo : StreamedValueInfo
     {
-        private static readonly MethodInfo _executeMethod = new Func<QueryModel, IAsyncQueryExecutor, object>(ExecuteCollectionQueryModel<object>).Method.GetGenericMethodDefinition();
+        private static readonly MethodInfo _executeMethod = new Func<QueryModel, IAsyncQueryExecutor, object>(ExecuteCollectionQueryModel<object>).GetMethodInfo().GetGenericMethodDefinition();
 
         private readonly Type _itemType;
 

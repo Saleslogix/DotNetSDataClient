@@ -36,32 +36,32 @@ namespace Sage.SData.Client
             public string GetName(MemberInfo member)
             {
 #if !NET_2_0
-                var contractAttr = (DataContractAttribute) Attribute.GetCustomAttribute(member, typeof (DataContractAttribute));
+                var contractAttr = member.GetCustomAttribute<DataContractAttribute>();
                 if (contractAttr != null && !string.IsNullOrEmpty(contractAttr.Name))
                 {
                     return contractAttr.Name;
                 }
 
-                var memberAttr = (DataMemberAttribute) Attribute.GetCustomAttribute(member, typeof (DataMemberAttribute));
+                var memberAttr = member.GetCustomAttribute<DataMemberAttribute>();
                 if (memberAttr != null && !string.IsNullOrEmpty(memberAttr.Name))
                 {
                     return memberAttr.Name;
                 }
 #endif
 
-                var elementAttr = (XmlElementAttribute) Attribute.GetCustomAttribute(member, typeof (XmlElementAttribute));
+                var elementAttr = member.GetCustomAttribute<XmlElementAttribute>();
                 if (elementAttr != null)
                 {
                     return elementAttr.ElementName;
                 }
 
-                var attributeAttr = (XmlAttributeAttribute) Attribute.GetCustomAttribute(member, typeof (XmlAttributeAttribute));
+                var attributeAttr = member.GetCustomAttribute<XmlAttributeAttribute>();
                 if (attributeAttr != null)
                 {
                     return attributeAttr.AttributeName;
                 }
 
-                var arrayAttr = (XmlArrayAttribute) Attribute.GetCustomAttribute(member, typeof (XmlArrayAttribute));
+                var arrayAttr = member.GetCustomAttribute<XmlArrayAttribute>();
                 if (arrayAttr != null)
                 {
                     return arrayAttr.ElementName;

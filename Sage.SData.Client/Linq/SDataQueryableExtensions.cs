@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 #if !NET_3_5
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Sage.SData.Client.Linq
             return new SDataQueryable<T>(
                 query.Provider,
                 Expression.Call(
-                    new Func<IQueryable<T>, int, IQueryable<T>>(WithPrecedence).Method,
+                    new Func<IQueryable<T>, int, IQueryable<T>>(WithPrecedence).GetMethodInfo(),
                     query.Expression,
                     Expression.Constant(value)));
         }
@@ -26,7 +27,7 @@ namespace Sage.SData.Client.Linq
             return new SDataQueryable<TSource>(
                 query.Provider,
                 Expression.Call(
-                    new Func<IQueryable<TSource>, Expression<Func<TSource, TRelated>>, IQueryable<TSource>>(Fetch).Method,
+                    new Func<IQueryable<TSource>, Expression<Func<TSource, TRelated>>, IQueryable<TSource>>(Fetch).GetMethodInfo(),
                     query.Expression,
                     selector));
         }
@@ -80,7 +81,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<ICollection<TSource>>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<ICollection<TSource>>>(ToCollectionAsync).Method,
+                                new Func<IQueryable<TSource>, Task<ICollection<TSource>>>(ToCollectionAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -88,7 +89,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<int>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<int>>(CountAsync).Method,
+                                new Func<IQueryable<TSource>, Task<int>>(CountAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -96,7 +97,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<int>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<int>>(CountAsync).Method,
+                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<int>>(CountAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Quote(predicate)}));
         }
 
@@ -104,7 +105,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<long>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<long>>(LongCountAsync).Method,
+                                new Func<IQueryable<TSource>, Task<long>>(LongCountAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -112,7 +113,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<long>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<long>>(LongCountAsync).Method,
+                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<long>>(LongCountAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Quote(predicate)}));
         }
 
@@ -120,7 +121,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<bool>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<bool>>(AnyAsync).Method,
+                                new Func<IQueryable<TSource>, Task<bool>>(AnyAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -128,7 +129,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<bool>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<bool>>(AnyAsync).Method,
+                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<bool>>(AnyAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Quote(predicate)}));
         }
 
@@ -136,7 +137,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<bool>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<bool>>(AllAsync).Method,
+                                new Func<IQueryable<TSource>, Task<bool>>(AllAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -144,7 +145,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<bool>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<bool>>(AllAsync).Method,
+                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<bool>>(AllAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Quote(predicate)}));
         }
 
@@ -152,7 +153,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<TSource>>(FirstAsync).Method,
+                                new Func<IQueryable<TSource>, Task<TSource>>(FirstAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -160,7 +161,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(FirstAsync).Method,
+                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(FirstAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Quote(predicate)}));
         }
 
@@ -168,7 +169,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<TSource>>(FirstOrDefaultAsync).Method,
+                                new Func<IQueryable<TSource>, Task<TSource>>(FirstOrDefaultAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -176,7 +177,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(FirstOrDefaultAsync).Method,
+                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(FirstOrDefaultAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Quote(predicate)}));
         }
 
@@ -184,7 +185,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<TSource>>(LastAsync).Method,
+                                new Func<IQueryable<TSource>, Task<TSource>>(LastAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -192,7 +193,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(LastAsync).Method,
+                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(LastAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Quote(predicate)}));
         }
 
@@ -200,7 +201,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<TSource>>(LastOrDefaultAsync).Method,
+                                new Func<IQueryable<TSource>, Task<TSource>>(LastOrDefaultAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -208,7 +209,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(LastOrDefaultAsync).Method,
+                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(LastOrDefaultAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Quote(predicate)}));
         }
 
@@ -216,7 +217,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<TSource>>(SingleAsync).Method,
+                                new Func<IQueryable<TSource>, Task<TSource>>(SingleAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -224,7 +225,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(SingleAsync).Method,
+                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(SingleAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Quote(predicate)}));
         }
 
@@ -232,7 +233,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Task<TSource>>(SingleOrDefaultAsync).Method,
+                                new Func<IQueryable<TSource>, Task<TSource>>(SingleOrDefaultAsync).GetMethodInfo(),
                                 new[] {source.Expression}));
         }
 
@@ -240,7 +241,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(SingleOrDefaultAsync).Method,
+                                new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(SingleOrDefaultAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Quote(predicate)}));
         }
 
@@ -248,7 +249,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, int, Task<TSource>>(ElementAtAsync).Method,
+                                new Func<IQueryable<TSource>, int, Task<TSource>>(ElementAtAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Constant(index)}));
         }
 
@@ -256,7 +257,7 @@ namespace Sage.SData.Client.Linq
         {
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
-                                new Func<IQueryable<TSource>, int, Task<TSource>>(ElementAtOrDefaultAsync).Method,
+                                new Func<IQueryable<TSource>, int, Task<TSource>>(ElementAtOrDefaultAsync).GetMethodInfo(),
                                 new[] {source.Expression, Expression.Constant(index)}));
         }
 #endif

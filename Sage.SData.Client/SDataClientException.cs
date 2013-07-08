@@ -23,7 +23,7 @@ namespace Sage.SData.Client
         {
         }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         protected SDataClientException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {

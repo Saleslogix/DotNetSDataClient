@@ -10,7 +10,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
 using System.Net;
 using System.Security.Permissions;
 #endif
@@ -97,7 +97,7 @@ namespace Sage.SData.Client.Framework
         /// <summary>
         /// Gets the identifier/IPAddress to use for the Local Host.
         /// </summary>
-#if PCL || SILVERLIGHT
+#if PCL || NETFX_CORE || SILVERLIGHT
         public const string LocalHost = "localhost";
 #else
         public static readonly string LocalHost = Dns.GetHostName();
@@ -124,7 +124,7 @@ namespace Sage.SData.Client.Framework
 
         #endregion
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         /// <summary>
         /// Initializes a new instance of the <see cref="UriFormatter"/> class.
         /// </summary>
@@ -1091,7 +1091,7 @@ namespace Sage.SData.Client.Framework
 
         #endregion
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         #region ISerializable Members
 
         protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)

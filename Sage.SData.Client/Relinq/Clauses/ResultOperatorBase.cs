@@ -116,7 +116,7 @@ namespace Remotion.Linq.Clauses
       ArgumentUtility.CheckNotNull ("input", input);
       ArgumentUtility.CheckNotNull ("genericExecuteCaller", genericExecuteCaller);
 
-      var method = genericExecuteCaller.Method;
+      var method = genericExecuteCaller.GetMethodInfo();
       if (!method.IsGenericMethod || method.GetGenericArguments ().Length != 1)
       {
         throw new ArgumentException (

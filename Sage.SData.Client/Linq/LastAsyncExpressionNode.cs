@@ -13,10 +13,10 @@ namespace Sage.SData.Client.Linq
         public new static readonly MethodInfo[] SupportedMethods =
             new[]
                 {
-                    new Func<IQueryable<object>, Task<object>>(SDataQueryableExtensions.LastAsync).Method.GetGenericMethodDefinition(),
-                    new Func<IQueryable<object>, Task<object>>(SDataQueryableExtensions.LastOrDefaultAsync).Method.GetGenericMethodDefinition(),
-                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<object>>(SDataQueryableExtensions.LastAsync).Method.GetGenericMethodDefinition(),
-                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<object>>(SDataQueryableExtensions.LastOrDefaultAsync).Method.GetGenericMethodDefinition()
+                    new Func<IQueryable<object>, Task<object>>(SDataQueryableExtensions.LastAsync).GetMethodInfo().GetGenericMethodDefinition(),
+                    new Func<IQueryable<object>, Task<object>>(SDataQueryableExtensions.LastOrDefaultAsync).GetMethodInfo().GetGenericMethodDefinition(),
+                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<object>>(SDataQueryableExtensions.LastAsync).GetMethodInfo().GetGenericMethodDefinition(),
+                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<object>>(SDataQueryableExtensions.LastOrDefaultAsync).GetMethodInfo().GetGenericMethodDefinition()
                 };
 
         public LastAsyncExpressionNode(MethodCallExpressionParseInfo parseInfo, LambdaExpression optionalPredicate)

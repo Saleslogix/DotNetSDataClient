@@ -31,7 +31,7 @@ namespace Remotion.Linq.Utilities
     {
     }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
     public ArgumentEmptyException (SerializationInfo info, StreamingContext context)
         : base (info, context)
     {

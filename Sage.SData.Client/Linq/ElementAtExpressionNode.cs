@@ -13,10 +13,10 @@ namespace Sage.SData.Client.Linq
         public static readonly MethodInfo[] SupportedMethods =
             new[]
                 {
-                    new Func<IEnumerable<object>, int, object>(Enumerable.ElementAt).Method.GetGenericMethodDefinition(),
-                    new Func<IQueryable<object>, int, object>(Queryable.ElementAt).Method.GetGenericMethodDefinition(),
-                    new Func<IEnumerable<object>, int, object>(Enumerable.ElementAtOrDefault).Method.GetGenericMethodDefinition(),
-                    new Func<IQueryable<object>, int, object>(Queryable.ElementAtOrDefault).Method.GetGenericMethodDefinition()
+                    new Func<IEnumerable<object>, int, object>(Enumerable.ElementAt).GetMethodInfo().GetGenericMethodDefinition(),
+                    new Func<IQueryable<object>, int, object>(Queryable.ElementAt).GetMethodInfo().GetGenericMethodDefinition(),
+                    new Func<IEnumerable<object>, int, object>(Enumerable.ElementAtOrDefault).GetMethodInfo().GetGenericMethodDefinition(),
+                    new Func<IQueryable<object>, int, object>(Queryable.ElementAtOrDefault).GetMethodInfo().GetGenericMethodDefinition()
                 };
 
         private readonly int _index;

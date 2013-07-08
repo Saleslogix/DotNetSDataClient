@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Xml.Serialization;
 
 namespace Sage.SData.Client.Utilities
@@ -63,14 +64,14 @@ namespace Sage.SData.Client.Utilities
             {
                 foreach (var field in typeof (T).GetFields())
                 {
-                    if (!field.IsStatic || Attribute.IsDefined(field, typeof (ObsoleteAttribute)))
+                    if (!field.IsStatic || field.IsDefined(typeof (ObsoleteAttribute)))
                     {
                         continue;
                     }
 
                     var value = (T) field.GetValue(null);
 
-                    var enumAttr = (XmlEnumAttribute) Attribute.GetCustomAttribute(field, typeof (XmlEnumAttribute));
+                    var enumAttr = field.GetCustomAttribute<XmlEnumAttribute>();
                     _xmlNames[value] = (enumAttr != null) ? enumAttr.Name : value.ToString();
                 }
             }

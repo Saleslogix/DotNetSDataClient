@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Sage.SData.Client.Framework;
 using Sage.SData.Client.Utilities;
@@ -18,7 +19,7 @@ namespace Sage.SData.Client.Content
             RegexOptions.IgnoreCase |
             RegexOptions.CultureInvariant |
             RegexOptions.IgnorePatternWhitespace
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
             | RegexOptions.Compiled
 #endif
             );
@@ -173,7 +174,7 @@ namespace Sage.SData.Client.Content
                     value = new Uri(str);
                 }
             }
-            else if (type.IsEnum)
+            else if (type.GetTypeInfo().IsEnum)
             {
                 var str = value as string;
                 if (str != null)
@@ -236,7 +237,7 @@ namespace Sage.SData.Client.Content
                 return jsonObj;
             }
 
-            if (obj != null && !(obj is string) && !obj.GetType().IsValueType)
+            if (obj != null && !(obj is string) && !obj.GetType().GetTypeInfo().IsValueType)
             {
                 jsonObj = WriteObject(ContentHelper.Serialize(obj, namingScheme), isRoot, namingScheme);
                 if (jsonObj != null)

@@ -31,7 +31,7 @@ namespace Sage.SData.Client
         public MediaType? Format { get; set; }
         public string Language { get; set; }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         public ISDataResults Execute(ISDataParameters parms)
         {
             var request = CreateRequest(parms);

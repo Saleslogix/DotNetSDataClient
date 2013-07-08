@@ -13,10 +13,10 @@ namespace Sage.SData.Client.Linq
         public static readonly MethodInfo[] SupportedMethods =
             new[]
                 {
-                    new Func<IQueryable<object>, Task<object>>(SDataQueryableExtensions.SingleAsync).Method.GetGenericMethodDefinition(),
-                    new Func<IQueryable<object>, Task<object>>(SDataQueryableExtensions.SingleOrDefaultAsync).Method.GetGenericMethodDefinition(),
-                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<object>>(SDataQueryableExtensions.SingleAsync).Method.GetGenericMethodDefinition(),
-                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<object>>(SDataQueryableExtensions.SingleOrDefaultAsync).Method.GetGenericMethodDefinition()
+                    new Func<IQueryable<object>, Task<object>>(SDataQueryableExtensions.SingleAsync).GetMethodInfo().GetGenericMethodDefinition(),
+                    new Func<IQueryable<object>, Task<object>>(SDataQueryableExtensions.SingleOrDefaultAsync).GetMethodInfo().GetGenericMethodDefinition(),
+                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<object>>(SDataQueryableExtensions.SingleAsync).GetMethodInfo().GetGenericMethodDefinition(),
+                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<object>>(SDataQueryableExtensions.SingleOrDefaultAsync).GetMethodInfo().GetGenericMethodDefinition()
                 };
 
         public SingleAsyncExpressionNode(MethodCallExpressionParseInfo parseInfo, LambdaExpression optionalPredicate)

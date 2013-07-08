@@ -39,7 +39,7 @@ namespace Remotion.Linq.Parsing.Structure.IntermediateModel
                                                                GetSupportedMethod (() => Enumerable.LongCount<object> (null)),
                                                                GetSupportedMethod (() => Enumerable.LongCount<object> (null, null)),
 // ReSharper disable PossibleNullReferenceException
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
                                                                GetSupportedMethod (() => (((Array) null).LongLength)),
 #endif
 // ReSharper restore PossibleNullReferenceException

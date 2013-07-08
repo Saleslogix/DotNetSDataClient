@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Xml;
 
 namespace Sage.SData.Client.Utilities
@@ -24,7 +25,7 @@ namespace Sage.SData.Client.Utilities
             RegisterMethod(XmlConvert.ToSingle);
             RegisterMethod(XmlConvert.ToDouble);
             RegisterMethod(XmlConvert.ToDecimal);
-#if !PCL
+#if !PCL && !NETFX_CORE
             RegisterMethod(value => XmlConvert.ToDateTime(value, XmlDateTimeSerializationMode.RoundtripKind));
 #endif
             RegisterMethod(XmlConvert.ToDateTimeOffset);
@@ -47,7 +48,7 @@ namespace Sage.SData.Client.Utilities
             var type = typeof (T);
             type = Nullable.GetUnderlyingType(type) ?? type;
 
-            if (type.IsEnum)
+            if (type.GetTypeInfo().IsEnum)
             {
                 return (T) EnumEx.Parse(type, value);
             }

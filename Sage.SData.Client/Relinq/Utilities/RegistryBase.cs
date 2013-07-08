@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Remotion.Linq.Utilities
 {
@@ -28,8 +29,8 @@ namespace Remotion.Linq.Utilities
   {
     public static TRegistry CreateDefault ()
     {
-      var defaultItemTypes = from t in typeof (TRegistry).Assembly.GetTypes() 
-                             where typeof (TItem).IsAssignableFrom (t) && !t.IsAbstract
+      var defaultItemTypes = from t in typeof (TRegistry).GetTypeInfo().Assembly.GetTypes() 
+                             where typeof (TItem).IsAssignableFrom (t) && !t.GetTypeInfo().IsAbstract
                              select t;
 
       var registry = new TRegistry();

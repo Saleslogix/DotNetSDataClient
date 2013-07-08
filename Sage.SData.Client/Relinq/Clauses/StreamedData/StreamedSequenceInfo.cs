@@ -83,7 +83,7 @@ namespace Remotion.Linq.Clauses.StreamedData
     {
       ArgumentUtility.CheckNotNull ("dataType", dataType);
 
-      if (dataType.IsGenericTypeDefinition)
+      if (dataType.GetTypeInfo().IsGenericTypeDefinition)
       {
         try
         {
@@ -145,7 +145,7 @@ namespace Remotion.Linq.Clauses.StreamedData
 
       // wrap executeMethod into a delegate instead of calling Invoke in order to allow for exceptions that are bubbled up correctly
       var func = (Func<QueryModel, IQueryExecutor, IEnumerable>)
-          Delegate.CreateDelegate (typeof (Func<QueryModel, IQueryExecutor, IEnumerable>), this, executeMethod);
+      executeMethod.CreateDelegate (typeof (Func<QueryModel, IQueryExecutor, IEnumerable>), this);
       var result = func (queryModel, executor).AsQueryable ();
 
       return new StreamedSequence (result, new StreamedSequenceInfo (result.GetType(), ItemExpression));

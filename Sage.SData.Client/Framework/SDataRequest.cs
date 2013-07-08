@@ -136,7 +136,7 @@ namespace Sage.SData.Client.Framework
             get { return _operations; }
         }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         /// <summary>
         /// Execute the request and return a response object.
         /// </summary>
@@ -259,7 +259,7 @@ namespace Sage.SData.Client.Framework
                                 }
                                 catch (WebException webEx)
                                 {
-#if PCL || SILVERLIGHT
+#if PCL || NETFX_CORE || SILVERLIGHT
                                     if (attempts > 0)
 #else
                                     if (webEx.Status == WebExceptionStatus.Timeout && attempts > 0)
@@ -353,7 +353,7 @@ namespace Sage.SData.Client.Framework
         {
             var request = WebRequest.Create(uri);
             request.Method = op.Method.ToString().ToUpperInvariant();
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
             request.Timeout = Timeout;
             request.PreAuthenticate = true;
 
@@ -366,7 +366,7 @@ namespace Sage.SData.Client.Framework
             var httpRequest = request as HttpWebRequest;
             if (httpRequest != null)
             {
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
                 httpRequest.AllowAutoRedirect = false;
                 httpRequest.ReadWriteTimeout = Timeout;
                 httpRequest.KeepAlive = false;

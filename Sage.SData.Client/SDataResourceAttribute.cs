@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Sage.SData.Client
 {
@@ -7,7 +8,7 @@ namespace Sage.SData.Client
     {
         public static string GetPath(Type type)
         {
-            var attr = (SDataResourceAttribute) GetCustomAttribute(type, typeof (SDataResourceAttribute));
+            var attr = type.GetTypeInfo().GetCustomAttribute<SDataResourceAttribute>();
             return attr != null ? attr.Path : null;
         }
 

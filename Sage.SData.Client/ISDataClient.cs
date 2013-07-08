@@ -23,7 +23,7 @@ namespace Sage.SData.Client
         MediaType? Format { get; set; }
         string Language { get; set; }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         ISDataResults Execute(ISDataParameters parms);
         ISDataResults<T> Execute<T>(ISDataParameters parms);
 #endif

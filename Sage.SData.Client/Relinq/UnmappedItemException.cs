@@ -35,7 +35,7 @@ namespace Remotion.Linq
     {
     }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
     protected UnmappedItemException (SerializationInfo info, StreamingContext context)
         : base (info, context)
     {

@@ -50,7 +50,7 @@ namespace Remotion.Linq.Clauses.StreamedData
       var executeMethod = s_executeMethod.MakeGenericMethod (DataType);
       // wrap executeMethod into a delegate instead of calling Invoke in order to allow for exceptions that are bubbled up correctly
       var func = (Func<QueryModel, IQueryExecutor, object>)
-          Delegate.CreateDelegate (typeof (Func<QueryModel, IQueryExecutor, object>), this, executeMethod);
+      executeMethod.CreateDelegate (typeof (Func<QueryModel, IQueryExecutor, object>), this);
       var result = func (queryModel, executor);
 
       return new StreamedValue (result, this);

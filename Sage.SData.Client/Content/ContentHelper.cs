@@ -54,7 +54,7 @@ namespace Sage.SData.Client.Content
             if (nonGeneric != null &&
                 obj.GetType()
                    .GetInterfaces()
-                   .Any(item => item.IsGenericType &&
+                   .Any(item => item.GetTypeInfo().IsGenericType &&
                                 item.GetGenericTypeDefinition() == typeof (IEnumerable<>) &&
                                 typeof (IDictionary<string, object>).IsAssignableFrom(item.GetGenericArguments()[0])))
             {
@@ -109,11 +109,11 @@ namespace Sage.SData.Client.Content
                     {
                         var iface = obj.GetType()
                                        .GetInterfaces()
-                                       .FirstOrDefault(item => item.IsGenericType && item.GetGenericTypeDefinition() == typeof (IDictionary<,>));
+                                       .FirstOrDefault(item => item.GetTypeInfo().IsGenericType && item.GetGenericTypeDefinition() == typeof (IDictionary<,>));
                         if (iface != null)
                         {
                             var keyValueType = iface.GetInterfaces()
-                                                    .First(a => a.IsGenericType && a.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+                                                    .First(a => a.GetTypeInfo().IsGenericType && a.GetGenericTypeDefinition() == typeof (IEnumerable<>))
                                                     .GetGenericArguments()[0];
                             var keyProp = keyValueType.GetProperty("Key");
                             var valueProp = keyValueType.GetProperty("Value");
@@ -178,7 +178,7 @@ namespace Sage.SData.Client.Content
             return obj != null &&
                    (obj is IDictionary ||
                     obj is IDictionary<string, object> ||
-                    obj.GetType().GetInterfaces().Any(iface => iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof (IDictionary<,>)));
+                    obj.GetType().GetInterfaces().Any(iface => iface.GetTypeInfo().IsGenericType && iface.GetGenericTypeDefinition() == typeof (IDictionary<,>)));
         }
 
         public static bool IsCollection(object obj)
@@ -186,7 +186,7 @@ namespace Sage.SData.Client.Content
             return obj != null &&
                    !(obj is string) &&
                    (obj is IEnumerable ||
-                    obj.GetType().GetInterfaces().Any(iface => iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>)));
+                    obj.GetType().GetInterfaces().Any(iface => iface.GetTypeInfo().IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>)));
         }
 
         #region Nested type: Serializer
@@ -202,7 +202,7 @@ namespace Sage.SData.Client.Content
 
             public override bool TrySerializeNonPrimitiveObject(object input, out object output)
             {
-                if (input == null || input is string || input.GetType().IsValueType)
+                if (input == null || input is string || input.GetType().GetTypeInfo().IsValueType)
                 {
                     output = input;
                     return true;
@@ -272,7 +272,7 @@ namespace Sage.SData.Client.Content
                 {
                     var type = input.GetType();
 #if !NET_2_0
-                    var dataAttr = (DataContractAttribute) Attribute.GetCustomAttribute(type, typeof (DataContractAttribute));
+                    var dataAttr = type.GetTypeInfo().GetCustomAttribute<DataContractAttribute>();
                     if (dataAttr != null)
                     {
                         resource.XmlLocalName = dataAttr.Name;
@@ -281,7 +281,7 @@ namespace Sage.SData.Client.Content
                     else
 #endif
                     {
-                        var xmlAttr = (XmlTypeAttribute) Attribute.GetCustomAttribute(type, typeof (XmlTypeAttribute));
+                        var xmlAttr = type.GetTypeInfo().GetCustomAttribute<XmlTypeAttribute>();
                         if (xmlAttr != null)
                         {
                             resource.XmlLocalName = xmlAttr.TypeName;
@@ -327,7 +327,7 @@ namespace Sage.SData.Client.Content
 
             public override object DeserializeObject(object value, Type type)
             {
-                if (value == null || value is string || value.GetType().IsValueType)
+                if (value == null || value is string || value.GetType().GetTypeInfo().IsValueType)
                 {
                     return base.DeserializeObject(value, type);
                 }
@@ -387,23 +387,23 @@ namespace Sage.SData.Client.Content
 
             private static ReflectionUtils.GetDelegate GetGetter(ReflectionUtils.GetDelegate baseGetter, MemberInfo memberInfo, Type memberType)
             {
-                if (memberType != typeof (string) && !memberType.IsValueType)
+                if (memberType != typeof (string) && !memberType.GetTypeInfo().IsValueType)
                 {
                     string xmlLocalName = null;
                     string xmlNamespace = null;
                     var xmlIsFlat = false;
 
-                    var elementAttr = (XmlElementAttribute) Attribute.GetCustomAttribute(memberInfo, typeof (XmlElementAttribute));
+                    var elementAttr = memberInfo.GetCustomAttribute<XmlElementAttribute>();
                     if (elementAttr != null)
                     {
                         xmlLocalName = elementAttr.ElementName;
                         xmlNamespace = elementAttr.Namespace;
                         xmlIsFlat = memberType != typeof (string) &&
                                     (typeof (IEnumerable).IsAssignableFrom(memberType) ||
-                                     memberType.GetInterfaces().Any(iface => iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>)));
+                                     memberType.GetInterfaces().Any(iface => iface.GetTypeInfo().IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>)));
                     }
 
-                    var itemAttr = (XmlArrayItemAttribute) Attribute.GetCustomAttribute(memberInfo, typeof (XmlArrayItemAttribute));
+                    var itemAttr = memberInfo.GetCustomAttribute<XmlArrayItemAttribute>();
                     if (itemAttr != null)
                     {
                         xmlLocalName = itemAttr.ElementName;
@@ -415,7 +415,7 @@ namespace Sage.SData.Client.Content
                         var itemType = memberType.IsArray
                                            ? memberType.GetElementType()
                                            : memberType.GetInterfaces()
-                                                       .Where(iface => iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+                                                       .Where(iface => iface.GetTypeInfo().IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>))
                                                        .Select(iface => iface.GetGenericArguments()[0])
                                                        .FirstOrDefault();
                         xmlLocalName = itemType != null && itemType != typeof (object) ? itemType.Name : null;
@@ -470,9 +470,9 @@ namespace Sage.SData.Client.Content
                 return ReflectionUtils.GetProperties(type)
                                       .Where(item => item.CanRead &&
 #if !NET_2_0
-                                                     !Attribute.IsDefined(item, typeof (IgnoreDataMemberAttribute)) &&
+                                                     !item.IsDefined(typeof (IgnoreDataMemberAttribute)) &&
 #endif
-                                                     !Attribute.IsDefined(item, typeof (XmlIgnoreAttribute)))
+                                                     !item.IsDefined(typeof (XmlIgnoreAttribute)))
                                       .Where(item =>
                                                  {
                                                      var getMethod = ReflectionUtils.GetGetterMethodInfo(item);
@@ -485,9 +485,9 @@ namespace Sage.SData.Client.Content
                 return ReflectionUtils.GetFields(type)
                                       .Where(item => !item.IsInitOnly && !item.IsStatic && item.IsPublic &&
 #if !NET_2_0
-                                                     !Attribute.IsDefined(item, typeof (IgnoreDataMemberAttribute)) &&
+                                                     !item.IsDefined(typeof (IgnoreDataMemberAttribute)) &&
 #endif
-                                                     !Attribute.IsDefined(item, typeof (XmlIgnoreAttribute)));
+                                                     !item.IsDefined(typeof (XmlIgnoreAttribute)));
             }
         }
 

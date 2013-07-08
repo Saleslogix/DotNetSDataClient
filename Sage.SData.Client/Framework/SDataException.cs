@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using Sage.SData.Client.Content;
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 #endif
@@ -71,7 +71,7 @@ namespace Sage.SData.Client.Framework
             _statusCode = statusCode;
         }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         protected SDataException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {

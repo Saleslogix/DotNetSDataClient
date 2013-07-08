@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
 using Sage.SData.Client.Framework;
@@ -70,7 +71,7 @@ namespace Sage.SData.Client.Content
             Guard.ArgumentNotNull(stream, "stream");
 
             var type = obj.GetType();
-            if (type != typeof (string) && !type.IsValueType)
+            if (type != typeof (string) && !type.GetTypeInfo().IsValueType)
             {
                 var serializer = new XmlSerializer(type);
                 serializer.Serialize(stream, obj);

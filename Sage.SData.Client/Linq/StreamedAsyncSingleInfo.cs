@@ -10,7 +10,7 @@ namespace Sage.SData.Client.Linq
 {
     internal class StreamedAsyncSingleInfo : StreamedValueInfo
     {
-        private static readonly MethodInfo _executeMethod = new Func<QueryModel, IAsyncQueryExecutor, object>(ExecuteSingleQueryModel<object>).Method.GetGenericMethodDefinition();
+        private static readonly MethodInfo _executeMethod = new Func<QueryModel, IAsyncQueryExecutor, object>(ExecuteSingleQueryModel<object>).GetMethodInfo().GetGenericMethodDefinition();
 
         private readonly Type _resultType;
 

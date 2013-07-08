@@ -76,12 +76,16 @@ namespace Remotion.Linq.Parsing.Structure.NodeTypeProviders
     public static MethodInfo GetRegisterableMethodDefinition (MethodInfo method)
     {
       var genericMethodDefinition = method.IsGenericMethod ? method.GetGenericMethodDefinition () : method;
-      if (genericMethodDefinition.DeclaringType.IsGenericType)
+      if (genericMethodDefinition.DeclaringType.GetTypeInfo().IsGenericType)
       {
         var declaringTypeDefinition = genericMethodDefinition.DeclaringType.GetGenericTypeDefinition ();
 
         // find corresponding method on the generic type definition
+#if NETFX_CORE
+        return declaringTypeDefinition.GetMethod(genericMethodDefinition.Name, genericMethodDefinition.GetParameters().Select(param => param.ParameterType).ToArray());
+#else
         return (MethodInfo) MethodBase.GetMethodFromHandle (genericMethodDefinition.MethodHandle, declaringTypeDefinition.TypeHandle);
+#endif
       }
       else
       {
@@ -118,7 +122,7 @@ namespace Remotion.Linq.Parsing.Structure.NodeTypeProviders
           throw new InvalidOperationException (message);
         }
 
-        if (method.DeclaringType.IsGenericType && !method.DeclaringType.IsGenericTypeDefinition)
+        if (method.DeclaringType.GetTypeInfo().IsGenericType && !method.DeclaringType.GetTypeInfo().IsGenericTypeDefinition)
         {
           var message = string.Format (
               "Cannot register method '{0}' in closed generic type '{1}', try to register its equivalent in the generic type definition instead.", 

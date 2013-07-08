@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ExpressionTreeVisitors;
@@ -36,7 +37,7 @@ namespace Sage.SData.Client.Linq
         public T ExecuteScalar<T>(QueryModel queryModel)
         {
             int? takeCount;
-#if PCL || SILVERLIGHT
+#if PCL || NETFX_CORE || SILVERLIGHT
             PreExecuteScalar(queryModel, out takeCount);
             var alternative = queryModel.ResultOperators.Last().ToString().TrimEnd('(', ')') + "Async";
             throw new PlatformNotSupportedException(string.Format("Synchronous execution not supported on this platform, please use {0} instead", alternative));
@@ -66,7 +67,7 @@ namespace Sage.SData.Client.Linq
         public T ExecuteSingle<T>(QueryModel queryModel, bool returnDefaultWhenEmpty)
         {
             int? takeCount;
-#if PCL || SILVERLIGHT
+#if PCL || NETFX_CORE || SILVERLIGHT
             PreExecuteScalar(queryModel, out takeCount);
             var alternative = queryModel.ResultOperators.Last().ToString().TrimEnd('(', ')') + "Async";
             throw new PlatformNotSupportedException(string.Format("Synchronous execution not supported on this platform, please use {0} instead", alternative));
@@ -118,7 +119,7 @@ namespace Sage.SData.Client.Linq
 
         public IEnumerable<T> ExecuteCollection<T>(QueryModel queryModel)
         {
-#if PCL || SILVERLIGHT
+#if PCL || NETFX_CORE || SILVERLIGHT
             throw new PlatformNotSupportedException("Synchronous execution not supported on this platform");
 #else
             int? takeCount;
@@ -157,7 +158,7 @@ namespace Sage.SData.Client.Linq
 #endif
         }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         private Func<ISDataParameters, SDataCollection<T>> PrepareExecuteDelegate<T>(QueryModel queryModel)
         {
             if (queryModel.MainFromClause.ItemType != typeof (T))
@@ -344,7 +345,8 @@ namespace Sage.SData.Client.Linq
             {
                 //this.ExecuteAsync<[queryModel.MainFromClause.ItemType], T>(parms, [queryModel.SelectClause.Selector]);
                 var executeMethod = new Func<ISDataParameters, Func<object, T>, Task<SDataCollection<T>>>(ExecuteAsync)
-                    .Method.GetGenericMethodDefinition()
+                    .GetMethodInfo()
+                    .GetGenericMethodDefinition()
                     .MakeGenericMethod(queryModel.MainFromClause.ItemType, typeof (T));
                 var parmsParamExpr = Expression.Parameter(typeof (ISDataParameters), "parms");
                 var selectorParamExpr = Expression.Parameter(queryModel.MainFromClause.ItemType, "selector");
@@ -497,7 +499,7 @@ namespace Sage.SData.Client.Linq
             visitor.VisitQueryModel(queryModel);
             return new SDataParameters
                        {
-                           Path = _path ?? SDataResourceAttribute.GetPath(visitor.MainType) ?? _namingScheme.GetName(visitor.MainType),
+                           Path = _path ?? SDataResourceAttribute.GetPath(visitor.MainType) ?? _namingScheme.GetName(visitor.MainType.GetTypeInfo()),
                            Select = visitor.Select,
                            Where = visitor.Where,
                            OrderBy = visitor.OrderBy,

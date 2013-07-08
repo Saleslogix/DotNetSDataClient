@@ -44,7 +44,7 @@ namespace Remotion.Linq.Parsing.Structure.IntermediateModel
 // ReSharper disable PossibleNullReferenceException
                                                                GetSupportedMethod (() => ((List<int>) null).Count),
                                                                GetSupportedMethod (() => ((ICollection<int>) null).Count),
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
                                                                GetSupportedMethod (() => ((ArrayList) null).Count),
 #endif
                                                                GetSupportedMethod (() => ((ICollection) null).Count),

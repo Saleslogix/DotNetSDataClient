@@ -35,7 +35,7 @@ namespace Remotion.Linq.Parsing.Structure.IntermediateModel
     {
     }
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
     protected ExpressionNodeInstantiationException (SerializationInfo info, StreamingContext context)
         : base(info, context)
     {

@@ -91,7 +91,7 @@ namespace Remotion.Linq
       }
       else
       {
-        if (implementedEnumerableInterface.IsGenericType)
+        if (implementedEnumerableInterface.GetTypeInfo().IsGenericType)
           return implementedEnumerableInterface.GetGenericArguments ()[0];
         else
           return typeof (object);
@@ -108,7 +108,7 @@ namespace Remotion.Linq
       {
         return (from i in enumerableType.GetInterfaces()
                 where IsIEnumerable (i)
-                let genericArgsCount = i.IsGenericType ? i.GetGenericArguments ().Length : 0
+                let genericArgsCount = i.GetTypeInfo().IsGenericType ? i.GetGenericArguments ().Length : 0
                 orderby genericArgsCount descending
                 select i).FirstOrDefault();
       }
@@ -117,7 +117,7 @@ namespace Remotion.Linq
     private static bool IsIEnumerable (Type enumerableType)
     {
       return enumerableType == typeof (IEnumerable) 
-          || (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof (IEnumerable<>));
+          || (enumerableType.GetTypeInfo().IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof (IEnumerable<>));
     }
   }
 }

@@ -97,7 +97,7 @@ namespace Sage.SData.Client.Mime
             }
             else
             {
-#if PCL || SILVERLIGHT
+#if PCL || NETFX_CORE || SILVERLIGHT
                 throw new NotSupportedException();
 #else
                 _headers.Remove(name);
@@ -113,7 +113,7 @@ namespace Sage.SData.Client.Mime
             }
             else
             {
-#if PCL || SILVERLIGHT
+#if PCL || NETFX_CORE || SILVERLIGHT
                 throw new NotSupportedException();
 #else
                 _headers.Remove(name);

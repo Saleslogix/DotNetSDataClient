@@ -13,8 +13,8 @@ namespace Sage.SData.Client.Linq
         public new static readonly MethodInfo[] SupportedMethods =
             new[]
                 {
-                    new Func<IQueryable<object>, Task<bool>>(SDataQueryableExtensions.AnyAsync).Method.GetGenericMethodDefinition(),
-                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<bool>>(SDataQueryableExtensions.AnyAsync).Method.GetGenericMethodDefinition()
+                    new Func<IQueryable<object>, Task<bool>>(SDataQueryableExtensions.AnyAsync).GetMethodInfo().GetGenericMethodDefinition(),
+                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<bool>>(SDataQueryableExtensions.AnyAsync).GetMethodInfo().GetGenericMethodDefinition()
                 };
 
         public AnyAsyncExpressionNode(MethodCallExpressionParseInfo parseInfo, LambdaExpression optionalPredicate)

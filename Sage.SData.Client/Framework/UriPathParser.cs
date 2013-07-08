@@ -39,7 +39,7 @@ namespace Sage.SData.Client.Framework
             RegexOptions.IgnoreCase |
             RegexOptions.CultureInvariant |
             RegexOptions.IgnorePatternWhitespace
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
             | RegexOptions.Compiled
 #endif
             );

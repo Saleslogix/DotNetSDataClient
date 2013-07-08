@@ -330,7 +330,7 @@ namespace Sage.SData.Client.Test.Extensions
             assertDoesNotThrow("double", x => XmlConvert.ToDouble(x));
             assertDoesNotThrow("decimal", x => XmlConvert.ToDecimal(x));
             assertDoesNotThrow("Guid", x => XmlConvert.ToGuid(x));
-#if !PCL
+#if !PCL && !NETFX_CORE
             assertDoesNotThrow("DateTime", x => XmlConvert.ToDateTime(x, XmlDateTimeSerializationMode.RoundtripKind));
 #endif
             assertDoesNotThrow("DateTimeOffset", x => XmlConvert.ToDateTimeOffset(x));
