@@ -46,7 +46,7 @@ namespace Remotion.Linq.Parsing.Structure.NodeTypeProviders
                                 select t;
 
       var infoForTypes = from t in expressionNodeTypes
-                                     let supportedMethodNamesField = t.GetField ("SupportedMethodNames", BindingFlags.Static | BindingFlags.Public)
+                                     let supportedMethodNamesField = t.GetFields().FirstOrDefault(f => f.Name == "SupportedMethodNames" && f.IsStatic)
                                      select new { 
                                          Type = t,
                                          RegistrationInfo =

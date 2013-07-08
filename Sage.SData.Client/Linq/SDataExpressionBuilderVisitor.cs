@@ -651,6 +651,12 @@ namespace Sage.SData.Client.Linq
             {
                 return "null";
             }
+#if !PCL
+            if (value is DBNull)
+            {
+                return "null";
+            }
+#endif
 
             type = Nullable.GetUnderlyingType(type) ?? type;
 
@@ -674,7 +680,7 @@ namespace Sage.SData.Client.Linq
             {
                 return string.Format(CultureInfo.InvariantCulture, "'{0}'", value);
             }
-            if (typeof (IConvertible).IsAssignableFrom(type))
+            if (typeof (IFormattable).IsAssignableFrom(type))
             {
                 return Convert.ToString(value, CultureInfo.InvariantCulture);
             }

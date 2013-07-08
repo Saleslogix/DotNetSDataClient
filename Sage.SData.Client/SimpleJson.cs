@@ -1418,7 +1418,11 @@ namespace SimpleJson
                         else if (ReflectionUtils.IsTypeGenericeCollectionInterface(type) || ReflectionUtils.IsAssignableFrom(typeof(IList), type))
                         {
                             Type innerType = ReflectionUtils.GetGenericTypeArguments(type)[0];
+#if SIMPLE_JSON_TYPEINFO
+                            Type genericType = type.GetTypeInfo().IsInterface ? typeof(List<>).MakeGenericType(innerType) : type;
+#else
                             Type genericType = type.IsInterface ? typeof(List<>).MakeGenericType(innerType) : type;
+#endif
                             list = (IList)ConstructorCache[genericType](jsonObject.Count);
                             foreach (object o in jsonObject)
                                 list.Add(DeserializeObject(o, innerType));
@@ -1612,7 +1616,16 @@ namespace SimpleJson
             public static Type[] GetGenericTypeArguments(Type type)
             {
 #if SIMPLE_JSON_TYPEINFO
-                return type.GetTypeInfo().GenericTypeArguments;
+                if (!type.GetTypeInfo().IsGenericType)
+                {
+                    foreach (var iface in type.GetInterfaces())
+                    {
+                        if (iface.GetTypeInfo().IsGenericType)
+                        {
+                            return iface.GetGenericArguments();
+                        }
+                    }
+                }
 #else
                 if (!type.IsGenericType)
                 {
@@ -1624,8 +1637,8 @@ namespace SimpleJson
                         }
                     }
                 }
-                return type.GetGenericArguments();
 #endif
+                return type.GetGenericArguments();
             }
 
             public static bool IsTypeGenericeCollectionInterface(Type type)

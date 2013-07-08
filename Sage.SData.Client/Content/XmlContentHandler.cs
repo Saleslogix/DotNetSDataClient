@@ -70,7 +70,7 @@ namespace Sage.SData.Client.Content
             Guard.ArgumentNotNull(stream, "stream");
 
             var type = obj.GetType();
-            if (Type.GetTypeCode(type) == TypeCode.Object)
+            if (type != typeof (string) && !type.IsValueType)
             {
                 var serializer = new XmlSerializer(type);
                 serializer.Serialize(stream, obj);

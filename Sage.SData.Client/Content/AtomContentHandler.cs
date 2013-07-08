@@ -498,7 +498,7 @@ namespace Sage.SData.Client.Content
                 return obj;
             }
 
-            if (value != null && Type.GetTypeCode(value.GetType()) == TypeCode.Object)
+            if (value != null && !(value is string) && !value.GetType().IsValueType)
             {
                 obj = WriteObject(name, ContentHelper.Serialize(value, namingScheme), namingScheme);
                 if (obj != null)

@@ -202,11 +202,7 @@ namespace Sage.SData.Client.Content
 
             public override bool TrySerializeNonPrimitiveObject(object input, out object output)
             {
-                if (input == null ||
-                    input is Guid ||
-                    input is DateTimeOffset ||
-                    input is TimeSpan ||
-                    Type.GetTypeCode(input.GetType()) != TypeCode.Object)
+                if (input == null || input is string || input.GetType().IsValueType)
                 {
                     output = input;
                     return true;
@@ -331,11 +327,7 @@ namespace Sage.SData.Client.Content
 
             public override object DeserializeObject(object value, Type type)
             {
-                if (value == null ||
-                    value is Guid ||
-                    value is DateTimeOffset ||
-                    value is TimeSpan ||
-                    Type.GetTypeCode(value.GetType()) != TypeCode.Object)
+                if (value == null || value is string || value.GetType().IsValueType)
                 {
                     return base.DeserializeObject(value, type);
                 }
@@ -395,7 +387,7 @@ namespace Sage.SData.Client.Content
 
             private static ReflectionUtils.GetDelegate GetGetter(ReflectionUtils.GetDelegate baseGetter, MemberInfo memberInfo, Type memberType)
             {
-                if (Type.GetTypeCode(memberType) == TypeCode.Object)
+                if (memberType != typeof (string) && !memberType.IsValueType)
                 {
                     string xmlLocalName = null;
                     string xmlNamespace = null;

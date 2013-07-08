@@ -82,7 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sage.SData.Client\Sage.SData.Client_4_0.csproj">
-      <Project>{806b42bd-4103-47e2-b502-da1f88dc7a6f}</Project>
+      <Project>{FEECA9B9-980E-470F-81BA-C56ABD8D520E}</Project>
       <Name>Sage.SData.Client_4_0</Name>
     </ProjectReference>
   </ItemGroup>

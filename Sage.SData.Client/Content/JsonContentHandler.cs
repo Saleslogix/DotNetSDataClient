@@ -236,7 +236,7 @@ namespace Sage.SData.Client.Content
                 return jsonObj;
             }
 
-            if (obj != null && Type.GetTypeCode(obj.GetType()) == TypeCode.Object)
+            if (obj != null && !(obj is string) && !obj.GetType().IsValueType)
             {
                 jsonObj = WriteObject(ContentHelper.Serialize(obj, namingScheme), isRoot, namingScheme);
                 if (jsonObj != null)

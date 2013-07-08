@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Xml.Serialization;
 
 namespace Sage.SData.Client.Utilities
@@ -62,9 +61,9 @@ namespace Sage.SData.Client.Utilities
 
             static EnumData()
             {
-                foreach (var field in typeof (T).GetFields(BindingFlags.Public | BindingFlags.Static))
+                foreach (var field in typeof (T).GetFields())
                 {
-                    if (Attribute.IsDefined(field, typeof (ObsoleteAttribute)))
+                    if (!field.IsStatic || Attribute.IsDefined(field, typeof (ObsoleteAttribute)))
                     {
                         continue;
                     }
