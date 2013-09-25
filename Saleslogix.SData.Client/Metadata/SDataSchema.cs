@@ -329,13 +329,11 @@ namespace Saleslogix.SData.Client.Metadata
 
             foreach (var type in Types)
             {
-                if (type is SDataSchemaComplexType)
+                if (type is SDataSchemaComplexType || type is SDataSchemaChoiceType)
                 {
-                    var complexType = (SDataSchemaComplexType) type;
-
                     if (type is SDataSchemaTopLevelType)
                     {
-                        var element = new XmlSchemaElement {SchemaTypeName = complexType.QualifiedName};
+                        var element = new XmlSchemaElement {SchemaTypeName = type.QualifiedName};
                         type.Write(element);
                         xmlSchema.Items.Add(element);
                     }
@@ -343,37 +341,8 @@ namespace Saleslogix.SData.Client.Metadata
                     var xmlComplexType = new XmlSchemaComplexType();
                     type.Write(xmlComplexType);
                     xmlSchema.Items.Add(xmlComplexType);
-
-                    if (complexType.ListName != null)
-                    {
-                        xmlComplexType = new XmlSchemaComplexType
-                                             {
-                                                 Name = complexType.ListName,
-                                                 AnyAttribute = complexType.ListAnyAttribute,
-                                                 Particle = new XmlSchemaSequence
-                                                                {
-                                                                    Items =
-                                                                        {
-                                                                            new XmlSchemaElement
-                                                                                {
-                                                                                    Name = complexType.ListItemName,
-                                                                                    SchemaTypeName = complexType.QualifiedName,
-                                                                                    MinOccurs = 0,
-                                                                                    MaxOccurs = decimal.MaxValue
-                                                                                }
-                                                                        }
-                                                                }
-                                             };
-                        xmlSchema.Items.Add(xmlComplexType);
-                    }
                 }
-                else if (type is SDataSchemaChoiceType)
-                {
-                    var xmlComplexType = new XmlSchemaComplexType();
-                    type.Write(xmlComplexType);
-                    xmlSchema.Items.Add(xmlComplexType);
-                }
-                else if (type is SDataSchemaSimpleType || type is SDataSchemaEnumType)
+                else if (type is SDataSchemaValueType)
                 {
                     var xmlType = new XmlSchemaSimpleType();
                     type.Write(xmlType);
@@ -382,6 +351,29 @@ namespace Saleslogix.SData.Client.Metadata
                 else
                 {
                     throw new InvalidOperationException(string.Format("Unexpected type '{0}'", type.GetType()));
+                }
+
+                if (type.ListName != null)
+                {
+                    var xmlComplexType = new XmlSchemaComplexType
+                                             {
+                                                 Name = type.ListName,
+                                                 AnyAttribute = type.ListAnyAttribute,
+                                                 Particle = new XmlSchemaSequence
+                                                                {
+                                                                    Items =
+                                                                        {
+                                                                            new XmlSchemaElement
+                                                                                {
+                                                                                    Name = type.ListItemName,
+                                                                                    SchemaTypeName = type.QualifiedName,
+                                                                                    MinOccurs = 0,
+                                                                                    MaxOccurs = decimal.MaxValue
+                                                                                }
+                                                                        }
+                                                                }
+                                             };
+                    xmlSchema.Items.Add(xmlComplexType);
                 }
             }
         }

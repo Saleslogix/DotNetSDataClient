@@ -1,6 +1,13 @@
 ﻿using System.IO;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.XPath;
 using NUnit.Framework;
 using Saleslogix.SData.Client.Metadata;
+
+#if NET_4_0
+using System.Xml.Linq;
+#endif
 
 // ReSharper disable InconsistentNaming
 
@@ -10,7 +17,7 @@ namespace Saleslogix.SData.Client.Test.Metadata
     public class SDataSchemaTests
     {
         [Test]
-        public void Properties_Without_Types_Specified_Are_Supported_Test()
+        public void Read_Properties_Without_Types_Specified_Test()
         {
             const string xsd = @"
 <xs:schema targetNamespace=""http://schemas.sage.com/crmErp/2008""
@@ -40,7 +47,7 @@ namespace Saleslogix.SData.Client.Test.Metadata
         }
 
         [Test]
-        public void Element_Then_Complex_Type_Then_List_Type_Test()
+        public void Read_Element_Then_Complex_Type_Then_List_Type_Test()
         {
             const string xsd = @"
 <xs:schema targetNamespace=""http://schemas.sage.com/crmErp/2008""
@@ -71,7 +78,7 @@ namespace Saleslogix.SData.Client.Test.Metadata
         }
 
         [Test]
-        public void Element_Then_List_Type_Then_Complex_Type_Test()
+        public void Read_Element_Then_List_Type_Then_Complex_Type_Test()
         {
             const string xsd = @"
 <xs:schema targetNamespace=""http://schemas.sage.com/crmErp/2008""
@@ -102,7 +109,7 @@ namespace Saleslogix.SData.Client.Test.Metadata
         }
 
         [Test]
-        public void Choice_Schema_Types_Support_List_Types_Test()
+        public void Read_Choice_Schema_Types_Support_List_Types_Test()
         {
             const string xsd = @"
 <xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
@@ -129,7 +136,7 @@ namespace Saleslogix.SData.Client.Test.Metadata
         }
 
         [Test]
-        public void Enum_Schema_Types_Support_List_Types_Test()
+        public void Read_Enum_Schema_Types_Support_List_Types_Test()
         {
             const string xsd = @"
 <xs:schema xmlns:xs=""http://www.w3.org/2001/XMLSchema"">
@@ -153,6 +160,154 @@ namespace Saleslogix.SData.Client.Test.Metadata
             Assume.That(type, Is.InstanceOf<SDataSchemaEnumType>());
             Assert.That(type.ListName, Is.EqualTo("test--list"));
             Assert.That(type.ListItemName, Is.EqualTo("test"));
+        }
+
+        [Test]
+        public void Write_Properties_Without_Types_Specified_Test()
+        {
+            var schema = new SDataSchema("http://schemas.sage.com/crmErp/2008")
+                             {
+                                 Types =
+                                     {
+                                         new SDataSchemaComplexType("tradingAccount")
+                                             {
+                                                 Properties =
+                                                     {
+                                                         new SDataSchemaValueProperty("active")
+                                                     }
+                                             }
+                                     }
+                             };
+
+            XPathNavigator nav;
+            using (var stream = new MemoryStream())
+            {
+                schema.Write(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+#if NET_2_0 || NET_3_5
+                nav = new XPathDocument(stream).CreateNavigator();
+#else
+                nav = XDocument.Load(stream).CreateNavigator();
+#endif
+            }
+
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("xs", "http://www.w3.org/2001/XMLSchema");
+
+            var resource = nav.SelectSingleNode("xs:schema/xs:complexType[@name='tradingAccount--type']", mgr);
+            Assert.That(resource, Is.Not.Null);
+            Assert.That(resource.Select("xs:all/xs:element", mgr).Count, Is.EqualTo(1));
+            var property = resource.SelectSingleNode("xs:all/xs:element", mgr);
+            Assert.That(property, Is.Not.Null);
+            Assert.That(property.SelectSingleNode("@name").Value, Is.EqualTo("active"));
+            Assert.That(property.SelectSingleNode("@type"), Is.Null);
+        }
+
+        [Test]
+        public void Write_Element_Then_Complex_Type_Then_List_Type_Test()
+        {
+            var schema = new SDataSchema("http://schemas.sage.com/crmErp/2008")
+                             {
+                                 Types =
+                                     {
+                                         new SDataSchemaResourceType("tradingAccount")
+                                     }
+                             };
+
+            XPathNavigator nav;
+            using (var stream = new MemoryStream())
+            {
+                schema.Write(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+#if NET_2_0 || NET_3_5
+                nav = new XPathDocument(stream).CreateNavigator();
+#else
+                nav = XDocument.Load(stream).CreateNavigator();
+#endif
+            }
+
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("xs", "http://www.w3.org/2001/XMLSchema");
+
+            var resource = nav.SelectSingleNode("xs:schema/xs:element[@name='tradingAccount']", mgr);
+            Assert.That(resource, Is.Not.Null);
+            Assert.That(nav.SelectSingleNode("xs:schema/xs:complexType[@name='tradingAccount--type']", mgr), Is.Not.Null);
+            Assert.That(nav.SelectSingleNode("xs:schema/xs:complexType[@name='tradingAccount--list']", mgr), Is.Not.Null);
+        }
+
+        [Test]
+        public void Write_Choice_Schema_Types_Support_List_Types_Test()
+        {
+            var schema = new SDataSchema
+                             {
+                                 Types =
+                                     {
+                                         new SDataSchemaChoiceType("test")
+                                             {
+                                                 ListName = "test--list",
+                                                 ListItemName = "test"
+                                             }
+                                     }
+                             };
+
+            XPathNavigator nav;
+            using (var stream = new MemoryStream())
+            {
+                schema.Write(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+#if NET_2_0 || NET_3_5
+                nav = new XPathDocument(stream).CreateNavigator();
+#else
+                nav = XDocument.Load(stream).CreateNavigator();
+#endif
+            }
+
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("xs", "http://www.w3.org/2001/XMLSchema");
+
+            var type = nav.SelectSingleNode("xs:schema/xs:complexType[@name='test--choice']", mgr);
+            Assume.That(type, Is.Not.Null);
+            var list = nav.SelectSingleNode("xs:schema/xs:complexType[@name='test--list']", mgr);
+            Assert.That(list, Is.Not.Null);
+            Assert.That(list.SelectSingleNode("xs:sequence/xs:element[@name='test']", mgr), Is.Not.Null);
+        }
+
+        [Test]
+        public void Write_Enum_Schema_Types_Support_List_Types_Test()
+        {
+            var schema = new SDataSchema
+                             {
+                                 Types =
+                                     {
+                                         new SDataSchemaEnumType("test")
+                                             {
+                                                 BaseType = XmlTypeCode.String,
+                                                 ListName = "test--list",
+                                                 ListItemName = "test"
+                                             }
+                                     }
+                             };
+
+            XPathNavigator nav;
+            using (var stream = new MemoryStream())
+            {
+                schema.Write(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+#if NET_2_0 || NET_3_5
+                nav = new XPathDocument(stream).CreateNavigator();
+#else
+                nav = XDocument.Load(stream).CreateNavigator();
+#endif
+            }
+
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("xs", "http://www.w3.org/2001/XMLSchema");
+
+            var type = nav.SelectSingleNode("xs:schema/xs:simpleType[@name='test--enum']", mgr);
+            Assume.That(type, Is.Not.Null);
+            var list = nav.SelectSingleNode("xs:schema/xs:complexType[@name='test--list']", mgr);
+            Assert.That(list, Is.Not.Null);
+            Assert.That(list.SelectSingleNode("xs:sequence/xs:element[@name='test']", mgr), Is.Not.Null);
         }
     }
 }
