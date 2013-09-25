@@ -390,14 +390,16 @@ namespace Saleslogix.SData.Client.Framework
             public bool Equals(ContentType x, ContentType y)
             {
                 return string.Equals(x.MediaType, y.MediaType, StringComparison.OrdinalIgnoreCase) &&
+                       string.Equals(x.SubType, y.SubType, StringComparison.OrdinalIgnoreCase) &&
                        string.Equals(x["type"], y["type"], StringComparison.OrdinalIgnoreCase);
             }
 
             public int GetHashCode(ContentType obj)
             {
-                var code = obj.MediaType.ToLowerInvariant().GetHashCode();
-                var type = obj["type"];
+                var code = obj.MediaType.ToLowerInvariant().GetHashCode() ^
+                           obj.SubType.ToLowerInvariant().GetHashCode();
 
+                var type = obj["type"];
                 if (type != null)
                 {
                     code ^= type.ToLowerInvariant().GetHashCode();

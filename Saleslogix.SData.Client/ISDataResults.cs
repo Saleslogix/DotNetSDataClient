@@ -12,6 +12,7 @@ namespace Saleslogix.SData.Client
         MediaType? ContentType { get; }
         string ETag { get; }
         string Location { get; }
+        IDictionary<string, string> Form { get; }
         IList<AttachedFile> Files { get; }
     }
 

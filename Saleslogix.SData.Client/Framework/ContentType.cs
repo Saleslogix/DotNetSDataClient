@@ -35,7 +35,12 @@ namespace Saleslogix.SData.Client.Framework
 
         public string MediaType
         {
-            get { return _mediaType + "/" + _subType; }
+            get { return _mediaType; }
+        }
+
+        public string SubType
+        {
+            get { return _subType; }
         }
 
         public string this[string name]

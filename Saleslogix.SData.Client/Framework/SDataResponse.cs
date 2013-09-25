@@ -20,6 +20,7 @@ namespace Saleslogix.SData.Client.Framework
         private readonly string _eTag;
         private readonly string _location;
         private readonly object _content;
+        private IDictionary<string, string> _form;
         private readonly IList<AttachedFile> _files;
 
         internal SDataResponse(WebResponse response, string redirectLocation)
@@ -35,6 +36,7 @@ namespace Saleslogix.SData.Client.Framework
 
             _eTag = response.Headers["ETag"];
             _location = response.Headers["Location"] ?? redirectLocation;
+            _form = new Dictionary<string, string>();
             _files = new List<AttachedFile>();
 
             if (_statusCode != HttpStatusCode.NoContent)
@@ -46,6 +48,7 @@ namespace Saleslogix.SData.Client.Framework
                     if (_contentType == MediaType.Multipart && TryGetMultipartBoundary(response.ContentType, out boundary))
                     {
                         var multipart = MimeMessage.Parse(responseStream, boundary);
+                        var isFormData = string.Equals(new ContentType(response.ContentType).SubType, "form-data", StringComparison.OrdinalIgnoreCase);
 
                         foreach (var part in multipart)
                         {
@@ -56,6 +59,17 @@ namespace Saleslogix.SData.Client.Framework
                             }
                             else
                             {
+                                if (isFormData)
+                                {
+                                    var name = ContentDisposition.Parse(part.ContentDisposition)["name"];
+                                    if (name != null)
+                                    {
+                                        var value = new StreamReader(part.Content).ReadToEnd();
+                                        _form.Add(name, value);
+                                        continue;
+                                    }
+                                }
+
                                 _files.Add(new AttachedFile(part));
                             }
                         }
@@ -145,6 +159,14 @@ namespace Saleslogix.SData.Client.Framework
         public object Content
         {
             get { return _content; }
+        }
+
+        /// <summary>
+        /// Gets the form data attached to the response.
+        /// </summary>
+        public IDictionary<string, string> Form
+        {
+            get { return _form ?? (_form = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)); }
         }
 
         /// <summary>

@@ -12,6 +12,7 @@ namespace Saleslogix.SData.Client
         private readonly MediaType? _contentType;
         private readonly string _eTag;
         private readonly string _location;
+        private IDictionary<string, string> _form;
         private readonly IList<AttachedFile> _files;
 
         public static ISDataResults FromResponse(SDataResponse response)
@@ -64,6 +65,11 @@ namespace Saleslogix.SData.Client
         public string Location
         {
             get { return _location; }
+        }
+
+        public IDictionary<string, string> Form
+        {
+            get { return _form; }
         }
 
         public IList<AttachedFile> Files
