@@ -1,11 +1,11 @@
 ﻿using System.IO;
 using System.Text;
 using NUnit.Framework;
-using Sage.SData.Client.Content;
+using Saleslogix.SData.Client.Content;
 
 // ReSharper disable InconsistentNaming
 
-namespace Sage.SData.Client.Test.Content
+namespace Saleslogix.SData.Client.Test.Content
 {
     [TestFixture]
     public class TextContentHandlerTests

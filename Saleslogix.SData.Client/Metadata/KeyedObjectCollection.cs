@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using Sage.SData.Client.Utilities;
+using Saleslogix.SData.Client.Utilities;
 
-namespace Sage.SData.Client.Metadata
+namespace Saleslogix.SData.Client.Metadata
 {
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof (CollectionDebugView<>))]

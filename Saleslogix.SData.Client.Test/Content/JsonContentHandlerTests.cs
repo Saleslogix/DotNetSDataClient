@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Sage.SData.Client.Framework;
-using Sage.SData.Client.Test.Model;
+using Saleslogix.SData.Client.Framework;
+using Saleslogix.SData.Client.Test.Model;
 
 // ReSharper disable InconsistentNaming
 
-namespace Sage.SData.Client.Test.Content
+namespace Saleslogix.SData.Client.Test.Content
 {
     [TestFixture]
     public class JsonContentHandlerTests

@@ -2,7 +2,7 @@
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using Sage.SData.Client.Framework;
+using Saleslogix.SData.Client.Framework;
 
 namespace SDataClientApp
 {

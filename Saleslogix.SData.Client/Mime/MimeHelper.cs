@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using Microsoft.Win32;
 
-namespace Sage.SData.Client.Mime
+namespace Saleslogix.SData.Client.Mime
 {
     /// <summary>
     /// Helper class for inferring file MIME types.

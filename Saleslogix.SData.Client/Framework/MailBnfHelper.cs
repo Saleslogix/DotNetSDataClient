@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     internal static class MailBnfHelper
     {

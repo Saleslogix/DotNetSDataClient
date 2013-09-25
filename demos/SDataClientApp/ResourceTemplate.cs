@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using Sage.SData.Client.Core;
-using Sage.SData.Client.Extensions;
+using Saleslogix.SData.Client.Core;
+using Saleslogix.SData.Client.Extensions;
 
 namespace SDataClientApp
 {

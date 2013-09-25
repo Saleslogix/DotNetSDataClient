@@ -1,4 +1,4 @@
-﻿namespace Sage.SData.Client.Test.Model
+﻿namespace Saleslogix.SData.Client.Test.Model
 {
     public class Address
     {

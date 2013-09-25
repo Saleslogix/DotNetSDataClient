@@ -2,7 +2,7 @@
 
 // ReSharper disable InconsistentNaming
 
-namespace Sage.SData.Client.Test.Extensions
+namespace Saleslogix.SData.Client.Test.Extensions
 {
     [TestFixture]
     public class SyndicationExtensionTests

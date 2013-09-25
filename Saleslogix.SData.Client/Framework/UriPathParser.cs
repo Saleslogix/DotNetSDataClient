@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Parses a Uri path into segments

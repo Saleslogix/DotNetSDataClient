@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using Sage.SData.Client.Framework;
+using Saleslogix.SData.Client.Framework;
 
-namespace Sage.SData.Client
+namespace Saleslogix.SData.Client
 {
     [Serializable]
     public class SDataResource : Dictionary<string, object>, ISDataProtocolAware

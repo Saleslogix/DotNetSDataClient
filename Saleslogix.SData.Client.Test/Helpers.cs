@@ -1,14 +1,14 @@
 using System.IO;
 using System.Text;
 using System.Xml.XPath;
-using Sage.SData.Client.Content;
+using Saleslogix.SData.Client.Content;
 using SimpleJson;
 
 #if !NET_2_0 && !NET_3_5
 using System.Xml.Linq;
 #endif
 
-namespace Sage.SData.Client.Test
+namespace Saleslogix.SData.Client.Test
 {
     internal static class Helpers
     {

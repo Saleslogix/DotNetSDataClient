@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Sage.SData.Client.Metadata
+namespace Saleslogix.SData.Client.Metadata
 {
     public abstract class SDataSchemaObject
     {

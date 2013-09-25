@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Sage.SData.Client.Utilities;
+using Saleslogix.SData.Client.Utilities;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     internal class ContentType
     {

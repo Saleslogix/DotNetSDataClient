@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Sage.SData.Client.Core;
-using Sage.SData.Client.Metadata;
+using Saleslogix.SData.Client.Core;
+using Saleslogix.SData.Client.Metadata;
 using SDataClientApp.Properties;
 
 namespace SDataClientApp

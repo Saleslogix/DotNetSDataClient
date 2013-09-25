@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 
-namespace Sage.SData.Client.Mime
+namespace Saleslogix.SData.Client.Mime
 {
     /// <summary>
     /// Represents a MIME protocol message part.

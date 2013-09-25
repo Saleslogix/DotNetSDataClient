@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     public class SDataProtocolFilterVariable
     {

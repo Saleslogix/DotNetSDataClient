@@ -1,4 +1,4 @@
-﻿using Sage.SData.Client.Core;
+﻿using Saleslogix.SData.Client.Core;
 
 namespace SDataClientApp
 {

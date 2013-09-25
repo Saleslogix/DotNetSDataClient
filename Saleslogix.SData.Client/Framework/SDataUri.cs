@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Runtime.Serialization;
 #endif
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Helper class for building an SData compatible <see cref="Uri"/>.

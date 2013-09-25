@@ -6,11 +6,11 @@ using System.Runtime.CompilerServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Sage.SData.Client")]
+[assembly: AssemblyTitle("Saleslogix.SData.Client")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Sage Software, Inc.")]
-[assembly: AssemblyProduct("Sage.SData.Client")]
+[assembly: AssemblyProduct("Saleslogix.SData.Client")]
 [assembly: AssemblyCopyright("©1997-2011 Sage Software, Inc. All Rights Reserved")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

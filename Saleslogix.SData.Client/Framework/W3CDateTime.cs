@@ -8,9 +8,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Sage.SData.Client.Utilities;
+using Saleslogix.SData.Client.Utilities;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Represents a W3C DateTime structure.

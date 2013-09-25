@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sage.SData.Client.Utilities
+namespace Saleslogix.SData.Client.Utilities
 {
     /// <summary>
     /// Provides common validation methods shared across the framework entities. This class cannot be inherited.

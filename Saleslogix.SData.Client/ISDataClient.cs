@@ -1,11 +1,11 @@
 ﻿using System.Net;
-using Sage.SData.Client.Framework;
+using Saleslogix.SData.Client.Framework;
 
 #if !NET_2_0 && !NET_3_5
 using System.Threading.Tasks;
 #endif
 
-namespace Sage.SData.Client
+namespace Saleslogix.SData.Client
 {
     public interface ISDataClient
     {

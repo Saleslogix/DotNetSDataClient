@@ -5,7 +5,7 @@ using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.Utilities;
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     internal class ElementAtAsyncResultOperator : ElementAtResultOperator
     {

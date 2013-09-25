@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using Sage.SData.Client.Utilities;
+using Saleslogix.SData.Client.Utilities;
 
-namespace Sage.SData.Client.Metadata
+namespace Saleslogix.SData.Client.Metadata
 {
     public class SDataSchemaSet : SDataSchemaObject
     {

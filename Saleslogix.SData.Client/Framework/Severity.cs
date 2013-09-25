@@ -7,7 +7,7 @@
 
 using System.Xml.Serialization;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Defines the severity of an error.

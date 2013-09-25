@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Sage.SData.Client.Framework;
+using Saleslogix.SData.Client.Framework;
 
-namespace Sage.SData.Client.Content
+namespace Saleslogix.SData.Client.Content
 {
     public static class ContentManager
     {

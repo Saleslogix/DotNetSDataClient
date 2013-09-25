@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Sage.SData.Client
+namespace Saleslogix.SData.Client
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class SDataProtocolPropertyAttribute : Attribute

@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using Sage.SData.Client.Utilities;
+using Saleslogix.SData.Client.Utilities;
 
-namespace Sage.SData.Client.Content
+namespace Saleslogix.SData.Client.Content
 {
     public class TextContentHandler : IContentHandler
     {

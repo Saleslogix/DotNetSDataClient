@@ -8,8 +8,8 @@ using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
-using Sage.SData.Client.Linq;
-using Sage.SData.Client.Test.Model;
+using Saleslogix.SData.Client.Linq;
+using Saleslogix.SData.Client.Test.Model;
 
 #if !NET_3_5
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 // ReSharper disable InconsistentNaming
 
-namespace Sage.SData.Client.Test.Linq
+namespace Saleslogix.SData.Client.Test.Linq
 {
     [TestFixture]
     public class SDataQueryExecutorTests

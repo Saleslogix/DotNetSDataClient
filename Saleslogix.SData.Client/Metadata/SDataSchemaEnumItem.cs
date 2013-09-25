@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Xml.Schema;
 
-namespace Sage.SData.Client.Metadata
+namespace Saleslogix.SData.Client.Metadata
 {
     [DebuggerDisplay("{Value}")]
     public class SDataSchemaEnumItem : SDataSchemaItem

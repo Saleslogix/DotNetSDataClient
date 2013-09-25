@@ -5,7 +5,7 @@ using System.Reflection;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     internal class WithPrecedenceExpressionNode : ResultOperatorExpressionNodeBase
     {

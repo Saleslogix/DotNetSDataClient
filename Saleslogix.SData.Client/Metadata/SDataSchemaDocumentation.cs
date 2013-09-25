@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Sage.SData.Client.Metadata
+namespace Saleslogix.SData.Client.Metadata
 {
     [DebuggerDisplay("{Text}")]
     public class SDataSchemaDocumentation : SDataSchemaObject

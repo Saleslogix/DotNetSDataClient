@@ -1,7 +1,7 @@
-﻿using Sage.SData.Client.Atom;
-using Sage.SData.Client.Common;
-using Sage.SData.Client.Core;
-using Sage.SData.Client.Extensions;
+﻿using Saleslogix.SData.Client.Atom;
+using Saleslogix.SData.Client.Common;
+using Saleslogix.SData.Client.Core;
+using Saleslogix.SData.Client.Extensions;
 
 #pragma warning disable 168
 #pragma warning disable 219

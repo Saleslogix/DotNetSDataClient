@@ -2,11 +2,11 @@
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using NUnit.Framework;
-using Sage.SData.Client.Framework;
+using Saleslogix.SData.Client.Framework;
 
 // ReSharper disable InconsistentNaming
 
-namespace Sage.SData.Client.Test.Framework
+namespace Saleslogix.SData.Client.Test.Framework
 {
     [TestFixture]
     public class SDataExceptionTests

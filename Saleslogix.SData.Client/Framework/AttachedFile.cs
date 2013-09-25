@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using Sage.SData.Client.Mime;
+using Saleslogix.SData.Client.Mime;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Represents a file that's been attached to a request or response.

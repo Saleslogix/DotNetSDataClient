@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Remotion.Linq;
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     internal interface IAsyncQueryExecutor : IQueryExecutor
     {

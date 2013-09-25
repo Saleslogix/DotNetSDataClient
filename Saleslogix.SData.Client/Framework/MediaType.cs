@@ -6,7 +6,7 @@
 
 using System.Xml.Serialization;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Defines the list of supported media types.

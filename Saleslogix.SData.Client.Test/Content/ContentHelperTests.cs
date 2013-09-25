@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Sage.SData.Client.Content;
+using Saleslogix.SData.Client.Content;
 
 #if !NET_2_0
 using System.Runtime.Serialization;
@@ -10,7 +10,7 @@ using System.Runtime.Serialization;
 
 // ReSharper disable InconsistentNaming
 
-namespace Sage.SData.Client.Test.Content
+namespace Saleslogix.SData.Client.Test.Content
 {
     [TestFixture]
     public class ContentHelperTests

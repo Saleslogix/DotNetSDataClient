@@ -7,7 +7,7 @@
 using System;
 using System.Xml.Serialization;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Represents tracking information used to track the progress of an

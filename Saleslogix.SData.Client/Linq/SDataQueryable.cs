@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Remotion.Linq;
 using Remotion.Linq.Parsing.Structure;
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     internal class SDataQueryable<T> : QueryableBase<T>
     {

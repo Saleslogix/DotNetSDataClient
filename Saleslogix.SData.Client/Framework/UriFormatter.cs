@@ -15,7 +15,7 @@ using System.Net;
 using System.Security.Permissions;
 #endif
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Helper class for building a <see cref="Uri"/>.

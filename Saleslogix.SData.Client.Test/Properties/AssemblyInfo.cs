@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Sage.SData.Client.Test")]
+[assembly: AssemblyTitle("Saleslogix.SData.Client.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Sage Software, Inc.")]
-[assembly: AssemblyProduct("Sage.SData.Client.Test")]
+[assembly: AssemblyCompany("Saleslogix Software, Inc.")]
+[assembly: AssemblyProduct("Saleslogix.SData.Client.Test")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.StreamedData;
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     internal class WithPrecedenceResultOperator : ResultOperatorBase
     {

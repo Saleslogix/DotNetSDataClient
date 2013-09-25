@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Helper class for parsing the query part of a <see cref="Uri"/>

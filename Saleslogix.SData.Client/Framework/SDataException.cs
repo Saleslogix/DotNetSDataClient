@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using Sage.SData.Client.Content;
+using Saleslogix.SData.Client.Content;
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 #endif
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// The exception that is thrown when an error occurs on an SData server.

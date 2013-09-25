@@ -2,7 +2,7 @@
 
 // ReSharper disable UnusedParameter.Global
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     public static class SDataOperatorExtensions
     {

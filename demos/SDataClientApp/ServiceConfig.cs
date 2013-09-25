@@ -1,5 +1,5 @@
 ﻿using System;
-using Sage.SData.Client.Framework;
+using Saleslogix.SData.Client.Framework;
 using SDataClientApp.Properties;
 
 namespace SDataClientApp

@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
-using Sage.SData.Client.Framework;
+using Saleslogix.SData.Client.Framework;
 
-namespace Sage.SData.Client.Test.Framework
+namespace Saleslogix.SData.Client.Test.Framework
 {
     [TestFixture]
     public class SDataUriTests

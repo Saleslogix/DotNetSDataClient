@@ -1,4 +1,4 @@
-﻿namespace Sage.SData.Client.Framework
+﻿namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Specifies the types of diagnosis code.

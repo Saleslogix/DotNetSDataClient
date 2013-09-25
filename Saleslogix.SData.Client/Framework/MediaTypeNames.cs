@@ -6,9 +6,9 @@
 
 using System;
 using System.Collections.Generic;
-using Sage.SData.Client.Utilities;
+using Saleslogix.SData.Client.Utilities;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Handles the mapping of <see cref="MediaType"/> values to names and visa-versa.

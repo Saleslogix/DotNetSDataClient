@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using Sage.SData.Client.Mime;
+using Saleslogix.SData.Client.Mime;
 
 // ReSharper disable InconsistentNaming
 
-namespace Sage.SData.Client.Test.Mime
+namespace Saleslogix.SData.Client.Test.Mime
 {
     [TestFixture]
     public class MimeMessageTests

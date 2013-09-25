@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 // ReSharper disable InconsistentNaming
 
-namespace Sage.SData.Client.Test.ExtensionsJson
+namespace Saleslogix.SData.Client.Test.ExtensionsJson
 {
     [TestFixture]
     public class SDataExtensionContextTests

@@ -9,7 +9,7 @@ using System.Text;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     internal class SDataExpressionBuilderVisitor : ThrowingExpressionTreeVisitor
     {

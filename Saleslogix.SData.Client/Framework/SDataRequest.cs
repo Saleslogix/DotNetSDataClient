@@ -12,11 +12,11 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Xml.Serialization;
-using Sage.SData.Client.Content;
-using Sage.SData.Client.Mime;
-using Sage.SData.Client.Utilities;
+using Saleslogix.SData.Client.Content;
+using Saleslogix.SData.Client.Mime;
+using Saleslogix.SData.Client.Utilities;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// The request class which is responsible for sending and

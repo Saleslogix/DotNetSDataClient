@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using NUnit.Framework;
-using Sage.SData.Client.Metadata;
+using Saleslogix.SData.Client.Metadata;
 
 // ReSharper disable InconsistentNaming
 
-namespace Sage.SData.Client.Test.Metadata
+namespace Saleslogix.SData.Client.Test.Metadata
 {
     [TestFixture]
     public class SDataSchemaTests

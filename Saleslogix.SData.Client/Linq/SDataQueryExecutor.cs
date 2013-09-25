@@ -14,7 +14,7 @@ using Remotion.Linq.Clauses.StreamedData;
 using System.Threading.Tasks;
 #endif
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     internal class SDataQueryExecutor
 #if NET_3_5

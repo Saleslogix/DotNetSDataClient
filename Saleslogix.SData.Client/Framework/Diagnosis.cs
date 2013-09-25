@@ -9,7 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Xml.Serialization;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Provides details of an error that has occurred.

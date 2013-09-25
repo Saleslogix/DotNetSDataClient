@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization;
 #endif
 
-namespace Sage.SData.Client
+namespace Saleslogix.SData.Client
 {
     public static class NamingScheme
     {

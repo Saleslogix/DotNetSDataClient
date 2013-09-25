@@ -5,7 +5,7 @@
 // Sage will take appropriate legal action against those who make unauthorised use of this
 // code.
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Provides the common elements for Syndication

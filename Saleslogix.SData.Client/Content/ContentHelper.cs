@@ -11,7 +11,7 @@ using SimpleJson.Reflection;
 using System.Runtime.Serialization;
 #endif
 
-namespace Sage.SData.Client.Content
+namespace Saleslogix.SData.Client.Content
 {
     internal static class ContentHelper
     {

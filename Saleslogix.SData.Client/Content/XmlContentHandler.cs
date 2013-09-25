@@ -3,10 +3,10 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
-using Sage.SData.Client.Framework;
-using Sage.SData.Client.Utilities;
+using Saleslogix.SData.Client.Framework;
+using Saleslogix.SData.Client.Utilities;
 
-namespace Sage.SData.Client.Content
+namespace Saleslogix.SData.Client.Content
 {
     public class XmlContentHandler : IContentHandler
     {

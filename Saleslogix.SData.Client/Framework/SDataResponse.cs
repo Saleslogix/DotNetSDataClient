@@ -8,10 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using Sage.SData.Client.Content;
-using Sage.SData.Client.Mime;
+using Saleslogix.SData.Client.Content;
+using Saleslogix.SData.Client.Mime;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// The response class which encapsulates interesting information returned

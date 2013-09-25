@@ -9,7 +9,7 @@ using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Collections;
 using Remotion.Linq.Parsing;
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     internal class SDataQueryModelVisitor : QueryModelVisitorBase
     {

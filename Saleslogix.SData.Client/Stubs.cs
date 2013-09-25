@@ -28,7 +28,7 @@ namespace System
 
     namespace Net
     {
-        using Sage.SData.Client.Utilities;
+        using Saleslogix.SData.Client.Utilities;
 
         internal static class WebHeaderCollectionExtensions
         {

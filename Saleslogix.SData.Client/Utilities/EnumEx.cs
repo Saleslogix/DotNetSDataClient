@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml.Serialization;
 
-namespace Sage.SData.Client.Utilities
+namespace Saleslogix.SData.Client.Utilities
 {
     internal static class EnumEx
     {

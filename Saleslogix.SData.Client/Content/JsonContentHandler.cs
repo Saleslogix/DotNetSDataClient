@@ -6,11 +6,11 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Sage.SData.Client.Framework;
-using Sage.SData.Client.Utilities;
+using Saleslogix.SData.Client.Framework;
+using Saleslogix.SData.Client.Utilities;
 using SimpleJson;
 
-namespace Sage.SData.Client.Content
+namespace Saleslogix.SData.Client.Content
 {
     public class JsonContentHandler : IContentHandler
     {

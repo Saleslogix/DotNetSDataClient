@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace Sage.SData.Client.Metadata
+namespace Saleslogix.SData.Client.Metadata
 {
     public enum ComplianceLevel
     {

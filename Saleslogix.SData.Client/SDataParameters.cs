@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Sage.SData.Client.Framework;
+using Saleslogix.SData.Client.Framework;
 
-namespace Sage.SData.Client
+namespace Saleslogix.SData.Client
 {
     public class SDataParameters : ISDataParameters
     {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Sage.SData.Client.Content
+namespace Saleslogix.SData.Client.Content
 {
     public interface IContentHandler
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Sage.SData.Client.Test.Model
+namespace Saleslogix.SData.Client.Test.Model
 {
     [SDataResource("salesOrders")]
     public class SalesOrder

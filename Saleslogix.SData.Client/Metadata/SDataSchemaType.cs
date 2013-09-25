@@ -2,7 +2,7 @@
 using System.Xml;
 using System.Xml.Schema;
 
-namespace Sage.SData.Client.Metadata
+namespace Saleslogix.SData.Client.Metadata
 {
     [DebuggerDisplay("{Name}")]
     public abstract class SDataSchemaType : SDataSchemaItem

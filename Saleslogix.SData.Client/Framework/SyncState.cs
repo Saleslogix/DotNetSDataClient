@@ -8,7 +8,7 @@
 using System;
 using System.Xml.Serialization;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
     /// Provides details of a SyncState for sync.

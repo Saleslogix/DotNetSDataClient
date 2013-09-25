@@ -6,7 +6,7 @@ using System.Reflection;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.StreamedData;
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     internal class FetchResultOperator : ResultOperatorBase
     {

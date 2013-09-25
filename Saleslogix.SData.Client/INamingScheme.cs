@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Sage.SData.Client
+namespace Saleslogix.SData.Client
 {
     public interface INamingScheme
     {

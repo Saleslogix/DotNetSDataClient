@@ -4,7 +4,7 @@
 using System.Runtime.Serialization;
 #endif
 
-namespace Sage.SData.Client
+namespace Saleslogix.SData.Client
 {
     [Serializable]
     public class SDataClientException : Exception

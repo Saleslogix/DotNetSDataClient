@@ -1,4 +1,4 @@
-﻿namespace Sage.SData.Client
+﻿namespace Saleslogix.SData.Client
 {
     public interface ISDataProtocolAware
     {

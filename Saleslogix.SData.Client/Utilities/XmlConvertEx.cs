@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Xml;
 
-namespace Sage.SData.Client.Utilities
+namespace Saleslogix.SData.Client.Utilities
 {
     internal static class XmlConvertEx
     {

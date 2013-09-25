@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     public static class SDataClientExtensions
     {

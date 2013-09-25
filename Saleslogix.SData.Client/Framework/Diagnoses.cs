@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 
-namespace Sage.SData.Client.Framework
+namespace Saleslogix.SData.Client.Framework
 {
     [XmlRoot(Namespace = Common.SData.Namespace)]
     [XmlType(TypeName = "diagnoses", Namespace = Common.SData.Namespace)]

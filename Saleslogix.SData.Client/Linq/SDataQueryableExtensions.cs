@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 #endif
 
-namespace Sage.SData.Client.Linq
+namespace Saleslogix.SData.Client.Linq
 {
     public static class SDataQueryableExtensions
     {
