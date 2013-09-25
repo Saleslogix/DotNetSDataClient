@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CAD51DA5-A6D2-4BFC-9D81-23F4F474615B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Saleslogix.SData.Client</RootNamespace>
+    <AssemblyName>Saleslogix.SData.Client</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\Net20\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET_2_0;SIMPLE_JSON_NO_LINQ_EXPRESSION</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Net20\Saleslogix.SData.Client.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\Net20\</OutputPath>
+    <DefineConstants>TRACE;NET_2_0;SIMPLE_JSON_NO_LINQ_EXPRESSION</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Net20\Saleslogix.SData.Client.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Content\AtomContentHandler.cs" />
+    <Compile Include="Content\ContentHelper.cs" />
+    <Compile Include="Content\ContentManager.cs" />
+    <Compile Include="Content\IContentHandler.cs" />
+    <Compile Include="Content\JsonContentHandler.cs" />
+    <Compile Include="Content\TextContentHandler.cs" />
+    <Compile Include="Content\XmlContentHandler.cs" />
+    <Compile Include="Framework\AttachedFile.cs" />
+    <Compile Include="Framework\Common.cs" />
+    <Compile Include="Framework\ContentDisposition.cs" />
+    <Compile Include="Framework\ContentType.cs" />
+    <Compile Include="Framework\Diagnoses.cs" />
+    <Compile Include="Framework\Diagnosis.cs" />
+    <Compile Include="Framework\DiagnosisCode.cs" />
+    <Compile Include="Framework\Digest.cs" />
+    <Compile Include="Framework\DigestEntry.cs" />
+    <Compile Include="Framework\HttpMethod.cs" />
+    <Compile Include="Framework\MailBnfHelper.cs" />
+    <Compile Include="Framework\MediaType.cs" />
+    <Compile Include="Framework\MediaTypeNames.cs" />
+    <Compile Include="Framework\RequestOperation.cs" />
+    <Compile Include="Framework\SDataException.cs" />
+    <Compile Include="Framework\SDataRequest.cs" />
+    <Compile Include="Framework\SDataResponse.cs" />
+    <Compile Include="Framework\SDataUri.cs" />
+    <Compile Include="Framework\Severity.cs" />
+    <Compile Include="Framework\SyncMode.cs" />
+    <Compile Include="Framework\SyncState.cs" />
+    <Compile Include="Framework\Tracking.cs" />
+    <Compile Include="Framework\UriFormatter.cs" />
+    <Compile Include="Framework\UriPathParser.cs" />
+    <Compile Include="Framework\UriPathSegment.cs" />
+    <Compile Include="Framework\UriQueryParser.cs" />
+    <Compile Include="Framework\W3CDateTime.cs" />
+    <Compile Include="INamingScheme.cs" />
+    <Compile Include="ISDataClient.cs" />
+    <Compile Include="ISDataParameters.cs" />
+    <Compile Include="ISDataProtocolAware.cs" />
+    <Compile Include="ISDataResults.cs" />
+    <Compile Include="LinqBridge.cs" />
+    <Compile Include="LinqToXml\Extensions.cs" />
+    <Compile Include="LinqToXml\LoadOptions.cs" />
+    <Compile Include="LinqToXml\SaveOptions.cs" />
+    <Compile Include="LinqToXml\XAttribute.cs" />
+    <Compile Include="LinqToXml\XCData.cs" />
+    <Compile Include="LinqToXml\XComment.cs" />
+    <Compile Include="LinqToXml\XContainer.cs" />
+    <Compile Include="LinqToXml\XDeclaration.cs" />
+    <Compile Include="LinqToXml\XDocument.cs" />
+    <Compile Include="LinqToXml\XDocumentType.cs" />
+    <Compile Include="LinqToXml\XElement.cs" />
+    <Compile Include="LinqToXml\XIterators.cs" />
+    <Compile Include="LinqToXml\XName.cs" />
+    <Compile Include="LinqToXml\XNamespace.cs" />
+    <Compile Include="LinqToXml\XNode.cs" />
+    <Compile Include="LinqToXml\XNodeDocumentOrderComparer.cs" />
+    <Compile Include="LinqToXml\XNodeEqualityComparer.cs" />
+    <Compile Include="LinqToXml\XNodeNavigator.cs" />
+    <Compile Include="LinqToXml\XNodeReader.cs" />
+    <Compile Include="LinqToXml\XNodeWriter.cs" />
+    <Compile Include="LinqToXml\XObject.cs" />
+    <Compile Include="LinqToXml\XObjectChange.cs" />
+    <Compile Include="LinqToXml\XObjectChangeEventArgs.cs" />
+    <Compile Include="LinqToXml\XProcessingInstruction.cs" />
+    <Compile Include="LinqToXml\XStreamingElement.cs" />
+    <Compile Include="LinqToXml\XText.cs" />
+    <Compile Include="LinqToXml\XUtil.cs" />
+    <Compile Include="Metadata\BatchingMode.cs" />
+    <Compile Include="Metadata\CollectionDebugView.cs" />
+    <Compile Include="Metadata\ComplianceLevel.cs" />
+    <Compile Include="Metadata\InvocationMode.cs" />
+    <Compile Include="Metadata\KeyedCollection.cs" />
+    <Compile Include="Metadata\KeyedEnumerable.cs" />
+    <Compile Include="Metadata\KeyedObjectCollection.cs" />
+    <Compile Include="Metadata\RelationshipType.cs" />
+    <Compile Include="Metadata\SDataSchema.cs" />
+    <Compile Include="Metadata\SDataSchemaChoiceItem.cs" />
+    <Compile Include="Metadata\SDataSchemaChoiceType.cs" />
+    <Compile Include="Metadata\SDataSchemaComplexType.cs" />
+    <Compile Include="Metadata\SDataSchemaDocumentation.cs" />
+    <Compile Include="Metadata\SDataSchemaEnumItem.cs" />
+    <Compile Include="Metadata\SDataSchemaEnumType.cs" />
+    <Compile Include="Metadata\SDataSchemaItem.cs" />
+    <Compile Include="Metadata\SDataSchemaNamedQueryType.cs" />
+    <Compile Include="Metadata\SDataSchemaObject.cs" />
+    <Compile Include="Metadata\SDataSchemaProperty.cs" />
+    <Compile Include="Metadata\SDataSchemaRelationshipProperty.cs" />
+    <Compile Include="Metadata\SDataSchemaResourceType.cs" />
+    <Compile Include="Metadata\SDataSchemaServiceOperationType.cs" />
+    <Compile Include="Metadata\SDataSchemaSet.cs" />
+    <Compile Include="Metadata\SDataSchemaSimpleType.cs" />
+    <Compile Include="Metadata\SDataSchemaTopLevelType.cs" />
+    <Compile Include="Metadata\SDataSchemaType.cs" />
+    <Compile Include="Metadata\SDataSchemaTypeReference.cs" />
+    <Compile Include="Metadata\SDataSchemaValueProperty.cs" />
+    <Compile Include="Metadata\SDataSchemaValueType.cs" />
+    <Compile Include="Mime\MimeHelper.cs" />
+    <Compile Include="Mime\MimeMessage.cs" />
+    <Compile Include="Mime\MimePart.cs" />
+    <Compile Include="NamingScheme.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SDataClient.cs" />
+    <Compile Include="SDataClientException.cs" />
+    <Compile Include="SDataCollection.cs" />
+    <Compile Include="SDataParameters.cs" />
+    <Compile Include="SDataProtocolInfo.cs" />
+    <Compile Include="SDataProtocolProperty.cs" />
+    <Compile Include="SDataProtocolPropertyAttribute.cs" />
+    <Compile Include="SDataResource.cs" />
+    <Compile Include="SDataResourceAttribute.cs" />
+    <Compile Include="SDataResults.cs" />
+    <Compile Include="SimpleJson.cs" />
+    <Compile Include="Stubs.cs" />
+    <Compile Include="Utilities\EnumEx.cs" />
+    <Compile Include="Utilities\Guard.cs" />
+    <Compile Include="Utilities\XmlConvertEx.cs" />
+    <None Include="Examplecs.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,417 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <ProjectGuid>{5C3BE940-20AD-4287-8118-14F4FBB07496}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Saleslogix.SData.Client</RootNamespace>
+    <AssemblyName>Saleslogix.SData.Client</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\NetFX\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\NetFX\Saleslogix.SData.Client.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\NetFX\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\NetFX\Saleslogix.SData.Client.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\NetFX\ARM\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\Release\NetFX\ARM\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\NetFX\x64\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\Release\NetFX\x64\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\NetFX\x86\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\Release\NetFX\x86\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .NET Framework and Windows SDK are automatically included -->
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Content\AtomContentHandler.cs" />
+    <Compile Include="Content\ContentHelper.cs" />
+    <Compile Include="Content\ContentManager.cs" />
+    <Compile Include="Content\IContentHandler.cs" />
+    <Compile Include="Content\JsonContentHandler.cs" />
+    <Compile Include="Content\TextContentHandler.cs" />
+    <Compile Include="Content\XmlContentHandler.cs" />
+    <Compile Include="Framework\AttachedFile.cs" />
+    <Compile Include="Framework\Common.cs" />
+    <Compile Include="Framework\ContentDisposition.cs" />
+    <Compile Include="Framework\ContentType.cs" />
+    <Compile Include="Framework\Diagnoses.cs" />
+    <Compile Include="Framework\Diagnosis.cs" />
+    <Compile Include="Framework\DiagnosisCode.cs" />
+    <Compile Include="Framework\Digest.cs" />
+    <Compile Include="Framework\DigestEntry.cs" />
+    <Compile Include="Framework\HttpMethod.cs" />
+    <Compile Include="Framework\MailBnfHelper.cs" />
+    <Compile Include="Framework\MediaType.cs" />
+    <Compile Include="Framework\MediaTypeNames.cs" />
+    <Compile Include="Framework\RequestOperation.cs" />
+    <Compile Include="Framework\SDataException.cs" />
+    <Compile Include="Framework\SDataRequest.cs" />
+    <Compile Include="Framework\SDataResponse.cs" />
+    <Compile Include="Framework\SDataUri.cs" />
+    <Compile Include="Framework\Severity.cs" />
+    <Compile Include="Framework\SyncMode.cs" />
+    <Compile Include="Framework\SyncState.cs" />
+    <Compile Include="Framework\Tracking.cs" />
+    <Compile Include="Framework\UriFormatter.cs" />
+    <Compile Include="Framework\UriPathParser.cs" />
+    <Compile Include="Framework\UriPathSegment.cs" />
+    <Compile Include="Framework\UriQueryParser.cs" />
+    <Compile Include="Framework\W3CDateTime.cs" />
+    <Compile Include="INamingScheme.cs" />
+    <Compile Include="ISDataClient.cs" />
+    <Compile Include="ISDataParameters.cs" />
+    <Compile Include="ISDataProtocolAware.cs" />
+    <Compile Include="ISDataResults.cs" />
+    <Compile Include="Linq\AllAsyncExpressionNode.cs" />
+    <Compile Include="Linq\AllAsyncResultOperator.cs" />
+    <Compile Include="Linq\AnyAsyncExpressionNode.cs" />
+    <Compile Include="Linq\AnyAsyncResultOperator.cs" />
+    <Compile Include="Linq\CountAsyncExpressionNode.cs" />
+    <Compile Include="Linq\CountAsyncResultOperator.cs" />
+    <Compile Include="Linq\ElementAtAsyncExpressionNode.cs" />
+    <Compile Include="Linq\ElementAtAsyncResultOperator.cs" />
+    <Compile Include="Linq\ElementAtExpressionNode.cs" />
+    <Compile Include="Linq\ElementAtResultOperator.cs" />
+    <Compile Include="Linq\FetchExpressionNode.cs" />
+    <Compile Include="Linq\FetchResultOperator.cs" />
+    <Compile Include="Linq\FirstAsyncExpressionNode.cs" />
+    <Compile Include="Linq\FirstAsyncResultOperator.cs" />
+    <Compile Include="Linq\IAsyncQueryExecutor.cs" />
+    <Compile Include="Linq\LastAsyncExpressionNode.cs" />
+    <Compile Include="Linq\LastAsyncResultOperator.cs" />
+    <Compile Include="Linq\LongCountAsyncExpressionNode.cs" />
+    <Compile Include="Linq\LongCountAsyncResultOperator.cs" />
+    <Compile Include="Linq\MemberPathBuilder.cs" />
+    <Compile Include="Linq\SDataClientExtensions.cs" />
+    <Compile Include="Linq\SDataExpressionBuilderVisitor.cs" />
+    <Compile Include="Linq\SDataFunctionExtensions.cs" />
+    <Compile Include="Linq\SDataOperatorExtensions.cs" />
+    <Compile Include="Linq\SDataProtocolFilterVariable.cs" />
+    <Compile Include="Linq\SDataQueryable.cs" />
+    <Compile Include="Linq\SDataQueryableExtensions.cs" />
+    <Compile Include="Linq\SDataQueryExecutor.cs" />
+    <Compile Include="Linq\SDataQueryModelVisitor.cs" />
+    <Compile Include="Linq\SingleAsyncExpressionNode.cs" />
+    <Compile Include="Linq\SingleAsyncResultOperator.cs" />
+    <Compile Include="Linq\StreamedAsyncCollectionInfo.cs" />
+    <Compile Include="Linq\StreamedAsyncScalarInfo.cs" />
+    <Compile Include="Linq\StreamedAsyncSingleInfo.cs" />
+    <Compile Include="Linq\ToCollectionAsyncExpressionNode.cs" />
+    <Compile Include="Linq\ToCollectionAsyncResultOperator.cs" />
+    <Compile Include="Linq\WithPrecedenceExpressionNode.cs" />
+    <Compile Include="Linq\WithPrecedenceResultOperator.cs" />
+    <Compile Include="Mime\MimeMessage.cs" />
+    <Compile Include="Mime\MimePart.cs" />
+    <Compile Include="NamingScheme.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Relinq\Clauses\AdditionalFromClause.cs" />
+    <Compile Include="Relinq\Clauses\CloneContext.cs" />
+    <Compile Include="Relinq\Clauses\Expressions\ExtensionExpression.cs" />
+    <Compile Include="Relinq\Clauses\Expressions\IPartialEvaluationExceptionExpressionVisitor.cs" />
+    <Compile Include="Relinq\Clauses\Expressions\IVBSpecificExpressionVisitor.cs" />
+    <Compile Include="Relinq\Clauses\Expressions\PartialEvaluationExceptionExpression.cs" />
+    <Compile Include="Relinq\Clauses\Expressions\QuerySourceReferenceExpression.cs" />
+    <Compile Include="Relinq\Clauses\Expressions\SubQueryExpression.cs" />
+    <Compile Include="Relinq\Clauses\Expressions\VBStringComparisonExpression.cs" />
+    <Compile Include="Relinq\Clauses\ExpressionTreeVisitors\AccessorFindingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Clauses\ExpressionTreeVisitors\CloningExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Clauses\ExpressionTreeVisitors\FormattingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Clauses\ExpressionTreeVisitors\ReferenceReplacingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Clauses\ExpressionTreeVisitors\ReverseResolvingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Clauses\FromClauseBase.cs" />
+    <Compile Include="Relinq\Clauses\GroupJoinClause.cs" />
+    <Compile Include="Relinq\Clauses\IBodyClause.cs" />
+    <Compile Include="Relinq\Clauses\IClause.cs" />
+    <Compile Include="Relinq\Clauses\IQuerySource.cs" />
+    <Compile Include="Relinq\Clauses\JoinClause.cs" />
+    <Compile Include="Relinq\Clauses\MainFromClause.cs" />
+    <Compile Include="Relinq\Clauses\OrderByClause.cs" />
+    <Compile Include="Relinq\Clauses\Ordering.cs" />
+    <Compile Include="Relinq\Clauses\OrderingDirection.cs" />
+    <Compile Include="Relinq\Clauses\QuerySourceMapping.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperatorBase.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\AggregateFromSeedResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\AggregateResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\AllResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\AnyResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\AverageResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\CastResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\ChoiceResultOperatorBase.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\ContainsResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\CountResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\DefaultIfEmptyResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\DistinctResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\ExceptResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\FirstResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\GroupResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\IntersectResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\LastResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\LongCountResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\MaxResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\MinResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\OfTypeResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\ReverseResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\SequenceFromSequenceResultOperatorBase.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\SequenceTypePreservingResultOperatorBase.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\SingleResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\SkipResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\SumResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\TakeResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\UnionResultOperator.cs" />
+    <Compile Include="Relinq\Clauses\ResultOperators\ValueFromSequenceResultOperatorBase.cs" />
+    <Compile Include="Relinq\Clauses\SelectClause.cs" />
+    <Compile Include="Relinq\Clauses\StreamedData\IStreamedData.cs" />
+    <Compile Include="Relinq\Clauses\StreamedData\IStreamedDataInfo.cs" />
+    <Compile Include="Relinq\Clauses\StreamedData\StreamedScalarValueInfo.cs" />
+    <Compile Include="Relinq\Clauses\StreamedData\StreamedSequence.cs" />
+    <Compile Include="Relinq\Clauses\StreamedData\StreamedSequenceInfo.cs" />
+    <Compile Include="Relinq\Clauses\StreamedData\StreamedSingleValueInfo.cs" />
+    <Compile Include="Relinq\Clauses\StreamedData\StreamedValue.cs" />
+    <Compile Include="Relinq\Clauses\StreamedData\StreamedValueInfo.cs" />
+    <Compile Include="Relinq\Clauses\WhereClause.cs" />
+    <Compile Include="Relinq\Collections\ChangeResistantObservableCollectionEnumerator.cs" />
+    <Compile Include="Relinq\Collections\MultiDictionary.cs" />
+    <Compile Include="Relinq\Collections\ObservableCollection.cs" />
+    <Compile Include="Relinq\Collections\ObservableCollectionChangedEventArgs.cs" />
+    <Compile Include="Relinq\DefaultQueryProvider.cs" />
+    <Compile Include="Relinq\EagerFetching\FetchFilteringQueryModelVisitor.cs" />
+    <Compile Include="Relinq\EagerFetching\FetchManyRequest.cs" />
+    <Compile Include="Relinq\EagerFetching\FetchOneRequest.cs" />
+    <Compile Include="Relinq\EagerFetching\FetchQueryModelBuilder.cs" />
+    <Compile Include="Relinq\EagerFetching\FetchRequestBase.cs" />
+    <Compile Include="Relinq\EagerFetching\FetchRequestCollection.cs" />
+    <Compile Include="Relinq\EagerFetching\FluentFetchRequest.cs" />
+    <Compile Include="Relinq\EagerFetching\Parsing\FetchExpressionNodeBase.cs" />
+    <Compile Include="Relinq\EagerFetching\Parsing\FetchManyExpressionNode.cs" />
+    <Compile Include="Relinq\EagerFetching\Parsing\FetchOneExpressionNode.cs" />
+    <Compile Include="Relinq\EagerFetching\Parsing\OuterFetchExpressionNodeBase.cs" />
+    <Compile Include="Relinq\EagerFetching\Parsing\ThenFetchExpressionNodeBase.cs" />
+    <Compile Include="Relinq\EagerFetching\Parsing\ThenFetchManyExpressionNode.cs" />
+    <Compile Include="Relinq\EagerFetching\Parsing\ThenFetchOneExpressionNode.cs" />
+    <Compile Include="Relinq\IQueryExecutor.cs" />
+    <Compile Include="Relinq\IQueryModelVisitor.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\MemberBindings\FieldInfoBinding.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\MemberBindings\MemberBinding.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\MemberBindings\MethodInfoBinding.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\MemberBindings\PropertyInfoBinding.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\MultiReplacingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\PartialEvaluatingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\ReplacingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\SubQueryFindingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\ExpressionTransformation.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\ExpressionTransformerRegistry.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\IExpressionTranformationProvider.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\IExpressionTransformer.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\PredefinedTransformations\AttributeEvaluatingExpressionTransformer.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\PredefinedTransformations\DictionaryEntryNewExpressionTransformer.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\PredefinedTransformations\InvocationOfLambdaExpressionTransformer.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\PredefinedTransformations\KeyValuePairNewExpressionTransformer.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\PredefinedTransformations\MemberAddingNewExpressionTransformerBase.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\PredefinedTransformations\MethodCallExpressionTransformerAttribute.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\PredefinedTransformations\NullableValueTransformer.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\PredefinedTransformations\TupleNewExpressionTransformer.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\PredefinedTransformations\VBCompareStringExpressionTransformer.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\Transformation\PredefinedTransformations\VBInformationIsNothingExpressionTransformer.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\TransformingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\TransparentIdentifierRemovingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\TreeEvaluation\EvaluatableTreeFindingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Parsing\ExpressionTreeVisitors\TreeEvaluation\PartialEvaluationInfo.cs" />
+    <Compile Include="Relinq\Parsing\ParserException.cs" />
+    <Compile Include="Relinq\Parsing\Structure\ExpressionTreeParser.cs" />
+    <Compile Include="Relinq\Parsing\Structure\ExpressionTreeProcessors\CompoundExpressionTreeProcessor.cs" />
+    <Compile Include="Relinq\Parsing\Structure\ExpressionTreeProcessors\NullExpressionTreeProcessor.cs" />
+    <Compile Include="Relinq\Parsing\Structure\ExpressionTreeProcessors\PartialEvaluatingExpressionTreeProcessor.cs" />
+    <Compile Include="Relinq\Parsing\Structure\ExpressionTreeProcessors\TransformingExpressionTreeProcessor.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IExpressionTreeProcessor.cs" />
+    <Compile Include="Relinq\Parsing\Structure\INodeTypeProvider.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\AggregateExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\AggregateFromSeedExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\AllExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\AnyExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\AverageExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\CastExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\ClauseGenerationContext.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\ContainsExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\CountExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\DefaultIfEmptyExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\DistinctExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\ExceptExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\ExpressionNodeInstantiationException.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\ExpressionResolver.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\FirstExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\GroupByExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\GroupByWithResultSelectorExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\GroupJoinExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\IExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\IExpressionNodeParseInfo.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\IntersectExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\IQuerySourceExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\JoinExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\LastExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\LongCountExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\MainSourceExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\MaxExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\MethodCallExpressionNodeBase.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\MethodCallExpressionNodeFactory.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\MinExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\OfTypeExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\OrderByDescendingExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\OrderByExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\QuerySourceExpressionNodeUtility.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\ResolvedExpressionCache.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\ResultOperatorExpressionNodeBase.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\ReverseExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\SelectExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\SelectManyExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\SingleExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\SkipExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\SumExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\TakeExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\ThenByDescendingExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\ThenByExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\UnionExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IntermediateModel\WhereExpressionNode.cs" />
+    <Compile Include="Relinq\Parsing\Structure\IQueryParser.cs" />
+    <Compile Include="Relinq\Parsing\Structure\MethodCallExpressionParser.cs" />
+    <Compile Include="Relinq\Parsing\Structure\NodeTypeProviders\CompoundNodeTypeProvider.cs" />
+    <Compile Include="Relinq\Parsing\Structure\NodeTypeProviders\MethodInfoBasedNodeTypeRegistry.cs" />
+    <Compile Include="Relinq\Parsing\Structure\NodeTypeProviders\MethodNameBasedNodeTypeRegistry.cs" />
+    <Compile Include="Relinq\Parsing\Structure\NodeTypeProviders\NameBasedRegistrationInfo.cs" />
+    <Compile Include="Relinq\Parsing\Structure\QueryParser.cs" />
+    <Compile Include="Relinq\Parsing\ThrowingExpressionTreeVisitor.cs" />
+    <Compile Include="Relinq\Parsing\TupleExpressionBuilder.cs" />
+    <Compile Include="Relinq\QueryableBase.cs" />
+    <Compile Include="Relinq\QueryModel.cs" />
+    <Compile Include="Relinq\QueryModelBuilder.cs" />
+    <Compile Include="Relinq\QueryModelVisitorBase.cs" />
+    <Compile Include="Relinq\QueryProviderBase.cs" />
+    <Compile Include="Relinq\ReflectionUtility.cs" />
+    <Compile Include="Relinq\Transformations\SubQueryFromClauseFlattener.cs" />
+    <Compile Include="Relinq\UniqueIdentifierGenerator.cs" />
+    <Compile Include="Relinq\UnmappedItemException.cs" />
+    <Compile Include="Relinq\Utilities\ArgumentEmptyException.cs" />
+    <Compile Include="Relinq\Utilities\ArgumentTypeException.cs" />
+    <Compile Include="Relinq\Utilities\ArgumentUtility.cs" />
+    <Compile Include="Relinq\Utilities\HashCodeUtility.cs" />
+    <Compile Include="Relinq\Utilities\RegistryBase.cs" />
+    <Compile Include="Relinq\Utilities\ReSharperAnnotations\AssertionConditionAttribute.cs" />
+    <Compile Include="Relinq\Utilities\ReSharperAnnotations\AssertionConditionType.cs" />
+    <Compile Include="Relinq\Utilities\ReSharperAnnotations\AssertionMethodAttribute.cs" />
+    <Compile Include="Relinq\Utilities\ReSharperAnnotations\ImplicitUseKindFlags.cs" />
+    <Compile Include="Relinq\Utilities\ReSharperAnnotations\ImplicitUseTargetFlags.cs" />
+    <Compile Include="Relinq\Utilities\ReSharperAnnotations\InvokerParameterNameAttribute.cs" />
+    <Compile Include="Relinq\Utilities\ReSharperAnnotations\MeansImplicitUseAttribute.cs" />
+    <Compile Include="Relinq\Utilities\ReSharperAnnotations\NoEnumerationAttribute.cs" />
+    <Compile Include="Relinq\Utilities\ReSharperAnnotations\UsedImplicitlyAttribute.cs" />
+    <Compile Include="Relinq\Utilities\SeparatedStringBuilder.cs" />
+    <Compile Include="SDataClient.cs" />
+    <Compile Include="SDataClientException.cs" />
+    <Compile Include="SDataCollection.cs" />
+    <Compile Include="SDataParameters.cs" />
+    <Compile Include="SDataProtocolInfo.cs" />
+    <Compile Include="SDataProtocolProperty.cs" />
+    <Compile Include="SDataProtocolPropertyAttribute.cs" />
+    <Compile Include="SDataResource.cs" />
+    <Compile Include="SDataResourceAttribute.cs" />
+    <Compile Include="SDataResults.cs" />
+    <Compile Include="SimpleJson.cs" />
+    <Compile Include="Stubs.cs" />
+    <Compile Include="Utilities\EnumEx.cs" />
+    <Compile Include="Utilities\Guard.cs" />
+    <Compile Include="Utilities\XmlConvertEx.cs" />
+    <None Include="Examplecs.cs" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
+    <VisualStudioVersion>11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

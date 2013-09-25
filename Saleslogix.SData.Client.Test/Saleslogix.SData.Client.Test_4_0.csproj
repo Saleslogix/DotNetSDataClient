@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{92C27580-82D9-46FC-8E4A-9B75E6FF6C2B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Saleslogix.SData.Client.Test</RootNamespace>
+    <AssemblyName>Saleslogix.SData.Client.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\Net40\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET_4_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\Net40\</OutputPath>
+    <DefineConstants>TRACE;NET_4_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\dependencies\Moq\NET40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\dependencies\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Content\AtomContentHandlerTests.cs" />
+    <Compile Include="Content\ContentHelperTests.cs" />
+    <Compile Include="Content\JsonContentHandlerTests.cs" />
+    <Compile Include="Content\TextContentHandlerTests.cs" />
+    <Compile Include="Content\XmlContentHandlerTests.cs" />
+    <Compile Include="ExtensionsJson\SDataExtensionContextTests.cs" />
+    <Compile Include="ExtensionsJson\SDataPayloadTests.cs" />
+    <Compile Include="ExtensionsJson\SDataSimpleCollectionTests.cs" />
+    <Compile Include="ExtensionsJson\SDataSyncExtensionContextTests.cs" />
+    <Compile Include="Extensions\SDataExtensionContextTests.cs" />
+    <Compile Include="Extensions\SDataPayloadTests.cs" />
+    <Compile Include="Extensions\SDataSimpleCollectionTests.cs" />
+    <Compile Include="Extensions\SDataSyncExtensionContextTests.cs" />
+    <Compile Include="Extensions\SyndicationExtensionTests.cs" />
+    <Compile Include="Framework\DiagnosisTests.cs" />
+    <Compile Include="Framework\MediaTypeNamesTests.cs" />
+    <Compile Include="Framework\SDataExceptionTests.cs" />
+    <Compile Include="Framework\SDataUriTests.cs" />
+    <Compile Include="Framework\UriFormatterTests.cs" />
+    <Compile Include="Framework\UriPathParserTests.cs" />
+    <Compile Include="Framework\W3CDateTimeTests.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Linq\SDataExpressionBuilderVisitorTests.cs" />
+    <Compile Include="Linq\SDataQueryExecutorTests.cs" />
+    <Compile Include="Linq\SDataQueryModelVisitorTests.cs" />
+    <Compile Include="Metadata\SDataSchemaTests.cs" />
+    <Compile Include="Mime\MimeMessageTests.cs" />
+    <Compile Include="Model\Address.cs" />
+    <Compile Include="Model\Contact.cs" />
+    <Compile Include="Model\Product.cs" />
+    <Compile Include="Model\SalesOrder.cs" />
+    <Compile Include="Model\SalesOrderLine.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Saleslogix.SData.Client\Saleslogix.SData.Client_4_0.csproj">
+      <Project>{FEECA9B9-980E-470F-81BA-C56ABD8D520E}</Project>
+      <Name>Saleslogix.SData.Client_4_0</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
