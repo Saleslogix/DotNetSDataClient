@@ -56,7 +56,7 @@ namespace Saleslogix.SData.Client.Framework
         public SDataRequest(string uri, params RequestOperation[] operations)
         {
             Uri = uri;
-            UserAgent = "Sage";
+            UserAgent = "DotNetSDataClient";
             Timeout = 120000;
             TimeoutRetryAttempts = 1;
             _operations = new List<RequestOperation>(operations);
