@@ -125,7 +125,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Initializes a new instance of the <see cref="UriFormatter"/> class.
         /// </summary>
         protected UriFormatter(SerializationInfo info, StreamingContext context)
-            : this((Uri) null)
+            : this()
         {
             string uri = null;
 
@@ -152,7 +152,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Initializes a new instance of the <see cref="UriFormatter"/> class.
         /// </summary>
         public UriFormatter()
-            : this((Uri) null)
+            : this(default(Uri))
         {
         }
 
@@ -432,11 +432,6 @@ namespace Saleslogix.SData.Client.Framework
             }
             set
             {
-                if (value == null)
-                {
-                    value = string.Empty;
-                }
-
                 CheckParsePath();
                 _queryArgs = !string.IsNullOrEmpty(value) ? new QueryArgsDictionary(this, value) : null;
                 _requiresRebuildUri = true;
@@ -476,7 +471,7 @@ namespace Saleslogix.SData.Client.Framework
                 if (query < 0)
                 {
                     Path = Path;
-                    Query = string.Empty;
+                    Query = null;
                 }
                 else
                 {
@@ -916,11 +911,11 @@ namespace Saleslogix.SData.Client.Framework
             {
                 _port = UnspecifiedPort;
                 _scheme = Http;
-                _host = string.Empty;
-                _pathPrefix = string.Empty;
-                _server = string.Empty;
-                _fragment = string.Empty;
-                _pathInternal = string.Empty;
+                _host = null;
+                _pathPrefix = null;
+                _server = null;
+                _fragment = null;
+                _pathInternal = null;
                 _queryArgs = null;
             }
             else
@@ -941,7 +936,7 @@ namespace Saleslogix.SData.Client.Framework
                 if (endServer < 0)
                 {
                     _server = path;
-                    _pathInternal = string.Empty;
+                    _pathInternal = null;
                 }
                 else
                 {
@@ -955,7 +950,7 @@ namespace Saleslogix.SData.Client.Framework
                     _fragment = _fragment.Substring(FragmentPrefix.Length);
                 }
 
-                if (_pathInternal.StartsWith(PathSegmentPrefix))
+                if (_pathInternal != null && _pathInternal.StartsWith(PathSegmentPrefix))
                 {
                     _pathInternal = _pathInternal.Substring(PathSegmentPrefix.Length);
                 }
@@ -1139,7 +1134,21 @@ namespace Saleslogix.SData.Client.Framework
                     query = query.Substring(QueryPrefix.Length);
                 }
 
-                return UriQueryParser.Parse(query);
+                var args = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                if (!string.IsNullOrEmpty(query))
+                {
+                    foreach (var arg in query.Split(QueryArgPrefix[0]))
+                    {
+                        var parts = arg.Split(QueryArgValuePrefix[0]);
+                        if (parts[0].Length > 0)
+                        {
+                            var key = Uri.UnescapeDataString(parts[0].Trim());
+                            args[key] = parts.Length == 1 ? null : Uri.UnescapeDataString(parts[1]);
+                        }
+                    }
+                }
+
+                return args;
             }
 
             #region IDictionary Members

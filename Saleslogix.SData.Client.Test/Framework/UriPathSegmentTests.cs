@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using Saleslogix.SData.Client.Framework;
 
 // ReSharper disable InconsistentNaming
@@ -6,7 +7,7 @@ using Saleslogix.SData.Client.Framework;
 namespace Saleslogix.SData.Client.Test.Framework
 {
     [TestFixture]
-    public class UriPathParserTests
+    public class UriPathSegmentTests
     {
         /// <summary>
         /// The URI path parser should handle open parentheses characters
@@ -15,7 +16,7 @@ namespace Saleslogix.SData.Client.Test.Framework
         [Test]
         public void Literal_String_Selector_With_Open_Paren_Test()
         {
-            var segments = UriPathParser.Parse("aaa('bbb(ccc')");
+            var segments = UriPathSegment.FromStrings(new[] {"aaa('bbb(ccc')"}).ToList();
             Assert.That(segments, Is.Not.Null);
             Assert.That(segments.Count, Is.EqualTo(1));
 

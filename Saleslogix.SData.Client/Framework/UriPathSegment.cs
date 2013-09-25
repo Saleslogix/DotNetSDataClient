@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Saleslogix.SData.Client.Framework
 {
@@ -27,6 +28,31 @@ namespace Saleslogix.SData.Client.Framework
         /// <value>The suffix to use for a selector.</value>
         public const string SelectorSuffix = ")";
 
+        private static readonly Regex _segmentFormat = new Regex(
+            @"(?<segment>
+                [^/(]+                       # anything other than slash or open paren
+              )
+              (
+                \(
+                  (?<selector>
+                    (
+                      ('([^']|(''))*')       # single quoted literal string
+                      |
+                      (""([^""]|(""""))*"")  # double quoted literal string
+                      |
+                      ([^'"")]*)             # anything other than quote or close paren
+                    )*
+                  )
+                \)
+              )?",
+            RegexOptions.IgnoreCase |
+            RegexOptions.CultureInvariant |
+            RegexOptions.IgnorePatternWhitespace
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+            | RegexOptions.Compiled
+#endif
+            );
+
         #endregion
 
         #region Fields
@@ -44,7 +70,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Initializes a new instance of the <see cref="UriPathSegment"/> class.
         /// </summary>
         public UriPathSegment()
-            : this(string.Empty)
+            : this(default(string))
         {
         }
 
@@ -230,7 +256,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <returns><see cref="Array"/> of <see cref="UriPathSegment"/> objects.</returns>
         public static IEnumerable<UriPathSegment> FromStrings(IEnumerable<string> segments)
         {
-            return segments.SelectMany(UriPathParser.Parse).ToArray();
+            return segments.SelectMany(Parse).ToArray();
         }
 
         /// <summary>
@@ -240,7 +266,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <returns>Array of segments that make up the specified path.</returns>
         public static IEnumerable<string> GetPathSegments(string path)
         {
-            return UriPathParser.Parse(path).Select(segment => segment.Segment);
+            return Parse(path).Select(segment => segment.Segment);
         }
 
         /// <summary>
@@ -348,12 +374,12 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         private void OnParse()
         {
-            _text = string.Empty;
-            _selector = string.Empty;
+            _text = null;
+            _selector = null;
 
             if (!string.IsNullOrEmpty(_segment))
             {
-                var segments = UriPathParser.Parse(_segment);
+                var segments = Parse(_segment);
 
                 if (segments.Count > 0)
                 {
@@ -363,6 +389,31 @@ namespace Saleslogix.SData.Client.Framework
                     _selector = segment.Selector;
                 }
             }
+        }
+
+        private static IList<UriPathSegment> Parse(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return new UriPathSegment[0];
+            }
+
+            var segments = new List<UriPathSegment>();
+            var match = _segmentFormat.Match(path);
+
+            while (match.Success)
+            {
+                var segment = match.Groups["segment"];
+                if (segment.Success)
+                {
+                    var selector = match.Groups["selector"];
+                    segments.Add(new UriPathSegment(segment.Value, selector.Success ? selector.Value : null));
+                }
+
+                match = match.NextMatch();
+            }
+
+            return segments.ToArray();
         }
 
         #endregion

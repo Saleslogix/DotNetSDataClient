@@ -71,9 +71,7 @@
     <Compile Include="Framework\SyncState.cs" />
     <Compile Include="Framework\Tracking.cs" />
     <Compile Include="Framework\UriFormatter.cs" />
-    <Compile Include="Framework\UriPathParser.cs" />
     <Compile Include="Framework\UriPathSegment.cs" />
-    <Compile Include="Framework\UriQueryParser.cs" />
     <Compile Include="Framework\W3CDateTime.cs" />
     <Compile Include="INamingScheme.cs" />
     <Compile Include="ISDataClient.cs" />

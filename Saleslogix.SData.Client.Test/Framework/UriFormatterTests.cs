@@ -16,7 +16,7 @@ namespace Saleslogix.SData.Client.Test.Framework
         [Test]
         public void Assign_New_Uri_To_Existing_Test()
         {
-            var uri = new UriFormatter("http://m6400/sdata/-/-/-/");
+            var uri = new UriFormatter("http://test.com/sdata/-/-/-/");
             var expected = new[] {new UriPathSegment("-"), new UriPathSegment("-"), new UriPathSegment("-")};
             Assert.That(uri.PathSegments, Is.EquivalentTo(expected));
 
@@ -32,7 +32,7 @@ namespace Saleslogix.SData.Client.Test.Framework
         [Test]
         public void Support_Uri_Fragments_Test()
         {
-            var uri = new UriFormatter("http://m6400/sdata/-/-/-/#one");
+            var uri = new UriFormatter("http://test.com/sdata/-/-/-/#one");
             Assert.That(uri.Fragment, Is.EqualTo("one"));
 
             uri.Host = "localhost";
@@ -88,6 +88,25 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(string.IsNullOrEmpty(uri.Query));
             Assert.That(uri.QueryArgs.Count == 0);
             Assert.That(uri.ToString() == "http://localhost/");
+        }
+
+        [Test]
+        public void Clone_Test()
+        {
+            var before = new UriFormatter("http://localhost/sdata/aw/dynamic/-/accounts?select=Name");
+            var dummy = before.PathSegments;
+            var after = new UriFormatter(before);
+            Assert.That(after.Scheme, Is.EqualTo(before.Scheme));
+            Assert.That(after.Port, Is.EqualTo(before.Port));
+            Assert.That(after.Host, Is.EqualTo(before.Host));
+            Assert.That(after.PathPrefix, Is.EqualTo(before.PathPrefix));
+            Assert.That(after.Server, Is.EqualTo(before.Server));
+            Assert.That(after.Fragment, Is.EqualTo(before.Fragment));
+            Assert.That(after.Path, Is.EqualTo(before.Path));
+            Assert.That(after.PathSegments, Is.EqualTo(before.PathSegments));
+            Assert.That(after.Query, Is.EqualTo(before.Query));
+            Assert.That(after.QueryArgs, Is.EqualTo(before.QueryArgs));
+            Assert.That(after.PathQuery, Is.EqualTo(before.PathQuery));
         }
     }
 }

@@ -78,29 +78,16 @@ namespace Saleslogix.SData.Client
                               Include = parms.Include,
                               Precedence = parms.Precedence,
                               Select = parms.Select,
+                              IncludeSchema = parms.IncludeSchema,
+                              ReturnDelta = parms.ReturnDelta,
                               TrackingId = parms.TrackingId,
+                              Format = parms.Format ?? Format,
                               Language = parms.Language ?? Language,
                               Version = parms.Version
                           };
             if (parms.Path != null)
             {
                 uri.AppendPath(parms.Path);
-            }
-            if (parms.Format != null)
-            {
-                uri.Format = parms.Format.Value;
-            }
-            else if (Format != null)
-            {
-                uri.Format = Format.Value;
-            }
-            if (parms.IncludeSchema != null)
-            {
-                uri.IncludeSchema = parms.IncludeSchema.Value;
-            }
-            if (parms.ReturnDelta != null)
-            {
-                uri.ReturnDelta = parms.ReturnDelta.Value;
             }
             var operation = new RequestOperation(parms.Method, parms.Content)
                                 {

@@ -2,9 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
 using System.Runtime.Serialization;
 #endif
 
@@ -184,7 +187,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Initializes a new instance of the <see cref="SDataUri"/> class.
         /// </summary>
         public SDataUri()
-            : this((Uri) null)
+            : this(default(Uri))
         {
         }
 
@@ -285,13 +288,12 @@ namespace Saleslogix.SData.Client.Framework
 
                 while (match.Success)
                 {
-                    var property = match.Groups["property"].Value;
-
-                    if (property.Length > 0)
+                    var property = match.Groups["property"];
+                    if (property.Success)
                     {
                         var raw = match.Groups["direction"].Value;
                         var descending = string.Equals(raw, "desc", StringComparison.OrdinalIgnoreCase);
-                        properties.Add(new PropertySort(property, descending));
+                        properties.Add(new PropertySort(property.Value, descending));
                     }
 
                     match = match.NextMatch();
@@ -333,7 +335,7 @@ namespace Saleslogix.SData.Client.Framework
 
                 return null;
             }
-            set { this[QueryArgNames.Count] = value != null ? value.ToString() : null; }
+            set { this[QueryArgNames.Count] = value != null ? value.Value.ToString(CultureInfo.InvariantCulture) : null; }
         }
 
         /// <summary>
@@ -358,7 +360,7 @@ namespace Saleslogix.SData.Client.Framework
 
                 return null;
             }
-            set { this[QueryArgNames.StartIndex] = value != null ? value.ToString() : null; }
+            set { this[QueryArgNames.StartIndex] = value != null ? value.Value.ToString(CultureInfo.InvariantCulture) : null; }
         }
 
         /// <summary>
@@ -375,7 +377,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Gets or sets the format type to return.
         /// </summary>
         /// <value>One of the <see cref="MediaType"/> values.</value>
-        public MediaType Format
+        public MediaType? Format
         {
             get
             {
@@ -395,7 +397,7 @@ namespace Saleslogix.SData.Client.Framework
 
                 return HasSelector ? MediaType.AtomEntry : MediaType.Atom;
             }
-            set { this[QueryArgNames.Format] = MediaTypeNames.GetShortMediaType(value); }
+            set { this[QueryArgNames.Format] = value != null ? MediaTypeNames.GetShortMediaType(value.Value) : null; }
         }
 
         /// <summary>
@@ -423,7 +425,7 @@ namespace Saleslogix.SData.Client.Framework
 
                 return null;
             }
-            set { this[QueryArgNames.Precedence] = value != null ? value.ToString() : null; }
+            set { this[QueryArgNames.Precedence] = value != null ? value.Value.ToString(CultureInfo.InvariantCulture) : null; }
         }
 
         /// <summary>
@@ -440,7 +442,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Gets or sets the value indicating whether or not the schema should be returned.
         /// </summary>
         /// <value><b>true</b> if the schema should be returned, otherwise <b>false</b>.  The default is <b>false</b>.</value>
-        public bool IncludeSchema
+        public bool? IncludeSchema
         {
             get
             {
@@ -458,7 +460,7 @@ namespace Saleslogix.SData.Client.Framework
 
                 return false;
             }
-            set { this[QueryArgNames.IncludeSchema] = value.ToString(); }
+            set { this[QueryArgNames.IncludeSchema] = value != null ? value.ToString().ToLowerInvariant() : null; }
         }
 
         /// <summary>
@@ -502,7 +504,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Gets or sets the value indicating whether the server should only include properties that have been modified in its response.
         /// </summary>
         /// <value><b>true</b> if the server should only include properties that have been modified in its response, otherwise <b>false</b>.  The default is <b>false</b>.</value>
-        public bool ReturnDelta
+        public bool? ReturnDelta
         {
             get
             {
@@ -520,7 +522,7 @@ namespace Saleslogix.SData.Client.Framework
 
                 return false;
             }
-            set { this[QueryArgNames.ReturnDelta] = value.ToString(); }
+            set { this[QueryArgNames.ReturnDelta] = value != null ? value.ToString().ToLowerInvariant() : null; }
         }
 
         /// <summary>
@@ -584,6 +586,54 @@ namespace Saleslogix.SData.Client.Framework
             AppendPath(segments);
 
             return this;
+        }
+
+        public static string FormatSelectorConstant(object value)
+        {
+            if (value == null)
+            {
+                return "null";
+            }
+#if !PCL && !NETFX_CORE
+            if (value is DBNull)
+            {
+                return "null";
+            }
+#endif
+
+            var type = value.GetType();
+            type = Nullable.GetUnderlyingType(type) ?? type;
+
+            if (type == typeof (bool))
+            {
+                return (bool) value ? "true" : "false";
+            }
+            if (type == typeof (string))
+            {
+                return string.Format(CultureInfo.InvariantCulture, "'{0}'", ((string) value).Replace("'", "''"));
+            }
+            if (type == typeof (DateTime) || type == typeof (DateTimeOffset))
+            {
+                return string.Format(CultureInfo.InvariantCulture, "@{0:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}@", value);
+            }
+            if (type == typeof (TimeSpan))
+            {
+                return string.Format(CultureInfo.InvariantCulture, "@{0:hh':'mm':'ss}@", value);
+            }
+            if (type == typeof (Guid) || type == typeof (char) || type.GetTypeInfo().IsEnum)
+            {
+                return string.Format(CultureInfo.InvariantCulture, "'{0}'", value);
+            }
+            if (typeof (IFormattable).IsAssignableFrom(type))
+            {
+                return Convert.ToString(value, CultureInfo.InvariantCulture);
+            }
+            if (type.IsArray)
+            {
+                return string.Format(CultureInfo.InvariantCulture, "({0})", string.Join(",", ((Array) value).Cast<object>().Select(FormatSelectorConstant).ToArray()));
+            }
+
+            throw new NotSupportedException();
         }
 
         #endregion
