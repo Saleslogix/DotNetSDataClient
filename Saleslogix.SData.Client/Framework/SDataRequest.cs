@@ -56,8 +56,10 @@ namespace Saleslogix.SData.Client.Framework
         public SDataRequest(string uri, params RequestOperation[] operations)
         {
             Uri = uri;
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
             UserAgent = "DotNetSDataClient";
             Timeout = 120000;
+#endif
             TimeoutRetryAttempts = 1;
             _operations = new List<RequestOperation>(operations);
         }
@@ -77,6 +79,7 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         public string Password { get; set; }
 
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         /// <summary>
         /// Gets or sets the user agent passed during requests.
         /// </summary>
@@ -86,6 +89,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Gets or sets the timeout in milliseconds used during requests.
         /// </summary>
         public int Timeout { get; set; }
+#endif
 
         /// <summary>
         /// Gets or sets the number of timeout retry attempts that should be made before giving up.
@@ -399,7 +403,8 @@ namespace Saleslogix.SData.Client.Framework
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
             request.Timeout = Timeout;
             request.PreAuthenticate = true;
-
+#endif
+#if !PCL && !SILVERLIGHT
             if (_proxySet)
             {
                 request.Proxy = _proxy;

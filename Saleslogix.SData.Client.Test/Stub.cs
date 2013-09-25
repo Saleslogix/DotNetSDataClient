@@ -1,10 +1,37 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
+﻿#if NETFX_CORE
+namespace System.Net
+{
+    public class WebProxy : IWebProxy
+    {
+        private readonly Uri _uri;
+
+        public WebProxy(string address)
+        {
+            _uri = new Uri(address);
+        }
+
+        public ICredentials Credentials { get; set; }
+
+        public Uri GetProxy(Uri destination)
+        {
+            return _uri;
+        }
+
+        public bool IsBypassed(Uri host)
+        {
+            throw new NotSupportedException();
+        }
+    }
+}
+#endif
 
 namespace System.Xml.XPath
 {
+    using Collections;
+    using Collections.Generic;
+    using Linq;
+    using System.Linq;
+
     internal class XPathNavigator
     {
         private readonly XObject _obj;

@@ -1,5 +1,6 @@
 ﻿namespace Saleslogix.SData.Client.Test.Model
 {
+    [SDataResource("addresses")]
     public class Address
     {
         public string Street { get; set; }

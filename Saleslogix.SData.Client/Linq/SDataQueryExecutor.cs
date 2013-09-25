@@ -146,7 +146,7 @@ namespace Saleslogix.SData.Client.Linq
                     }
                 }
 
-                parms.StartIndex += collection.Count;
+                parms.StartIndex = (parms.StartIndex ?? 1) + collection.Count;
                 if (collection.TotalResults != null && parms.StartIndex > collection.TotalResults)
                 {
                     yield break;
@@ -324,7 +324,7 @@ namespace Saleslogix.SData.Client.Linq
                                           }
                                       }
 
-                                      parms.StartIndex += collection.Count;
+                                      parms.StartIndex = (parms.StartIndex ?? 1) + collection.Count;
                                       if (collection.TotalResults != null && parms.StartIndex > collection.TotalResults)
                                       {
                                           return task;
@@ -479,10 +479,6 @@ namespace Saleslogix.SData.Client.Linq
             if (takeCount > 100)
             {
                 parms.Count = 100;
-            }
-            if (parms.StartIndex == null)
-            {
-                parms.StartIndex = 1;
             }
 
             return parms;

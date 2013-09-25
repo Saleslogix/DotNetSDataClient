@@ -103,11 +103,10 @@ namespace Saleslogix.SData.Client
             {
                 operation.Files.Add(file);
             }
-            var request = new SDataRequest(uri.ToString())
+            var request = new SDataRequest(uri.ToString(), operation)
                               {
                                   UserName = UserName,
                                   Password = Password,
-                                  UserAgent = UserAgent,
 #if !PCL && !SILVERLIGHT
                                   Proxy = Proxy,
 #endif
@@ -116,11 +115,13 @@ namespace Saleslogix.SData.Client
                                   Cookies = _cookies,
                                   Accept = parms.Accept
                               };
-
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+            request.UserAgent = UserAgent;
             if (Timeout != null)
             {
                 request.Timeout = Timeout.Value;
             }
+#endif
             if (TimeoutRetryAttempts != null)
             {
                 request.TimeoutRetryAttempts = TimeoutRetryAttempts.Value;

@@ -2,7 +2,7 @@
 
 using System;
 
-#if !PCL && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
 using System.Runtime.Serialization;
 #endif
 

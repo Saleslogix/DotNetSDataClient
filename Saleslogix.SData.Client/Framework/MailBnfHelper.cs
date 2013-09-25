@@ -53,12 +53,12 @@ namespace Saleslogix.SData.Client.Framework
             _tText[0x3d] = false;
         }
 
-        internal static string ReadParameterAttribute(string data, ref int offset)
+        public static string ReadParameterAttribute(string data, ref int offset)
         {
             return SkipCfws(data, ref offset) ? ReadToken(data, ref offset) : null;
         }
 
-        internal static string ReadQuotedString(string data, ref int offset, StringBuilder builder)
+        public static string ReadQuotedString(string data, ref int offset, StringBuilder builder)
         {
             offset++;
             var startIndex = offset;
@@ -95,7 +95,7 @@ namespace Saleslogix.SData.Client.Framework
             throw new FormatException("Malformed mail header field");
         }
 
-        internal static string ReadToken(string data, ref int offset)
+        public static string ReadToken(string data, ref int offset)
         {
             var startIndex = offset;
             while (offset < data.Length)
@@ -117,7 +117,7 @@ namespace Saleslogix.SData.Client.Framework
             return data.Substring(startIndex, offset - startIndex);
         }
 
-        internal static bool SkipCfws(string data, ref int offset)
+        public static bool SkipCfws(string data, ref int offset)
         {
             var num = 0;
             while (offset < data.Length)
