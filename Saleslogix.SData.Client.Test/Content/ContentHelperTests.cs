@@ -1,8 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using NUnit.Framework;
 using Saleslogix.SData.Client.Content;
+using Saleslogix.SData.Client.Framework;
 
 #if !NET_2_0
 using System.Runtime.Serialization;
@@ -113,27 +116,211 @@ namespace Saleslogix.SData.Client.Test.Content
         [Test]
         public void Serialize_SDataProtocolProperty_Test()
         {
-            var value = new SDataProtocolProperty_Object {Key = "abc123"};
+            var value = new SDataProtocolProperty_Object
+                            {
+                                Id = "id",
+                                Title = "title",
+                                Updated = new DateTimeOffset(2001, 1, 1, 1, 1, 1, TimeSpan.FromHours(1)),
+                                Url = new Uri("http://localhost"),
+                                Diagnoses = new Diagnoses {new Diagnosis {SDataCode = DiagnosisCode.BadUrlSyntax}},
+                                Schema = "schema",
+                                Key = "key",
+                                Uuid = new Guid("6787D975-EC01-4FCA-AA4E-2402968BC911"),
+                                Lookup = "lookup",
+                                Descriptor = "descriptor",
+                                HttpMethod = HttpMethod.Post,
+                                HttpStatus = HttpStatusCode.BadRequest,
+                                HttpMessage = "message",
+                                Location = "location",
+                                ETag = "etag",
+                                IfMatch = "ifmatch",
+                                IsDeleted = true,
+                                SyncState = new SyncState {EndPoint = "endpoint"},
+                                XmlLocalName = "xmllocalname",
+                                XmlNamespace = "xmlnamespace",
+                                TotalResults = 1,
+                                StartIndex = 2,
+                                ItemsPerPage = 3,
+                                DeleteMissing = true,
+                                SyncMode = SyncMode.CatchUp,
+                                SyncDigest = new Digest {Origin = "origin"}
+                            };
+
             var result = ContentHelper.Serialize(value);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.InstanceOf<ISDataProtocolAware>());
-            Assert.That(((ISDataProtocolAware) result).Info.Key, Is.EqualTo("abc123"));
+            var info = ((ISDataProtocolAware) result).Info;
+            Assert.That(info.Id, Is.EqualTo("id"));
+            Assert.That(info.Title, Is.EqualTo("title"));
+            Assert.That(info.Updated, Is.EqualTo(new DateTimeOffset(2001, 1, 1, 1, 1, 1, TimeSpan.FromHours(1))));
+            Assert.That(info.Url, Is.EqualTo(new Uri("http://localhost")));
+            Assert.That(info.Diagnoses[0].SDataCode, Is.EqualTo(DiagnosisCode.BadUrlSyntax));
+            Assert.That(info.Schema, Is.EqualTo("schema"));
+            Assert.That(info.Key, Is.EqualTo("key"));
+            Assert.That(info.Uuid, Is.EqualTo(new Guid("6787D975-EC01-4FCA-AA4E-2402968BC911")));
+            Assert.That(info.Lookup, Is.EqualTo("lookup"));
+            Assert.That(info.Descriptor, Is.EqualTo("descriptor"));
+            Assert.That(info.HttpMethod, Is.EqualTo(HttpMethod.Post));
+            Assert.That(info.HttpStatus, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(info.HttpMessage, Is.EqualTo("message"));
+            Assert.That(info.Location, Is.EqualTo("location"));
+            Assert.That(info.ETag, Is.EqualTo("etag"));
+            Assert.That(info.IfMatch, Is.EqualTo("ifmatch"));
+            Assert.That(info.IsDeleted, Is.True);
+            Assert.That(info.SyncState.EndPoint, Is.EqualTo("endpoint"));
+            Assert.That(info.XmlLocalName, Is.EqualTo("xmllocalname"));
+            Assert.That(info.XmlNamespace, Is.EqualTo("xmlnamespace"));
+            Assert.That(info.TotalResults, Is.EqualTo(1));
+            Assert.That(info.StartIndex, Is.EqualTo(2));
+            Assert.That(info.ItemsPerPage, Is.EqualTo(3));
+            Assert.That(info.DeleteMissing, Is.True);
+            Assert.That(info.SyncMode, Is.EqualTo(SyncMode.CatchUp));
+            Assert.That(info.SyncDigest.Origin, Is.EqualTo("origin"));
         }
 
         [Test]
         public void Deserialize_SDataProtocolProperty_Test()
         {
-            var value = new SDataResource {Key = "abc123"};
+            var value = new SDataResource
+                            {
+                                Id = "id",
+                                Title = "title",
+                                Updated = new DateTimeOffset(2001, 1, 1, 1, 1, 1, TimeSpan.FromHours(1)),
+                                Url = new Uri("http://localhost"),
+                                Diagnoses = new Diagnoses {new Diagnosis {SDataCode = DiagnosisCode.BadUrlSyntax}},
+                                Schema = "schema",
+                                Key = "key",
+                                Uuid = new Guid("6787D975-EC01-4FCA-AA4E-2402968BC911"),
+                                Lookup = "lookup",
+                                Descriptor = "descriptor",
+                                HttpMethod = HttpMethod.Post,
+                                HttpStatus = HttpStatusCode.BadRequest,
+                                HttpMessage = "message",
+                                Location = "location",
+                                ETag = "etag",
+                                IfMatch = "ifmatch",
+                                IsDeleted = true,
+                                SyncState = new SyncState {EndPoint = "endpoint"},
+                                XmlLocalName = "xmllocalname",
+                                XmlNamespace = "xmlnamespace"
+                            };
+            var info = ((ISDataProtocolAware) value).Info;
+            info.TotalResults = 1;
+            info.StartIndex = 2;
+            info.ItemsPerPage = 3;
+            info.DeleteMissing = true;
+            info.SyncMode = SyncMode.CatchUp;
+            info.SyncDigest = new Digest {Origin = "origin"};
             var result = ContentHelper.Deserialize<SDataProtocolProperty_Object>(value);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Not.SameAs(value));
-            Assert.That(result.Key, Is.EqualTo("abc123"));
+            Assert.That(result.Id, Is.EqualTo("id"));
+            Assert.That(result.Title, Is.EqualTo("title"));
+            Assert.That(result.Updated, Is.EqualTo(new DateTimeOffset(2001, 1, 1, 1, 1, 1, TimeSpan.FromHours(1))));
+            Assert.That(result.Url, Is.EqualTo(new Uri("http://localhost")));
+            Assert.That(result.Diagnoses[0].SDataCode, Is.EqualTo(DiagnosisCode.BadUrlSyntax));
+            Assert.That(result.Schema, Is.EqualTo("schema"));
+            Assert.That(result.Key, Is.EqualTo("key"));
+            Assert.That(result.Uuid, Is.EqualTo(new Guid("6787D975-EC01-4FCA-AA4E-2402968BC911")));
+            Assert.That(result.Lookup, Is.EqualTo("lookup"));
+            Assert.That(result.Descriptor, Is.EqualTo("descriptor"));
+            Assert.That(result.HttpMethod, Is.EqualTo(HttpMethod.Post));
+            Assert.That(result.HttpStatus, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(result.HttpMessage, Is.EqualTo("message"));
+            Assert.That(result.Location, Is.EqualTo("location"));
+            Assert.That(result.ETag, Is.EqualTo("etag"));
+            Assert.That(result.IfMatch, Is.EqualTo("ifmatch"));
+            Assert.That(result.IsDeleted, Is.True);
+            Assert.That(result.SyncState.EndPoint, Is.EqualTo("endpoint"));
+            Assert.That(result.XmlLocalName, Is.EqualTo("xmllocalname"));
+            Assert.That(result.XmlNamespace, Is.EqualTo("xmlnamespace"));
+            Assert.That(result.TotalResults, Is.EqualTo(1));
+            Assert.That(result.StartIndex, Is.EqualTo(2));
+            Assert.That(result.ItemsPerPage, Is.EqualTo(3));
+            Assert.That(result.DeleteMissing, Is.True);
+            Assert.That(result.SyncMode, Is.EqualTo(SyncMode.CatchUp));
+            Assert.That(result.SyncDigest.Origin, Is.EqualTo("origin"));
         }
 
         private class SDataProtocolProperty_Object
         {
+            [SDataProtocolProperty(SDataProtocolProperty.Id)]
+            public string Id { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.Title)]
+            public string Title { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.Updated)]
+            public DateTimeOffset? Updated { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.Url)]
+            public Uri Url { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.Diagnoses)]
+            public Diagnoses Diagnoses { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.Schema)]
+            public string Schema { get; set; }
+
             [SDataProtocolProperty(SDataProtocolProperty.Key)]
             public string Key { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.Uuid)]
+            public Guid? Uuid { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.Lookup)]
+            public string Lookup { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.Descriptor)]
+            public string Descriptor { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.HttpMethod)]
+            public HttpMethod? HttpMethod { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.HttpStatus)]
+            public HttpStatusCode? HttpStatus { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.HttpMessage)]
+            public string HttpMessage { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.Location)]
+            public string Location { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.ETag)]
+            public string ETag { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.IfMatch)]
+            public string IfMatch { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.IsDeleted)]
+            public bool? IsDeleted { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.SyncState)]
+            public SyncState SyncState { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.XmlLocalName)]
+            public string XmlLocalName { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.XmlNamespace)]
+            public string XmlNamespace { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.TotalResults)]
+            public int? TotalResults { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.StartIndex)]
+            public int? StartIndex { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.ItemsPerPage)]
+            public int? ItemsPerPage { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.DeleteMissing)]
+            public bool? DeleteMissing { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.SyncMode)]
+            public SyncMode? SyncMode { get; set; }
+
+            [SDataProtocolProperty(SDataProtocolProperty.SyncDigest)]
+            public Digest SyncDigest { get; set; }
         }
 
         [Test]

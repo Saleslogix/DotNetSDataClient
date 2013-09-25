@@ -14,7 +14,7 @@ namespace Saleslogix.SData.Client
     {
         public static INamingScheme Default;
         public static readonly INamingScheme Basic = new BasicNamingScheme(name => name);
-        public static readonly INamingScheme CamelCase = new BasicNamingScheme(name => char.IsUpper(name[0]) ? char.ToLowerInvariant(name[0]) + name.Substring(1) : name);
+        public static readonly INamingScheme CamelCase = new BasicNamingScheme(ToCamelCase);
         public static readonly INamingScheme PascalCase = new BasicNamingScheme(name => char.IsLower(name[0]) ? char.ToUpperInvariant(name[0]) + name.Substring(1) : name);
         public static readonly INamingScheme LowerCase = new BasicNamingScheme(name => name.ToLowerInvariant());
         public static readonly INamingScheme UpperCase = new BasicNamingScheme(name => name.ToUpperInvariant());
@@ -22,6 +22,11 @@ namespace Saleslogix.SData.Client
         static NamingScheme()
         {
             Default = Basic;
+        }
+
+        private static string ToCamelCase(string name)
+        {
+            return char.IsUpper(name[0]) ? char.ToLowerInvariant(name[0]) + name.Substring(1) : name;
         }
 
         #region Nested type: BasicNamingScheme
@@ -37,6 +42,14 @@ namespace Saleslogix.SData.Client
 
             public string GetName(MemberInfo member)
             {
+                var protocolAttr = member.GetCustomAttribute<SDataProtocolPropertyAttribute>();
+                if (protocolAttr != null)
+                {
+                    return "$" + ToCamelCase(protocolAttr.Value != null
+                                                 ? protocolAttr.Value.ToString()
+                                                 : member.Name);
+                }
+
 #if !NET_2_0
                 var contractAttr = member.GetCustomAttribute<DataContractAttribute>();
                 if (contractAttr != null && !string.IsNullOrEmpty(contractAttr.Name))

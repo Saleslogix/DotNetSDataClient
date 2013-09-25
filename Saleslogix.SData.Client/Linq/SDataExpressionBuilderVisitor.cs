@@ -3,13 +3,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
+using Saleslogix.SData.Client.Framework;
 
 namespace Saleslogix.SData.Client.Linq
 {
@@ -107,7 +105,10 @@ namespace Saleslogix.SData.Client.Linq
 
         protected override Expression VisitConstantExpression(ConstantExpression expression)
         {
-            Append(RenderConstantValue(expression.Type, expression.Value));
+            var protocolVar = expression.Value as SDataProtocolVariable;
+            Append(protocolVar != null
+                       ? protocolVar.ToString()
+                       : SDataUri.FormatSelectorConstant(expression.Value));
             return expression;
         }
 
@@ -278,7 +279,7 @@ namespace Saleslogix.SData.Client.Linq
                            "(",
                            expression.Object,
                            " like ",
-                           RenderConstantValue(typeof (string), argExpr.Value + "%"),
+                           SDataUri.FormatSelectorConstant(argExpr.Value + "%"),
                            ")"
                        };
         }
@@ -296,7 +297,7 @@ namespace Saleslogix.SData.Client.Linq
                            "(",
                            expression.Object,
                            " like ",
-                           RenderConstantValue(typeof (string), "%" + argExpr.Value),
+                           SDataUri.FormatSelectorConstant("%" + argExpr.Value),
                            ")"
                        };
         }
@@ -314,7 +315,7 @@ namespace Saleslogix.SData.Client.Linq
                            "(",
                            expression.Object,
                            " like ",
-                           RenderConstantValue(typeof (string), "%" + argExpr.Value + "%"),
+                           SDataUri.FormatSelectorConstant("%" + argExpr.Value + "%"),
                            ")"
                        };
         }
@@ -646,54 +647,6 @@ namespace Saleslogix.SData.Client.Linq
                            value < 0 ? (object) -value : expression.Arguments[0],
                            ")"
                        };
-        }
-
-        private static string RenderConstantValue(Type type, object value)
-        {
-            if (value == null)
-            {
-                return "null";
-            }
-#if !PCL && !NETFX_CORE
-            if (value is DBNull)
-            {
-                return "null";
-            }
-#endif
-
-            type = Nullable.GetUnderlyingType(type) ?? type;
-
-            if (type == typeof (bool))
-            {
-                return (bool) value ? "true" : "false";
-            }
-            if (type == typeof (string))
-            {
-                return string.Format(CultureInfo.InvariantCulture, "'{0}'", ((string) value).Replace("'", "''"));
-            }
-            if (type == typeof (DateTime) || type == typeof (DateTimeOffset))
-            {
-                return string.Format(CultureInfo.InvariantCulture, "@{0:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}@", value);
-            }
-            if (type == typeof (TimeSpan))
-            {
-                return string.Format(CultureInfo.InvariantCulture, "@{0:hh':'mm':'ss}@", value);
-            }
-            if (type == typeof (Guid) || type == typeof (char) || type.GetTypeInfo().IsEnum)
-            {
-                return string.Format(CultureInfo.InvariantCulture, "'{0}'", value);
-            }
-            if (typeof (IFormattable).IsAssignableFrom(type))
-            {
-                return Convert.ToString(value, CultureInfo.InvariantCulture);
-            }
-            if (type.IsArray)
-            {
-                type = type.GetElementType();
-                return string.Format(CultureInfo.InvariantCulture, "({0})", string.Join(",", ((Array) value).Cast<object>().Select(item => RenderConstantValue(type, item)).ToArray()));
-            }
-
-            throw new NotSupportedException();
         }
 
         #region Nested type: MethodMappingKey

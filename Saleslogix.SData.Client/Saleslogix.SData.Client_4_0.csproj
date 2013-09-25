@@ -106,7 +106,7 @@
     <Compile Include="Linq\SDataExpressionBuilderVisitor.cs" />
     <Compile Include="Linq\SDataFunctionExtensions.cs" />
     <Compile Include="Linq\SDataOperatorExtensions.cs" />
-    <Compile Include="Linq\SDataProtocolFilterVariable.cs" />
+    <Compile Include="Linq\SDataProtocolVariable.cs" />
     <Compile Include="Linq\SDataQueryable.cs" />
     <Compile Include="Linq\SDataQueryableExtensions.cs" />
     <Compile Include="Linq\SDataQueryExecutor.cs" />

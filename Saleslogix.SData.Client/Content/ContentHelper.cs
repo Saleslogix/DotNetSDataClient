@@ -228,22 +228,23 @@ namespace Saleslogix.SData.Client.Content
 
                 foreach (var item in dict.ToList())
                 {
-                    if (item.Key.StartsWith("_$_"))
-                    {
-                        if (info == null)
-                        {
-                            info = new SDataProtocolInfo();
-                        }
-                        var prop = (SDataProtocolProperty) Enum.Parse(typeof (SDataProtocolProperty), item.Key.Substring(3), false);
-                        info.SetValue(prop, item.Value);
-                        continue;
-                    }
-
                     var value = item.Value;
                     var surrogate = value as XmlMetadataSurrogate;
                     if (surrogate != null)
                     {
                         value = surrogate.Value;
+                    }
+
+                    if (item.Key.StartsWith("$"))
+                    {
+                        if (info == null)
+                        {
+                            info = new SDataProtocolInfo();
+                        }
+                        var name = item.Key;
+                        var prop = (SDataProtocolProperty) Enum.Parse(typeof (SDataProtocolProperty), char.ToUpperInvariant(name[1]) + name.Substring(2), false);
+                        info.SetValue(prop, value);
+                        continue;
                     }
 
                     object result;
@@ -329,7 +330,19 @@ namespace Saleslogix.SData.Client.Content
 
             public override object DeserializeObject(object value, Type type)
             {
-                if (value == null || value is string || value.GetType().GetTypeInfo().IsValueType)
+                if (value == null)
+                {
+                    return type.GetTypeInfo().IsValueType && !ReflectionUtils.IsNullableType(type)
+                               ? Activator.CreateInstance(type)
+                               : null;
+                }
+
+                if (type.IsInstanceOfType(value))
+                {
+                    return value;
+                }
+
+                if (value is string || value.GetType().GetTypeInfo().IsValueType)
                 {
                     return base.DeserializeObject(value, type);
                 }
@@ -343,7 +356,8 @@ namespace Saleslogix.SData.Client.Content
                     {
                         foreach (SDataProtocolProperty protocolProp in Enum.GetValues(typeof (SDataProtocolProperty)))
                         {
-                            dict["_$_" + protocolProp] = prot.Info.GetValue(protocolProp);
+                            var name = protocolProp.ToString();
+                            dict[string.Format("${0}{1}", char.ToLowerInvariant(name[0]), name.Substring(1))] = prot.Info.GetValue(protocolProp);
                         }
                     }
                 }
@@ -377,11 +391,11 @@ namespace Saleslogix.SData.Client.Content
                 var result = new Dictionary<string, ReflectionUtils.GetDelegate>();
                 foreach (var propertyInfo in GetProperties(type))
                 {
-                    result[MapMemberName(propertyInfo)] = GetGetter(ReflectionUtils.GetGetMethod(propertyInfo), propertyInfo, propertyInfo.PropertyType);
+                    result[_namingScheme.GetName(propertyInfo)] = GetGetter(ReflectionUtils.GetGetMethod(propertyInfo), propertyInfo, propertyInfo.PropertyType);
                 }
                 foreach (var fieldInfo in GetFields(type))
                 {
-                    result[MapMemberName(fieldInfo)] = GetGetter(ReflectionUtils.GetGetMethod(fieldInfo), fieldInfo, fieldInfo.FieldType);
+                    result[_namingScheme.GetName(fieldInfo)] = GetGetter(ReflectionUtils.GetGetMethod(fieldInfo), fieldInfo, fieldInfo.FieldType);
                 }
 
                 return result;
@@ -445,26 +459,15 @@ namespace Saleslogix.SData.Client.Content
                 foreach (var propertyInfo in GetProperties(type))
                 {
                     var setter = ReflectionUtils.GetSetMethod(propertyInfo);
-                    result[MapMemberName(propertyInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(propertyInfo.PropertyType, setter);
+                    result[_namingScheme.GetName(propertyInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(propertyInfo.PropertyType, setter);
                 }
                 foreach (var fieldInfo in GetFields(type))
                 {
                     var setter = ReflectionUtils.GetSetMethod(fieldInfo);
-                    result[MapMemberName(fieldInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(fieldInfo.FieldType, setter);
+                    result[_namingScheme.GetName(fieldInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(fieldInfo.FieldType, setter);
                 }
 
                 return result;
-            }
-
-            private string MapMemberName(MemberInfo memberInfo)
-            {
-                var protoAttr = SDataProtocolPropertyAttribute.GetProperty(memberInfo);
-                if (protoAttr != null)
-                {
-                    return "_$_" + protoAttr.Value;
-                }
-
-                return _namingScheme.GetName(memberInfo);
             }
 
             private static IEnumerable<PropertyInfo> GetProperties(Type type)

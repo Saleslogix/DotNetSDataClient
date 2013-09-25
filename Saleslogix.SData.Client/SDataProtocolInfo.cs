@@ -132,7 +132,7 @@ namespace Saleslogix.SData.Client
                     Title = Convert.ToString(value);
                     break;
                 case SDataProtocolProperty.Updated:
-                    Updated = value != null ? Convert.ToDateTime(value) : (DateTimeOffset?) null;
+                    Updated = (value as DateTimeOffset?) ?? (value != null ? Convert.ToDateTime(value) : (DateTimeOffset?) null);
                     break;
                 case SDataProtocolProperty.TotalResults:
                     TotalResults = value != null ? Convert.ToInt32(value) : (int?) null;

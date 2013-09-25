@@ -390,17 +390,18 @@ namespace Saleslogix.SData.Client.Content
             var feed = new XElement(_atomNs + "feed");
 
             var prot = resources as ISDataProtocolAware;
-            if (prot != null)
+            var info = prot != null ? prot.Info : null;
+            if (info != null)
             {
-                WriteElementValue(feed, _atomNs + "id", prot.Info.Id);
-                WriteElementValue(feed, _atomNs + "title", prot.Info.Title);
-                WriteElementValue(feed, _atomNs + "updated", prot.Info.Updated);
-                WriteElementValue(feed, _openSearchNs + "totalResults", prot.Info.TotalResults);
-                WriteElementValue(feed, _openSearchNs + "startIndex", prot.Info.StartIndex);
-                WriteElementValue(feed, _openSearchNs + "itemsPerPage", prot.Info.ItemsPerPage);
-                WriteElementValue(feed, _sDataNs + "syncMode", prot.Info.SyncMode);
+                WriteElementValue(feed, _atomNs + "id", info.Id);
+                WriteElementValue(feed, _atomNs + "title", info.Title);
+                WriteElementValue(feed, _atomNs + "updated", info.Updated);
+                WriteElementValue(feed, _openSearchNs + "totalResults", info.TotalResults);
+                WriteElementValue(feed, _openSearchNs + "startIndex", info.StartIndex);
+                WriteElementValue(feed, _openSearchNs + "itemsPerPage", info.ItemsPerPage);
+                WriteElementValue(feed, _sDataNs + "syncMode", info.SyncMode);
 
-                var diagnoses = prot.Info.Diagnoses;
+                var diagnoses = info.Diagnoses;
                 if (diagnoses != null && diagnoses.Count > 0)
                 {
                     foreach (var diagnosis in diagnoses)
@@ -409,13 +410,13 @@ namespace Saleslogix.SData.Client.Content
                     }
                 }
 
-                var schema = prot.Info.Schema;
+                var schema = info.Schema;
                 if (!string.IsNullOrEmpty(schema))
                 {
                     feed.Add(new XElement(_sDataNs + "schema", schema));
                 }
 
-                var syncDigest = prot.Info.SyncDigest;
+                var syncDigest = info.SyncDigest;
                 if (syncDigest != null)
                 {
                     feed.Add(SerializeObject(syncDigest));
@@ -431,19 +432,20 @@ namespace Saleslogix.SData.Client.Content
             var entry = new XElement(_atomNs + "entry");
 
             var prot = resource as ISDataProtocolAware;
-            if (prot != null)
+            var info = prot != null ? prot.Info : null;
+            if (info != null)
             {
-                WriteElementValue(entry, _atomNs + "id", prot.Info.Id);
-                WriteElementValue(entry, _atomNs + "title", prot.Info.Title);
-                WriteElementValue(entry, _atomNs + "updated", prot.Info.Updated);
-                WriteElementValue(entry, _httpNs + "httpMethod", prot.Info.HttpMethod);
-                WriteElementValue(entry, _httpNs + "httpStatus", (int?) prot.Info.HttpStatus);
-                WriteElementValue(entry, _httpNs + "httpMessage", prot.Info.HttpMessage);
-                WriteElementValue(entry, _httpNs + "location", prot.Info.Location);
-                WriteElementValue(entry, _httpNs + "etag", prot.Info.ETag);
-                WriteElementValue(entry, _httpNs + "ifMatch", prot.Info.IfMatch);
+                WriteElementValue(entry, _atomNs + "id", info.Id);
+                WriteElementValue(entry, _atomNs + "title", info.Title);
+                WriteElementValue(entry, _atomNs + "updated", info.Updated);
+                WriteElementValue(entry, _httpNs + "httpMethod", info.HttpMethod);
+                WriteElementValue(entry, _httpNs + "httpStatus", (int?) info.HttpStatus);
+                WriteElementValue(entry, _httpNs + "httpMessage", info.HttpMessage);
+                WriteElementValue(entry, _httpNs + "location", info.Location);
+                WriteElementValue(entry, _httpNs + "etag", info.ETag);
+                WriteElementValue(entry, _httpNs + "ifMatch", info.IfMatch);
 
-                var diagnoses = prot.Info.Diagnoses;
+                var diagnoses = info.Diagnoses;
                 if (diagnoses != null && diagnoses.Count > 0)
                 {
                     foreach (var diagnosis in diagnoses)
@@ -452,21 +454,21 @@ namespace Saleslogix.SData.Client.Content
                     }
                 }
 
-                var schema = prot.Info.Schema;
+                var schema = info.Schema;
                 if (!string.IsNullOrEmpty(schema))
                 {
                     entry.Add(new XElement(_sDataNs + "schema", schema));
                 }
 
-                var syncState = prot.Info.SyncState;
+                var syncState = info.SyncState;
                 if (syncState != null)
                 {
                     entry.Add(SerializeObject(syncState));
                 }
 
-                if (prot.Info.XmlLocalName != null)
+                if (info.XmlLocalName != null)
                 {
-                    var name = XName.Get(prot.Info.XmlLocalName, prot.Info.XmlNamespace ?? string.Empty);
+                    var name = XName.Get(info.XmlLocalName, info.XmlNamespace ?? string.Empty);
                     entry.Add(new XElement(_sDataNs + "payload", WriteResource(name, resource, namingScheme)));
                 }
             }
@@ -479,14 +481,15 @@ namespace Saleslogix.SData.Client.Content
             var payload = new XElement(name);
 
             var prot = resource as ISDataProtocolAware;
-            if (prot != null)
+            var info = prot != null ? prot.Info : null;
+            if (info != null)
             {
-                WriteAttributeValue(payload, _sDataNs + "key", prot.Info.Key);
-                WriteAttributeValue(payload, _sDataNs + "uri", prot.Info.Url != null ? prot.Info.Url.AbsoluteUri : null);
-                WriteAttributeValue(payload, _sDataNs + "uuid", prot.Info.Uuid);
-                WriteAttributeValue(payload, _sDataNs + "lookup", prot.Info.Lookup);
-                WriteAttributeValue(payload, _sDataNs + "descriptor", prot.Info.Descriptor);
-                WriteAttributeValue(payload, _sDataNs + "isDeleted", prot.Info.IsDeleted);
+                WriteAttributeValue(payload, _sDataNs + "key", info.Key);
+                WriteAttributeValue(payload, _sDataNs + "uri", info.Url != null ? info.Url.AbsoluteUri : null);
+                WriteAttributeValue(payload, _sDataNs + "uuid", info.Uuid);
+                WriteAttributeValue(payload, _sDataNs + "lookup", info.Lookup);
+                WriteAttributeValue(payload, _sDataNs + "descriptor", info.Descriptor);
+                WriteAttributeValue(payload, _sDataNs + "isDeleted", info.IsDeleted);
             }
 
             payload.Add(resource.Select(item => WriteItem(name.Namespace + item.Key, item.Value, namingScheme)));
@@ -529,8 +532,9 @@ namespace Saleslogix.SData.Client.Content
             if (resource != null)
             {
                 var prot = resource as ISDataProtocolAware;
-                var itemName = XName.Get((prot != null ? prot.Info.XmlLocalName : null) ?? name.LocalName,
-                                         (prot != null ? prot.Info.XmlNamespace : null) ?? name.NamespaceName);
+                var info = prot != null ? prot.Info : null;
+                var itemName = XName.Get((info != null ? info.XmlLocalName : null) ?? name.LocalName,
+                                         (info != null ? info.XmlNamespace : null) ?? name.NamespaceName);
                 return WriteResource(itemName, resource, namingScheme);
             }
 
@@ -553,25 +557,27 @@ namespace Saleslogix.SData.Client.Content
         {
             var element = new XElement(name);
             var prot = resources as ISDataProtocolAware;
-            var localName = prot != null ? prot.Info.XmlLocalName : null;
-            var xmlNs = prot != null ? prot.Info.XmlNamespace : null;
+            var info = prot != null ? prot.Info : null;
+            var localName = info != null ? info.XmlLocalName : null;
+            var xmlNs = info != null ? info.XmlNamespace : null;
             var elements = resources.Select(item =>
                                                 {
                                                     var itemProt = item as ISDataProtocolAware;
-                                                    var itemName = XName.Get(localName ?? (itemProt != null ? itemProt.Info.XmlLocalName : null) ?? item.GetType().Name,
-                                                                             xmlNs ?? (itemProt != null ? itemProt.Info.XmlNamespace : null) ?? name.NamespaceName);
+                                                    var itemInfo = itemProt != null ? itemProt.Info : null;
+                                                    var itemName = XName.Get(localName ?? (itemInfo != null ? itemInfo.XmlLocalName : null) ?? item.GetType().Name,
+                                                                             xmlNs ?? (itemInfo != null ? itemInfo.XmlNamespace : null) ?? name.NamespaceName);
                                                     return WriteResource(itemName, item, namingScheme);
                                                 });
 
-            if (prot != null)
+            if (info != null)
             {
-                if (prot.Info.XmlIsFlat)
+                if (info.XmlIsFlat)
                 {
                     return elements;
                 }
 
-                WriteAttributeValue(element, _sDataNs + "uri", prot.Info.Url != null ? prot.Info.Url.AbsoluteUri : null);
-                WriteAttributeValue(element, _sDataNs + "deleteMissing", prot.Info.DeleteMissing);
+                WriteAttributeValue(element, _sDataNs + "uri", info.Url != null ? info.Url.AbsoluteUri : null);
+                WriteAttributeValue(element, _sDataNs + "deleteMissing", info.DeleteMissing);
             }
 
             element.Add(elements);
@@ -582,13 +588,15 @@ namespace Saleslogix.SData.Client.Content
         {
             var element = new XElement(name);
             var prot = items as ISDataProtocolAware;
-            var localName = prot != null ? prot.Info.XmlLocalName : null;
-            var xmlNs = prot != null ? prot.Info.XmlNamespace : null;
+            var info = prot != null ? prot.Info : null;
+            var localName = info != null ? info.XmlLocalName : null;
+            var xmlNs = info != null ? info.XmlNamespace : null;
             element.Add(items.Select(item =>
                                          {
                                              var itemProt = item as ISDataProtocolAware;
-                                             var itemName = XName.Get(localName ?? (itemProt != null ? itemProt.Info.XmlLocalName : null) ?? item.GetType().Name,
-                                                                      xmlNs ?? (itemProt != null ? itemProt.Info.XmlNamespace : null) ?? name.NamespaceName);
+                                             var itemInfo = itemProt != null ? itemProt.Info : null;
+                                             var itemName = XName.Get(localName ?? (itemProt != null ? itemInfo.XmlLocalName : null) ?? item.GetType().Name,
+                                                                      xmlNs ?? (itemProt != null ? itemInfo.XmlNamespace : null) ?? name.NamespaceName);
                                              return WriteItem(itemName, item, namingScheme);
                                          }));
             return element;

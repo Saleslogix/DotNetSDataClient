@@ -282,32 +282,33 @@ namespace Saleslogix.SData.Client.Content
             var obj = new Dictionary<string, object>();
 
             var prot = resource as ISDataProtocolAware;
-            if (prot != null)
+            var info = prot != null ? prot.Info : null;
+            if (info != null)
             {
-                WriteProtocolValue(obj, "id", prot.Info.Id);
-                WriteProtocolValue(obj, "title", prot.Info.Title);
-                WriteProtocolValue(obj, "updated", prot.Info.Updated);
-                WriteProtocolValue(obj, "location", prot.Info.Location);
-                WriteProtocolValue(obj, "etag", prot.Info.ETag);
-                WriteProtocolValue(obj, "ifMatch", prot.Info.IfMatch);
-                WriteProtocolValue(obj, "httpMethod", prot.Info.HttpMethod);
-                WriteProtocolValue(obj, "httpStatus", prot.Info.HttpStatus);
-                WriteProtocolValue(obj, "httpMessage", prot.Info.HttpMessage);
-                WriteProtocolValue(obj, "key", prot.Info.Key);
-                WriteProtocolValue(obj, "url", prot.Info.Url != null ? prot.Info.Url.AbsoluteUri : null);
-                WriteProtocolValue(obj, "uuid", prot.Info.Uuid);
-                WriteProtocolValue(obj, "lookup", prot.Info.Lookup);
-                WriteProtocolValue(obj, "descriptor", prot.Info.Descriptor);
-                WriteProtocolValue(obj, "schema", prot.Info.Schema);
-                WriteProtocolValue(obj, "isDeleted", prot.Info.IsDeleted);
+                WriteProtocolValue(obj, "id", info.Id);
+                WriteProtocolValue(obj, "title", info.Title);
+                WriteProtocolValue(obj, "updated", info.Updated);
+                WriteProtocolValue(obj, "location", info.Location);
+                WriteProtocolValue(obj, "etag", info.ETag);
+                WriteProtocolValue(obj, "ifMatch", info.IfMatch);
+                WriteProtocolValue(obj, "httpMethod", info.HttpMethod);
+                WriteProtocolValue(obj, "httpStatus", info.HttpStatus);
+                WriteProtocolValue(obj, "httpMessage", info.HttpMessage);
+                WriteProtocolValue(obj, "key", info.Key);
+                WriteProtocolValue(obj, "url", info.Url != null ? info.Url.AbsoluteUri : null);
+                WriteProtocolValue(obj, "uuid", info.Uuid);
+                WriteProtocolValue(obj, "lookup", info.Lookup);
+                WriteProtocolValue(obj, "descriptor", info.Descriptor);
+                WriteProtocolValue(obj, "schema", info.Schema);
+                WriteProtocolValue(obj, "isDeleted", info.IsDeleted);
 
-                var diagnoses = prot.Info.Diagnoses;
+                var diagnoses = info.Diagnoses;
                 if (diagnoses != null && diagnoses.Count > 0)
                 {
                     obj["$diagnoses"] = ContentHelper.Serialize(diagnoses, namingScheme);
                 }
 
-                var syncState = prot.Info.SyncState;
+                var syncState = info.SyncState;
                 if (syncState != null)
                 {
                     obj["$syncState"] = ContentHelper.Serialize(syncState, namingScheme);
@@ -327,26 +328,27 @@ namespace Saleslogix.SData.Client.Content
             var obj = new Dictionary<string, object>();
 
             var prot = collection as ISDataProtocolAware;
-            if (prot != null)
+            var info = prot != null ? prot.Info : null;
+            if (info != null)
             {
-                WriteProtocolValue(obj, "id", prot.Info.Id);
-                WriteProtocolValue(obj, "title", prot.Info.Title);
-                WriteProtocolValue(obj, "updated", prot.Info.Updated);
-                WriteProtocolValue(obj, "totalResults", prot.Info.TotalResults);
-                WriteProtocolValue(obj, "startIndex", prot.Info.StartIndex);
-                WriteProtocolValue(obj, "itemsPerPage", prot.Info.ItemsPerPage);
-                WriteProtocolValue(obj, "url", prot.Info.Url != null ? prot.Info.Url.AbsoluteUri : null);
-                WriteProtocolValue(obj, "deleteMissing", prot.Info.DeleteMissing);
-                WriteProtocolValue(obj, "schema", prot.Info.Schema);
-                WriteProtocolValue(obj, "syncMode", prot.Info.SyncMode);
+                WriteProtocolValue(obj, "id", info.Id);
+                WriteProtocolValue(obj, "title", info.Title);
+                WriteProtocolValue(obj, "updated", info.Updated);
+                WriteProtocolValue(obj, "totalResults", info.TotalResults);
+                WriteProtocolValue(obj, "startIndex", info.StartIndex);
+                WriteProtocolValue(obj, "itemsPerPage", info.ItemsPerPage);
+                WriteProtocolValue(obj, "url", info.Url != null ? info.Url.AbsoluteUri : null);
+                WriteProtocolValue(obj, "deleteMissing", info.DeleteMissing);
+                WriteProtocolValue(obj, "schema", info.Schema);
+                WriteProtocolValue(obj, "syncMode", info.SyncMode);
 
-                var diagnoses = prot.Info.Diagnoses;
+                var diagnoses = info.Diagnoses;
                 if (diagnoses != null && diagnoses.Count > 0)
                 {
                     obj["$diagnoses"] = ContentHelper.Serialize(diagnoses, namingScheme);
                 }
 
-                var syncDigest = prot.Info.SyncDigest;
+                var syncDigest = info.SyncDigest;
                 if (syncDigest != null)
                 {
                     obj["$digest"] = ContentHelper.Serialize(syncDigest, namingScheme);
