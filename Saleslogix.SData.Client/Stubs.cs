@@ -1,4 +1,6 @@
-﻿#if PCL || NETFX_CORE
+﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
+
+#if PCL || NETFX_CORE
 namespace System.ComponentModel
 {
     internal class BrowsableAttribute : Attribute

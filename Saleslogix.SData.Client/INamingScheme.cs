@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
+
+using System.Reflection;
 
 namespace Saleslogix.SData.Client
 {

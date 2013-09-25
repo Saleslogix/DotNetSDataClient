@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
+
+using System.Linq;
 
 namespace Saleslogix.SData.Client.Linq
 {

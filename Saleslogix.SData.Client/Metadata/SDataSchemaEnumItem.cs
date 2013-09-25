@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
+
+using System.Diagnostics;
 using System.Xml.Schema;
 
 namespace Saleslogix.SData.Client.Metadata

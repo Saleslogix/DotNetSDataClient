@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
+
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using Saleslogix.SData.Client.Utilities;

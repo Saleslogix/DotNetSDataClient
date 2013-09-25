@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
+
+using System;
 using System.Diagnostics;
 using System.Xml;
 using System.Xml.Schema;

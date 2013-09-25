@@ -1,4 +1,6 @@
-﻿using System.Xml.Serialization;
+﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
+
+using System.Xml.Serialization;
 
 namespace Saleslogix.SData.Client.Metadata
 {

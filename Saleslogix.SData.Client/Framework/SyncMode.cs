@@ -1,9 +1,4 @@
-﻿// Copyright (c) Sage (UK) Limited 2007. All rights reserved.
-// This code may not be copied or used, except as set out in a written licence agreement
-// between the user and Sage (UK) Limited, which specifically permits the user to use
-// this code. Please contact [email@sage.com] if you do not have such a licence.
-// Sage will take appropriate legal action against those who make unauthorised use of this
-// code.
+﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System.Xml.Serialization;
 

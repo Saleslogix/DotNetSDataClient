@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Saleslogix.SData.Client.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Saleslogix Software, Inc.")]
+[assembly: AssemblyCompany("SalesLogix NA, LLC")]
 [assembly: AssemblyProduct("Saleslogix.SData.Client.Test")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]

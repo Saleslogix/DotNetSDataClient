@@ -9,9 +9,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("Saleslogix.SData.Client")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Sage Software, Inc.")]
+[assembly: AssemblyCompany("SalesLogix NA, LLC")]
 [assembly: AssemblyProduct("Saleslogix.SData.Client")]
-[assembly: AssemblyCopyright("©1997-2011 Sage Software, Inc. All Rights Reserved")]
+[assembly: AssemblyCopyright("Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
