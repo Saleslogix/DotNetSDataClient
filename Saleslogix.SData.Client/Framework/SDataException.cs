@@ -36,7 +36,7 @@ namespace Saleslogix.SData.Client.Framework
             _statusCode = httpResponse != null ? httpResponse.StatusCode : (HttpStatusCode?) null;
             MediaType contentType;
 
-            if (MediaTypeNames.TryGetMediaType(Response.ContentType, out contentType) && contentType == MediaType.Xml)
+            if (MediaTypeNames.TryGetMediaType(Response.ContentType, out contentType))
             {
                 var handler = ContentManager.GetHandler(contentType);
                 if (handler != null)
@@ -47,17 +47,20 @@ namespace Saleslogix.SData.Client.Framework
                         obj = handler.ReadFrom(responseStream);
                     }
 
-                    var diagnoses = ContentHelper.Deserialize<Diagnoses>(obj);
-                    if (diagnoses != null)
-                    {
-                        _diagnoses = diagnoses;
-                    }
-                    else
+                    if (ContentHelper.IsDictionary(obj))
                     {
                         var diagnosis = ContentHelper.Deserialize<Diagnosis>(obj);
                         if (diagnosis != null)
                         {
                             _diagnoses = new Diagnoses {diagnosis};
+                        }
+                    }
+                    else if (ContentHelper.IsCollection(obj))
+                    {
+                        var diagnoses = ContentHelper.Deserialize<Diagnoses>(obj);
+                        if (diagnoses != null)
+                        {
+                            _diagnoses = diagnoses;
                         }
                     }
                 }

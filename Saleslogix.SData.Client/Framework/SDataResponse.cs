@@ -86,19 +86,23 @@ namespace Saleslogix.SData.Client.Framework
                                 _content = tracking;
                             }
                         }
-
-                        if (_statusCode >= HttpStatusCode.BadRequest)
+                        else if (_statusCode >= HttpStatusCode.BadRequest)
                         {
-                            var diagnoses = ContentHelper.Deserialize<Diagnoses>(_content);
-                            if (diagnoses != null)
+                            if (ContentHelper.IsDictionary(_content))
                             {
-                                throw new SDataException(diagnoses, _statusCode);
+                                var diagnosis = ContentHelper.Deserialize<Diagnosis>(_content);
+                                if (diagnosis != null)
+                                {
+                                    throw new SDataException(new Diagnoses {diagnosis}, _statusCode);
+                                }
                             }
-
-                            var diagnosis = ContentHelper.Deserialize<Diagnosis>(_content);
-                            if (diagnosis != null)
+                            else if (ContentHelper.IsCollection(_content))
                             {
-                                throw new SDataException(new Diagnoses {diagnosis}, _statusCode);
+                                var diagnoses = ContentHelper.Deserialize<Diagnoses>(_content);
+                                if (diagnoses != null)
+                                {
+                                    throw new SDataException(diagnoses, _statusCode);
+                                }
                             }
                         }
                     }
@@ -185,11 +189,6 @@ namespace Saleslogix.SData.Client.Framework
                 if (handler != null)
                 {
                     return handler.ReadFrom(stream);
-                }
-
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
                 }
             }
 
