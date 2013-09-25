@@ -112,7 +112,7 @@ namespace Saleslogix.SData.Client.Framework
             }
             if (startIndex == offset)
             {
-                throw new FormatException("Invalid mail header field character: " + data[offset]);
+                throw new FormatException("Malformed mail header field");
             }
             return data.Substring(startIndex, offset - startIndex);
         }
@@ -122,7 +122,7 @@ namespace Saleslogix.SData.Client.Framework
             var num = 0;
             while (offset < data.Length)
             {
-                if (data[offset] > '\x007f')
+                if (data[offset] > Ascii7BitMaxValue)
                 {
                     throw new FormatException("Invalid mail header field character: " + data[offset]);
                 }

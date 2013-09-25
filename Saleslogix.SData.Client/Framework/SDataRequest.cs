@@ -303,32 +303,56 @@ namespace Saleslogix.SData.Client.Framework
 
             foreach (var op in _operations)
             {
-                //TODO: be more permissive
-                SDataResource resource;
+                var selector = op.Selector;
+                var eTag = op.ETag;
 
+                SDataResource resource;
                 if (op.Content == null)
                 {
-                    if (op.Method != HttpMethod.Post && string.IsNullOrEmpty(op.Selector))
-                    {
-                        throw new InvalidOperationException("A selector must be specified for GET, PUT and DELETE batch requests");
-                    }
-
-                    var resourceUri = new SDataUri(Uri) {LastPathSegment = {Selector = op.Selector}};
-                    resource = new SDataResource {Id = resourceUri.Uri.ToString()};
+                    resource = new SDataResource();
                 }
                 else
                 {
-                    resource = op.Content as SDataResource;
-
-                    //TODO: could be a POCO, will need to be wrapped in a surrogate
+                    resource = op.Content as SDataResource ?? ContentHelper.Serialize(op.Content, NamingScheme) as SDataResource;
                     if (resource == null)
                     {
                         throw new InvalidOperationException("Only resources can be submitted in batch requests");
                     }
+
+                    if (selector == null && resource.Key != null)
+                    {
+                        selector = SDataUri.FormatSelectorConstant(resource.Key);
+                    }
+                    if (eTag == null)
+                    {
+                        eTag = resource.ETag;
+                    }
+                }
+
+                if (op.Method != HttpMethod.Post)
+                {
+                    if (selector == null)
+                    {
+                        throw new InvalidOperationException("A selector must be specified for GET, PUT and DELETE batch requests");
+                    }
+
+                    resource.Id = new SDataUri(Uri) {LastPathSegment = {Selector = selector}}.ToString();
+                }
+
+                if (op.ContentType != null)
+                {
+                    if (batchOp.ContentType == null)
+                    {
+                        batchOp.ContentType = op.ContentType;
+                    }
+                    else if (batchOp.ContentType != op.ContentType)
+                    {
+                        throw new InvalidOperationException("All non-null request operation content types must be the same");
+                    }
                 }
 
                 resource.HttpMethod = op.Method;
-                resource.ETag = op.ETag;
+                resource.ETag = eTag;
                 resources.Add(resource);
 
                 foreach (var data in op.Form)
@@ -347,6 +371,29 @@ namespace Saleslogix.SData.Client.Framework
 
         private WebRequest CreateRequest(string uri, RequestOperation op)
         {
+            var selector = op.Selector;
+            var eTag = op.ETag;
+            if (op.Content != null && (selector == null || eTag == null))
+            {
+                var prot = op.Content as ISDataProtocolAware ?? ContentHelper.Serialize(op.Content, NamingScheme) as ISDataProtocolAware;
+                if (prot != null && prot.Info != null)
+                {
+                    if (selector == null && prot.Info.Key != null)
+                    {
+                        selector = SDataUri.FormatSelectorConstant(prot.Info.Key);
+                    }
+                    if (eTag == null)
+                    {
+                        eTag = prot.Info.ETag;
+                    }
+                }
+            }
+
+            if (selector != null)
+            {
+                uri = new SDataUri(Uri) {LastPathSegment = {Selector = selector}}.ToString();
+            }
+
             var request = WebRequest.Create(uri);
             request.Method = op.Method.ToString().ToUpperInvariant();
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
@@ -368,7 +415,7 @@ namespace Saleslogix.SData.Client.Framework
                 httpRequest.KeepAlive = false;
                 httpRequest.ProtocolVersion = HttpVersion.Version10;
 
-                if (!string.IsNullOrEmpty(UserAgent))
+                if (UserAgent != null)
                 {
                     httpRequest.UserAgent = UserAgent;
                 }
@@ -388,7 +435,7 @@ namespace Saleslogix.SData.Client.Framework
             {
                 request.Credentials = Credentials;
             }
-            else if (!string.IsNullOrEmpty(UserName) || !string.IsNullOrEmpty(Password))
+            else if (UserName != null || Password != null)
             {
                 request.Credentials = new NetworkCredential(UserName, Password);
             }
@@ -399,12 +446,12 @@ namespace Saleslogix.SData.Client.Framework
             }
 #endif
 
-            if (!string.IsNullOrEmpty(op.ETag))
+            if (eTag != null)
             {
                 var header = op.Method == HttpMethod.Get
                                  ? HttpRequestHeader.IfNoneMatch
                                  : HttpRequestHeader.IfMatch;
-                request.Headers[header] = op.ETag;
+                request.Headers[header] = eTag;
             }
 
             return request;
@@ -433,6 +480,10 @@ namespace Saleslogix.SData.Client.Framework
                 else if (op.Content is string)
                 {
                     contentType = MediaType.Text;
+                }
+                else if (ContentHelper.IsObject(op.Content))
+                {
+                    contentType = MediaType.AtomEntry;
                 }
             }
 
@@ -475,7 +526,7 @@ namespace Saleslogix.SData.Client.Framework
                         var contentDisposition = "attachment";
                         if (file.FileName != null)
                         {
-                            if (file.FileName == Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(file.FileName)))
+                            if (Encoding.UTF8.GetByteCount(file.FileName) == file.FileName.Length)
                             {
                                 contentDisposition += "; filename=" + file.FileName;
                             }
@@ -487,7 +538,7 @@ namespace Saleslogix.SData.Client.Framework
 
                         var part = new MimePart(file.Stream)
                                        {
-                                           ContentType = !string.IsNullOrEmpty(file.ContentType) ? file.ContentType : "application/octet-stream",
+                                           ContentType = file.ContentType ?? "application/octet-stream",
                                            ContentTransferEncoding = "binary",
                                            ContentDisposition = contentDisposition
                                        };
