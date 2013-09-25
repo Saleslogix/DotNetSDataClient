@@ -190,14 +190,13 @@ namespace Saleslogix.SData.Client.Content
 
         private static bool TryParseMicrosoftDate(string value, out DateTimeOffset date)
         {
-            if (!_microsoftDateFormat.IsMatch(value))
+            var match = _microsoftDateFormat.Match(value);
+            if (!match.Success)
             {
                 date = DateTimeOffset.MinValue;
                 return false;
             }
 
-            var matches = _microsoftDateFormat.Matches(value);
-            var match = matches[0];
             var ms = Convert.ToInt64(match.Groups[1].Value);
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var dt = epoch.AddMilliseconds(ms);
@@ -239,7 +238,7 @@ namespace Saleslogix.SData.Client.Content
                 return jsonObj;
             }
 
-            if (obj != null && !(obj is string) && !obj.GetType().GetTypeInfo().IsValueType)
+            if (ContentHelper.IsObject(obj))
             {
                 jsonObj = WriteObject(ContentHelper.Serialize(obj, namingScheme), isRoot, namingScheme);
                 if (jsonObj != null)

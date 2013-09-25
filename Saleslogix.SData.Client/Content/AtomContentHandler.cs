@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -504,7 +503,7 @@ namespace Saleslogix.SData.Client.Content
                 return obj;
             }
 
-            if (value != null && !(value is string) && !value.GetType().GetTypeInfo().IsValueType)
+            if (ContentHelper.IsObject(value))
             {
                 obj = WriteObject(name, ContentHelper.Serialize(value, namingScheme), namingScheme);
                 if (obj != null)

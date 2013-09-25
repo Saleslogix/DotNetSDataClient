@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
 using Saleslogix.SData.Client.Framework;
@@ -72,10 +71,9 @@ namespace Saleslogix.SData.Client.Content
             Guard.ArgumentNotNull(obj, "obj");
             Guard.ArgumentNotNull(stream, "stream");
 
-            var type = obj.GetType();
-            if (type != typeof (string) && !type.GetTypeInfo().IsValueType)
+            if (ContentHelper.IsObject(obj))
             {
-                var serializer = new XmlSerializer(type);
+                var serializer = new XmlSerializer(obj.GetType());
                 serializer.Serialize(stream, obj);
             }
             else

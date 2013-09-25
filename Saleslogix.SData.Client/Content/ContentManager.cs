@@ -28,7 +28,14 @@ namespace Saleslogix.SData.Client.Content
 
         public static void SetHandler(MediaType contentType, IContentHandler handler)
         {
-            _contentHandlers[contentType] = handler;
+            if (handler != null)
+            {
+                _contentHandlers[contentType] = handler;
+            }
+            else
+            {
+                _contentHandlers.Remove(contentType);
+            }
         }
     }
 }

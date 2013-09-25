@@ -22,10 +22,9 @@ namespace Saleslogix.SData.Client.Content
             Guard.ArgumentNotNull(obj, "obj");
             Guard.ArgumentNotNull(stream, "stream");
 
-            using (var writer = new StreamWriter(stream))
-            {
-                writer.Write(obj.ToString());
-            }
+            var writer = new StreamWriter(stream);
+            writer.Write(obj.ToString());
+            writer.Flush();
         }
     }
 }

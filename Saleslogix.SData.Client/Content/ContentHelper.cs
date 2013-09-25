@@ -19,24 +19,14 @@ namespace Saleslogix.SData.Client.Content
     {
         public static object Serialize(object value, INamingScheme namingScheme = null)
         {
-            if (namingScheme == null)
-            {
-                namingScheme = NamingScheme.Default;
-            }
-
             object result;
-            new Serializer(namingScheme).TrySerializeNonPrimitiveObject(value, out result);
+            new Serializer(namingScheme ?? NamingScheme.Default).TrySerializeNonPrimitiveObject(value, out result);
             return result;
         }
 
         public static T Deserialize<T>(object value, INamingScheme namingScheme = null)
         {
-            if (namingScheme == null)
-            {
-                namingScheme = NamingScheme.Default;
-            }
-
-            return (T) new Serializer(namingScheme).DeserializeObject(value, typeof (T));
+            return (T) new Serializer(namingScheme ?? NamingScheme.Default).DeserializeObject(value, typeof (T));
         }
 
         public static IEnumerable<IDictionary<string, object>> AsDictionaries(object obj)
@@ -191,6 +181,11 @@ namespace Saleslogix.SData.Client.Content
                     obj.GetType().GetInterfaces().Any(iface => iface.GetTypeInfo().IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>)));
         }
 
+        public static bool IsObject(object obj)
+        {
+            return obj != null && !(obj is string) && !(obj is ValueType);
+        }
+
         #region Nested type: Serializer
 
         private class Serializer : PocoJsonSerializerStrategy
@@ -204,7 +199,7 @@ namespace Saleslogix.SData.Client.Content
 
             public override bool TrySerializeNonPrimitiveObject(object input, out object output)
             {
-                if (input == null || input is string || input.GetType().GetTypeInfo().IsValueType)
+                if (!IsObject(input))
                 {
                     output = input;
                     return true;
@@ -342,7 +337,7 @@ namespace Saleslogix.SData.Client.Content
                     return value;
                 }
 
-                if (value is string || value.GetType().GetTypeInfo().IsValueType)
+                if (!IsObject(value))
                 {
                     return base.DeserializeObject(value, type);
                 }
