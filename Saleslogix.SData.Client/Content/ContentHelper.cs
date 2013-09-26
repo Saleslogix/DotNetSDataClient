@@ -386,11 +386,11 @@ namespace Saleslogix.SData.Client.Content
                 var result = new Dictionary<string, ReflectionUtils.GetDelegate>();
                 foreach (var propertyInfo in GetProperties(type))
                 {
-                    result[_namingScheme.GetName(propertyInfo)] = GetGetter(ReflectionUtils.GetGetMethod(propertyInfo), propertyInfo, propertyInfo.PropertyType);
+                    result[GetName(propertyInfo)] = GetGetter(ReflectionUtils.GetGetMethod(propertyInfo), propertyInfo, propertyInfo.PropertyType);
                 }
                 foreach (var fieldInfo in GetFields(type))
                 {
-                    result[_namingScheme.GetName(fieldInfo)] = GetGetter(ReflectionUtils.GetGetMethod(fieldInfo), fieldInfo, fieldInfo.FieldType);
+                    result[GetName(fieldInfo)] = GetGetter(ReflectionUtils.GetGetMethod(fieldInfo), fieldInfo, fieldInfo.FieldType);
                 }
 
                 return result;
@@ -454,12 +454,12 @@ namespace Saleslogix.SData.Client.Content
                 foreach (var propertyInfo in GetProperties(type))
                 {
                     var setter = ReflectionUtils.GetSetMethod(propertyInfo);
-                    result[_namingScheme.GetName(propertyInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(propertyInfo.PropertyType, setter);
+                    result[GetName(propertyInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(propertyInfo.PropertyType, setter);
                 }
                 foreach (var fieldInfo in GetFields(type))
                 {
                     var setter = ReflectionUtils.GetSetMethod(fieldInfo);
-                    result[_namingScheme.GetName(fieldInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(fieldInfo.FieldType, setter);
+                    result[GetName(fieldInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(fieldInfo.FieldType, setter);
                 }
 
                 return result;
@@ -488,6 +488,22 @@ namespace Saleslogix.SData.Client.Content
                                                      !item.IsDefined(typeof (IgnoreDataMemberAttribute)) &&
 #endif
                                                      !item.IsDefined(typeof (XmlIgnoreAttribute)));
+            }
+
+            private string GetName(MemberInfo member)
+            {
+                var protocolAttr = member.GetCustomAttribute<SDataProtocolPropertyAttribute>();
+                if (protocolAttr != null)
+                {
+                    var name = protocolAttr.Value != null ? protocolAttr.Value.ToString() : member.Name;
+                    if (char.IsUpper(name[0]))
+                    {
+                        name = char.ToLowerInvariant(name[0]) + name.Substring(1);
+                    }
+                    return "$" + name;
+                }
+
+                return _namingScheme.GetName(member);
             }
         }
 
