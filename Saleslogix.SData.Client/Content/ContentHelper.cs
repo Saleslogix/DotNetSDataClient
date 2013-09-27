@@ -358,13 +358,10 @@ namespace Saleslogix.SData.Client.Content
                 }
 
                 // SimpleJson only recognizes IList<object>
-                if (!(value is IList<object>))
+                var items = AsCollection(value);
+                if (items != null && !(value is IList<object>))
                 {
-                    var items = AsCollection(value);
-                    if (items != null)
-                    {
-                        value = items.ToList();
-                    }
+                    value = items.ToList();
                 }
 
                 var result = base.DeserializeObject(value, type);
@@ -372,6 +369,16 @@ namespace Saleslogix.SData.Client.Content
                 if (prot != null)
                 {
                     var resultProt = result as ISDataProtocolAware;
+                    if (resultProt == null && items != null)
+                    {
+                        var itemType = type.GetTypeInfo().IsGenericType ? type.GetGenericArguments()[0] : typeof (object);
+                        var colType = typeof (SDataCollection<>).MakeGenericType(itemType);
+                        if (type.IsAssignableFrom(colType))
+                        {
+                            result = Activator.CreateInstance(colType, new[] {result});
+                            resultProt = (ISDataProtocolAware) result;
+                        }
+                    }
                     if (resultProt != null)
                     {
                         resultProt.Info = prot.Info;

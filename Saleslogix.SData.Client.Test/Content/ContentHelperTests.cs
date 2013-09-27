@@ -114,6 +114,19 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
+        public void Deserialize_ProtcolAware_Enumerable_Test()
+        {
+            var value = new SDataCollection<string> {"Smith"};
+            ((ISDataProtocolAware) value).Info = new SDataProtocolInfo {Url = new Uri("http://www.example.com")};
+            var result = ContentHelper.Deserialize<IList<object>>(value);
+            Assert.That(result, Is.InstanceOf<ISDataProtocolAware>());
+            Assert.That(result, Is.Not.SameAs(value));
+            Assert.That(result, Has.Count.EqualTo(1));
+            Assert.That(result[0], Is.EqualTo("Smith"));
+            Assert.That(((ISDataProtocolAware) result).Info.Url, Is.EqualTo(new Uri("http://www.example.com")));
+        }
+
+        [Test]
         public void Serialize_SDataProtocolProperty_Test()
         {
             var value = new SDataProtocolProperty_Object
