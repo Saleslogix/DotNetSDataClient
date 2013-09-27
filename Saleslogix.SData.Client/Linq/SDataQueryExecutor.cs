@@ -115,7 +115,7 @@ namespace Saleslogix.SData.Client.Linq
             var collection = takeCount != 0
                                  ? PrepareExecuteDelegate<T>(queryModel)(parms)
                                  : new SDataCollection<T>(0) {TotalResults = 0};
-            return PostExecuteSingle(queryModel, collection);
+            return PostExecuteSingle(queryModel, collection, parms.StartIndex, takeCount);
 #endif
         }
 
@@ -290,11 +290,11 @@ namespace Saleslogix.SData.Client.Linq
             if (takeCount == 0)
             {
                 var collection = new SDataCollection<T>(0) {TotalResults = 0};
-                return CreateResultTask(PostExecuteSingle(queryModel, collection));
+                return CreateResultTask(PostExecuteSingle(queryModel, collection, parms.StartIndex, takeCount));
             }
 
             var execute = PrepareAsyncExecuteDelegate<T>(queryModel);
-            return execute(parms).ContinueWith(task => PostExecuteSingle(queryModel, task.Result));
+            return execute(parms).ContinueWith(task => PostExecuteSingle(queryModel, task.Result, parms.StartIndex, takeCount));
         }
 
         public Task<ICollection<T>> ExecuteCollectionAsync<T>(QueryModel queryModel)
@@ -451,17 +451,17 @@ namespace Saleslogix.SData.Client.Linq
             return parms;
         }
 
-        private static T PostExecuteSingle<T>(QueryModel queryModel, SDataCollection<T> collection)
+        private static T PostExecuteSingle<T>(QueryModel queryModel, SDataCollection<T> collection, int? startIndex, int? takeCount)
         {
             var resultOperator = queryModel.ResultOperators.Last();
-            if (resultOperator is SingleResultOperator)
+            if (resultOperator is SingleResultOperator && takeCount != 1)
             {
                 if (collection.TotalResults == null)
                 {
                     throw new SDataClientException("Unable to determine total results");
                 }
 
-                if (collection.TotalResults > 1)
+                if (collection.TotalResults - (startIndex ?? 1) > 0)
                 {
                     throw new SDataClientException("Multiple results");
                 }

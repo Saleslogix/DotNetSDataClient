@@ -254,6 +254,79 @@ namespace Saleslogix.SData.Client.Test.Linq
         }
 
         [Test]
+        public void Single_Single_TotalResultsMissing_Test()
+        {
+            var parmsList = new List<ISDataParameters>();
+            var expected = new Contact();
+            var client = CreateClient(parmsList, CreateCollection(new[] {expected}, null));
+            var executor = new SDataQueryExecutor(client);
+            var builder = CreateQueryBuilder<Contact>(true);
+            builder.AddResultOperator(new SingleResultOperator(false));
+            Assert.That(() => executor.ExecuteSingle<Contact>(builder.Build(), false), Throws.InstanceOf<SDataClientException>());
+        }
+
+        [Test]
+        public void Single_Single_MultipleResults_Test()
+        {
+            var parmsList = new List<ISDataParameters>();
+            var expected = new Contact();
+            var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 2));
+            var executor = new SDataQueryExecutor(client);
+            var builder = CreateQueryBuilder<Contact>(true);
+            builder.AddResultOperator(new SingleResultOperator(false));
+            Assert.That(() => executor.ExecuteSingle<Contact>(builder.Build(), false), Throws.InstanceOf<SDataClientException>());
+        }
+
+        [Test]
+        public void Single_Single_Take_One_Test()
+        {
+            var parmsList = new List<ISDataParameters>();
+            var expected = new Contact();
+            var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 10));
+            var executor = new SDataQueryExecutor(client);
+            var builder = CreateQueryBuilder<Contact>(true);
+            builder.AddResultOperator(new TakeResultOperator(Expression.Constant(1)));
+            builder.AddResultOperator(new SingleResultOperator(false));
+            var result = executor.ExecuteSingle<Contact>(builder.Build(), false);
+
+            Assert.That(parmsList[0].Count, Is.EqualTo(1));
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void Single_Single_Skip_Test()
+        {
+            var parmsList = new List<ISDataParameters>();
+            var expected = new Contact();
+            var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 10));
+            var executor = new SDataQueryExecutor(client);
+            var builder = CreateQueryBuilder<Contact>(true);
+            builder.AddResultOperator(new SkipResultOperator(Expression.Constant(9)));
+            builder.AddResultOperator(new SingleResultOperator(false));
+            var result = executor.ExecuteSingle<Contact>(builder.Build(), false);
+
+            Assert.That(parmsList[0].Count, Is.EqualTo(1));
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void Single_Single_Take_Skip_Test()
+        {
+            var parmsList = new List<ISDataParameters>();
+            var expected = new Contact();
+            var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 10));
+            var executor = new SDataQueryExecutor(client);
+            var builder = CreateQueryBuilder<Contact>(true);
+            builder.AddResultOperator(new TakeResultOperator(Expression.Constant(5)));
+            builder.AddResultOperator(new SkipResultOperator(Expression.Constant(4)));
+            builder.AddResultOperator(new SingleResultOperator(false));
+            var result = executor.ExecuteSingle<Contact>(builder.Build(), false);
+
+            Assert.That(parmsList[0].Count, Is.EqualTo(1));
+            Assert.That(result, Is.EqualTo(expected));
+        }
+
+        [Test]
         public void Single_ElementAt_Test()
         {
             var parmsList = new List<ISDataParameters>();

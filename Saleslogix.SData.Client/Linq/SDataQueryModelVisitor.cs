@@ -93,12 +93,8 @@ namespace Saleslogix.SData.Client.Linq
         {
             if (resultOperator is AnyResultOperator ||
                 resultOperator is CountResultOperator ||
-                resultOperator is LongCountResultOperator)
-            {
-                return;
-            }
-
-            if (resultOperator is FirstResultOperator ||
+                resultOperator is LongCountResultOperator ||
+                resultOperator is FirstResultOperator ||
                 resultOperator is SingleResultOperator)
             {
                 return;
