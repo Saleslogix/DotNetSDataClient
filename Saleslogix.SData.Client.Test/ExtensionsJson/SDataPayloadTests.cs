@@ -23,7 +23,6 @@ namespace Saleslogix.SData.Client.Test.ExtensionsJson
                   }
                   ""orderLines"":{
                     ""$url"":""http://www.example.com/sdata/myApp/myContract/-/salesOrderLines?where=salesOrderID%20eq%2043660"",
-                    ""$resources"":[]
                   }
                 }";
             var payload = Helpers.ReadJson<SDataResource>(json);
@@ -82,26 +81,6 @@ namespace Saleslogix.SData.Client.Test.ExtensionsJson
 
         [Test]
         public void Empty_Collection_Property_Without_Attributes()
-        {
-            const string json = @"
-                {
-                  ""orderLines"":{
-                    ""$resources"":[]
-                  }
-                }";
-            var payload = Helpers.ReadJson<SDataResource>(json);
-
-            Assert.That(payload.Count, Is.EqualTo(1));
-
-            object value;
-            Assert.IsTrue(payload.TryGetValue("orderLines", out value));
-            Assert.That(value, Is.InstanceOf<SDataCollection<SDataResource>>());
-            var col = (SDataCollection<SDataResource>) value;
-            Assert.That(col, Is.Empty);
-        }
-
-        [Test]
-        public void Empty_Collection_Property_Without_Attributes_Or_Namespace()
         {
             const string json = @"
                 {

@@ -47,7 +47,9 @@ namespace Saleslogix.SData.Client.Content
             if (jsonObj != null)
             {
                 object resourcesObj;
-                if (jsonObj.TryGetValue("$resources", out resourcesObj))
+                if (jsonObj.TryGetValue("$resources", out resourcesObj) ||
+                    ((jsonObj.ContainsKey("$url") || jsonObj.ContainsKey("$deleteMissing")) &&
+                     !jsonObj.ContainsKey("$key") && !jsonObj.ContainsKey("$uuid") && !jsonObj.ContainsKey("$lookup") && !jsonObj.ContainsKey("$descriptor") && !jsonObj.ContainsKey("$isDeleted")))
                 {
                     var jsonResources = ContentHelper.AsDictionaries(resourcesObj);
                     return ReadResourceCollection(jsonObj, jsonResources ?? new List<IDictionary<string, object>>());

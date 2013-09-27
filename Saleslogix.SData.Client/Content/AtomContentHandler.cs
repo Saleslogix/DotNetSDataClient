@@ -252,8 +252,7 @@ namespace Saleslogix.SData.Client.Content
                 return ItemType.Object;
             }
 
-            if (item.Attribute(_sDataNs + "url") != null ||
-                item.Attribute(_sDataNs + "uri") != null ||
+            if (item.Attribute(_sDataNs + "uri") != null ||
                 item.Attribute(_sDataNs + "deleteMissing") != null)
             {
                 return ItemType.PayloadCollection;
