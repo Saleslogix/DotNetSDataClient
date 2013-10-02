@@ -3,8 +3,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using SimpleJson;
 using SimpleJson.Reflection;
@@ -17,6 +19,16 @@ namespace Saleslogix.SData.Client.Content
 {
     internal static class ContentHelper
     {
+        private static readonly Regex _microsoftDateFormat = new Regex(
+            @"\\?/Date\((-?\d+)(-|\+)?([0-9]{4})?\)\\?/",
+            RegexOptions.IgnoreCase |
+            RegexOptions.CultureInvariant |
+            RegexOptions.IgnorePatternWhitespace
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+            | RegexOptions.Compiled
+#endif
+            );
+
         public static object Serialize(object value, INamingScheme namingScheme = null)
         {
             object result;
@@ -186,6 +198,31 @@ namespace Saleslogix.SData.Client.Content
             return obj != null && !(obj is string) && !(obj is ValueType);
         }
 
+        public static bool TryParseMicrosoftDate(string value, out DateTimeOffset date)
+        {
+            var match = _microsoftDateFormat.Match(value);
+            if (!match.Success)
+            {
+                date = DateTimeOffset.MinValue;
+                return false;
+            }
+
+            var ms = Convert.ToInt64(match.Groups[1].Value);
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var dt = epoch.AddMilliseconds(ms);
+
+            if (match.Groups.Count < 3 || string.IsNullOrEmpty(match.Groups[3].Value))
+            {
+                date = dt;
+                return true;
+            }
+
+            var mod = DateTime.ParseExact(match.Groups[3].Value, "HHmm", CultureInfo.InvariantCulture);
+            var offset = match.Groups[2].Value == "+" ? mod.TimeOfDay : -mod.TimeOfDay;
+            date = new DateTimeOffset(dt.ToLocalTime(), offset);
+            return true;
+        }
+
         #region Nested type: Serializer
 
         private class Serializer : PocoJsonSerializerStrategy
@@ -339,6 +376,13 @@ namespace Saleslogix.SData.Client.Content
 
                 if (!IsObject(value))
                 {
+                    var str = value as string;
+                    DateTimeOffset date;
+                    if (str != null && TryParseMicrosoftDate(str, out date))
+                    {
+                        return date;
+                    }
+
                     return base.DeserializeObject(value, type);
                 }
 

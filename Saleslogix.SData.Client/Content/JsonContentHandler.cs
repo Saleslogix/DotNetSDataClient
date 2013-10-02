@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Utilities;
 using SimpleJson;
@@ -16,16 +15,6 @@ namespace Saleslogix.SData.Client.Content
 {
     public class JsonContentHandler : IContentHandler
     {
-        private static readonly Regex _microsoftDateFormat = new Regex(
-            @"\\?/Date\((-?\d+)(-|\+)?([0-9]{4})?\)\\?/",
-            RegexOptions.IgnoreCase |
-            RegexOptions.CultureInvariant |
-            RegexOptions.IgnorePatternWhitespace
-#if !PCL && !NETFX_CORE && !SILVERLIGHT
-            | RegexOptions.Compiled
-#endif
-            );
-
         private readonly SerializerStrategy _serializerStrategy = new SerializerStrategy();
 
         public object ReadFrom(Stream stream)
@@ -157,7 +146,7 @@ namespace Saleslogix.SData.Client.Content
             {
                 var str = value as string;
                 DateTimeOffset date;
-                if (str != null && TryParseMicrosoftDate(str, out date))
+                if (str != null && ContentHelper.TryParseMicrosoftDate(str, out date))
                 {
                     value = date;
                 }
@@ -188,31 +177,6 @@ namespace Saleslogix.SData.Client.Content
             }
 
             return (T) Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
-        }
-
-        private static bool TryParseMicrosoftDate(string value, out DateTimeOffset date)
-        {
-            var match = _microsoftDateFormat.Match(value);
-            if (!match.Success)
-            {
-                date = DateTimeOffset.MinValue;
-                return false;
-            }
-
-            var ms = Convert.ToInt64(match.Groups[1].Value);
-            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            var dt = epoch.AddMilliseconds(ms);
-
-            if (match.Groups.Count < 3 || string.IsNullOrEmpty(match.Groups[3].Value))
-            {
-                date = dt;
-                return true;
-            }
-
-            var mod = DateTime.ParseExact(match.Groups[3].Value, "HHmm", CultureInfo.InvariantCulture);
-            var offset = match.Groups[2].Value == "+" ? mod.TimeOfDay : -mod.TimeOfDay;
-            date = new DateTimeOffset(dt.ToLocalTime(), offset);
-            return true;
         }
 
         public void WriteTo(object obj, Stream stream, INamingScheme namingScheme = null)

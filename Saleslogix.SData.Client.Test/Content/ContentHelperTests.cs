@@ -360,5 +360,19 @@ namespace Saleslogix.SData.Client.Test.Content
         {
             public string Name;
         }
+
+        [Test]
+        public void Deserialize_JsonDate_Test()
+        {
+            var value = new Dictionary<string, object> {{"ShipDate", "/Date(1371283200000)/"}};
+            var result = ContentHelper.Deserialize<JsonDate_Object>(value);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ShipDate, Is.EqualTo(new DateTimeOffset(2013, 6, 15, 8, 0, 0, TimeSpan.Zero)));
+        }
+
+        private class JsonDate_Object
+        {
+            public DateTimeOffset ShipDate { get; set; }
+        }
     }
 }
