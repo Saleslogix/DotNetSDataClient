@@ -369,20 +369,43 @@ namespace Saleslogix.SData.Client.Content
                                : null;
                 }
 
+                type = Nullable.GetUnderlyingType(type) ?? type;
+
                 if (type.IsInstanceOfType(value))
                 {
                     return value;
                 }
 
-                if (!IsObject(value))
+                if (type == typeof (DateTime) || type == typeof (DateTimeOffset))
                 {
                     var str = value as string;
                     DateTimeOffset date;
                     if (str != null && TryParseMicrosoftDate(str, out date))
                     {
-                        return date;
+                        return type == typeof (DateTime) ? date.DateTime : (object) date;
                     }
 
+                    if (value is DateTime)
+                    {
+                        return (DateTimeOffset) (DateTime) value;
+                    }
+                    if (value is DateTimeOffset)
+                    {
+                        return ((DateTimeOffset) value).DateTime;
+                    }
+                }
+#if NETFX_CORE
+                else if (type == typeof (byte) || type == typeof (short) || type == typeof (int) || type == typeof (long) ||
+                         type == typeof (float) || type == typeof (double) || type == typeof (decimal) || type == typeof (bool))
+#else
+                else if (typeof (IConvertible).IsAssignableFrom(type))
+#endif
+                {
+                    return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+                }
+
+                if (!IsObject(value))
+                {
                     return base.DeserializeObject(value, type);
                 }
 

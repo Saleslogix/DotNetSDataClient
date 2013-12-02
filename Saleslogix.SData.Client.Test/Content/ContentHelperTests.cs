@@ -374,5 +374,54 @@ namespace Saleslogix.SData.Client.Test.Content
         {
             public DateTimeOffset ShipDate { get; set; }
         }
+
+        [Test]
+        public void Deserialize_NumberTypeMismatch_FromInteger_Test()
+        {
+            var value = new Dictionary<string, object>
+                {
+                    {"Byte", 123},
+                    {"Int16", 123},
+                    {"Int32", 123},
+                    {"Float", 123},
+                    {"Decimal", 123}
+                };
+            var result = ContentHelper.Deserialize<NumberTypeMismatch_Object>(value);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Byte, Is.EqualTo(123));
+            Assert.That(result.Int16, Is.EqualTo(123));
+            Assert.That(result.Int32, Is.EqualTo(123));
+            Assert.That(result.Float, Is.EqualTo(123));
+            Assert.That(result.Decimal, Is.EqualTo(123));
+        }
+
+        [Test]
+        public void Deserialize_NumberTypeMismatch_FromFloat_Test()
+        {
+            var value = new Dictionary<string, object>
+                {
+                    {"Byte", 123.456},
+                    {"Int16", 123.456},
+                    {"Int32", 123.456},
+                    {"Float", 123.456},
+                    {"Decimal", 123.456}
+                };
+            var result = ContentHelper.Deserialize<NumberTypeMismatch_Object>(value);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Byte, Is.EqualTo(123));
+            Assert.That(result.Int16, Is.EqualTo(123));
+            Assert.That(result.Int32, Is.EqualTo(123));
+            Assert.That(result.Float, Is.EqualTo(123.456).Within(1e-4));
+            Assert.That(result.Decimal, Is.EqualTo(123.456).Within(1e-4));
+        }
+
+        private class NumberTypeMismatch_Object
+        {
+            public byte Byte { get; set; }
+            public short Int16 { get; set; }
+            public int Int32 { get; set; }
+            public float Float { get; set; }
+            public decimal Decimal { get; set; }
+        }
     }
 }

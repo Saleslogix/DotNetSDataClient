@@ -17,11 +17,14 @@ namespace Saleslogix.SData.Client.Test.Content
         public void Read_DateTime_Test()
         {
             const string xml = @"
-                    <atom:entry xmlns:atom=""http://www.w3.org/2005/Atom"">
-                      <atom:updated>2013-06-15T08:00:00Z</atom:updated>
+                    <atom:entry xmlns:atom=""http://www.w3.org/2005/Atom"" xmlns:sync=""http://schemas.sage.com/sdata/sync/2008/1"">
+                      <sync:syncState>
+                        <sync:stamp>2013-06-15T08:00:00</sync:stamp>
+                      </sync:syncState>
                     </atom:entry>";
             var resource = Helpers.ReadAtom<SDataResource>(xml);
-            Assert.That(resource.Updated, Is.EqualTo(new DateTimeOffset(2013, 6, 15, 8, 0, 0, TimeSpan.Zero)));
+            Assert.That(resource.SyncState, Is.Not.Null);
+            Assert.That(resource.SyncState.Stamp, Is.EqualTo(new DateTime(2013, 6, 15, 8, 0, 0)));
         }
 
         [Test]

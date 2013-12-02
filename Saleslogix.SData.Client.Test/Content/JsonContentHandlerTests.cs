@@ -14,9 +14,10 @@ namespace Saleslogix.SData.Client.Test.Content
         [Test]
         public void Read_DateTime_Test()
         {
-            const string json = @"{""$updated"":""/Date(1371283200000)/""}";
+            const string json = @"{""$syncState"":{""stamp"":""/Date(1371283200000)/""}}";
             var resource = Helpers.ReadJson<SDataResource>(json);
-            Assert.That(resource.Updated, Is.EqualTo(new DateTimeOffset(2013, 6, 15, 8, 0, 0, TimeSpan.Zero)));
+            Assert.That(resource.SyncState, Is.Not.Null);
+            Assert.That(resource.SyncState.Stamp, Is.EqualTo(new DateTime(2013, 6, 15, 8, 0, 0)));
         }
 
         [Test]
