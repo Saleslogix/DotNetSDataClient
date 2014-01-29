@@ -381,7 +381,7 @@ namespace Saleslogix.SData.Client.Framework
         {
             get
             {
-                CheckParsePath();
+                CheckParseQuery();
 
                 var formatType = this[QueryArgNames.Format];
 

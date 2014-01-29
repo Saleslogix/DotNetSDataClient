@@ -108,5 +108,55 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(after.QueryArgs, Is.EqualTo(before.QueryArgs));
             Assert.That(after.PathQuery, Is.EqualTo(before.PathQuery));
         }
+
+        [Test]
+        public void Modifying_QueryArgs_Should_Not_Require_Path_Parse_Test()
+        {
+            var uri = new Modifying_QueryArgs_Should_Not_Require_Path_Parse_Object("http://localhost:3333/sdata/aw/dynamic/-/accounts");
+            uri["format"] = "html";
+            Assert.That(uri.ToString(), Is.EqualTo("http://localhost:3333/sdata/aw/dynamic/-/accounts?format=html"));
+            Assert.That(uri.OnParsePathCalled, Is.False);
+        }
+
+        private class Modifying_QueryArgs_Should_Not_Require_Path_Parse_Object : UriFormatter
+        {
+            public bool OnParsePathCalled;
+
+            public Modifying_QueryArgs_Should_Not_Require_Path_Parse_Object(string uri)
+                : base(uri)
+            {
+            }
+
+            protected override void OnParsePath()
+            {
+                OnParsePathCalled = true;
+                base.OnParsePath();
+            }
+        }
+
+        [Test]
+        public void Modifying_PathSegments_Should_Not_Require_Query_Parse_Test()
+        {
+            var uri = new Modifying_PathSegments_Should_Not_Require_Query_Parse_object("http://localhost:3333/sdata/aw/dynamic/-/accounts");
+            uri.AppendPath("nested");
+            Assert.That(uri.ToString(), Is.EqualTo("http://localhost:3333/sdata/aw/dynamic/-/accounts/nested"));
+            Assert.That(uri.OnParseQueryCalled, Is.False);
+        }
+
+        private class Modifying_PathSegments_Should_Not_Require_Query_Parse_object : UriFormatter
+        {
+            public bool OnParseQueryCalled;
+
+            public Modifying_PathSegments_Should_Not_Require_Query_Parse_object(string uri)
+                : base(uri)
+            {
+            }
+
+            protected override void OnParseQuery()
+            {
+                OnParseQueryCalled = true;
+                base.OnParseQuery();
+            }
+        }
     }
 }

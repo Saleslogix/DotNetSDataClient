@@ -116,6 +116,9 @@ namespace Saleslogix.SData.Client.Framework
         private bool _requiresParsePath;
         private List<UriPathSegment> _pathSegments;
 
+        private string _query;
+        private bool _requiresParseQuery;
+        private bool _requiresRebuildQuery;
         private QueryArgsDictionary _queryArgs;
 
         #endregion
@@ -208,6 +211,10 @@ namespace Saleslogix.SData.Client.Framework
                     _pathSegments.Add(clone);
                 }
             }
+
+            _query = uri._query;
+            _requiresParseQuery = uri._requiresParseQuery;
+            _requiresRebuildQuery = uri._requiresRebuildQuery;
 
             if (uri._queryArgs != null)
             {
@@ -426,15 +433,15 @@ namespace Saleslogix.SData.Client.Framework
         {
             get
             {
-                CheckParsePath();
-
-                return BuildQuery(QueryArgs);
+                CheckParseQuery();
+                CheckRebuildQuery();
+                return _query;
             }
             set
             {
-                CheckParsePath();
-                _queryArgs = !string.IsNullOrEmpty(value) ? new QueryArgsDictionary(this, value) : null;
-                _requiresRebuildUri = true;
+                CheckParseQuery();
+                _query = value;
+                _requiresParseQuery = true;
             }
         }
 
@@ -563,7 +570,7 @@ namespace Saleslogix.SData.Client.Framework
         {
             get
             {
-                CheckParseUri();
+                CheckParseQuery();
 
                 string value;
                 QueryArgs.TryGetValue(name, out value);
@@ -571,7 +578,7 @@ namespace Saleslogix.SData.Client.Framework
             }
             set
             {
-                CheckParseUri();
+                CheckParseQuery();
 
                 if (value == null)
                 {
@@ -599,6 +606,23 @@ namespace Saleslogix.SData.Client.Framework
             set
             {
                 _requiresRebuildPath = value;
+                if (value)
+                {
+                    _requiresRebuildUri = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating if the <see cref="Query"/> needs to be rebuilt.
+        /// </summary>
+        /// <value><b>true</b> if the <see cref="Query"/> needs to be rebuilt, otherwise <b>false</b>.</value>
+        internal bool RequiresRebuildQuery
+        {
+            get { return _requiresRebuildQuery; }
+            set
+            {
+                _requiresRebuildQuery = value;
                 if (value)
                 {
                     _requiresRebuildUri = true;
@@ -690,7 +714,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <param name="segments">The path segments for the <see cref="Uri"/>.</param>
         public UriFormatter SetPath(IEnumerable<UriPathSegment> segments)
         {
-            CheckParseUri();
+            CheckParsePath();
 
             InternalPathSegments.Clear();
             AddPathSegments(segments);
@@ -792,7 +816,7 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         private void CheckRebuildUri()
         {
-            if (!_requiresRebuildPath && !_requiresRebuildUri)
+            if (!_requiresRebuildPath && !_requiresRebuildQuery && !_requiresRebuildUri)
             {
                 return;
             }
@@ -805,7 +829,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <summary>
         /// Called when the <see cref="Uri"/> needs to be rebuilt.
         /// </summary>
-        private void OnBuildUri()
+        protected virtual void OnBuildUri()
         {
             // http
             var uri = new StringBuilder(string.IsNullOrEmpty(_scheme) ? Http : _scheme);
@@ -863,12 +887,12 @@ namespace Saleslogix.SData.Client.Framework
             }
 
             // http://<host><:port>/<path><?query>
-            var query = Query;
+            CheckRebuildQuery();
 
-            if (!string.IsNullOrEmpty(query))
+            if (!String.IsNullOrEmpty(_query))
             {
                 uri.Append(QueryPrefix);
-                uri.Append(query);
+                uri.Append(_query);
             }
 
             if (!string.IsNullOrEmpty(_fragment))
@@ -902,9 +926,10 @@ namespace Saleslogix.SData.Client.Framework
         /// <summary>
         /// Called when the <see cref="Uri"/> needs to be parsed.
         /// </summary>
-        private void OnParseUri()
+        protected virtual void OnParseUri()
         {
             _requiresParsePath = true;
+            _requiresParseQuery = true;
             _directPath = null;
 
             if (_uri == null)
@@ -916,7 +941,7 @@ namespace Saleslogix.SData.Client.Framework
                 _server = null;
                 _fragment = null;
                 _pathInternal = null;
-                _queryArgs = null;
+                _query = null;
             }
             else
             {
@@ -955,32 +980,8 @@ namespace Saleslogix.SData.Client.Framework
                     _pathInternal = _pathInternal.Substring(PathSegmentPrefix.Length);
                 }
 
-                _queryArgs = new QueryArgsDictionary(this, _uri.Query);
+                _query = _uri.Query;
             }
-        }
-
-        /// <summary>
-        /// Builds a query <see cref="string"/> from the specified <see cref="IDictionary{TKey, TValue}"/>.
-        /// </summary>
-        /// <param name="args">The arguments to build the query string from.</param>
-        /// <returns>A <see cref="string"/> containing the query.</returns>
-        public static string BuildQuery(IEnumerable<KeyValuePair<string, string>> args)
-        {
-            var query = new StringBuilder();
-
-            foreach (var pair in args)
-            {
-                if (query.Length > 0)
-                {
-                    query.Append(QueryArgPrefix);
-                }
-
-                query.Append(Uri.EscapeDataString(pair.Key));
-                query.Append(QueryArgValuePrefix);
-                query.Append(Uri.EscapeDataString(pair.Value));
-            }
-
-            return query.ToString();
         }
 
         /// <summary>
@@ -1027,7 +1028,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <summary>
         /// Called when the <see cref="Path"/> needs to be rebuilt.
         /// </summary>
-        private void OnBuildPath()
+        protected virtual void OnBuildPath()
         {
             var path = new StringBuilder();
 
@@ -1062,7 +1063,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <summary>
         /// Called when the <see cref="Path"/> needs to be parsed.
         /// </summary>
-        private void OnParsePath()
+        protected virtual void OnParsePath()
         {
             if (!string.IsNullOrEmpty(_pathInternal))
             {
@@ -1075,6 +1076,87 @@ namespace Saleslogix.SData.Client.Framework
                     {
                         segment.Formatter = this;
                         segments.Add(segment);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if the query part of the <see cref="Uri"/> needs rebuilding.
+        /// </summary>
+        private void CheckRebuildQuery()
+        {
+            if (!_requiresRebuildQuery)
+            {
+                return;
+            }
+
+            _requiresRebuildQuery = false;
+            _requiresRebuildUri = true;
+
+            OnBuildQuery();
+        }
+
+        /// <summary>
+        /// Called when the <see cref="Query"/> needs to be rebuilt.
+        /// </summary>
+        protected virtual void OnBuildQuery()
+        {
+            var query = new StringBuilder();
+
+            foreach (var pair in _queryArgs)
+            {
+                if (query.Length > 0)
+                {
+                    query.Append(QueryArgPrefix);
+                }
+
+                query.Append(Uri.EscapeDataString(pair.Key));
+                query.Append(QueryArgValuePrefix);
+                query.Append(Uri.EscapeDataString(pair.Value));
+            }
+
+            _query = query.ToString();
+        }
+
+        /// <summary>
+        /// Checks if the query part of the <see cref="Uri"/> needs parsing.
+        /// </summary>
+        protected void CheckParseQuery()
+        {
+            CheckParseUri();
+
+            if (!_requiresParseQuery)
+            {
+                return;
+            }
+
+            _requiresParseQuery = false;
+
+            OnParseQuery();
+        }
+
+        /// <summary>
+        /// Called when the <see cref="Query"/> needs to be parsed.
+        /// </summary>
+        protected virtual void OnParseQuery()
+        {
+            if (!String.IsNullOrEmpty(_query))
+            {
+                if (_query.StartsWith(QueryPrefix))
+                {
+                    _query = _query.Substring(QueryPrefix.Length);
+                }
+
+                var queryArgs = (Dictionary<string, string>) QueryArgs;
+                queryArgs.Clear();
+                foreach (var arg in _query.Split(QueryArgPrefix[0]))
+                {
+                    var parts = arg.Split(QueryArgValuePrefix[0]);
+                    if (parts[0].Length > 0)
+                    {
+                        var key = Uri.UnescapeDataString(parts[0].Trim());
+                        queryArgs[key] = parts.Length == 1 ? null : Uri.UnescapeDataString(parts[1]);
                     }
                 }
             }
@@ -1116,64 +1198,43 @@ namespace Saleslogix.SData.Client.Framework
                 _uri = uri;
             }
 
-            public QueryArgsDictionary(UriFormatter uri, string query)
-                : this(uri, Parse(query))
-            {
-            }
-
             public QueryArgsDictionary(UriFormatter uri, IDictionary<string, string> items)
                 : base(items, StringComparer.OrdinalIgnoreCase)
             {
                 _uri = uri;
             }
 
-            private static IDictionary<string, string> Parse(string query)
-            {
-                if (query.StartsWith(QueryPrefix))
-                {
-                    query = query.Substring(QueryPrefix.Length);
-                }
-
-                var args = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                if (!string.IsNullOrEmpty(query))
-                {
-                    foreach (var arg in query.Split(QueryArgPrefix[0]))
-                    {
-                        var parts = arg.Split(QueryArgValuePrefix[0]);
-                        if (parts[0].Length > 0)
-                        {
-                            var key = Uri.UnescapeDataString(parts[0].Trim());
-                            args[key] = parts.Length == 1 ? null : Uri.UnescapeDataString(parts[1]);
-                        }
-                    }
-                }
-
-                return args;
-            }
-
             #region IDictionary Members
 
             string IDictionary<string, string>.this[string key]
             {
-                get { return this[key]; }
+                get
+                {
+                    _uri.CheckParseQuery();
+                    return this[key];
+                }
                 set
                 {
+                    _uri.CheckParseQuery();
                     this[key] = value;
-                    _uri._requiresRebuildUri = true;
+                    _uri.RequiresRebuildQuery = true;
                 }
             }
 
             void IDictionary<string, string>.Add(string key, string value)
             {
+                _uri.CheckParseQuery();
                 Add(key, value);
-                _uri._requiresRebuildUri = true;
+                _uri.RequiresRebuildQuery = true;
             }
 
             bool IDictionary<string, string>.Remove(string key)
             {
+                _uri.CheckParseQuery();
+
                 if (Remove(key))
                 {
-                    _uri._requiresRebuildUri = true;
+                    _uri.RequiresRebuildQuery = true;
                     return true;
                 }
 
@@ -1186,15 +1247,18 @@ namespace Saleslogix.SData.Client.Framework
 
             void ICollection<KeyValuePair<string, string>>.Add(KeyValuePair<string, string> item)
             {
+                _uri.CheckParseQuery();
                 Add(item.Key, item.Value);
-                _uri._requiresRebuildUri = true;
+                _uri.RequiresRebuildQuery = true;
             }
 
             bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
             {
+                _uri.CheckParseQuery();
+
                 if (Remove(item.Key))
                 {
-                    _uri._requiresRebuildUri = true;
+                    _uri.RequiresRebuildQuery = true;
                     return true;
                 }
 
@@ -1203,8 +1267,9 @@ namespace Saleslogix.SData.Client.Framework
 
             void ICollection<KeyValuePair<string, string>>.Clear()
             {
+                _uri.CheckParseQuery();
                 Clear();
-                _uri._requiresRebuildUri = true;
+                _uri.RequiresRebuildQuery = true;
             }
 
             #endregion

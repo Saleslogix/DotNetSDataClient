@@ -344,7 +344,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Called when the <see cref="Segment"/> needs rebuilding using the <see cref="Text"/>
         /// and <see cref="Selector"/> values.
         /// </summary>
-        private void OnRebuild()
+        protected virtual void OnRebuild()
         {
             var segment = new StringBuilder(_text);
 
@@ -372,7 +372,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Called when the <see cref="Segment"/> needs parsing to extract the
         /// <see cref="Text"/> and <see cref="Selector"/> values.
         /// </summary>
-        private void OnParse()
+        protected virtual void OnParse()
         {
             _text = null;
             _selector = null;
