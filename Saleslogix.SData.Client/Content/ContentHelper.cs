@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using SimpleJson;
 using SimpleJson.Reflection;
@@ -19,16 +18,6 @@ namespace Saleslogix.SData.Client.Content
 {
     internal static class ContentHelper
     {
-        private static readonly Regex _microsoftDateFormat = new Regex(
-            @"\\?/Date\((-?\d+)(-|\+)?([0-9]{4})?\)\\?/",
-            RegexOptions.IgnoreCase |
-            RegexOptions.CultureInvariant |
-            RegexOptions.IgnorePatternWhitespace
-#if !PCL && !NETFX_CORE && !SILVERLIGHT
-            | RegexOptions.Compiled
-#endif
-            );
-
         public static object Serialize(object value, INamingScheme namingScheme = null)
         {
             object result;
@@ -57,10 +46,10 @@ namespace Saleslogix.SData.Client.Content
             var nonGeneric = obj as IEnumerable;
             if (nonGeneric != null &&
                 obj.GetType()
-                   .GetInterfaces()
-                   .Any(item => item.GetTypeInfo().IsGenericType &&
-                                item.GetGenericTypeDefinition() == typeof (IEnumerable<>) &&
-                                typeof (IDictionary<string, object>).IsAssignableFrom(item.GetGenericArguments()[0])))
+                    .GetInterfaces()
+                    .Any(item => item.GetTypeInfo().IsGenericType &&
+                                 item.GetGenericTypeDefinition() == typeof (IEnumerable<>) &&
+                                 typeof (IDictionary<string, object>).IsAssignableFrom(item.GetGenericArguments()[0])))
             {
                 generic = nonGeneric.Cast<IDictionary<string, object>>();
             }
@@ -104,7 +93,7 @@ namespace Saleslogix.SData.Client.Content
                 if (nonGeneric != null)
                 {
                     generic = nonGeneric.Cast<DictionaryEntry>()
-                                        .ToDictionary(entry => entry.Key.ToString(), entry => entry.Value);
+                        .ToDictionary(entry => entry.Key.ToString(), entry => entry.Value);
                 }
                 else
                 {
@@ -112,18 +101,18 @@ namespace Saleslogix.SData.Client.Content
                     if (entries != null)
                     {
                         var iface = obj.GetType()
-                                       .GetInterfaces()
-                                       .FirstOrDefault(item => item.GetTypeInfo().IsGenericType && item.GetGenericTypeDefinition() == typeof (IDictionary<,>));
+                            .GetInterfaces()
+                            .FirstOrDefault(item => item.GetTypeInfo().IsGenericType && item.GetGenericTypeDefinition() == typeof (IDictionary<,>));
                         if (iface != null)
                         {
                             var keyValueType = iface.GetInterfaces()
-                                                    .First(a => a.GetTypeInfo().IsGenericType && a.GetGenericTypeDefinition() == typeof (IEnumerable<>))
-                                                    .GetGenericArguments()[0];
+                                .First(a => a.GetTypeInfo().IsGenericType && a.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+                                .GetGenericArguments()[0];
                             var keyProp = keyValueType.GetProperty("Key");
                             var valueProp = keyValueType.GetProperty("Value");
                             generic = entries.Cast<object>()
-                                             .ToDictionary(item => keyProp.GetValue(item, null).ToString(),
-                                                           item => valueProp.GetValue(item, null));
+                                .ToDictionary(item => keyProp.GetValue(item, null).ToString(),
+                                    item => valueProp.GetValue(item, null));
                         }
                     }
                 }
@@ -196,31 +185,6 @@ namespace Saleslogix.SData.Client.Content
         public static bool IsObject(object obj)
         {
             return obj != null && !(obj is string) && !(obj is ValueType);
-        }
-
-        public static bool TryParseMicrosoftDate(string value, out DateTimeOffset date)
-        {
-            var match = _microsoftDateFormat.Match(value);
-            if (!match.Success)
-            {
-                date = DateTimeOffset.MinValue;
-                return false;
-            }
-
-            var ms = Convert.ToInt64(match.Groups[1].Value);
-            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            var dt = epoch.AddMilliseconds(ms);
-
-            if (match.Groups.Count < 3 || string.IsNullOrEmpty(match.Groups[3].Value))
-            {
-                date = dt;
-                return true;
-            }
-
-            var mod = DateTime.ParseExact(match.Groups[3].Value, "HHmm", CultureInfo.InvariantCulture);
-            var offset = match.Groups[2].Value == "+" ? mod.TimeOfDay : -mod.TimeOfDay;
-            date = new DateTimeOffset(dt.ToLocalTime(), offset);
-            return true;
         }
 
         #region Nested type: Serializer
@@ -348,8 +312,8 @@ namespace Saleslogix.SData.Client.Content
                 }
 
                 output = results.All(result => result is SDataResource)
-                             ? new SDataCollection<SDataResource>(results.Cast<SDataResource>())
-                             : (object) new SDataCollection<object>(results);
+                    ? new SDataCollection<SDataResource>(results.Cast<SDataResource>())
+                    : (object) new SDataCollection<object>(results);
 
                 var prot = input as ISDataProtocolAware;
                 if (prot != null)
@@ -365,8 +329,8 @@ namespace Saleslogix.SData.Client.Content
                 if (value == null)
                 {
                     return type.GetTypeInfo().IsValueType && !ReflectionUtils.IsNullableType(type)
-                               ? Activator.CreateInstance(type)
-                               : null;
+                        ? Activator.CreateInstance(type)
+                        : null;
                 }
 
                 type = Nullable.GetUnderlyingType(type) ?? type;
@@ -378,13 +342,6 @@ namespace Saleslogix.SData.Client.Content
 
                 if (type == typeof (DateTime) || type == typeof (DateTimeOffset))
                 {
-                    var str = value as string;
-                    DateTimeOffset date;
-                    if (str != null && TryParseMicrosoftDate(str, out date))
-                    {
-                        return type == typeof (DateTime) ? date.DateTime : (object) date;
-                    }
-
                     if (value is DateTime)
                     {
                         return (DateTimeOffset) (DateTime) value;
@@ -498,11 +455,11 @@ namespace Saleslogix.SData.Client.Content
                     if (xmlLocalName == null)
                     {
                         var itemType = memberType.IsArray
-                                           ? memberType.GetElementType()
-                                           : memberType.GetInterfaces()
-                                                       .Where(iface => iface.GetTypeInfo().IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>))
-                                                       .Select(iface => iface.GetGenericArguments()[0])
-                                                       .FirstOrDefault();
+                            ? memberType.GetElementType()
+                            : memberType.GetInterfaces()
+                                .Where(iface => iface.GetTypeInfo().IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+                                .Select(iface => iface.GetGenericArguments()[0])
+                                .FirstOrDefault();
                         xmlLocalName = itemType != null && itemType != typeof (object) ? itemType.Name : null;
                         xmlNamespace = null;
                     }
@@ -510,12 +467,12 @@ namespace Saleslogix.SData.Client.Content
                     if (xmlLocalName != null || xmlNamespace != null || xmlIsFlat)
                     {
                         return source => new XmlMetadataSurrogate
-                                             {
-                                                 Value = baseGetter(source),
-                                                 XmlLocalName = xmlLocalName,
-                                                 XmlNamespace = xmlNamespace,
-                                                 XmlIsFlat = xmlIsFlat
-                                             };
+                            {
+                                Value = baseGetter(source),
+                                XmlLocalName = xmlLocalName,
+                                XmlNamespace = xmlNamespace,
+                                XmlIsFlat = xmlIsFlat
+                            };
                     }
                 }
 
@@ -542,26 +499,26 @@ namespace Saleslogix.SData.Client.Content
             private static IEnumerable<PropertyInfo> GetProperties(Type type)
             {
                 return ReflectionUtils.GetProperties(type)
-                                      .Where(item => item.CanRead &&
+                    .Where(item => item.CanRead &&
 #if !NET_2_0
-                                                     !item.IsDefined(typeof (IgnoreDataMemberAttribute)) &&
+                        !item.IsDefined(typeof (IgnoreDataMemberAttribute)) &&
 #endif
-                                                     !item.IsDefined(typeof (XmlIgnoreAttribute)))
-                                      .Where(item =>
-                                                 {
-                                                     var getMethod = ReflectionUtils.GetGetterMethodInfo(item);
-                                                     return !getMethod.IsStatic && getMethod.IsPublic;
-                                                 });
+                        !item.IsDefined(typeof (XmlIgnoreAttribute)))
+                    .Where(item =>
+                    {
+                        var getMethod = ReflectionUtils.GetGetterMethodInfo(item);
+                        return !getMethod.IsStatic && getMethod.IsPublic;
+                    });
             }
 
             private static IEnumerable<FieldInfo> GetFields(Type type)
             {
                 return ReflectionUtils.GetFields(type)
-                                      .Where(item => !item.IsInitOnly && !item.IsStatic && item.IsPublic &&
+                    .Where(item => !item.IsInitOnly && !item.IsStatic && item.IsPublic &&
 #if !NET_2_0
-                                                     !item.IsDefined(typeof (IgnoreDataMemberAttribute)) &&
+                        !item.IsDefined(typeof (IgnoreDataMemberAttribute)) &&
 #endif
-                                                     !item.IsDefined(typeof (XmlIgnoreAttribute)));
+                        !item.IsDefined(typeof (XmlIgnoreAttribute)));
             }
 
             private string GetName(MemberInfo member)

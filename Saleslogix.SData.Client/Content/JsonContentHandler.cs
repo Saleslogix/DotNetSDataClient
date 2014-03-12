@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Utilities;
 using SimpleJson;
@@ -15,6 +16,16 @@ namespace Saleslogix.SData.Client.Content
 {
     public class JsonContentHandler : IContentHandler
     {
+        private static readonly Regex _microsoftDateFormat = new Regex(
+            @"\\?/Date\((-?\d+)(-|\+)?([0-9]{4})?\)\\?/",
+            RegexOptions.IgnoreCase |
+            RegexOptions.CultureInvariant |
+            RegexOptions.IgnorePatternWhitespace
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+            | RegexOptions.Compiled
+#endif
+            );
+
         private readonly SerializerStrategy _serializerStrategy = new SerializerStrategy();
 
         public object ReadFrom(Stream stream)
@@ -27,6 +38,7 @@ namespace Saleslogix.SData.Client.Content
                 obj = SimpleJson.SimpleJson.DeserializeObject(reader.ReadToEnd());
             }
 
+            RecursivelyReplaceMicrosoftDates(ref obj);
             return ReadObject(obj);
         }
 
@@ -59,24 +71,24 @@ namespace Saleslogix.SData.Client.Content
         private static SDataResource ReadResource(IDictionary<string, object> obj)
         {
             var resource = new SDataResource
-                               {
-                                   Id = ReadProtocolValue<string>(obj, "id"),
-                                   Title = ReadProtocolValue<string>(obj, "title"),
-                                   Updated = ReadProtocolValue<DateTimeOffset?>(obj, "updated"),
-                                   HttpMethod = ReadProtocolValue<HttpMethod?>(obj, "httpMethod"),
-                                   HttpStatus = (HttpStatusCode?) ReadProtocolValue<long?>(obj, "httpStatus"),
-                                   HttpMessage = ReadProtocolValue<string>(obj, "httpMessage"),
-                                   Location = ReadProtocolValue<string>(obj, "location"),
-                                   ETag = ReadProtocolValue<string>(obj, "etag"),
-                                   IfMatch = ReadProtocolValue<string>(obj, "ifMatch"),
-                                   Url = ReadProtocolValue<Uri>(obj, "url"),
-                                   Key = ReadProtocolValue<string>(obj, "key"),
-                                   Uuid = ReadProtocolValue<Guid?>(obj, "uuid"),
-                                   Lookup = ReadProtocolValue<string>(obj, "lookup"),
-                                   Descriptor = ReadProtocolValue<string>(obj, "descriptor"),
-                                   Schema = ReadProtocolValue<string>(obj, "schema"),
-                                   IsDeleted = ReadProtocolValue<bool?>(obj, "isDeleted")
-                               };
+                {
+                    Id = ReadProtocolValue<string>(obj, "id"),
+                    Title = ReadProtocolValue<string>(obj, "title"),
+                    Updated = ReadProtocolValue<DateTimeOffset?>(obj, "updated"),
+                    HttpMethod = ReadProtocolValue<HttpMethod?>(obj, "httpMethod"),
+                    HttpStatus = (HttpStatusCode?) ReadProtocolValue<long?>(obj, "httpStatus"),
+                    HttpMessage = ReadProtocolValue<string>(obj, "httpMessage"),
+                    Location = ReadProtocolValue<string>(obj, "location"),
+                    ETag = ReadProtocolValue<string>(obj, "etag"),
+                    IfMatch = ReadProtocolValue<string>(obj, "ifMatch"),
+                    Url = ReadProtocolValue<Uri>(obj, "url"),
+                    Key = ReadProtocolValue<string>(obj, "key"),
+                    Uuid = ReadProtocolValue<Guid?>(obj, "uuid"),
+                    Lookup = ReadProtocolValue<string>(obj, "lookup"),
+                    Descriptor = ReadProtocolValue<string>(obj, "descriptor"),
+                    Schema = ReadProtocolValue<string>(obj, "schema"),
+                    IsDeleted = ReadProtocolValue<bool?>(obj, "isDeleted")
+                };
 
             object value;
             if (obj.TryGetValue("$diagnoses", out value))
@@ -99,18 +111,18 @@ namespace Saleslogix.SData.Client.Content
         private static SDataCollection<SDataResource> ReadResourceCollection(IDictionary<string, object> obj, IEnumerable<IDictionary<string, object>> items)
         {
             var collection = new SDataCollection<SDataResource>(items.Select(ReadResource))
-                                 {
-                                     Id = ReadProtocolValue<string>(obj, "id"),
-                                     Title = ReadProtocolValue<string>(obj, "title"),
-                                     Updated = ReadProtocolValue<DateTimeOffset?>(obj, "updated"),
-                                     TotalResults = ReadProtocolValue<int?>(obj, "totalResults"),
-                                     StartIndex = ReadProtocolValue<int?>(obj, "startIndex"),
-                                     ItemsPerPage = ReadProtocolValue<int?>(obj, "itemsPerPage"),
-                                     Url = ReadProtocolValue<Uri>(obj, "url"),
-                                     DeleteMissing = ReadProtocolValue<bool?>(obj, "deleteMissing"),
-                                     Schema = ReadProtocolValue<string>(obj, "schema"),
-                                     SyncMode = ReadProtocolValue<SyncMode?>(obj, "syncMode")
-                                 };
+                {
+                    Id = ReadProtocolValue<string>(obj, "id"),
+                    Title = ReadProtocolValue<string>(obj, "title"),
+                    Updated = ReadProtocolValue<DateTimeOffset?>(obj, "updated"),
+                    TotalResults = ReadProtocolValue<int?>(obj, "totalResults"),
+                    StartIndex = ReadProtocolValue<int?>(obj, "startIndex"),
+                    ItemsPerPage = ReadProtocolValue<int?>(obj, "itemsPerPage"),
+                    Url = ReadProtocolValue<Uri>(obj, "url"),
+                    DeleteMissing = ReadProtocolValue<bool?>(obj, "deleteMissing"),
+                    Schema = ReadProtocolValue<string>(obj, "schema"),
+                    SyncMode = ReadProtocolValue<SyncMode?>(obj, "syncMode")
+                };
 
             object diagnoses;
             if (obj.TryGetValue("$diagnoses", out diagnoses))
@@ -142,16 +154,7 @@ namespace Saleslogix.SData.Client.Content
 
             var type = typeof (T);
             type = Nullable.GetUnderlyingType(type) ?? type;
-            if (type == typeof (DateTime) || type == typeof (DateTimeOffset))
-            {
-                var str = value as string;
-                DateTimeOffset date;
-                if (str != null && ContentHelper.TryParseMicrosoftDate(str, out date))
-                {
-                    value = date;
-                }
-            }
-            else if (type == typeof (Guid))
+            if (type == typeof (Guid))
             {
                 var str = value as string;
                 if (str != null)
@@ -177,6 +180,75 @@ namespace Saleslogix.SData.Client.Content
             }
 
             return (T) Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+        }
+
+        private static bool RecursivelyReplaceMicrosoftDates(ref object obj)
+        {
+            var jsonObj = obj as JsonObject;
+            if (jsonObj != null)
+            {
+                foreach (var item in jsonObj.ToList())
+                {
+                    var value = item.Value;
+                    if (RecursivelyReplaceMicrosoftDates(ref value))
+                    {
+                        jsonObj[item.Key] = value;
+                    }
+                }
+                return false;
+            }
+
+            var jsonItems = obj as JsonArray;
+            if (jsonItems != null)
+            {
+                for (var i = 0; i < jsonItems.Count; i++)
+                {
+                    var value = jsonItems[i];
+                    if (RecursivelyReplaceMicrosoftDates(ref value))
+                    {
+                        jsonItems[i] = value;
+                    }
+                }
+                return false;
+            }
+
+            var str = obj as string;
+            if (str != null)
+            {
+                DateTimeOffset date;
+                if (TryParseMicrosoftDate(str, out date))
+                {
+                    obj = date;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool TryParseMicrosoftDate(string value, out DateTimeOffset date)
+        {
+            var match = _microsoftDateFormat.Match(value);
+            if (!match.Success)
+            {
+                date = DateTimeOffset.MinValue;
+                return false;
+            }
+
+            var ms = Convert.ToInt64(match.Groups[1].Value);
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var dt = epoch.AddMilliseconds(ms);
+
+            if (match.Groups.Count < 3 || string.IsNullOrEmpty(match.Groups[3].Value))
+            {
+                date = dt;
+                return true;
+            }
+
+            var mod = DateTime.ParseExact(match.Groups[3].Value, "HHmm", CultureInfo.InvariantCulture);
+            var offset = match.Groups[2].Value == "+" ? mod.TimeOfDay : -mod.TimeOfDay;
+            date = new DateTimeOffset(dt.ToLocalTime(), offset);
+            return true;
         }
 
         public void WriteTo(object obj, Stream stream, INamingScheme namingScheme = null)

@@ -12,12 +12,20 @@ namespace Saleslogix.SData.Client.Test.Content
     public class JsonContentHandlerTests
     {
         [Test]
-        public void Read_DateTime_Test()
+        public void Read_DateTime_Typed_Test()
         {
             const string json = @"{""$syncState"":{""stamp"":""/Date(1371283200000)/""}}";
             var resource = Helpers.ReadJson<SDataResource>(json);
             Assert.That(resource.SyncState, Is.Not.Null);
             Assert.That(resource.SyncState.Stamp, Is.EqualTo(new DateTime(2013, 6, 15, 8, 0, 0)));
+        }
+
+        [Test]
+        public void Read_DateTime_Untyped_Test()
+        {
+            const string json = @"{""ShipDate"":""/Date(1371283200000)/""}";
+            var resource = Helpers.ReadJson<SDataResource>(json);
+            Assert.That(resource["ShipDate"], Is.EqualTo(new DateTimeOffset(2013, 6, 15, 8, 0, 0, TimeSpan.Zero)));
         }
 
         [Test]
