@@ -236,18 +236,18 @@ namespace Saleslogix.SData.Client.Content
             }
 
             var ms = Convert.ToInt64(match.Groups[1].Value);
-            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0);
             var dt = epoch.AddMilliseconds(ms);
 
             if (match.Groups.Count < 3 || string.IsNullOrEmpty(match.Groups[3].Value))
             {
-                date = dt;
+                date = DateTime.SpecifyKind(dt, DateTimeKind.Utc);
                 return true;
             }
 
             var mod = DateTime.ParseExact(match.Groups[3].Value, "HHmm", CultureInfo.InvariantCulture);
             var offset = match.Groups[2].Value == "+" ? mod.TimeOfDay : -mod.TimeOfDay;
-            date = new DateTimeOffset(dt.ToLocalTime(), offset);
+            date = new DateTimeOffset(dt, offset);
             return true;
         }
 

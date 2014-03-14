@@ -31,9 +31,9 @@ namespace Saleslogix.SData.Client.Test.Content
         [Test]
         public void Read_DateTimeOffset_Test()
         {
-            const string json = @"{""$updated"":""/Date(1371247200000+1000)/""}";
+            const string json = @"{""$updated"":""/Date(1371247200000+0300)/""}";
             var resource = Helpers.ReadJson<SDataResource>(json);
-            Assert.That(resource.Updated, Is.EqualTo(new DateTimeOffset(2013, 6, 15, 8, 0, 0, TimeSpan.FromHours(10))));
+            Assert.That(resource.Updated, Is.EqualTo(new DateTimeOffset(2013, 6, 14, 22, 0, 0, TimeSpan.FromHours(3))));
         }
 
         [Test]
