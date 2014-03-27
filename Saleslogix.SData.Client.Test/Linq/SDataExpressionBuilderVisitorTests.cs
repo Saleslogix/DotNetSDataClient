@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NUnit.Framework;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
@@ -512,15 +513,33 @@ namespace Saleslogix.SData.Client.Test.Linq
         }
 
         [Test]
+        public void Property_Untyped_Test()
+        {
+            AssertObject((IDictionary<string, object> c) => c["LastName"], "LastName");
+        }
+
+        [Test]
         public void Property_Nested_Test()
         {
             AssertObject((Contact c) => c.Address.City, "Address.City");
         }
 
         [Test]
+        public void Property_Nested_Untyped_Test()
+        {
+            AssertObject((IDictionary<string, object> c) => ((IDictionary<string, object>) c["Address"])["City"], "Address.City");
+        }
+
+        [Test]
         public void Property_NullableBoolean_Test()
         {
             AssertObject((Contact c) => (bool) c.Active && c.Active.Value, "(Active and Active)");
+        }
+
+        [Test]
+        public void Property_NullableBoolean_Untyped_Test()
+        {
+            AssertObject((IDictionary<string, object> c) => (bool) c["Active"], "Active");
         }
 
         private static void AssertSimple<T>(Expression<Func<T>> lambda, string expected)

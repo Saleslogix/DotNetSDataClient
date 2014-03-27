@@ -409,5 +409,43 @@ namespace Saleslogix.SData.Client.Test.Content
             public float Float { get; set; }
             public decimal Decimal { get; set; }
         }
+
+        [Test]
+        public void GetProtocolValue_Untyped_Test()
+        {
+            var resource = new SDataResource {ETag = "abc123"};
+            var eTag = ContentHelper.GetProtocolValue<string>(resource, SDataProtocolProperty.ETag);
+            Assert.That(eTag, Is.EqualTo("abc123"));
+        }
+
+        [Test]
+        public void GetProtocolValue_Typed_Test()
+        {
+            var resource = new ProtocolValue_Typed_Object {ETag = "abc123"};
+            var eTag = ContentHelper.GetProtocolValue<string>(resource, SDataProtocolProperty.ETag);
+            Assert.That(eTag, Is.EqualTo("abc123"));
+        }
+
+        [Test]
+        public void SetProtocolValue_Untyped_Test()
+        {
+            var resource = new SDataResource();
+            ContentHelper.SetProtocolValue(resource, SDataProtocolProperty.ETag, "abc123");
+            Assert.That(resource.ETag, Is.EqualTo("abc123"));
+        }
+
+        [Test]
+        public void SetProtocolValue_Typed_Test()
+        {
+            var resource = new ProtocolValue_Typed_Object();
+            ContentHelper.SetProtocolValue(resource, SDataProtocolProperty.ETag, "abc123");
+            Assert.That(resource.ETag, Is.EqualTo("abc123"));
+        }
+
+        private class ProtocolValue_Typed_Object
+        {
+            [SDataProtocolProperty(SDataProtocolProperty.ETag)]
+            public string ETag { get; set; }
+        }
     }
 }

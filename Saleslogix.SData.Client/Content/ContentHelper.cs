@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Serialization;
+using Saleslogix.SData.Client.Utilities;
 using SimpleJson;
 using SimpleJson.Reflection;
 
@@ -18,6 +19,9 @@ namespace Saleslogix.SData.Client.Content
 {
     internal static class ContentHelper
     {
+        private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>> GetProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>>(GetterValueFactory);
+        private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>> SetProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>>(SetterValueFactory);
+
         public static object Serialize(object value, INamingScheme namingScheme = null)
         {
             object result;
@@ -185,6 +189,93 @@ namespace Saleslogix.SData.Client.Content
         public static bool IsObject(object obj)
         {
             return obj != null && !(obj is string) && !(obj is ValueType);
+        }
+
+        public static T GetProtocolValue<T>(object obj, SDataProtocolProperty prop)
+        {
+            Guard.ArgumentNotNull(obj, "obj");
+
+            var prot = obj as ISDataProtocolAware;
+            if (prot != null)
+            {
+                return (T) prot.Info.GetValue(prop);
+            }
+
+            var getters = GetProtocolValueCache[obj.GetType()];
+            ReflectionUtils.GetDelegate getter;
+            return getters.TryGetValue(prop, out getter) ? (T) getter(obj) : default(T);
+        }
+
+        public static void SetProtocolValue(object obj, SDataProtocolProperty prop, object value)
+        {
+            Guard.ArgumentNotNull(obj, "obj");
+
+            var prot = obj as ISDataProtocolAware;
+            if (prot != null)
+            {
+                prot.Info.SetValue(prop, value);
+            }
+
+            var setters = SetProtocolValueCache[obj.GetType()];
+            ReflectionUtils.SetDelegate setter;
+            if (setters.TryGetValue(prop, out setter))
+            {
+                setter(obj, value);
+            }
+        }
+
+        private static IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate> GetterValueFactory(Type type)
+        {
+            var result = new Dictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>();
+            foreach (var propertyInfo in ReflectionUtils.GetProperties(type).Where(info => info.CanRead))
+            {
+                var getMethod = ReflectionUtils.GetGetterMethodInfo(propertyInfo);
+                if (getMethod.IsStatic || !getMethod.IsPublic)
+                {
+                    continue;
+                }
+                var attr = propertyInfo.GetCustomAttribute<SDataProtocolPropertyAttribute>();
+                if (attr != null && attr.Value != null)
+                {
+                    result[attr.Value.Value] = ReflectionUtils.GetGetMethod(propertyInfo);
+                }
+            }
+            foreach (var fieldInfo in ReflectionUtils.GetFields(type).Where(info => !info.IsStatic && info.IsPublic))
+            {
+                var attr = fieldInfo.GetCustomAttribute<SDataProtocolPropertyAttribute>();
+                if (attr != null && attr.Value != null)
+                {
+                    result[attr.Value.Value] = ReflectionUtils.GetGetMethod(fieldInfo);
+                }
+            }
+            return result;
+        }
+
+        private static IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate> SetterValueFactory(Type type)
+        {
+            var result = new Dictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>();
+            foreach (var propertyInfo in ReflectionUtils.GetProperties(type).Where(info => info.CanWrite))
+            {
+                var getMethod = ReflectionUtils.GetGetterMethodInfo(propertyInfo);
+                if (getMethod.IsStatic || !getMethod.IsPublic)
+                {
+                    continue;
+                }
+                var attr = propertyInfo.GetCustomAttribute<SDataProtocolPropertyAttribute>();
+                if (attr != null && attr.Value != null)
+                {
+                    result[attr.Value.Value] = ReflectionUtils.GetSetMethod(propertyInfo);
+                }
+            }
+            foreach (var fieldInfo in ReflectionUtils.GetFields(type).Where(info => !info.IsInitOnly && !info.IsStatic && info.IsPublic))
+            {
+                var attr = fieldInfo.GetCustomAttribute<SDataProtocolPropertyAttribute>();
+                if (attr != null && attr.Value != null)
+                {
+                    result[attr.Value.Value] = ReflectionUtils.GetSetMethod(fieldInfo);
+                }
+            }
+            return result;
         }
 
         #region Nested type: Serializer

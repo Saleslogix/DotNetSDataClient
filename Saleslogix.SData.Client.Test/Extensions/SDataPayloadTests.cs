@@ -387,7 +387,7 @@ namespace Saleslogix.SData.Client.Test.Extensions
                               {
                                   XmlLocalName = "person",
                                   XmlNamespace = "http://test.com",
-                                  Url = new Uri("http://localhost/sdata/invoices('`%^ []{}<>')")
+                                  Url = new Uri("http://localhost/sdata/invoices('`%^ {}<>')")
                               };
             var nav = Helpers.WriteAtom(payload);
             var mgr = new XmlNamespaceManager(nav.NameTable);
@@ -395,7 +395,7 @@ namespace Saleslogix.SData.Client.Test.Extensions
             mgr.AddNamespace("test", "http://test.com");
             var node = nav.SelectSingleNode("*//test:person/@sdata:uri", mgr);
             Assert.That(node, Is.Not.Null);
-            Assert.That(node.Value, Is.EqualTo("http://localhost/sdata/invoices('%60%25%5E%20%5B%5D%7B%7D%3C%3E')"));
+            Assert.That(node.Value, Is.EqualTo("http://localhost/sdata/invoices('%60%25%5E%20%7B%7D%3C%3E')"));
         }
     }
 }

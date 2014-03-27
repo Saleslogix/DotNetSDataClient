@@ -293,11 +293,11 @@ namespace Saleslogix.SData.Client.Test.ExtensionsJson
         {
             var payload = new SDataResource
                               {
-                                  Url = new Uri("http://localhost/sdata/invoices('`%^ []{}<>')")
+                                  Url = new Uri("http://localhost/sdata/invoices('`%^ {}<>')")
                               };
             var nav = Helpers.WriteJson(payload);
             var url = nav["$url"];
-            Assert.That(url, Is.EqualTo("http://localhost/sdata/invoices('%60%25%5E%20%5B%5D%7B%7D%3C%3E')"));
+            Assert.That(url, Is.EqualTo("http://localhost/sdata/invoices('%60%25%5E%20%7B%7D%3C%3E')"));
         }
     }
 }

@@ -633,7 +633,7 @@ namespace Saleslogix.SData.Client.Framework
                 return string.Format(CultureInfo.InvariantCulture, "({0})", string.Join(",", ((Array) value).Cast<object>().Select(FormatSelectorConstant).ToArray()));
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException(string.Format("Selector '{0}' not supported", value));
         }
 
         #endregion

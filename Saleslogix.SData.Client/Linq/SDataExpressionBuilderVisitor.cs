@@ -117,6 +117,21 @@ namespace Saleslogix.SData.Client.Linq
             var method = expression.Method;
             Func<MethodCallExpression, IEnumerable> handler;
 
+            if (method.IsSpecialName && method.Name == "get_Item" && expression.Arguments.Count == 1)
+            {
+                var arg = expression.Arguments[0];
+                if (arg.NodeType == ExpressionType.Constant && arg.Type == typeof (string))
+                {
+                    if (!(expression.Object is QuerySourceReferenceExpression ||
+                          expression.Object is ParameterExpression))
+                    {
+                        Append(expression.Object, ".");
+                    }
+                    Append((string) ((ConstantExpression) arg).Value);
+                    return expression;
+                }
+            }
+
             if (!_methodMappings.TryGetValue(new MethodMappingKey(method.DeclaringType, method.Name), out handler))
             {
                 throw new NotSupportedException();
@@ -128,14 +143,6 @@ namespace Saleslogix.SData.Client.Linq
 
         protected override Expression VisitMemberExpression(MemberExpression expression)
         {
-            if (!(expression.Expression is QuerySourceReferenceExpression ||
-                  expression.Expression is ParameterExpression ||
-                  expression.Expression is MemberExpression ||
-                  expression.Expression is UnaryExpression))
-            {
-                throw new NotSupportedException();
-            }
-
             if (expression.Member.DeclaringType == typeof (string) ||
                 expression.Member.DeclaringType == typeof (DateTime) ||
                 expression.Member.DeclaringType == typeof (DateTimeOffset))
@@ -173,7 +180,8 @@ namespace Saleslogix.SData.Client.Linq
                 }
             }
 
-            if (expression.Expression is MemberExpression)
+            if (!(expression.Expression is QuerySourceReferenceExpression ||
+                  expression.Expression is ParameterExpression))
             {
                 Append(expression.Expression, ".");
             }
@@ -184,22 +192,19 @@ namespace Saleslogix.SData.Client.Linq
 
         protected override Expression VisitUnaryExpression(UnaryExpression expression)
         {
-            if (expression.NodeType == ExpressionType.Not)
+            switch (expression.NodeType)
             {
-                Append("not(", expression.Operand, ")");
-                return expression;
+                case ExpressionType.Not:
+                    Append("not(", expression.Operand, ")");
+                    return expression;
+                case ExpressionType.Negate:
+                    Append("-(", expression.Operand, ")");
+                    return expression;
+                case ExpressionType.Convert:
+                    return BaseVisitUnaryExpression(expression);
+                default:
+                    throw new NotSupportedException();
             }
-            if (expression.NodeType == ExpressionType.Negate)
-            {
-                Append("-(", expression.Operand, ")");
-                return expression;
-            }
-            if (expression.NodeType == ExpressionType.Convert)
-            {
-                return BaseVisitUnaryExpression(expression);
-            }
-
-            throw new NotSupportedException();
         }
 
         protected override Exception CreateUnhandledItemException<T>(T unhandledItem, string visitMethod)
