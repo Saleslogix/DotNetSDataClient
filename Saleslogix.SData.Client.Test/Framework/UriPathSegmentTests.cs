@@ -22,7 +22,7 @@ namespace Saleslogix.SData.Client.Test.Framework
 
             var segment = segments[0];
             Assert.That(segment.Text, Is.EqualTo("aaa"));
-            Assert.That(segment.HasSelector);
+            Assert.That(segment.HasSelector, Is.True);
             Assert.That(segment.Selector, Is.EqualTo("'bbb(ccc'"));
         }
     }

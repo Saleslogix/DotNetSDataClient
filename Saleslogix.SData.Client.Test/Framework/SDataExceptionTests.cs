@@ -116,7 +116,7 @@ namespace Saleslogix.SData.Client.Test.Framework
                 output = (SDataException) formatter.Deserialize(stream);
             }
             Assert.That(output.Diagnoses, Has.Count.EqualTo(1));
-            Assert.That(output.StatusCode == input.StatusCode);
+            Assert.That(output.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 #endif
     }

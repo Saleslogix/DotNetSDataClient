@@ -316,7 +316,7 @@ namespace Saleslogix.SData.Client.Test.Content
             mgr.AddNamespace("sdata", "http://schemas.sage.com/sdata/2008/1");
             var node = nav.SelectSingleNode("atom:entry/sdata:payload/Contact/LastName", mgr);
             Assert.That(node, Is.Not.Null);
-            Assert.That(node.IsEmptyElement);
+            Assert.That(node.IsEmptyElement, Is.True);
         }
 
         [Test]

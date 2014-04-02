@@ -73,21 +73,21 @@ namespace Saleslogix.SData.Client.Test.Framework
         {
             var uri = new UriFormatter("http://localhost");
 
-            Assert.That(string.IsNullOrEmpty(uri.Query));
-            Assert.That(uri.QueryArgs.Count == 0);
-            Assert.That(uri.ToString() == "http://localhost/");
+            Assert.That(uri.Query, Is.Null.Or.Empty);
+            Assert.That(uri.QueryArgs, Is.Empty);
+            Assert.That(uri.ToString(), Is.EqualTo("http://localhost/"));
 
             uri.QueryArgs.Add("orderBy", "name");
 
-            Assert.That(uri.Query == "orderBy=name");
-            Assert.That(uri.QueryArgs.Count == 1);
-            Assert.That(uri.ToString() == "http://localhost/?orderBy=name");
+            Assert.That(uri.Query, Is.EqualTo("orderBy=name"));
+            Assert.That(uri.QueryArgs.Count, Is.EqualTo(1));
+            Assert.That(uri.ToString(), Is.EqualTo("http://localhost/?orderBy=name"));
 
             uri.QueryArgs.Clear();
 
-            Assert.That(string.IsNullOrEmpty(uri.Query));
-            Assert.That(uri.QueryArgs.Count == 0);
-            Assert.That(uri.ToString() == "http://localhost/");
+            Assert.That(uri.Query, Is.Null.Or.Empty);
+            Assert.That(uri.QueryArgs, Is.Empty);
+            Assert.That(uri.ToString(), Is.EqualTo("http://localhost/"));
         }
 
         [Test]
