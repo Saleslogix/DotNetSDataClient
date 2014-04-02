@@ -4,9 +4,16 @@ using System;
 using System.Collections.Generic;
 using Saleslogix.SData.Client.Framework;
 
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+using System.ComponentModel;
+#endif
+
 namespace Saleslogix.SData.Client
 {
     [Serializable]
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+    [TypeConverter(typeof (SDataCollectionTypeConverter))]
+#endif
     public class SDataCollection<T> : List<T>, ISDataProtocolAware
     {
         private SDataProtocolInfo _info = new SDataProtocolInfo();

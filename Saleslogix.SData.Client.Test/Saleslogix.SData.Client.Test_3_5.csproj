@@ -81,6 +81,8 @@
     <Compile Include="Model\SalesOrder.cs" />
     <Compile Include="Model\SalesOrderLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SDataCollectionTypeConverterTests.cs" />
+    <Compile Include="SDataResourceTypeDescriptionProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Saleslogix.SData.Client\Saleslogix.SData.Client_3_5.csproj">

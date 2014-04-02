@@ -5,9 +5,16 @@ using System.Collections.Generic;
 using System.Net;
 using Saleslogix.SData.Client.Framework;
 
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+using System.ComponentModel;
+#endif
+
 namespace Saleslogix.SData.Client
 {
     [Serializable]
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+    [TypeDescriptionProvider(typeof (SDataResourceTypeDescriptionProvider))]
+#endif
     public class SDataResource : Dictionary<string, object>, ISDataProtocolAware
     {
         private SDataProtocolInfo _info = new SDataProtocolInfo();
@@ -156,6 +163,11 @@ namespace Saleslogix.SData.Client
         {
             get { return _info.XmlNamespace; }
             set { _info.XmlNamespace = value; }
+        }
+
+        public override string ToString()
+        {
+            return Descriptor ?? base.ToString();
         }
     }
 }

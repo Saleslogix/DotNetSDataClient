@@ -142,12 +142,14 @@
     <Compile Include="SDataClientException.cs" />
     <Compile Include="SDataClientExtensions.cs" />
     <Compile Include="SDataCollection.cs" />
+    <Compile Include="SDataCollectionTypeConverter.cs" />
     <Compile Include="SDataParameters.cs" />
     <Compile Include="SDataProtocolInfo.cs" />
     <Compile Include="SDataProtocolProperty.cs" />
     <Compile Include="SDataProtocolPropertyAttribute.cs" />
     <Compile Include="SDataResource.cs" />
     <Compile Include="SDataResourceAttribute.cs" />
+    <Compile Include="SDataResourceTypeDescriptionProvider.cs" />
     <Compile Include="SDataResults.cs" />
     <Compile Include="SimpleJson.cs" />
     <Compile Include="Stubs.cs" />
