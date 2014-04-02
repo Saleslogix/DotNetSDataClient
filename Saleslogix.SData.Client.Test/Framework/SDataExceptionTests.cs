@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using NUnit.Framework;
-using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 
 #if !NETFX_CORE && !SILVERLIGHT
@@ -10,7 +8,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 #endif
 
 #if !NET_2_0
+using System.Collections.Generic;
 using Moq;
+using Saleslogix.SData.Client.Content;
 #endif
 
 // ReSharper disable InconsistentNaming

@@ -1,16 +1,21 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Utilities;
+
+#if !NET_2_0 && !NET_3_5
+using System.Threading.Tasks;
+#endif
 
 namespace Saleslogix.SData.Client
 {
     public static class SDataClientExtensions
     {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         public static SDataResource Get(this ISDataClient client, string path, string key, IList<string> include = null, IList<string> select = null, int? precedence = null)
         {
             Guard.ArgumentNotNull(client, "client");
@@ -28,7 +33,9 @@ namespace Saleslogix.SData.Client
             Guard.ArgumentNotNull(client, "client");
             return client.Execute<T>(GetGetParameters(path ?? GetPath<T>(client), key, include, select, precedence)).Content;
         }
+#endif
 
+#if !NET_2_0 && !NET_3_5
         public static Task<SDataResource> GetAsync(this ISDataClient client, string path, string key, IList<string> include = null, IList<string> select = null, int? precedence = null)
         {
             Guard.ArgumentNotNull(client, "client");
@@ -49,6 +56,7 @@ namespace Saleslogix.SData.Client
             return client.ExecuteAsync<T>(GetGetParameters(path ?? GetPath<T>(client), key, include, select, precedence))
                 .ContinueWith(task => task.Result.Content);
         }
+#endif
 
         private static ISDataParameters GetGetParameters(string path, string key, IEnumerable<string> include, IEnumerable<string> select, int? precedence)
         {
@@ -58,12 +66,13 @@ namespace Saleslogix.SData.Client
                 {
                     Path = path,
                     Selector = SDataUri.FormatSelectorConstant(key),
-                    Select = select != null ? string.Join(",", select) : null,
-                    Include = include != null ? string.Join(",", include) : null,
+                    Select = select != null ? string.Join(",", select.ToArray()) : null,
+                    Include = include != null ? string.Join(",", include.ToArray()) : null,
                     Precedence = precedence
                 };
         }
 
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         public static SDataResource Post(this ISDataClient client, SDataResource content, string path)
         {
             return client.Execute<SDataResource>(GetPostParameters(client, content, path)).Content;
@@ -73,7 +82,9 @@ namespace Saleslogix.SData.Client
         {
             return client.Execute<T>(GetPostParameters(client, content, path ?? GetPath<T>(client))).Content;
         }
+#endif
 
+#if !NET_2_0 && !NET_3_5
         public static Task<SDataResource> PostAsync(this ISDataClient client, SDataResource content, string path)
         {
             return client.ExecuteAsync<SDataResource>(GetPostParameters(client, content, path))
@@ -85,6 +96,7 @@ namespace Saleslogix.SData.Client
             return client.ExecuteAsync<T>(GetPostParameters(client, content, path ?? GetPath<T>(client)))
                 .ContinueWith(task => task.Result.Content);
         }
+#endif
 
         private static ISDataParameters GetPostParameters<T>(ISDataClient client, T content, string path)
         {
@@ -96,10 +108,11 @@ namespace Saleslogix.SData.Client
                     Method = HttpMethod.Post,
                     Path = path,
                     Content = content,
-                    ContentType = client.Format
+                    ContentType = client.Format ?? MediaType.Json
                 };
         }
 
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         public static SDataResource Put(this ISDataClient client, SDataResource content, string path = null)
         {
             return client.Execute<SDataResource>(GetPutParameters(client, content, path)).Content;
@@ -109,7 +122,9 @@ namespace Saleslogix.SData.Client
         {
             return client.Execute<T>(GetPutParameters(client, content, path ?? GetPath<T>(client))).Content;
         }
+#endif
 
+#if !NET_2_0 && !NET_3_5
         public static Task<SDataResource> PutAsync(this ISDataClient client, string path, SDataResource content)
         {
             return client.ExecuteAsync<SDataResource>(GetPutParameters(client, content, path))
@@ -121,6 +136,7 @@ namespace Saleslogix.SData.Client
             return client.ExecuteAsync<T>(GetPutParameters(client, content, path ?? GetPath<T>(client)))
                 .ContinueWith(task => task.Result.Content);
         }
+#endif
 
         private static ISDataParameters GetPutParameters<T>(ISDataClient client, T content, string path)
         {
@@ -133,11 +149,12 @@ namespace Saleslogix.SData.Client
                     Path = path,
                     Selector = GetSelector(content),
                     Content = content,
-                    ContentType = client.Format,
+                    ContentType = client.Format ?? MediaType.Json,
                     ETag = GetETag(content)
                 };
         }
 
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         public static void Delete(this ISDataClient client, SDataResource content, string path = null)
         {
             Guard.ArgumentNotNull(client, "client");
@@ -149,7 +166,9 @@ namespace Saleslogix.SData.Client
             Guard.ArgumentNotNull(client, "client");
             client.Execute<T>(GetDeleteParameters(content, path ?? GetPath<T>(client)));
         }
+#endif
 
+#if !NET_2_0 && !NET_3_5
         public static Task DeleteAsync(this ISDataClient client, SDataResource content, string path = null)
         {
             Guard.ArgumentNotNull(client, "client");
@@ -161,6 +180,7 @@ namespace Saleslogix.SData.Client
             Guard.ArgumentNotNull(client, "client");
             return client.ExecuteAsync(GetDeleteParameters(content, path ?? GetPath<T>(client)));
         }
+#endif
 
         private static ISDataParameters GetDeleteParameters<T>(T content, string path)
         {

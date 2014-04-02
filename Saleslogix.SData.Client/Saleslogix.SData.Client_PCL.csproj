@@ -323,6 +323,7 @@
     <Compile Include="Relinq\Utilities\SeparatedStringBuilder.cs" />
     <Compile Include="SDataClient.cs" />
     <Compile Include="SDataClientException.cs" />
+    <Compile Include="SDataClientExtensions.cs" />
     <Compile Include="SDataCollection.cs" />
     <Compile Include="SDataParameters.cs" />
     <Compile Include="SDataProtocolInfo.cs" />
@@ -336,7 +337,6 @@
     <Compile Include="Utilities\EnumEx.cs" />
     <Compile Include="Utilities\Guard.cs" />
     <Compile Include="Utilities\XmlConvertEx.cs" />
-    <None Include="Examplecs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
