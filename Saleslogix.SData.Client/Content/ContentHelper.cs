@@ -19,19 +19,19 @@ namespace Saleslogix.SData.Client.Content
 {
     internal static class ContentHelper
     {
-        private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>> GetProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>>(GetterValueFactory);
-        private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>> SetProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>>(SetterValueFactory);
+        private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>> GetProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>>(ProtocolValueGetterFactory);
+        private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>> SetProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>>(ProtocolValueSetterFactory);
 
         public static object Serialize(object value, INamingScheme namingScheme = null)
         {
             object result;
-            new Serializer(namingScheme ?? NamingScheme.Default).TrySerializeNonPrimitiveObject(value, out result);
+            new SerializerStrategy(namingScheme ?? NamingScheme.Default).TrySerializeNonPrimitiveObject(value, out result);
             return result;
         }
 
         public static T Deserialize<T>(object value, INamingScheme namingScheme = null)
         {
-            return (T) new Serializer(namingScheme ?? NamingScheme.Default).DeserializeObject(value, typeof (T));
+            return (T) new SerializerStrategy(namingScheme ?? NamingScheme.Default).DeserializeObject(value, typeof (T));
         }
 
         public static IEnumerable<IDictionary<string, object>> AsDictionaries(object obj)
@@ -224,7 +224,7 @@ namespace Saleslogix.SData.Client.Content
             }
         }
 
-        private static IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate> GetterValueFactory(Type type)
+        private static IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate> ProtocolValueGetterFactory(Type type)
         {
             var result = new Dictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>();
             foreach (var propertyInfo in ReflectionUtils.GetProperties(type).Where(info => info.CanRead))
@@ -251,7 +251,7 @@ namespace Saleslogix.SData.Client.Content
             return result;
         }
 
-        private static IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate> SetterValueFactory(Type type)
+        private static IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate> ProtocolValueSetterFactory(Type type)
         {
             var result = new Dictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>();
             foreach (var propertyInfo in ReflectionUtils.GetProperties(type).Where(info => info.CanWrite))
@@ -278,15 +278,17 @@ namespace Saleslogix.SData.Client.Content
             return result;
         }
 
-        #region Nested type: Serializer
+        #region Nested type: SerializerStrategy
 
-        private class Serializer : PocoJsonSerializerStrategy
+        private class SerializerStrategy : PocoJsonSerializerStrategy
         {
             private readonly INamingScheme _namingScheme;
+            private readonly IDictionary<Type, KeyValuePair<ParameterInfo[], ReflectionUtils.ConstructorDelegate>> _ctorCache;
 
-            public Serializer(INamingScheme namingScheme)
+            public SerializerStrategy(INamingScheme namingScheme)
             {
                 _namingScheme = namingScheme;
+                _ctorCache = new ReflectionUtils.ThreadSafeDictionary<Type, KeyValuePair<ParameterInfo[], ReflectionUtils.ConstructorDelegate>>(ConstructorFactory);
             }
 
             public override bool TrySerializeNonPrimitiveObject(object input, out object output)
@@ -458,17 +460,14 @@ namespace Saleslogix.SData.Client.Content
                 }
 
                 var prot = value as ISDataProtocolAware;
+                var dict = AsDictionary(value);
 
-                if (prot != null)
+                if (prot != null && dict != null)
                 {
-                    var dict = AsDictionary(value);
-                    if (dict != null)
+                    foreach (SDataProtocolProperty protocolProp in Enum.GetValues(typeof (SDataProtocolProperty)))
                     {
-                        foreach (SDataProtocolProperty protocolProp in Enum.GetValues(typeof (SDataProtocolProperty)))
-                        {
-                            var name = protocolProp.ToString();
-                            dict[string.Format("${0}{1}", char.ToLowerInvariant(name[0]), name.Substring(1))] = prot.Info.GetValue(protocolProp);
-                        }
+                        var name = protocolProp.ToString();
+                        dict[string.Format("${0}{1}", char.ToLowerInvariant(name[0]), name.Substring(1))] = prot.Info.GetValue(protocolProp);
                     }
                 }
 
@@ -477,6 +476,16 @@ namespace Saleslogix.SData.Client.Content
                 if (items != null && !(value is IList<object>))
                 {
                     value = items.ToList();
+                }
+
+                if (dict != null)
+                {
+                    var ctor = _ctorCache[type];
+                    if (ctor.Key != null)
+                    {
+                        object arg;
+                        return ctor.Value(ctor.Key.Select(param => DeserializeObject(dict.TryGetValue(param.Name, out arg) ? arg : null, param.ParameterType)).ToArray());
+                    }
                 }
 
                 var result = base.DeserializeObject(value, type);
@@ -626,6 +635,21 @@ namespace Saleslogix.SData.Client.Content
                 }
 
                 return _namingScheme.GetName(member);
+            }
+
+            private static KeyValuePair<ParameterInfo[], ReflectionUtils.ConstructorDelegate> ConstructorFactory(Type key)
+            {
+                var ctors = key.GetConstructors();
+                if (ctors.Length == 1)
+                {
+                    var ctor = ctors[0];
+                    var parms = ctor.GetParameters();
+                    if (parms.Length > 0)
+                    {
+                        return new KeyValuePair<ParameterInfo[], ReflectionUtils.ConstructorDelegate>(parms, ReflectionUtils.GetContructor(ctor));
+                    }
+                }
+                return default(KeyValuePair<ParameterInfo[], ReflectionUtils.ConstructorDelegate>);
             }
         }
 

@@ -16,49 +16,36 @@ namespace Saleslogix.SData.Client
     public static class SDataClientExtensions
     {
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        public static SDataResource Get(this ISDataClient client, string path, string key, IList<string> include = null, IList<string> select = null, int? precedence = null)
+        public static SDataResource Get(this ISDataClient client, string key, string path, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.Execute<SDataResource>(GetGetParameters(path, key, include, select, precedence)).Content;
+            return client.Execute<SDataResource>(GetGetParameters(key, path, include, select, precedence)).Content;
         }
 
-        public static T Get<T>(this ISDataClient client, string key, IList<string> include = null, IList<string> select = null, int? precedence = null)
+        public static T Get<T>(this ISDataClient client, string key, string path = null, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.Execute<T>(GetGetParameters(GetPath<T>(client), key, include, select, precedence)).Content;
-        }
-
-        public static T Get<T>(this ISDataClient client, string path, string key, IList<string> include = null, IList<string> select = null, int? precedence = null)
-        {
-            Guard.ArgumentNotNull(client, "client");
-            return client.Execute<T>(GetGetParameters(path ?? GetPath<T>(client), key, include, select, precedence)).Content;
+            return client.Execute<T>(GetGetParameters(key, path ?? GetPath<T>(client), include, select, precedence)).Content;
         }
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public static Task<SDataResource> GetAsync(this ISDataClient client, string path, string key, IList<string> include = null, IList<string> select = null, int? precedence = null)
+        public static Task<SDataResource> GetAsync(this ISDataClient client, string key, string path, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync<SDataResource>(GetGetParameters(path, key, include, select, precedence))
+            return client.ExecuteAsync<SDataResource>(GetGetParameters(key, path, include, select, precedence))
                 .ContinueWith(task => task.Result.Content);
         }
 
-        public static Task<T> GetAsync<T>(this ISDataClient client, string key, IList<string> include = null, IList<string> select = null, int? precedence = null)
+        public static Task<T> GetAsync<T>(this ISDataClient client, string key, string path = null, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync<T>(GetGetParameters(GetPath<T>(client), key, include, select, precedence))
-                .ContinueWith(task => task.Result.Content);
-        }
-
-        public static Task<T> GetAsync<T>(this ISDataClient client, string path, string key, IList<string> include = null, IList<string> select = null, int? precedence = null)
-        {
-            Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync<T>(GetGetParameters(path ?? GetPath<T>(client), key, include, select, precedence))
+            return client.ExecuteAsync<T>(GetGetParameters(key, path ?? GetPath<T>(client), include, select, precedence))
                 .ContinueWith(task => task.Result.Content);
         }
 #endif
 
-        private static ISDataParameters GetGetParameters(string path, string key, IEnumerable<string> include, IEnumerable<string> select, int? precedence)
+        private static ISDataParameters GetGetParameters(string key, string path, IEnumerable<string> include, IEnumerable<string> select, int? precedence)
         {
             Guard.ArgumentNotNullOrEmptyString(path, "path");
             Guard.ArgumentNotNullOrEmptyString(key, "key");

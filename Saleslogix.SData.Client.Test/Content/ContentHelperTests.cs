@@ -447,5 +447,54 @@ namespace Saleslogix.SData.Client.Test.Content
             [SDataProtocolProperty(SDataProtocolProperty.ETag)]
             public string ETag { get; set; }
         }
+
+        [Test]
+        public void Deserialize_Anonymous_Type_Test()
+        {
+            var resource = new SDataResource
+                {
+                    {"AccountName", "Bloggs Inc."},
+                    {"Incorporated", new DateTime(2001, 2, 3, 4, 5, 6)},
+                    {"Address", new SDataResource {{"City", "Melbourne"}}},
+                    {
+                        "Contacts", new SDataCollection<SDataResource>
+                            {
+                                new SDataResource
+                                    {
+                                        {"FullName", "Joe Bloggs"},
+                                        {"Age", 44}
+                                    }
+                            }
+                    }
+                };
+            var prototype = new
+                {
+                    AccountName = default(string),
+                    Incorporated = default(DateTime),
+                    Address = new {City = default(string)},
+                    Contacts = new[]
+                        {
+                            new
+                                {
+                                    FullName = default(string),
+                                    Age = default(int)
+                                }
+                        }
+                };
+            var result = Deserialize(resource, prototype);
+            Assert.That(result.AccountName, Is.EqualTo("Bloggs Inc."));
+            Assert.That(result.Incorporated, Is.EqualTo(new DateTime(2001, 2, 3, 4, 5, 6)));
+            Assert.That(result.Address, Is.Not.Null);
+            Assert.That(result.Address.City, Is.EqualTo("Melbourne"));
+            Assert.That(result.Contacts, Is.Not.Empty);
+            Assert.That(result.Contacts.Length, Is.EqualTo(1));
+            Assert.That(result.Contacts[0].FullName, Is.EqualTo("Joe Bloggs"));
+            Assert.That(result.Contacts[0].Age, Is.EqualTo(44));
+        }
+
+        private static T Deserialize<T>(object value, T prototype)
+        {
+            return ContentHelper.Deserialize<T>(value);
+        }
     }
 }
