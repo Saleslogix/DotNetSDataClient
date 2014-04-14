@@ -19,8 +19,8 @@ namespace Saleslogix.SData.Client.Content
 {
     internal static class ContentHelper
     {
-        private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>> GetProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>>(ProtocolValueGetterFactory);
-        private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>> SetProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>>(ProtocolValueSetterFactory);
+        private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>> _getProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>>(ProtocolValueGetterFactory);
+        private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>> _setProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>>(ProtocolValueSetterFactory);
 
         public static object Serialize(object value, INamingScheme namingScheme = null)
         {
@@ -201,7 +201,7 @@ namespace Saleslogix.SData.Client.Content
                 return (T) prot.Info.GetValue(prop);
             }
 
-            var getters = GetProtocolValueCache[obj.GetType()];
+            var getters = _getProtocolValueCache[obj.GetType()];
             ReflectionUtils.GetDelegate getter;
             return getters.TryGetValue(prop, out getter) ? (T) getter(obj) : default(T);
         }
@@ -216,7 +216,7 @@ namespace Saleslogix.SData.Client.Content
                 prot.Info.SetValue(prop, value);
             }
 
-            var setters = SetProtocolValueCache[obj.GetType()];
+            var setters = _setProtocolValueCache[obj.GetType()];
             ReflectionUtils.SetDelegate setter;
             if (setters.TryGetValue(prop, out setter))
             {

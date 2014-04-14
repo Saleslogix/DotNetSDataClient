@@ -290,7 +290,7 @@ namespace Saleslogix.SData.Client.Framework
                 return segment;
             }
 
-            return path + UriFormatter.PathSegmentPrefix + segment;
+            return string.Concat(path, UriFormatter.PathSegmentPrefix, segment);
         }
 
         /// <summary>
@@ -350,7 +350,9 @@ namespace Saleslogix.SData.Client.Framework
 
             if (HasSelector)
             {
-                segment.AppendFormat("{0}{1}{2}", SelectorPrefix, _selector, SelectorSuffix);
+                segment.Append(SelectorPrefix);
+                segment.Append(_selector);
+                segment.Append(SelectorSuffix);
             }
 
             _segment = segment.ToString();

@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
@@ -32,6 +35,7 @@ namespace Saleslogix.SData.Client
         public INamingScheme NamingScheme { get; set; }
         public MediaType? Format { get; set; }
         public string Language { get; set; }
+        public string Version { get; set; }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
         public ISDataResults Execute(ISDataParameters parms)
@@ -43,8 +47,7 @@ namespace Saleslogix.SData.Client
         public ISDataResults<T> Execute<T>(ISDataParameters parms)
         {
             var request = CreateRequest(parms);
-            var response = request.GetResponse();
-            return CreateResults<T>(response);
+            return CreateResults<T>(request.GetResponse());
         }
 #endif
 
@@ -76,14 +79,14 @@ namespace Saleslogix.SData.Client
                               OrderBy = parms.OrderBy,
                               Search = parms.Search,
                               Include = parms.Include,
-                              Precedence = parms.Precedence,
                               Select = parms.Select,
+                              Precedence = parms.Precedence,
                               IncludeSchema = parms.IncludeSchema,
                               ReturnDelta = parms.ReturnDelta,
                               TrackingId = parms.TrackingId,
                               Format = parms.Format ?? Format,
                               Language = parms.Language ?? Language,
-                              Version = parms.Version
+                              Version = parms.Version ?? Version
                           };
             if (parms.Path != null)
             {
@@ -107,14 +110,14 @@ namespace Saleslogix.SData.Client
                               {
                                   UserName = UserName,
                                   Password = Password,
-#if !PCL && !SILVERLIGHT
-                                  Proxy = Proxy,
-#endif
                                   Credentials = Credentials,
                                   NamingScheme = NamingScheme,
                                   Cookies = _cookies,
                                   Accept = parms.Accept
                               };
+#if !PCL && !SILVERLIGHT
+            request.Proxy = Proxy;
+#endif
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
             request.UserAgent = UserAgent;
             if (Timeout != null)

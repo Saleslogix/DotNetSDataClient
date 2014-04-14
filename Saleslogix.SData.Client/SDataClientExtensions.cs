@@ -53,8 +53,8 @@ namespace Saleslogix.SData.Client
                 {
                     Path = path,
                     Selector = SDataUri.FormatSelectorConstant(key),
-                    Select = select != null ? string.Join(",", select.ToArray()) : null,
                     Include = include != null ? string.Join(",", include.ToArray()) : null,
+                    Select = select != null ? string.Join(",", select.ToArray()) : null,
                     Precedence = precedence
                 };
         }
@@ -112,13 +112,13 @@ namespace Saleslogix.SData.Client
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public static Task<SDataResource> PutAsync(this ISDataClient client, string path, SDataResource content)
+        public static Task<SDataResource> PutAsync(this ISDataClient client, SDataResource content, string path)
         {
             return client.ExecuteAsync<SDataResource>(GetPutParameters(client, content, path))
                 .ContinueWith(task => task.Result.Content);
         }
 
-        public static Task<T> PutAsync<T>(this ISDataClient client, string path, T content)
+        public static Task<T> PutAsync<T>(this ISDataClient client, T content, string path = null)
         {
             return client.ExecuteAsync<T>(GetPutParameters(client, content, path ?? GetPath<T>(client)))
                 .ContinueWith(task => task.Result.Content);
@@ -145,13 +145,13 @@ namespace Saleslogix.SData.Client
         public static void Delete(this ISDataClient client, SDataResource content, string path = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            client.Execute<SDataResource>(GetDeleteParameters(content, path));
+            client.Execute(GetDeleteParameters(content, path));
         }
 
         public static void Delete<T>(this ISDataClient client, T content, string path = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            client.Execute<T>(GetDeleteParameters(content, path ?? GetPath<T>(client)));
+            client.Execute(GetDeleteParameters(content, path ?? GetPath<T>(client)));
         }
 #endif
 

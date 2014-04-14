@@ -24,6 +24,7 @@ namespace Saleslogix.SData.Client
         INamingScheme NamingScheme { get; set; }
         MediaType? Format { get; set; }
         string Language { get; set; }
+        string Version { get; set; }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
         ISDataResults Execute(ISDataParameters parms);

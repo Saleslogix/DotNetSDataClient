@@ -15,7 +15,7 @@ namespace Saleslogix.SData.Client
         string ETag { get; set; }
         IDictionary<string, string> Form { get; }
         IList<AttachedFile> Files { get; }
-        string Path { get; }
+        string Path { get; set; }
         int? StartIndex { get; set; }
         int? Count { get; set; }
         string Where { get; set; }
