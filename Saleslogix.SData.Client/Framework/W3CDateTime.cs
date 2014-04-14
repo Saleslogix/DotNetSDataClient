@@ -53,7 +53,7 @@ namespace Saleslogix.SData.Client.Framework
         }
 
         /// <summary>
-        /// Gets the W3C datetime. 
+        /// Gets the W3C datetime.
         /// </summary>
         public DateTime DateTime
         {

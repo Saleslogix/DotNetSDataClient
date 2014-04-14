@@ -45,7 +45,7 @@ namespace Saleslogix.SData.Client.Framework
         public decimal RemainingSeconds { get; set; }
 
         /// <summary>
-        /// Delay (in milliseconds) that the consumer should use 
+        /// Delay (in milliseconds) that the consumer should use
         /// before polling the service again.
         /// </summary>
         [XmlElement("pollingMillis")]

@@ -27,7 +27,7 @@ namespace Saleslogix.SData.Client.Linq
         }
 
         /// <summary>
-        /// Returns the ASCII code of the leftmost character of <param name="value"/>. 
+        /// Returns the ASCII code of the leftmost character of <param name="value"/>.
         /// </summary>
         public static int Ascii(this string value)
         {

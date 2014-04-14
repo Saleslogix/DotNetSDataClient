@@ -260,7 +260,7 @@ namespace Saleslogix.SData.Client.Content
 
             if (item.IsEmpty)
             {
-                // workaround: Older versions of the SIF generate payload collections as empty namespace-less elements 
+                // workaround: Older versions of the SIF generate payload collections as empty namespace-less elements
                 return string.IsNullOrEmpty(item.Name.NamespaceName) ? ItemType.PayloadCollection : ItemType.Property;
             }
 

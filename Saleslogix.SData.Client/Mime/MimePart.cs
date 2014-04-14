@@ -60,7 +60,7 @@ namespace Saleslogix.SData.Client.Mime
             get
             {
                 int length;
-                return int.TryParse(_headers[HttpRequestHeader.ContentLength], out length) ? length : (int?) null;
+                return int.TryParse(_headers[HttpRequestHeader.ContentLength], NumberStyles.Any, CultureInfo.InvariantCulture, out length) ? length : (int?) null;
             }
             set { SetHeaderValue(HttpRequestHeader.ContentLength, value != null ? value.ToString() : null); }
         }
@@ -100,7 +100,7 @@ namespace Saleslogix.SData.Client.Mime
             else
             {
 #if PCL || NETFX_CORE || SILVERLIGHT
-                throw new NotSupportedException();
+                throw new PlatformNotSupportedException("Header removal not supported on this platform");
 #else
                 _headers.Remove(name);
 #endif
@@ -116,7 +116,7 @@ namespace Saleslogix.SData.Client.Mime
             else
             {
 #if PCL || NETFX_CORE || SILVERLIGHT
-                throw new NotSupportedException();
+                throw new PlatformNotSupportedException("Header removal not supported on this platform");
 #else
                 _headers.Remove(name);
 #endif

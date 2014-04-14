@@ -21,8 +21,8 @@ namespace Saleslogix.SData.Client.Test.Extensions
                                     xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
                           <orderDate>2001-07-01</orderDate>
                           <shipDate xsi:nil=""true"" />
-                          <contact sdata:key=""216"" 
-                                   sdata:uri=""http://www.example.com/sdata/myApp/myContract/-/contacts('216')"" 
+                          <contact sdata:key=""216""
+                                   sdata:uri=""http://www.example.com/sdata/myApp/myContract/-/contacts('216')""
                                    sdata:lookup=""http://www.example.com/sdata/myApp/myContract/-/contacts""/>
                           <orderLines sdata:uri=""http://www.example.com/sdata/myApp/myContract/-/salesOrderLines?where=salesOrderID%20eq%2043660""/>
                         </salesOrder>

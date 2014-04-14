@@ -14,10 +14,10 @@ namespace Saleslogix.SData.Client.Test.Extensions
         private const string TestCase1 = @"
   <entry xmlns=""http://www.w3.org/2005/Atom"">
     <sdata:payload xmlns:sdata=""http://schemas.sage.com/sdata/2008/1"">
-      <validationRule 
-            sdata:key=""fc9bd0aee4d0445395f69dbc3070b6a1"" 
-            sdata:uri=""http://localhost:8001/sdata/$app/metadata/-/validationRules('fc9bd0aee4d0445395f69dbc3070b6a1')"" 
-            sdata:lookup=""http://localhost:8001/sdata/$app/metadata/-/validationRules"" 
+      <validationRule
+            sdata:key=""fc9bd0aee4d0445395f69dbc3070b6a1""
+            sdata:uri=""http://localhost:8001/sdata/$app/metadata/-/validationRules('fc9bd0aee4d0445395f69dbc3070b6a1')""
+            sdata:lookup=""http://localhost:8001/sdata/$app/metadata/-/validationRules""
             xmlns=""http://schemas.sage.com/gobiplatform/2010""
             xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
         <name>AccountTypeValidation</name>

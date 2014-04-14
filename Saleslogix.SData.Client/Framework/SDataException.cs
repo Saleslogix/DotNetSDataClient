@@ -94,7 +94,7 @@ namespace Saleslogix.SData.Client.Framework
 #endif
 
         /// <summary>
-        /// 
+        /// Gets the collection of diagnoses responsible for the exception.
         /// </summary>
         public Diagnoses Diagnoses
         {

@@ -96,7 +96,7 @@ namespace Saleslogix.SData.Client.Linq
             string op;
             if (!_binaryOperators.TryGetValue(expression.NodeType, out op))
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException(string.Format("Binary operator '{0}' not supported", expression.NodeType));
             }
 
             Append("(", expression.Left, " ", op, " ", expression.Right, ")");
@@ -108,7 +108,7 @@ namespace Saleslogix.SData.Client.Linq
             var protocolVar = expression.Value as SDataProtocolVariable;
             Append(protocolVar != null
                        ? protocolVar.ToString()
-                       : SDataUri.FormatSelectorConstant(expression.Value));
+                       : SDataUri.FormatConstant(expression.Value));
             return expression;
         }
 
@@ -134,7 +134,7 @@ namespace Saleslogix.SData.Client.Linq
 
             if (!_methodMappings.TryGetValue(new MethodMappingKey(method.DeclaringType, method.Name), out handler))
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException(string.Format("Method '{0}.{1}' not supported", method.DeclaringType, method.Name));
             }
 
             Append(handler(expression));
@@ -203,13 +203,13 @@ namespace Saleslogix.SData.Client.Linq
                 case ExpressionType.Convert:
                     return BaseVisitUnaryExpression(expression);
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException(string.Format("Unary expression type '{0}' not supported", expression.NodeType));
             }
         }
 
         protected override Exception CreateUnhandledItemException<T>(T unhandledItem, string visitMethod)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException(string.Format("Expression type '{0}' not supported", typeof (T)));
         }
 
         private void Append(params object[] parts)
@@ -276,7 +276,7 @@ namespace Saleslogix.SData.Client.Linq
             var argExpr = expression.Arguments[0] as ConstantExpression;
             if (argExpr == null)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("StartsWith must be passed a literal string");
             }
 
             return new object[]
@@ -284,7 +284,7 @@ namespace Saleslogix.SData.Client.Linq
                            "(",
                            expression.Object,
                            " like ",
-                           SDataUri.FormatSelectorConstant(argExpr.Value + "%"),
+                           SDataUri.FormatConstant(argExpr.Value + "%"),
                            ")"
                        };
         }
@@ -294,7 +294,7 @@ namespace Saleslogix.SData.Client.Linq
             var argExpr = expression.Arguments[0] as ConstantExpression;
             if (argExpr == null)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("EndsWith must be passed a literal string");
             }
 
             return new object[]
@@ -302,7 +302,7 @@ namespace Saleslogix.SData.Client.Linq
                            "(",
                            expression.Object,
                            " like ",
-                           SDataUri.FormatSelectorConstant("%" + argExpr.Value),
+                           SDataUri.FormatConstant("%" + argExpr.Value),
                            ")"
                        };
         }
@@ -312,7 +312,7 @@ namespace Saleslogix.SData.Client.Linq
             var argExpr = expression.Arguments[0] as ConstantExpression;
             if (argExpr == null)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Contains must be passed a literal string");
             }
 
             return new object[]
@@ -320,7 +320,7 @@ namespace Saleslogix.SData.Client.Linq
                            "(",
                            expression.Object,
                            " like ",
-                           SDataUri.FormatSelectorConstant("%" + argExpr.Value + "%"),
+                           SDataUri.FormatConstant("%" + argExpr.Value + "%"),
                            ")"
                        };
         }
@@ -454,7 +454,7 @@ namespace Saleslogix.SData.Client.Linq
         {
             if (expression.Arguments.Count != 1)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Only the single parameter String.IndexOf overload is supported");
             }
 
             return new object[]
@@ -511,7 +511,7 @@ namespace Saleslogix.SData.Client.Linq
         {
             if (expression.Arguments.Count > 0)
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException("Only the parameterless String.Trim overload is supported");
             }
 
             return new object[]

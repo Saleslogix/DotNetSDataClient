@@ -150,7 +150,7 @@ namespace Saleslogix.SData.Client.Linq
             {
                 if (Precedence != null)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("Multiple WithPrecedence operators not supported");
                 }
 
                 Precedence = withPrecedenceOperator.Precedence;
@@ -171,7 +171,7 @@ namespace Saleslogix.SData.Client.Linq
             }
 #endif
 
-            throw new NotSupportedException();
+            throw new NotSupportedException(string.Format("Result operator '{0}' not supported", resultOperator.GetType()));
         }
 
         public override void VisitAdditionalFromClause(AdditionalFromClause fromClause, QueryModel queryModel, int index)

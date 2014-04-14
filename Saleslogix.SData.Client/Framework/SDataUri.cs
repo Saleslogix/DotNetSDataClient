@@ -17,8 +17,7 @@ namespace Saleslogix.SData.Client.Framework
     /// Helper class for building an SData compatible <see cref="Uri"/>.
     /// </summary>
     /// <remarks>
-    /// The format of an SData <see cref="Uri"/> is as follows
-    /// 
+    /// The format of an SData <see cref="Uri"/> is as follows:
     /// http(s)://&gt;host&lt;:&gt;port&lt;/&gt;server&lt;/&gt;product&lt;/&gt;contract&lt;/&gt;company-dataset&lt;/&gt;collection&lt;(resource identifier)&gt;value&lt;
     /// </remarks>
     [Serializable]
@@ -327,7 +326,7 @@ namespace Saleslogix.SData.Client.Framework
                 {
                     long result;
 
-                    if (long.TryParse(count, out result))
+                    if (long.TryParse(count, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
                     {
                         return result;
                     }
@@ -352,7 +351,7 @@ namespace Saleslogix.SData.Client.Framework
                 {
                     long result;
 
-                    if (long.TryParse(startIndex, out result))
+                    if (long.TryParse(startIndex, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
                     {
                         return result;
                     }
@@ -403,8 +402,8 @@ namespace Saleslogix.SData.Client.Framework
         /// <summary>
         /// Gets or sets the maximum precedence of the fields to return in the result.
         /// </summary>
-        /// <value>0 to return no entity information (only name and id). 
-        /// Higher values will return entity information for the properties 
+        /// <value>0 to return no entity information (only name and id).
+        /// Higher values will return entity information for the properties
         /// with an equal or lower precedence value.</value>
         public int? Precedence
         {
@@ -417,7 +416,7 @@ namespace Saleslogix.SData.Client.Framework
                 {
                     int result;
 
-                    if (int.TryParse(precedence, out result))
+                    if (int.TryParse(precedence, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
                     {
                         return result;
                     }
@@ -477,9 +476,9 @@ namespace Saleslogix.SData.Client.Framework
         /// Specifies a full-text search criteria.
         /// </summary>
         /// <remarks>
-        /// The syntax for the search string may vary depending on the search 
-        /// engine used by the provider. SData does not attempt to introduce 
-        /// a standard syntax for full text searches because the search text 
+        /// The syntax for the search string may vary depending on the search
+        /// engine used by the provider. SData does not attempt to introduce
+        /// a standard syntax for full text searches because the search text
         /// will usually be entered interactively through a search box.
         /// </remarks>
         public string Search
@@ -588,7 +587,7 @@ namespace Saleslogix.SData.Client.Framework
             return this;
         }
 
-        public static string FormatSelectorConstant(object value)
+        public static string FormatConstant(object value)
         {
             if (value == null)
             {
@@ -630,7 +629,7 @@ namespace Saleslogix.SData.Client.Framework
             }
             if (type.IsArray)
             {
-                return string.Format(CultureInfo.InvariantCulture, "({0})", string.Join(",", ((Array) value).Cast<object>().Select(FormatSelectorConstant).ToArray()));
+                return string.Format(CultureInfo.InvariantCulture, "({0})", string.Join(",", ((Array) value).Cast<object>().Select(FormatConstant).ToArray()));
             }
 
             throw new NotSupportedException(string.Format("Selector '{0}' not supported", value));

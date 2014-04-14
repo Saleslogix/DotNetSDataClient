@@ -335,7 +335,7 @@ namespace Saleslogix.SData.Client.Framework
 
                     if (selector == null && resource.Key != null)
                     {
-                        selector = SDataUri.FormatSelectorConstant(resource.Key);
+                        selector = SDataUri.FormatConstant(resource.Key);
                     }
                     if (eTag == null)
                     {
@@ -396,7 +396,7 @@ namespace Saleslogix.SData.Client.Framework
                 {
                     if (selector == null && prot.Info.Key != null)
                     {
-                        selector = SDataUri.FormatSelectorConstant(prot.Info.Key);
+                        selector = SDataUri.FormatConstant(prot.Info.Key);
                     }
                     if (eTag == null)
                     {

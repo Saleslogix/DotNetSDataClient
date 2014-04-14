@@ -396,7 +396,7 @@ namespace Saleslogix.SData.Client.Linq
                   resultOperator is CountResultOperator ||
                   resultOperator is LongCountResultOperator))
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException(string.Format("Result operator '{0}' not supported", resultOperator.GetType()));
             }
 
             var parms = CreateParameters(queryModel);
@@ -442,7 +442,7 @@ namespace Saleslogix.SData.Client.Linq
             else if (!(resultOperator is FirstResultOperator ||
                        resultOperator is SingleResultOperator))
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException(string.Format("Result operator '{0}' not supported", resultOperator.GetType()));
             }
 
             var parms = CreateParameters(queryModel);
@@ -463,7 +463,7 @@ namespace Saleslogix.SData.Client.Linq
 
                 if (collection.TotalResults - (startIndex ?? 1) > 0)
                 {
-                    throw new SDataClientException("Multiple results");
+                    throw new SDataClientException("Multiple results found");
                 }
             }
 

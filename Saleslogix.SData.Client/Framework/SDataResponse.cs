@@ -42,18 +42,18 @@ namespace Saleslogix.SData.Client.Framework
 
             var header = response.Headers["Expires"];
             DateTime date;
-            if (DateTime.TryParse(header, out date))
+            if (DateTime.TryParse(header, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out date))
             {
-                _expires = date.ToUniversalTime();
+                _expires = date;
             }
 
             header = response.Headers["Retry-After"];
             int num;
-            if (DateTime.TryParse(header, out date))
+            if (DateTime.TryParse(header, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out date))
             {
-                _retryAfter = date.ToUniversalTime();
+                _retryAfter = date;
             }
-            else if (int.TryParse(header, out num))
+            else if (int.TryParse(header, NumberStyles.Any, CultureInfo.InvariantCulture, out num))
             {
                 _retryAfter = DateTime.UtcNow.AddSeconds(num);
             }

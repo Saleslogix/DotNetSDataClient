@@ -21,7 +21,7 @@ namespace Saleslogix.SData.Client.Linq
                 var memberExpr = expr as MemberExpression;
                 if (memberExpr == null)
                 {
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("Paths must only include member expressions");
                 }
 
                 memberPath.Add(memberExpr.Member);

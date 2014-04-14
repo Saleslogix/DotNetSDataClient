@@ -34,7 +34,7 @@ namespace Saleslogix.SData.Client.Framework
         public static class Xsi
         {
             /// <summary>
-            /// Namespace for XSI 
+            /// Namespace for XSI
             /// </summary>
             public const string Namespace = "http://www.w3.org/2001/XMLSchema-instance";
 
@@ -103,7 +103,7 @@ namespace Saleslogix.SData.Client.Framework
         public static class Http
         {
             /// <summary>
-            /// Namespace for SData HTTP elements 
+            /// Namespace for SData HTTP elements
             /// </summary>
             public const string Namespace = "http://schemas.sage.com/sdata/http/2008/1";
 
@@ -119,7 +119,7 @@ namespace Saleslogix.SData.Client.Framework
         public static class Sync
         {
             /// <summary>
-            /// Namespace for SData Sync elements 
+            /// Namespace for SData Sync elements
             /// </summary>
             public const string Namespace = "http://schemas.sage.com/sdata/sync/2008/1";
 

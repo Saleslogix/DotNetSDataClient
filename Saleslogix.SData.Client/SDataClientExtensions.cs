@@ -52,7 +52,7 @@ namespace Saleslogix.SData.Client
             return new SDataParameters
                 {
                     Path = path,
-                    Selector = SDataUri.FormatSelectorConstant(key),
+                    Selector = SDataUri.FormatConstant(key),
                     Include = include != null ? string.Join(",", include.ToArray()) : null,
                     Select = select != null ? string.Join(",", select.ToArray()) : null,
                     Precedence = precedence
@@ -189,7 +189,7 @@ namespace Saleslogix.SData.Client
 
         private static string GetSelector(object content)
         {
-            return SDataUri.FormatSelectorConstant(ContentHelper.GetProtocolValue<string>(content, SDataProtocolProperty.Key));
+            return SDataUri.FormatConstant(ContentHelper.GetProtocolValue<string>(content, SDataProtocolProperty.Key));
         }
 
         private static string GetETag(object content)

@@ -32,7 +32,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
         {
-            throw new NotSupportedException();
+            throw CreateResolveNotSupportedException();
         }
     }
 }
