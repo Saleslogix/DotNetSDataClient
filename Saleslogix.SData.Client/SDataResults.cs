@@ -12,7 +12,7 @@ namespace Saleslogix.SData.Client
         private readonly MediaType? _contentType;
         private readonly string _eTag;
         private readonly string _location;
-        private IDictionary<string, string> _form;
+        private readonly IDictionary<string, string> _form;
         private readonly IList<AttachedFile> _files;
 
         public static ISDataResults FromResponse(SDataResponse response)
@@ -21,6 +21,7 @@ namespace Saleslogix.SData.Client
                                     response.ContentType,
                                     response.ETag,
                                     response.Location,
+                                    response.Form,
                                     response.Files);
         }
 
@@ -30,6 +31,7 @@ namespace Saleslogix.SData.Client
                                        response.ContentType,
                                        response.ETag,
                                        response.Location,
+                                       response.Form,
                                        response.Files,
                                        content);
         }
@@ -38,12 +40,14 @@ namespace Saleslogix.SData.Client
                               MediaType? contentType,
                               string eTag,
                               string location,
+                              IDictionary<string, string> form,
                               IList<AttachedFile> files)
         {
             _statusCode = statusCode;
             _contentType = contentType;
             _eTag = eTag;
             _location = location;
+            _form = form;
             _files = files;
         }
 
@@ -86,9 +90,10 @@ namespace Saleslogix.SData.Client
                               MediaType? contentType,
                               string eTag,
                               string location,
+                              IDictionary<string, string> form,
                               IList<AttachedFile> files,
                               T content)
-            : base(statusCode, contentType, eTag, location, files)
+            : base(statusCode, contentType, eTag, location, form, files)
         {
             _content = content;
         }
