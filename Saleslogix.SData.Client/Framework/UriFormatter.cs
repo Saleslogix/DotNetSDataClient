@@ -100,6 +100,8 @@ namespace Saleslogix.SData.Client.Framework
 #endif
 
         private Uri _uri;
+        private bool _requiresRebuildUri;
+        private bool _requiresParseUri;
 
         private string _scheme;
         private int _port;
@@ -110,8 +112,6 @@ namespace Saleslogix.SData.Client.Framework
 
         private string _pathInternal;
         private string _directPath;
-        private bool _requiresRebuildUri;
-        private bool _requiresParseUri;
         private bool _requiresRebuildPath;
         private bool _requiresParsePath;
         private List<UriPathSegment> _pathSegments;
@@ -385,6 +385,7 @@ namespace Saleslogix.SData.Client.Framework
                 }
 
                 _requiresParsePath = true;
+                _requiresRebuildUri = true;
                 _directPath = null;
             }
         }
@@ -442,6 +443,7 @@ namespace Saleslogix.SData.Client.Framework
                 CheckParseQuery();
                 _query = value;
                 _requiresParseQuery = true;
+                _requiresRebuildUri = true;
             }
         }
 
@@ -469,21 +471,20 @@ namespace Saleslogix.SData.Client.Framework
                 {
                     return path;
                 }
-                return path + QueryPrefix + query;
+                return string.Concat(path, QueryPrefix, query);
             }
             set
             {
-                var query = value.IndexOf(QueryPrefix, StringComparison.Ordinal);
-
-                if (query < 0)
+                var pos = value.IndexOf(QueryPrefix, StringComparison.Ordinal);
+                if (pos < 0)
                 {
                     Path = Path;
                     Query = null;
                 }
                 else
                 {
-                    Path = value.Substring(0, query);
-                    Query = value.Substring(query + 1);
+                    Path = value.Substring(0, pos);
+                    Query = value.Substring(pos + 1);
                 }
             }
         }
@@ -652,13 +653,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <returns>The specified <see cref="Uri"/> with the additional query argument.</returns>
         public static string AppendQueryArgument(string uri, string name, string value)
         {
-            var formatted = name + QueryArgValuePrefix + value;
-
-            if (uri.Contains(QueryPrefix))
-            {
-                return uri + QueryArgPrefix + formatted;
-            }
-            return uri + QueryPrefix + formatted;
+            return string.Concat(uri, uri.Contains(QueryPrefix) ? QueryArgPrefix : QueryPrefix, name, QueryArgValuePrefix, value);
         }
 
         /// <summary>
@@ -889,7 +884,7 @@ namespace Saleslogix.SData.Client.Framework
             // http://<host><:port>/<path><?query>
             CheckRebuildQuery();
 
-            if (!String.IsNullOrEmpty(_query))
+            if (!string.IsNullOrEmpty(_query))
             {
                 uri.Append(QueryPrefix);
                 uri.Append(_query);
@@ -956,17 +951,16 @@ namespace Saleslogix.SData.Client.Framework
                     path = path.Substring(PathSegmentPrefix.Length);
                 }
 
-                var endServer = path.IndexOf(PathSegmentPrefix[0]);
-
-                if (endServer < 0)
+                var pos = path.IndexOf(PathSegmentPrefix[0]);
+                if (pos < 0)
                 {
                     _server = path;
                     _pathInternal = null;
                 }
                 else
                 {
-                    _server = path.Substring(0, endServer);
-                    _pathInternal = path.Substring(endServer + 1);
+                    _server = path.Substring(0, pos);
+                    _pathInternal = path.Substring(pos + 1);
                 }
 
                 _fragment = _uri.Fragment;
@@ -981,6 +975,10 @@ namespace Saleslogix.SData.Client.Framework
                 }
 
                 _query = _uri.Query;
+                if (_query.StartsWith(QueryPrefix))
+                {
+                    _query = _query.Substring(QueryPrefix.Length);
+                }
             }
         }
 
@@ -1065,11 +1063,11 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         protected virtual void OnParsePath()
         {
+            var segments = InternalPathSegments;
+            segments.Clear();
+
             if (!string.IsNullOrEmpty(_pathInternal))
             {
-                var segments = InternalPathSegments;
-                segments.Clear();
-
                 foreach (var segment in UriPathSegment.FromStrings(UriPathSegment.GetPathSegments(_pathInternal)))
                 {
                     if (segment != null)
@@ -1141,15 +1139,16 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         protected virtual void OnParseQuery()
         {
-            if (!String.IsNullOrEmpty(_query))
+            var queryArgs = (Dictionary<string, string>) QueryArgs;
+            queryArgs.Clear();
+
+            if (!string.IsNullOrEmpty(_query))
             {
                 if (_query.StartsWith(QueryPrefix))
                 {
                     _query = _query.Substring(QueryPrefix.Length);
                 }
 
-                var queryArgs = (Dictionary<string, string>) QueryArgs;
-                queryArgs.Clear();
                 foreach (var arg in _query.Split(QueryArgPrefix[0]))
                 {
                     var parts = arg.Split(QueryArgValuePrefix[0]);
