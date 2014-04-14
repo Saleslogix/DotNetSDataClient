@@ -26,7 +26,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Scalar_All_Same_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClient(parmsList, CreateCollection<object>(null, 3), CreateCollection<object>(null, 3));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -42,7 +42,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Scalar_All_Different_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClient(parmsList, CreateCollection<object>(null, 3), CreateCollection<object>(null, 2));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -58,7 +58,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Scalar_Any_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClient(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -72,7 +72,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Scalar_Any_Take_Zero_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClient<object>(parmsList);
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -87,7 +87,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Scalar_Count_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClient(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -101,7 +101,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Scalar_Count_Take_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClient(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -116,7 +116,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Scalar_Count_Skip_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClient(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -131,7 +131,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Scalar_LongCount_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClient(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -145,7 +145,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_First_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 10));
             var executor = new SDataQueryExecutor(client);
@@ -160,7 +160,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_First_Take_Zero_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClient<Contact>(parmsList);
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -175,21 +175,21 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_Last_Unordered_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var clientMock = new Mock<ISDataClient>();
-            var requestMock = new Mock<ISDataParameters>();
+            var requestMock = new Mock<SDataParameters>();
             requestMock.SetupAllProperties();
             var responseMock1 = new Mock<ISDataResults<SDataCollection<object>>>();
             responseMock1.Setup(x => x.Content).Returns(CreateCollection<object>(null, 10));
-            clientMock.Setup(x => x.Execute<SDataCollection<object>>(It.IsAny<ISDataParameters>()))
+            clientMock.Setup(x => x.Execute<SDataCollection<object>>(It.IsAny<SDataParameters>()))
                       .Returns(responseMock1.Object)
-                      .Callback((ISDataParameters parms) => parmsList.Add(parms));
+                      .Callback((SDataParameters parms) => parmsList.Add(parms));
             var responseMock2 = new Mock<ISDataResults<SDataCollection<Contact>>>();
             responseMock2.Setup(x => x.Content).Returns(CreateCollection(new[] {expected}, 10));
-            clientMock.Setup(x => x.Execute<SDataCollection<Contact>>(It.IsAny<ISDataParameters>()))
+            clientMock.Setup(x => x.Execute<SDataCollection<Contact>>(It.IsAny<SDataParameters>()))
                       .Returns(responseMock2.Object)
-                      .Callback((ISDataParameters parms) => parmsList.Add(parms));
+                      .Callback((SDataParameters parms) => parmsList.Add(parms));
             var executor = new SDataQueryExecutor(clientMock.Object);
             var builder = CreateQueryBuilder<Contact>(true);
             builder.AddResultOperator(new LastResultOperator(false));
@@ -204,7 +204,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_Last_Unordered_Empty_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClient(parmsList, CreateCollection<object>(null, 0));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -218,7 +218,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_Last_Ordered_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 10));
             var executor = new SDataQueryExecutor(client);
@@ -241,7 +241,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_Single_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 1));
             var executor = new SDataQueryExecutor(client);
@@ -256,7 +256,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_Single_TotalResultsMissing_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClient(parmsList, CreateCollection(new[] {expected}, null));
             var executor = new SDataQueryExecutor(client);
@@ -268,7 +268,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_Single_MultipleResults_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 2));
             var executor = new SDataQueryExecutor(client);
@@ -280,7 +280,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_Single_Take_One_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 10));
             var executor = new SDataQueryExecutor(client);
@@ -296,7 +296,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_Single_Skip_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 10));
             var executor = new SDataQueryExecutor(client);
@@ -312,7 +312,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_Single_Take_Skip_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 10));
             var executor = new SDataQueryExecutor(client);
@@ -329,7 +329,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Single_ElementAt_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClient(parmsList, CreateCollection(new[] {expected}, 1));
             var executor = new SDataQueryExecutor(client);
@@ -370,7 +370,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Collection_Select_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new[] {"one", "two", "three"};
             var list = CreateCollection(expected.Select(lastName => new Contact {LastName = lastName}), 3);
             var client = CreateClient(parmsList, list);
@@ -389,7 +389,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Collection_Take_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = CreateCollection(Enumerable.Range(0, 3).Select(i => new Contact()), 10);
             var client = CreateClient(parmsList, expected);
             var executor = new SDataQueryExecutor(client);
@@ -404,7 +404,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Collection_Take_Large_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var page1 = CreateCollection(Enumerable.Range(0, 100).Select(i => new Contact()), 200);
             var page2 = CreateCollection(Enumerable.Range(0, 100).Select(i => new Contact()), 200);
             var client = CreateClient(parmsList, page1, page2);
@@ -434,7 +434,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void ScalarAsync_All_Same_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 3), CreateCollection<object>(null, 3));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -450,7 +450,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void ScalarAsync_All_Different_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 3), CreateCollection<object>(null, 2));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -466,7 +466,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void ScalarAsync_Any_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -480,7 +480,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void ScalarAsync_Any_Take_Zero_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -495,7 +495,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void ScalarAsync_Count_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -509,7 +509,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void ScalarAsync_Count_Take_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -524,7 +524,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void ScalarAsync_Count_Skip_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -539,7 +539,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void ScalarAsync_LongCount_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -553,7 +553,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void SingleAsync_First_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClientAsync(parmsList, CreateCollection(new[] {expected}, 10));
             var executor = new SDataQueryExecutor(client);
@@ -568,7 +568,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void SingleAsync_First_Take_Zero_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClientAsync<Contact>(parmsList);
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -583,31 +583,31 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void SingleAsync_Last_Unordered_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var clientMock = new Mock<ISDataClient>();
-            var requestMock = new Mock<ISDataParameters>();
+            var requestMock = new Mock<SDataParameters>();
             requestMock.SetupAllProperties();
             var responseMock1 = new Mock<ISDataResults<SDataCollection<object>>>();
             responseMock1.Setup(x => x.Content).Returns(CreateCollection<object>(null, 10));
-            clientMock.Setup(x => x.ExecuteAsync<SDataCollection<object>>(It.IsAny<ISDataParameters>()))
+            clientMock.Setup(x => x.ExecuteAsync<SDataCollection<object>>(It.IsAny<SDataParameters>()))
                       .Returns(() =>
                                    {
                                        var taskSource = new TaskCompletionSource<ISDataResults<SDataCollection<object>>>();
                                        taskSource.SetResult(responseMock1.Object);
                                        return taskSource.Task;
                                    })
-                      .Callback((ISDataParameters parms) => parmsList.Add(parms));
+                      .Callback((SDataParameters parms) => parmsList.Add(parms));
             var responseMock2 = new Mock<ISDataResults<SDataCollection<Contact>>>();
             responseMock2.Setup(x => x.Content).Returns(CreateCollection(new[] {expected}, 10));
-            clientMock.Setup(x => x.ExecuteAsync<SDataCollection<Contact>>(It.IsAny<ISDataParameters>()))
+            clientMock.Setup(x => x.ExecuteAsync<SDataCollection<Contact>>(It.IsAny<SDataParameters>()))
                       .Returns(() =>
                                    {
                                        var taskSource = new TaskCompletionSource<ISDataResults<SDataCollection<Contact>>>();
                                        taskSource.SetResult(responseMock2.Object);
                                        return taskSource.Task;
                                    })
-                      .Callback((ISDataParameters parms) => parmsList.Add(parms));
+                      .Callback((SDataParameters parms) => parmsList.Add(parms));
             var executor = new SDataQueryExecutor(clientMock.Object);
             var builder = CreateQueryBuilder<Contact>(true);
             builder.AddResultOperator(new LastAsyncResultOperator(false));
@@ -622,7 +622,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void SingleAsync_Last_Unordered_Empty_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 0));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
@@ -636,7 +636,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void SingleAsync_Last_Ordered_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClientAsync(parmsList, CreateCollection(new[] {expected}, 10));
             var executor = new SDataQueryExecutor(client);
@@ -659,7 +659,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void SingleAsync_Single_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClientAsync(parmsList, CreateCollection(new[] {expected}, 1));
             var executor = new SDataQueryExecutor(client);
@@ -674,7 +674,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void SingleAsync_ElementAt_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new Contact();
             var client = CreateClientAsync(parmsList, CreateCollection(new[] {expected}, 1));
             var executor = new SDataQueryExecutor(client);
@@ -715,7 +715,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void CollectionAsync_Select_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = new[] {"one", "two", "three"};
             var list = CreateCollection(expected.Select(lastName => new Contact {LastName = lastName}), 3);
             var client = CreateClientAsync(parmsList, list);
@@ -734,7 +734,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void CollectionAsync_Take_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var expected = CreateCollection(Enumerable.Range(0, 3).Select(i => new Contact()), 10);
             var client = CreateClientAsync(parmsList, expected);
             var executor = new SDataQueryExecutor(client);
@@ -749,7 +749,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void CollectionAsync_Take_Large_Test()
         {
-            var parmsList = new List<ISDataParameters>();
+            var parmsList = new List<SDataParameters>();
             var page1 = CreateCollection(Enumerable.Range(0, 100).Select(i => new Contact()), 200);
             var page2 = CreateCollection(Enumerable.Range(0, 100).Select(i => new Contact()), 200);
             var client = CreateClientAsync(parmsList, page1, page2);
@@ -793,7 +793,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        private static ISDataClient CreateClient<T>(ICollection<ISDataParameters> parmsList, params T[] responseDataSequence)
+        private static ISDataClient CreateClient<T>(ICollection<SDataParameters> parmsList, params T[] responseDataSequence)
         {
             var clientMock = new Mock<ISDataClient>();
             var responses = new Queue<ISDataResults<T>>(
@@ -804,9 +804,9 @@ namespace Saleslogix.SData.Client.Test.Linq
                             responseMock.Setup(x => x.Content).Returns(data);
                             return responseMock.Object;
                         }));
-            clientMock.Setup(x => x.Execute<T>(It.IsAny<ISDataParameters>()))
+            clientMock.Setup(x => x.Execute<T>(It.IsAny<SDataParameters>()))
                       .Returns(responses.Dequeue)
-                      .Callback((ISDataParameters parms) =>
+                      .Callback((SDataParameters parms) =>
                                     {
                                         if (parmsList != null)
                                         {
@@ -818,7 +818,7 @@ namespace Saleslogix.SData.Client.Test.Linq
 #endif
 
 #if !NET_3_5
-        private static ISDataClient CreateClientAsync<T>(ICollection<ISDataParameters> parmsList, params T[] responseDataSequence)
+        private static ISDataClient CreateClientAsync<T>(ICollection<SDataParameters> parmsList, params T[] responseDataSequence)
         {
             var clientMock = new Mock<ISDataClient>();
             var responses = new Queue<Task<ISDataResults<T>>>(
@@ -831,9 +831,9 @@ namespace Saleslogix.SData.Client.Test.Linq
                             taskSource.SetResult(responseMock.Object);
                             return taskSource.Task;
                         }));
-            clientMock.Setup(x => x.ExecuteAsync<T>(It.IsAny<ISDataParameters>()))
+            clientMock.Setup(x => x.ExecuteAsync<T>(It.IsAny<SDataParameters>()))
                       .Returns(responses.Dequeue)
-                      .Callback((ISDataParameters parms) =>
+                      .Callback((SDataParameters parms) =>
                                     {
                                         if (parmsList != null)
                                         {

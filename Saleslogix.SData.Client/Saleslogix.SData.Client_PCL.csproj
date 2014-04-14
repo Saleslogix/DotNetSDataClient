@@ -75,7 +75,6 @@
     <Compile Include="Framework\W3CDateTime.cs" />
     <Compile Include="INamingScheme.cs" />
     <Compile Include="ISDataClient.cs" />
-    <Compile Include="ISDataParameters.cs" />
     <Compile Include="ISDataProtocolAware.cs" />
     <Compile Include="ISDataResults.cs" />
     <Compile Include="Linq\AllAsyncExpressionNode.cs" />

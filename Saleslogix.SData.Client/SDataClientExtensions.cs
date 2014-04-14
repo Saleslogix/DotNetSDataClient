@@ -45,7 +45,7 @@ namespace Saleslogix.SData.Client
         }
 #endif
 
-        private static ISDataParameters GetGetParameters(string key, string path, IEnumerable<string> include, IEnumerable<string> select, int? precedence)
+        private static SDataParameters GetGetParameters(string key, string path, IEnumerable<string> include, IEnumerable<string> select, int? precedence)
         {
             Guard.ArgumentNotNullOrEmptyString(path, "path");
             Guard.ArgumentNotNullOrEmptyString(key, "key");
@@ -85,7 +85,7 @@ namespace Saleslogix.SData.Client
         }
 #endif
 
-        private static ISDataParameters GetPostParameters<T>(ISDataClient client, T content, string path)
+        private static SDataParameters GetPostParameters<T>(ISDataClient client, T content, string path)
         {
             Guard.ArgumentNotNull(client, "client");
             Guard.ArgumentNotNull(content, "content");
@@ -125,7 +125,7 @@ namespace Saleslogix.SData.Client
         }
 #endif
 
-        private static ISDataParameters GetPutParameters<T>(ISDataClient client, T content, string path)
+        private static SDataParameters GetPutParameters<T>(ISDataClient client, T content, string path)
         {
             Guard.ArgumentNotNull(client, "client");
             Guard.ArgumentNotNull(content, "content");
@@ -169,7 +169,7 @@ namespace Saleslogix.SData.Client
         }
 #endif
 
-        private static ISDataParameters GetDeleteParameters<T>(T content, string path)
+        private static SDataParameters GetDeleteParameters<T>(T content, string path)
         {
             Guard.ArgumentNotNull(content, "content");
             Guard.ArgumentNotNullOrEmptyString(path, "path");

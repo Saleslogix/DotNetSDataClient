@@ -161,21 +161,21 @@ namespace Saleslogix.SData.Client.Linq
         }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        private Func<ISDataParameters, SDataCollection<T>> PrepareExecuteDelegate<T>(QueryModel queryModel)
+        private Func<SDataParameters, SDataCollection<T>> PrepareExecuteDelegate<T>(QueryModel queryModel)
         {
             if (queryModel.MainFromClause.ItemType != typeof (T))
             {
                 //this.Execute<[queryModel.MainFromClause.ItemType], T>(parms, [queryModel.SelectClause.Selector]);
-                var executeMethod = new Func<ISDataParameters, Func<object, T>, SDataCollection<T>>(Execute)
+                var executeMethod = new Func<SDataParameters, Func<object, T>, SDataCollection<T>>(Execute)
                     .Method.GetGenericMethodDefinition()
                     .MakeGenericMethod(queryModel.MainFromClause.ItemType, typeof (T));
-                var parmsParamExpr = Expression.Parameter(typeof (ISDataParameters), "parms");
+                var parmsParamExpr = Expression.Parameter(typeof (SDataParameters), "parms");
                 var selectorParamExpr = Expression.Parameter(queryModel.MainFromClause.ItemType, "selector");
                 var mapping = new QuerySourceMapping();
                 mapping.AddMapping(queryModel.MainFromClause, selectorParamExpr);
                 var selector = ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(queryModel.SelectClause.Selector, mapping, true);
                 var selectorFunc = Expression.Lambda(typeof (Func<,>).MakeGenericType(queryModel.MainFromClause.ItemType, typeof (T)), selector, selectorParamExpr).Compile();
-                var lambdaExpr = Expression.Lambda<Func<ISDataParameters, SDataCollection<T>>>(
+                var lambdaExpr = Expression.Lambda<Func<SDataParameters, SDataCollection<T>>>(
                     Expression.Call(
                         Expression.Constant(this),
                         executeMethod,
@@ -188,13 +188,13 @@ namespace Saleslogix.SData.Client.Linq
             return Execute<T>;
         }
 
-        private SDataCollection<TResult> Execute<TSource, TResult>(ISDataParameters parms, Func<TSource, TResult> selector)
+        private SDataCollection<TResult> Execute<TSource, TResult>(SDataParameters parms, Func<TSource, TResult> selector)
         {
             var collection = Execute<TSource>(parms);
             return PostExecute(collection, selector);
         }
 
-        private SDataCollection<T> Execute<T>(ISDataParameters parms)
+        private SDataCollection<T> Execute<T>(SDataParameters parms)
         {
             return _client.Execute<SDataCollection<T>>(parms).Content;
         }
@@ -341,22 +341,22 @@ namespace Saleslogix.SData.Client.Linq
             return loop().ContinueWith(task => items);
         }
 
-        private Func<ISDataParameters, Task<SDataCollection<T>>> PrepareAsyncExecuteDelegate<T>(QueryModel queryModel)
+        private Func<SDataParameters, Task<SDataCollection<T>>> PrepareAsyncExecuteDelegate<T>(QueryModel queryModel)
         {
             if (queryModel.MainFromClause.ItemType != typeof (T))
             {
                 //this.ExecuteAsync<[queryModel.MainFromClause.ItemType], T>(parms, [queryModel.SelectClause.Selector]);
-                var executeMethod = new Func<ISDataParameters, Func<object, T>, Task<SDataCollection<T>>>(ExecuteAsync)
+                var executeMethod = new Func<SDataParameters, Func<object, T>, Task<SDataCollection<T>>>(ExecuteAsync)
                     .GetMethodInfo()
                     .GetGenericMethodDefinition()
                     .MakeGenericMethod(queryModel.MainFromClause.ItemType, typeof (T));
-                var parmsParamExpr = Expression.Parameter(typeof (ISDataParameters), "parms");
+                var parmsParamExpr = Expression.Parameter(typeof (SDataParameters), "parms");
                 var selectorParamExpr = Expression.Parameter(queryModel.MainFromClause.ItemType, "selector");
                 var mapping = new QuerySourceMapping();
                 mapping.AddMapping(queryModel.MainFromClause, selectorParamExpr);
                 var selector = ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(queryModel.SelectClause.Selector, mapping, true);
                 var selectorFunc = Expression.Lambda(typeof (Func<,>).MakeGenericType(queryModel.MainFromClause.ItemType, typeof (T)), selector, selectorParamExpr).Compile();
-                var lambdaExpr = Expression.Lambda<Func<ISDataParameters, Task<SDataCollection<T>>>>(
+                var lambdaExpr = Expression.Lambda<Func<SDataParameters, Task<SDataCollection<T>>>>(
                     Expression.Call(
                         Expression.Constant(this),
                         executeMethod,
@@ -369,13 +369,13 @@ namespace Saleslogix.SData.Client.Linq
             return ExecuteAsync<T>;
         }
 
-        private Task<SDataCollection<TResult>> ExecuteAsync<TSource, TResult>(ISDataParameters parms, Func<TSource, TResult> selector)
+        private Task<SDataCollection<TResult>> ExecuteAsync<TSource, TResult>(SDataParameters parms, Func<TSource, TResult> selector)
         {
             return ExecuteAsync<TSource>(parms)
                 .ContinueWith(task => PostExecute(task.Result, selector));
         }
 
-        private Task<SDataCollection<T>> ExecuteAsync<T>(ISDataParameters parms)
+        private Task<SDataCollection<T>> ExecuteAsync<T>(SDataParameters parms)
         {
             return _client.ExecuteAsync<SDataCollection<T>>(parms)
                           .ContinueWith(task => task.Result.Content);
@@ -389,7 +389,7 @@ namespace Saleslogix.SData.Client.Linq
         }
 #endif
 
-        private ISDataParameters PreExecuteScalar(QueryModel queryModel, out int? takeCount)
+        private SDataParameters PreExecuteScalar(QueryModel queryModel, out int? takeCount)
         {
             var resultOperator = queryModel.ResultOperators.Last();
             if (!(resultOperator is AnyResultOperator ||
@@ -429,7 +429,7 @@ namespace Saleslogix.SData.Client.Linq
             return (T) Convert.ChangeType(obj, typeof (T), CultureInfo.InvariantCulture);
         }
 
-        private ISDataParameters PreExecuteSingle(QueryModel queryModel, out int? takeCount)
+        private SDataParameters PreExecuteSingle(QueryModel queryModel, out int? takeCount)
         {
             var resultOperator = queryModel.ResultOperators.Last();
             var elementAtOperator = resultOperator as ElementAtResultOperator;
@@ -471,7 +471,7 @@ namespace Saleslogix.SData.Client.Linq
             return ((ValueFromSequenceResultOperatorBase) resultOperator).ExecuteInMemory<T>(sequence).GetTypedValue<T>();
         }
 
-        private ISDataParameters PreExecuteCollection(QueryModel queryModel, out int? takeCount)
+        private SDataParameters PreExecuteCollection(QueryModel queryModel, out int? takeCount)
         {
             var parms = CreateParameters(queryModel);
 
@@ -491,7 +491,7 @@ namespace Saleslogix.SData.Client.Linq
             return projected;
         }
 
-        private ISDataParameters CreateParameters(QueryModel queryModel)
+        private SDataParameters CreateParameters(QueryModel queryModel)
         {
             var visitor = new SDataQueryModelVisitor(_namingScheme);
             visitor.VisitQueryModel(queryModel);

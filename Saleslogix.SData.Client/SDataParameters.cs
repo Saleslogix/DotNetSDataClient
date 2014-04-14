@@ -6,7 +6,7 @@ using Saleslogix.SData.Client.Framework;
 
 namespace Saleslogix.SData.Client
 {
-    public class SDataParameters : ISDataParameters
+    public class SDataParameters
     {
         private IDictionary<string, string> _form;
         private IList<AttachedFile> _files;

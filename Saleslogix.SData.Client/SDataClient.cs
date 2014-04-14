@@ -36,13 +36,13 @@ namespace Saleslogix.SData.Client
         public string Version { get; set; }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        public ISDataResults Execute(ISDataParameters parms)
+        public ISDataResults Execute(SDataParameters parms)
         {
             var request = CreateRequest(parms);
             return SDataResults.FromResponse(request.GetResponse());
         }
 
-        public ISDataResults<T> Execute<T>(ISDataParameters parms)
+        public ISDataResults<T> Execute<T>(SDataParameters parms)
         {
             var request = CreateRequest(parms);
             return CreateResults<T>(request.GetResponse());
@@ -50,7 +50,7 @@ namespace Saleslogix.SData.Client
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public Task<ISDataResults> ExecuteAsync(ISDataParameters parms)
+        public Task<ISDataResults> ExecuteAsync(SDataParameters parms)
         {
             var request = CreateRequest(parms);
             return Task.Factory
@@ -58,7 +58,7 @@ namespace Saleslogix.SData.Client
                        .ContinueWith(task => SDataResults.FromResponse(task.Result));
         }
 
-        public Task<ISDataResults<T>> ExecuteAsync<T>(ISDataParameters parms)
+        public Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms)
         {
             var request = CreateRequest(parms);
             return Task.Factory
@@ -67,7 +67,7 @@ namespace Saleslogix.SData.Client
         }
 #endif
 
-        private SDataRequest CreateRequest(ISDataParameters parms)
+        private SDataRequest CreateRequest(SDataParameters parms)
         {
             var uri = new SDataUri(Uri)
                           {

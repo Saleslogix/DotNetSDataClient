@@ -28,13 +28,13 @@ namespace Saleslogix.SData.Client
         string Version { get; set; }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        ISDataResults Execute(ISDataParameters parms);
-        ISDataResults<T> Execute<T>(ISDataParameters parms);
+        ISDataResults Execute(SDataParameters parms);
+        ISDataResults<T> Execute<T>(SDataParameters parms);
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        Task<ISDataResults> ExecuteAsync(ISDataParameters parms);
-        Task<ISDataResults<T>> ExecuteAsync<T>(ISDataParameters parms);
+        Task<ISDataResults> ExecuteAsync(SDataParameters parms);
+        Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms);
 #endif
     }
 }
