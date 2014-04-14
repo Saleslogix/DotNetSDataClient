@@ -24,6 +24,17 @@ namespace Saleslogix.SData.Client.Linq
                     Expression.Constant(value)));
         }
 
+        public static IQueryable<T> WithExtensionArg<T>(this IQueryable<T> query, string name, string value)
+        {
+            return new SDataQueryable<T>(
+                query.Provider,
+                Expression.Call(
+                    new Func<IQueryable<T>, string, string, IQueryable<T>>(WithExtensionArg).GetMethodInfo(),
+                    query.Expression,
+                    Expression.Constant(name),
+                    Expression.Constant(value)));
+        }
+
         public static IQueryable<TSource> Fetch<TSource, TRelated>(this IQueryable<TSource> query, Expression<Func<TSource, TRelated>> selector)
         {
             return new SDataQueryable<TSource>(

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using NUnit.Framework;
 using Remotion.Linq;
@@ -330,6 +331,21 @@ namespace Saleslogix.SData.Client.Test.Linq
             visitor.VisitQueryModel(builder.Build());
 
             Assert.That(visitor.Precedence, Is.EqualTo(3));
+        }
+
+        [Test]
+        public void ResultOperator_WithExtensionArg_Test()
+        {
+            var builder = new QueryModelBuilder();
+            builder.AddClause(new MainFromClause("x", typeof (Contact), Expression.Constant(null)));
+            builder.AddClause(new SelectClause(Expression.Constant(null)));
+            builder.AddResultOperator(new WithExtensionArgResultOperator("foo", "bar"));
+            builder.AddResultOperator(new WithExtensionArgResultOperator("hello", "world"));
+
+            var visitor = new SDataQueryModelVisitor();
+            visitor.VisitQueryModel(builder.Build());
+
+            Assert.That(visitor.ExtensionArgs, Is.EqualTo(new Dictionary<string, string> {{"foo", "bar"}, {"hello", "world"}}));
         }
 
         [Test]

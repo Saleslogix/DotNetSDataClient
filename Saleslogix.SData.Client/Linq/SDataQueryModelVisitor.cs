@@ -15,6 +15,7 @@ namespace Saleslogix.SData.Client.Linq
 {
     internal class SDataQueryModelVisitor : QueryModelVisitorBase
     {
+        private readonly IDictionary<string, string> _extensionArgs = new Dictionary<string, string>();
         private readonly INamingScheme _namingScheme;
 
         public SDataQueryModelVisitor(INamingScheme namingScheme = null)
@@ -30,6 +31,11 @@ namespace Saleslogix.SData.Client.Linq
         public int? StartIndex { get; private set; }
         public string Include { get; private set; }
         public int? Precedence { get; private set; }
+
+        public IDictionary<string, string> ExtensionArgs
+        {
+            get { return _extensionArgs; }
+        }
 
         public override void VisitMainFromClause(MainFromClause fromClause, QueryModel queryModel)
         {
@@ -148,6 +154,13 @@ namespace Saleslogix.SData.Client.Linq
                 }
 
                 Precedence = withPrecedenceOperator.Precedence;
+                return;
+            }
+
+            var withExtensionArgOperator = resultOperator as WithExtensionArgResultOperator;
+            if (withExtensionArgOperator != null)
+            {
+                ExtensionArgs[withExtensionArgOperator.Name] = withExtensionArgOperator.Value;
                 return;
             }
 

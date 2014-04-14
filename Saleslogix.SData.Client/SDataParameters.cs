@@ -10,6 +10,7 @@ namespace Saleslogix.SData.Client
     {
         private IDictionary<string, string> _form;
         private IList<AttachedFile> _files;
+        private IDictionary<string, string> _extensionArgs;
 
         public MediaType[] Accept { get; set; }
         public HttpMethod Method { get; set; }
@@ -43,5 +44,10 @@ namespace Saleslogix.SData.Client
         public MediaType? Format { get; set; }
         public string Language { get; set; }
         public string Version { get; set; }
+
+        public IDictionary<string, string> ExtensionArgs
+        {
+            get { return _extensionArgs ?? (_extensionArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)); }
+        }
     }
 }

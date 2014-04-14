@@ -30,5 +30,6 @@ namespace Saleslogix.SData.Client
         MediaType? Format { get; set; }
         string Language { get; set; }
         string Version { get; set; }
+        IDictionary<string, string> ExtensionArgs { get; }
     }
 }

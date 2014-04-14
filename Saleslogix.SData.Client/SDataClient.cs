@@ -1,8 +1,5 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
@@ -91,6 +88,10 @@ namespace Saleslogix.SData.Client
             if (parms.Path != null)
             {
                 uri.AppendPath(parms.Path);
+            }
+            foreach (var item in parms.ExtensionArgs)
+            {
+                uri["_" + item.Key] = item.Value;
             }
             var operation = new RequestOperation(parms.Method, parms.Content)
                                 {

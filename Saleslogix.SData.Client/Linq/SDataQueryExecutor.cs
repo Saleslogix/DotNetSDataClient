@@ -495,7 +495,7 @@ namespace Saleslogix.SData.Client.Linq
         {
             var visitor = new SDataQueryModelVisitor(_namingScheme);
             visitor.VisitQueryModel(queryModel);
-            return new SDataParameters
+            var parms = new SDataParameters
                        {
                            Path = _path ?? SDataResourceAttribute.GetPath(visitor.MainType) ?? _namingScheme.GetName(visitor.MainType.GetTypeInfo()),
                            Select = visitor.Select,
@@ -506,6 +506,11 @@ namespace Saleslogix.SData.Client.Linq
                            Include = visitor.Include,
                            Precedence = visitor.Precedence
                        };
+            foreach (var item in visitor.ExtensionArgs)
+            {
+                parms.ExtensionArgs[item.Key] = item.Value;
+            }
+            return parms;
         }
     }
 }

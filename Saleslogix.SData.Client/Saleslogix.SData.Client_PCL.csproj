@@ -114,6 +114,8 @@
     <Compile Include="Linq\StreamedAsyncSingleInfo.cs" />
     <Compile Include="Linq\ToCollectionAsyncExpressionNode.cs" />
     <Compile Include="Linq\ToCollectionAsyncResultOperator.cs" />
+    <Compile Include="Linq\WithExtensionArgumentExpressionNode.cs" />
+    <Compile Include="Linq\WithExtensionArgumentResultOperator.cs" />
     <Compile Include="Linq\WithPrecedenceExpressionNode.cs" />
     <Compile Include="Linq\WithPrecedenceResultOperator.cs" />
     <Compile Include="Mime\MimeMessage.cs" />
