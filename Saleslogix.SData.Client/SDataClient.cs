@@ -25,6 +25,7 @@ namespace Saleslogix.SData.Client
         public string UserAgent { get; set; }
         public int? Timeout { get; set; }
         public int? TimeoutRetryAttempts { get; set; }
+        public bool UseHttpMethodOverride { get; set; }
 #if !PCL && !SILVERLIGHT
         public IWebProxy Proxy { get; set; }
 #endif
@@ -114,7 +115,9 @@ namespace Saleslogix.SData.Client
                                   Credentials = Credentials,
                                   NamingScheme = NamingScheme,
                                   Cookies = _cookies,
-                                  Accept = parms.Accept
+                                  Accept = parms.Accept,
+                                  AcceptLanguage = parms.Language ?? Language,
+                                  UseHttpMethodOverride = UseHttpMethodOverride
                               };
 #if !PCL && !SILVERLIGHT
             request.Proxy = Proxy;

@@ -1,5 +1,6 @@
 // Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
+using System;
 using System.Collections.Generic;
 using System.Net;
 using Saleslogix.SData.Client.Framework;
@@ -12,6 +13,8 @@ namespace Saleslogix.SData.Client
         private readonly MediaType? _contentType;
         private readonly string _eTag;
         private readonly string _location;
+        private readonly DateTime? _expires;
+        private readonly DateTime? _retryAfter;
         private readonly IDictionary<string, string> _form;
         private readonly IList<AttachedFile> _files;
 
@@ -21,6 +24,8 @@ namespace Saleslogix.SData.Client
                                     response.ContentType,
                                     response.ETag,
                                     response.Location,
+                                    response.Expires,
+                                    response.RetryAfter,
                                     response.Form,
                                     response.Files);
         }
@@ -31,6 +36,8 @@ namespace Saleslogix.SData.Client
                                        response.ContentType,
                                        response.ETag,
                                        response.Location,
+                                       response.Expires,
+                                       response.RetryAfter,
                                        response.Form,
                                        response.Files,
                                        content);
@@ -40,6 +47,8 @@ namespace Saleslogix.SData.Client
                               MediaType? contentType,
                               string eTag,
                               string location,
+                              DateTime? expires,
+                              DateTime? retryAfter,
                               IDictionary<string, string> form,
                               IList<AttachedFile> files)
         {
@@ -47,6 +56,8 @@ namespace Saleslogix.SData.Client
             _contentType = contentType;
             _eTag = eTag;
             _location = location;
+            _expires = expires;
+            _retryAfter = retryAfter;
             _form = form;
             _files = files;
         }
@@ -71,6 +82,16 @@ namespace Saleslogix.SData.Client
             get { return _location; }
         }
 
+        public DateTime? Expires
+        {
+            get { return _expires; }
+        }
+
+        public DateTime? RetryAfter
+        {
+            get { return _retryAfter; }
+        }
+
         public IDictionary<string, string> Form
         {
             get { return _form; }
@@ -90,10 +111,12 @@ namespace Saleslogix.SData.Client
                               MediaType? contentType,
                               string eTag,
                               string location,
+                              DateTime? expires,
+                              DateTime? retryAfter,
                               IDictionary<string, string> form,
                               IList<AttachedFile> files,
                               T content)
-            : base(statusCode, contentType, eTag, location, form, files)
+            : base(statusCode, contentType, eTag, location, expires, retryAfter, form, files)
         {
             _content = content;
         }

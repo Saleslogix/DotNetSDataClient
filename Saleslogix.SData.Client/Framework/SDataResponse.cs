@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using Saleslogix.SData.Client.Content;
@@ -19,6 +20,8 @@ namespace Saleslogix.SData.Client.Framework
         private readonly MediaType? _contentType;
         private readonly string _eTag;
         private readonly string _location;
+        private readonly DateTime? _expires;
+        private readonly DateTime? _retryAfter;
         private readonly object _content;
         private IDictionary<string, string> _form;
         private readonly IList<AttachedFile> _files;
@@ -36,6 +39,25 @@ namespace Saleslogix.SData.Client.Framework
 
             _eTag = response.Headers["ETag"];
             _location = response.Headers["Location"] ?? redirectLocation;
+
+            var header = response.Headers["Expires"];
+            DateTime date;
+            if (DateTime.TryParse(header, out date))
+            {
+                _expires = date.ToUniversalTime();
+            }
+
+            header = response.Headers["Retry-After"];
+            int num;
+            if (DateTime.TryParse(header, out date))
+            {
+                _retryAfter = date.ToUniversalTime();
+            }
+            else if (int.TryParse(header, out num))
+            {
+                _retryAfter = DateTime.UtcNow.AddSeconds(num);
+            }
+
             _form = new Dictionary<string, string>();
             _files = new List<AttachedFile>();
 
@@ -155,6 +177,22 @@ namespace Saleslogix.SData.Client.Framework
         public string Location
         {
             get { return _location; }
+        }
+
+        /// <summary>
+        /// The response expiry date.
+        /// </summary>
+        public DateTime? Expires
+        {
+            get { return _expires; }
+        }
+
+        /// <summary>
+        /// The response location.
+        /// </summary>
+        public DateTime? RetryAfter
+        {
+            get { return _retryAfter; }
         }
 
         /// <summary>

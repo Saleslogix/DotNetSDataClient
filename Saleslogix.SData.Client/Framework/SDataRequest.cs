@@ -112,9 +112,19 @@ namespace Saleslogix.SData.Client.Framework
 #endif
 
         /// <summary>
-        /// Gets or sets the accept media types accepted by requests.
+        /// Gets or sets the media types accepted by requests.
         /// </summary>
         public MediaType[] Accept { get; set; }
+
+        /// <summary>
+        /// Gets or sets the language accepted by requests.
+        /// </summary>
+        public string AcceptLanguage { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether HTTP method override should be used by requests.
+        /// </summary>
+        public bool UseHttpMethodOverride { get; set; }
 
         /// <summary>
         /// Gets or sets the cookies associated with this request.
@@ -401,7 +411,16 @@ namespace Saleslogix.SData.Client.Framework
             }
 
             var request = WebRequest.Create(uri);
-            request.Method = op.Method.ToString().ToUpperInvariant();
+            if (UseHttpMethodOverride && op.Method != HttpMethod.Get && op.Method != HttpMethod.Post)
+            {
+                request.Method = "POST";
+                request.Headers["X-HTTP-Method-Override"] = op.Method.ToString().ToUpperInvariant();
+            }
+            else
+            {
+                request.Method = op.Method.ToString().ToUpperInvariant();
+            }
+
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
             request.Timeout = Timeout;
             request.PreAuthenticate = true;
@@ -436,6 +455,11 @@ namespace Saleslogix.SData.Client.Framework
                 {
                     httpRequest.CookieContainer = Cookies;
                 }
+            }
+
+            if (AcceptLanguage != null)
+            {
+                request.Headers[HttpRequestHeader.AcceptLanguage] = AcceptLanguage;
             }
 
             if (Credentials != null)

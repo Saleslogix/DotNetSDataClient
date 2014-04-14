@@ -753,5 +753,25 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(resources[1].HttpMethod, Is.EqualTo(HttpMethod.Post));
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
+
+        [Test]
+        public void UseHttpMethodOverride_Test()
+        {
+            var requestMock = new Mock<HttpWebRequest> {CallBase = true};
+            var responseMock = new Mock<HttpWebResponse>();
+            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
+            responseMock.Setup(x => x.Headers).Returns(new WebHeaderCollection());
+            requestMock.Setup(x => x.GetResponse()).Returns(responseMock.Object);
+            var webRequest = requestMock.Object;
+            webRequest.Headers = new WebHeaderCollection();
+            _requests.Enqueue(webRequest);
+
+            new SDataRequest("test://localhost/sdata/invoices", HttpMethod.Put)
+                {
+                    UseHttpMethodOverride = true
+                }.GetResponse();
+
+            Assert.That(webRequest.Headers["X-HTTP-Method-Override"], Is.EqualTo("PUT"));
+        }
     }
 }

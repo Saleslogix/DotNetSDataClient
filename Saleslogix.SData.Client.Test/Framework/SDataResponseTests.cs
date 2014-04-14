@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -258,6 +259,51 @@ world
             Assert.That(diagnosis.Message, Is.EqualTo("_Message"));
             Assert.That(diagnosis.StackTrace, Is.EqualTo("_StackTrace"));
             Assert.That(diagnosis.PayloadPath, Is.EqualTo("_PayloadPath"));
+        }
+
+        [Test]
+        public void Expires_Test()
+        {
+            var responseMock = new Mock<HttpWebResponse>();
+            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
+            var headers = new WebHeaderCollection();
+            headers["Expires"] = "Mon, 01 Dec 2014 16:17:18 GMT";
+            responseMock.Setup(x => x.Headers).Returns(headers);
+
+            var response = new SDataResponse(responseMock.Object, null);
+
+            Assert.That(response.Expires, Is.EqualTo(new DateTime(2014, 12, 1, 16, 17, 18, DateTimeKind.Utc)));
+        }
+
+        [Test]
+        public void RetryAfter_Date_Test()
+        {
+            var responseMock = new Mock<HttpWebResponse>();
+            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
+            var headers = new WebHeaderCollection();
+            headers["Retry-After"] = "Mon, 01 Dec 2014 16:17:18 GMT";
+            responseMock.Setup(x => x.Headers).Returns(headers);
+
+            var response = new SDataResponse(responseMock.Object, null);
+
+            Assert.That(response.RetryAfter, Is.EqualTo(new DateTime(2014, 12, 1, 16, 17, 18, DateTimeKind.Utc)));
+        }
+
+        [Test]
+        public void RetryAfter_Number_Test()
+        {
+            var responseMock = new Mock<HttpWebResponse>();
+            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
+            var headers = new WebHeaderCollection();
+            headers["Retry-After"] = "120";
+            responseMock.Setup(x => x.Headers).Returns(headers);
+
+            var before = DateTime.UtcNow;
+            var response = new SDataResponse(responseMock.Object, null);
+            var after = DateTime.UtcNow;
+
+            Assert.That(response.RetryAfter, Is.GreaterThanOrEqualTo(before.AddSeconds(120)));
+            Assert.That(response.RetryAfter, Is.LessThanOrEqualTo(after.AddSeconds(120)));
         }
     }
 }
