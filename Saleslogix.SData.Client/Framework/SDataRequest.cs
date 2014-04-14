@@ -340,7 +340,9 @@ namespace Saleslogix.SData.Client.Framework
                         throw new InvalidOperationException("A selector must be specified for GET, PUT and DELETE batch requests");
                     }
 
-                    resource.Id = new SDataUri(Uri) {LastPathSegment = {Selector = selector}}.ToString();
+                    var uri = new SDataUri(Uri) {LastPathSegment = {Selector = selector}};
+                    resource.Id = uri.ToString();
+                    resource.Url = uri.Uri;
                 }
 
                 if (op.ContentType != null)

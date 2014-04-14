@@ -359,6 +359,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(resources, Has.Count.EqualTo(2));
             Assert.That(resources[0].HttpMethod, Is.EqualTo(HttpMethod.Get));
             Assert.That(resources[0].Id, Is.EqualTo("test://localhost/sdata/invoices('abc')"));
+            Assert.That(resources[0].Url, Is.EqualTo(new Uri("test://localhost/sdata/invoices('abc')")));
             Assert.That(resources[0].ETag, Is.EqualTo("abc123"));
             Assert.That(resources[1].HttpMethod, Is.EqualTo(HttpMethod.Post));
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
