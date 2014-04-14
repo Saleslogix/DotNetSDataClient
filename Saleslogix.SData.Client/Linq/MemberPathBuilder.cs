@@ -10,7 +10,7 @@ namespace Saleslogix.SData.Client.Linq
 {
     internal static class MemberPathBuilder
     {
-        public static IEnumerable<MemberInfo> Build(Expression expression)
+        public static IEnumerable<MemberInfo> Build(Expression expression, bool throwOnError = true)
         {
             var memberPath = new List<MemberInfo>();
 
@@ -21,7 +21,11 @@ namespace Saleslogix.SData.Client.Linq
                 var memberExpr = expr as MemberExpression;
                 if (memberExpr == null)
                 {
-                    throw new NotSupportedException("Paths must only include member expressions");
+                    if (throwOnError)
+                    {
+                        throw new NotSupportedException("Paths must only include member expressions");
+                    }
+                    return null;
                 }
 
                 memberPath.Add(memberExpr.Member);

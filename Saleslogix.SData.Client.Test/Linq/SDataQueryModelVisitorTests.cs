@@ -173,6 +173,19 @@ namespace Saleslogix.SData.Client.Test.Linq
         }
 
         [Test]
+        public void Select_Complex_Test()
+        {
+            var builder = new QueryModelBuilder();
+            builder.AddClause(new MainFromClause("x", typeof (Contact), Expression.Constant(null)));
+            builder.AddClause(new SelectClause(GetExpression((Contact c) => c.Civility.ToString().Length)));
+
+            var visitor = new SDataQueryModelVisitor();
+            visitor.VisitQueryModel(builder.Build());
+
+            Assert.That(visitor.Select, Is.EqualTo("Civility"));
+        }
+
+        [Test]
         public void Select_Array_Test()
         {
             var builder = new QueryModelBuilder();

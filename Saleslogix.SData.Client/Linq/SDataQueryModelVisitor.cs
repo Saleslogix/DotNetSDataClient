@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -215,8 +216,14 @@ namespace Saleslogix.SData.Client.Linq
 
             protected override Expression VisitMemberExpression(MemberExpression expression)
             {
-                _paths.Add(string.Join("/", MemberPathBuilder.Build(expression).Select(item => _namingScheme.GetName(item)).ToArray()));
-                return expression;
+                var path = MemberPathBuilder.Build(expression, false);
+                if (path != null)
+                {
+                    _paths.Add(string.Join("/", path.Select(item => _namingScheme.GetName(item)).ToArray()));
+                    return expression;
+                }
+
+                return base.VisitMemberExpression(expression);
             }
         }
 
