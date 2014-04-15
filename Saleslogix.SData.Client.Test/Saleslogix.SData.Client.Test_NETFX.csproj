@@ -138,6 +138,7 @@
     <Compile Include="Model\SalesOrder.cs" />
     <Compile Include="Model\SalesOrderLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SDataResourceTests.cs" />
     <Compile Include="Stub.cs" />
   </ItemGroup>
   <ItemGroup>

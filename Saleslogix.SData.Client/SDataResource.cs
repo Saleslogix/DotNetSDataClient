@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using Saleslogix.SData.Client.Framework;
@@ -9,32 +10,44 @@ using Saleslogix.SData.Client.Framework;
 using System.ComponentModel;
 #endif
 
+#if !NET_2_0 && !NET_3_5
+using System.Dynamic;
+using Saleslogix.SData.Client.Utilities;
+#endif
+
 namespace Saleslogix.SData.Client
 {
     [Serializable]
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
     [TypeDescriptionProvider(typeof (SDataResourceTypeDescriptionProvider))]
 #endif
-    public class SDataResource : Dictionary<string, object>, ISDataProtocolAware
+    public class SDataResource :
+#if !NET_2_0 && !NET_3_5
+        DynamicObject,
+#endif
+        IDictionary<string, object>, ISDataProtocolAware
     {
+        private readonly IDictionary<string, object> _values;
         private SDataProtocolInfo _info = new SDataProtocolInfo();
 
         public SDataResource()
         {
+            _values = new Dictionary<string, object>();
         }
 
         public SDataResource(int capacity)
-            : base(capacity)
         {
+            _values = new Dictionary<string, object>(capacity);
         }
 
         public SDataResource(IDictionary<string, object> dictionary)
-            : base(dictionary)
         {
+            _values = new Dictionary<string, object>(dictionary);
         }
 
         public SDataResource(string xmlLocalName, string xmlNamespace = null)
         {
+            _values = new Dictionary<string, object>();
             XmlLocalName = xmlLocalName;
             XmlNamespace = xmlNamespace;
         }
@@ -169,5 +182,157 @@ namespace Saleslogix.SData.Client
         {
             return Descriptor ?? base.ToString();
         }
+
+        #region IDictionary Members
+
+        public bool ContainsKey(string key)
+        {
+            return _values.ContainsKey(key);
+        }
+
+        public void Add(string key, object value)
+        {
+            _values.Add(key, value);
+        }
+
+        public bool Remove(string key)
+        {
+            return _values.Remove(key);
+        }
+
+        public bool TryGetValue(string key, out object value)
+        {
+            return _values.TryGetValue(key, out value);
+        }
+
+        public object this[string key]
+        {
+            get { return _values[key]; }
+            set { _values[key] = value; }
+        }
+
+        public ICollection<string> Keys
+        {
+            get { return _values.Keys; }
+        }
+
+        public ICollection<object> Values
+        {
+            get { return _values.Values; }
+        }
+
+        #endregion
+
+        #region ICollection Members
+
+        public void Add(KeyValuePair<string, object> item)
+        {
+            _values.Add(item);
+        }
+
+        public void Clear()
+        {
+            _values.Clear();
+        }
+
+        public bool Contains(KeyValuePair<string, object> item)
+        {
+            return _values.Contains(item);
+        }
+
+        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        {
+            _values.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(KeyValuePair<string, object> item)
+        {
+            return _values.Remove(item);
+        }
+
+        public int Count
+        {
+            get { return _values.Count; }
+        }
+
+        public bool IsReadOnly
+        {
+            get { return _values.IsReadOnly; }
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            return _values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _values.GetEnumerator();
+        }
+
+        #endregion
+
+#if !NET_2_0 && !NET_3_5
+
+        #region DynamicObject Members
+
+        public override IEnumerable<string> GetDynamicMemberNames()
+        {
+            return Keys;
+        }
+
+        public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
+        {
+            Guard.ArgumentNotNull(indexes, "indexes");
+
+            if (indexes.Length == 1)
+            {
+                var key = indexes[0] as string;
+                if (key != null)
+                {
+                    result = this[key];
+                    return true;
+                }
+            }
+            result = null;
+            return false;
+        }
+
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            Guard.ArgumentNotNull(binder, "binder");
+            return _values.TryGetValue(binder.Name, out result);
+        }
+
+        public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
+        {
+            Guard.ArgumentNotNull(indexes, "indexes");
+
+            if (indexes.Length == 1)
+            {
+                var key = indexes[0] as string;
+                if (key != null)
+                {
+                    this[key] = value;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public override bool TrySetMember(SetMemberBinder binder, object value)
+        {
+            Guard.ArgumentNotNull(binder, "binder");
+            _values[binder.Name] = value;
+            return true;
+        }
+
+        #endregion
+
+#endif
     }
 }

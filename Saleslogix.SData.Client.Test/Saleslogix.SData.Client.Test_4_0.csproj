@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Moq">
       <HintPath>..\dependencies\Moq\NET40\Moq.dll</HintPath>
     </Reference>
@@ -82,6 +83,7 @@
     <Compile Include="Model\SalesOrderLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDataCollectionTypeConverterTests.cs" />
+    <Compile Include="SDataResourceTests.cs" />
     <Compile Include="SDataResourceTypeDescriptionProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
