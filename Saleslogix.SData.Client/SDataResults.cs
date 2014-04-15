@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using Saleslogix.SData.Client.Framework;
+using Saleslogix.SData.Client.Utilities;
 
 namespace Saleslogix.SData.Client
 {
@@ -20,6 +21,7 @@ namespace Saleslogix.SData.Client
 
         public static ISDataResults FromResponse(SDataResponse response)
         {
+            Guard.ArgumentNotNull(response, "response");
             return new SDataResults(response.StatusCode,
                                     response.ContentType,
                                     response.ETag,
@@ -32,6 +34,7 @@ namespace Saleslogix.SData.Client
 
         public static ISDataResults<T> FromResponse<T>(SDataResponse response, T content)
         {
+            Guard.ArgumentNotNull(response, "response");
             return new SDataResults<T>(response.StatusCode,
                                        response.ContentType,
                                        response.ETag,

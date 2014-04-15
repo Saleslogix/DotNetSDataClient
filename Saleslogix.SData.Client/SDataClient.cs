@@ -3,6 +3,7 @@
 using System.Net;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
+using Saleslogix.SData.Client.Utilities;
 
 #if !NET_2_0 && !NET_3_5
 using System.Threading.Tasks;
@@ -69,6 +70,7 @@ namespace Saleslogix.SData.Client
 
         private SDataRequest CreateRequest(SDataParameters parms)
         {
+            Guard.ArgumentNotNull(parms, "parms");
             var uri = new SDataUri(Uri)
                           {
                               StartIndex = parms.StartIndex,

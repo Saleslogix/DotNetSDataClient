@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using Saleslogix.SData.Client.Utilities;
 
 namespace Saleslogix.SData.Client.Mime
 {
@@ -130,6 +131,7 @@ namespace Saleslogix.SData.Client.Mime
         /// <param name="boundary">The unique string used to designated the beginning of the part.</param>
         public void WriteTo(StreamWriter writer, string boundary)
         {
+            Guard.ArgumentNotNull(writer, "writer");
             writer.WriteLine("--{0}", boundary);
 
             if (_content != null && _headers[HttpRequestHeader.ContentLength] == null)

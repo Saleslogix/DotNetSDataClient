@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
+using Saleslogix.SData.Client.Utilities;
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
 using System.Net;
@@ -165,7 +166,7 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         /// <param name="uri">The <see cref="Uri"/> to assign.</param>
         public UriFormatter(string uri)
-            : this(string.IsNullOrEmpty(uri) ? null : new Uri(uri))
+            : this(!string.IsNullOrEmpty(uri) ? new Uri(uri) : null)
         {
         }
 
@@ -186,9 +187,12 @@ namespace Saleslogix.SData.Client.Framework
         /// <param name="uri">The <see cref="Uri"/> to assign.</param>
         public UriFormatter(UriFormatter uri)
         {
+            Guard.ArgumentNotNull(uri, "uri");
+
             _uri = uri._uri;
             _requiresParseUri = uri._requiresParseUri;
             _requiresRebuildUri = uri._requiresRebuildUri;
+
             _scheme = uri._scheme;
             _port = uri._port;
             _host = uri._host;
@@ -645,18 +649,6 @@ namespace Saleslogix.SData.Client.Framework
         }
 
         /// <summary>
-        /// Adds a query argument to a URI.
-        /// </summary>
-        /// <param name="uri">The <see cref="Uri"/> to add the parameter to.</param>
-        /// <param name="name">The name of the query argument.</param>
-        /// <param name="value">The value of the query argument.</param>
-        /// <returns>The specified <see cref="Uri"/> with the additional query argument.</returns>
-        public static string AppendQueryArgument(string uri, string name, string value)
-        {
-            return string.Concat(uri, uri.Contains(QueryPrefix) ? QueryArgPrefix : QueryPrefix, name, QueryArgValuePrefix, value);
-        }
-
-        /// <summary>
         /// Adds the specified path segments to the <see cref="Uri"/>.
         /// </summary>
         /// <param name="segments">The path segments to add to the <see cref="Uri"/>.</param>
@@ -671,6 +663,8 @@ namespace Saleslogix.SData.Client.Framework
         /// <param name="segment">The path segment to add to the <see cref="Uri"/>.</param>
         public UriFormatter AppendPath(UriPathSegment segment)
         {
+            Guard.ArgumentNotNull(segment, "segment");
+
             CheckParsePath();
 
             AddPathSegments(new[] {segment});
@@ -686,6 +680,8 @@ namespace Saleslogix.SData.Client.Framework
         /// <param name="segments">The path segments to add to the <see cref="Uri"/>.</param>
         public UriFormatter AppendPath(IEnumerable<UriPathSegment> segments)
         {
+            Guard.ArgumentNotNull(segments, "segments");
+
             CheckParsePath();
             AddPathSegments(segments);
 
@@ -709,6 +705,8 @@ namespace Saleslogix.SData.Client.Framework
         /// <param name="segments">The path segments for the <see cref="Uri"/>.</param>
         public UriFormatter SetPath(IEnumerable<UriPathSegment> segments)
         {
+            Guard.ArgumentNotNull(segments, "segments");
+
             CheckParsePath();
 
             InternalPathSegments.Clear();
@@ -786,7 +784,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <returns><b>true</b> if <paramref name="obj"/> match this <see cref="UriPathSegment"/>, otherwise <b>false</b>.</returns>
         public override bool Equals(object obj)
         {
-            return obj.ToString() == ToString();
+            return obj != null && obj.ToString() == ToString();
         }
 
         #endregion
@@ -1149,14 +1147,12 @@ namespace Saleslogix.SData.Client.Framework
                     _query = _query.Substring(QueryPrefix.Length);
                 }
 
-                foreach (var arg in _query.Split(QueryArgPrefix[0]))
+                foreach (var arg in _query.Split(new[] {QueryArgPrefix}, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    var parts = arg.Split(QueryArgValuePrefix[0]);
-                    if (parts[0].Length > 0)
-                    {
-                        var key = Uri.UnescapeDataString(parts[0].Trim());
-                        queryArgs[key] = parts.Length == 1 ? null : Uri.UnescapeDataString(parts[1]);
-                    }
+                    var pos = arg.IndexOf(QueryArgValuePrefix, StringComparison.Ordinal);
+                    var key = Uri.UnescapeDataString(pos >= 0 ? arg.Substring(0, pos) : arg);
+                    var value = pos >= 0 ? Uri.UnescapeDataString(arg.Substring(pos + 1)) : null;
+                    queryArgs[key] = value;
                 }
             }
         }

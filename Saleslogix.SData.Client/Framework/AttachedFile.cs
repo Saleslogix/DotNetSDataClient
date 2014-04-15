@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using Saleslogix.SData.Client.Mime;
+using Saleslogix.SData.Client.Utilities;
 
 namespace Saleslogix.SData.Client.Framework
 {
@@ -20,8 +21,11 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         /// <param name="part">A multipart MIME part containing the attached file.</param>
         public AttachedFile(MimePart part)
-            : this(part.ContentType, GetFileName(part.ContentDisposition), part.Content)
         {
+            Guard.ArgumentNotNull(part, "part");
+            _contentType = part.ContentType;
+            _fileName = GetFileName(part.ContentDisposition);
+            _stream = part.Content;
         }
 
         /// <summary>

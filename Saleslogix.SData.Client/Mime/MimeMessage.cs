@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using Saleslogix.SData.Client.Utilities;
 
 namespace Saleslogix.SData.Client.Mime
 {
@@ -20,6 +21,7 @@ namespace Saleslogix.SData.Client.Mime
         /// <param name="boundary">The unique string used to designate boundaries between parts.</param>
         public static MimeMessage Parse(Stream stream, string boundary)
         {
+            Guard.ArgumentNotNull(stream, "stream");
             return new MimeMessage(EnumerateParts(stream, boundary)) {Boundary = boundary};
         }
 

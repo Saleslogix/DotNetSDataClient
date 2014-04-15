@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Saleslogix.SData.Client.Utilities;
 
 #if !NET_3_5
 using System.Collections.Generic;
@@ -14,45 +15,52 @@ namespace Saleslogix.SData.Client.Linq
 {
     public static class SDataQueryableExtensions
     {
-        public static IQueryable<T> WithPrecedence<T>(this IQueryable<T> query, int value)
+        public static IQueryable<T> WithPrecedence<T>(this IQueryable<T> source, int value)
         {
+            Guard.ArgumentNotNull(source, "source");
             return new SDataQueryable<T>(
-                query.Provider,
+                source.Provider,
                 Expression.Call(
                     new Func<IQueryable<T>, int, IQueryable<T>>(WithPrecedence).GetMethodInfo(),
-                    query.Expression,
+                    source.Expression,
                     Expression.Constant(value)));
         }
 
-        public static IQueryable<T> WithExtensionArg<T>(this IQueryable<T> query, string name, string value)
+        public static IQueryable<T> WithExtensionArg<T>(this IQueryable<T> source, string name, string value)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNullOrEmptyString(name, "name");
             return new SDataQueryable<T>(
-                query.Provider,
+                source.Provider,
                 Expression.Call(
                     new Func<IQueryable<T>, string, string, IQueryable<T>>(WithExtensionArg).GetMethodInfo(),
-                    query.Expression,
+                    source.Expression,
                     Expression.Constant(name),
                     Expression.Constant(value)));
         }
 
-        public static IQueryable<TSource> Fetch<TSource, TRelated>(this IQueryable<TSource> query, Expression<Func<TSource, TRelated>> selector)
+        public static IQueryable<TSource> Fetch<TSource, TRelated>(this IQueryable<TSource> source, Expression<Func<TSource, TRelated>> selector)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(selector, "selector");
             return new SDataQueryable<TSource>(
-                query.Provider,
+                source.Provider,
                 Expression.Call(
                     new Func<IQueryable<TSource>, Expression<Func<TSource, TRelated>>, IQueryable<TSource>>(Fetch).GetMethodInfo(),
-                    query.Expression,
+                    source.Expression,
                     selector));
         }
 
 #if !NET_3_5
         public static Task<List<TSource>> ToListAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.ToCollectionAsync().ContinueWith(task => task.Result.ToList());
         }
 
         public static Task<TSource[]> ToArrayAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.ToCollectionAsync().ContinueWith(task => task.Result.ToArray());
         }
 
@@ -61,6 +69,8 @@ namespace Saleslogix.SData.Client.Linq
             Func<TSource, TKey> keySelector,
             IEqualityComparer<TKey> comparer = null)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(keySelector, "keySelector");
             return source.ToCollectionAsync().ContinueWith(task => task.Result.ToDictionary(keySelector, comparer));
         }
 
@@ -70,6 +80,8 @@ namespace Saleslogix.SData.Client.Linq
             Func<TSource, TElement> elementSelector,
             IEqualityComparer<TKey> comparer = null)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(keySelector, "keySelector");
             return source.ToCollectionAsync().ContinueWith(task => task.Result.ToDictionary(keySelector, elementSelector, comparer));
         }
 
@@ -78,6 +90,8 @@ namespace Saleslogix.SData.Client.Linq
             Func<TSource, TKey> keySelector,
             IEqualityComparer<TKey> comparer = null)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(keySelector, "keySelector");
             return source.ToCollectionAsync().ContinueWith(task => task.Result.ToLookup(keySelector, comparer));
         }
 
@@ -87,6 +101,8 @@ namespace Saleslogix.SData.Client.Linq
             Func<TSource, TElement> elementSelector,
             IEqualityComparer<TKey> comparer = null)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(keySelector, "keySelector");
             return source.ToCollectionAsync().ContinueWith(task => task.Result.ToLookup(keySelector, elementSelector, comparer));
         }
 
@@ -100,6 +116,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<int> CountAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<int>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Task<int>>(CountAsync).GetMethodInfo(),
@@ -108,6 +125,8 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<int> CountAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(predicate, "predicate");
             return source.Provider.Execute<Task<int>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<int>>(CountAsync).GetMethodInfo(),
@@ -116,6 +135,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<long> LongCountAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<long>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Task<long>>(LongCountAsync).GetMethodInfo(),
@@ -124,6 +144,8 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<long> LongCountAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(predicate, "predicate");
             return source.Provider.Execute<Task<long>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<long>>(LongCountAsync).GetMethodInfo(),
@@ -132,6 +154,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<bool> AnyAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<bool>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Task<bool>>(AnyAsync).GetMethodInfo(),
@@ -140,6 +163,8 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<bool> AnyAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(predicate, "predicate");
             return source.Provider.Execute<Task<bool>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<bool>>(AnyAsync).GetMethodInfo(),
@@ -148,6 +173,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<bool> AllAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<bool>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Task<bool>>(AllAsync).GetMethodInfo(),
@@ -156,6 +182,8 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<bool> AllAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(predicate, "predicate");
             return source.Provider.Execute<Task<bool>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<bool>>(AllAsync).GetMethodInfo(),
@@ -164,6 +192,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> FirstAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Task<TSource>>(FirstAsync).GetMethodInfo(),
@@ -172,6 +201,8 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> FirstAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(predicate, "predicate");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(FirstAsync).GetMethodInfo(),
@@ -180,6 +211,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> FirstOrDefaultAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Task<TSource>>(FirstOrDefaultAsync).GetMethodInfo(),
@@ -188,6 +220,8 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> FirstOrDefaultAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(predicate, "predicate");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(FirstOrDefaultAsync).GetMethodInfo(),
@@ -196,6 +230,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> LastAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Task<TSource>>(LastAsync).GetMethodInfo(),
@@ -204,6 +239,8 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> LastAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(predicate, "predicate");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(LastAsync).GetMethodInfo(),
@@ -212,6 +249,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> LastOrDefaultAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Task<TSource>>(LastOrDefaultAsync).GetMethodInfo(),
@@ -220,6 +258,8 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> LastOrDefaultAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(predicate, "predicate");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(LastOrDefaultAsync).GetMethodInfo(),
@@ -228,6 +268,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> SingleAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Task<TSource>>(SingleAsync).GetMethodInfo(),
@@ -236,6 +277,8 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> SingleAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(predicate, "predicate");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(SingleAsync).GetMethodInfo(),
@@ -244,6 +287,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> SingleOrDefaultAsync<TSource>(this IQueryable<TSource> source)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Task<TSource>>(SingleOrDefaultAsync).GetMethodInfo(),
@@ -252,6 +296,8 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> SingleOrDefaultAsync<TSource>(this IQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
         {
+            Guard.ArgumentNotNull(source, "source");
+            Guard.ArgumentNotNull(predicate, "predicate");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, Expression<Func<TSource, bool>>, Task<TSource>>(SingleOrDefaultAsync).GetMethodInfo(),
@@ -260,6 +306,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> ElementAtAsync<TSource>(this IQueryable<TSource> source, int index)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, int, Task<TSource>>(ElementAtAsync).GetMethodInfo(),
@@ -268,6 +315,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public static Task<TSource> ElementAtOrDefaultAsync<TSource>(this IQueryable<TSource> source, int index)
         {
+            Guard.ArgumentNotNull(source, "source");
             return source.Provider.Execute<Task<TSource>>(
                 Expression.Call(null,
                                 new Func<IQueryable<TSource>, int, Task<TSource>>(ElementAtOrDefaultAsync).GetMethodInfo(),

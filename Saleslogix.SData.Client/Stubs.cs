@@ -90,6 +90,8 @@ namespace System.IO
 #if !NETFX_CORE
 namespace System.Reflection
 {
+    using Saleslogix.SData.Client.Utilities;
+
     internal static class IntrospectionExtensions
     {
         public static Type GetTypeInfo(this Type type)
@@ -102,10 +104,7 @@ namespace System.Reflection
     {
         public static MethodInfo GetMethodInfo(this Delegate del)
         {
-            if (del == null)
-            {
-                throw new ArgumentNullException("del");
-            }
+            Guard.ArgumentNotNull(del, "del");
             return del.Method;
         }
     }

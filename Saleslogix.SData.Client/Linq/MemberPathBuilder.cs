@@ -23,7 +23,7 @@ namespace Saleslogix.SData.Client.Linq
                 {
                     if (throwOnError)
                     {
-                        throw new NotSupportedException("Paths must only include member expressions");
+                        throw new InvalidOperationException("Paths must only include member expressions");
                     }
                     return null;
                 }

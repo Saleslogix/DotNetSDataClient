@@ -3,6 +3,7 @@
 using System;
 using System.Reflection;
 using System.Xml.Serialization;
+using Saleslogix.SData.Client.Utilities;
 
 #if !NET_2_0
 using System.Runtime.Serialization;
@@ -37,6 +38,7 @@ namespace Saleslogix.SData.Client
 
             public string GetName(MemberInfo member)
             {
+                Guard.ArgumentNotNull(member, "member");
 #if !NET_2_0
                 var contractAttr = member.GetCustomAttribute<DataContractAttribute>();
                 if (contractAttr != null && !string.IsNullOrEmpty(contractAttr.Name))

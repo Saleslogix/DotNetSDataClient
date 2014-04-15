@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Saleslogix.SData.Client.Utilities;
 
 namespace Saleslogix.SData.Client.Framework
 {
@@ -103,6 +104,8 @@ namespace Saleslogix.SData.Client.Framework
         /// <param name="segment">The segment to copy the details from.</param>
         public UriPathSegment(UriPathSegment segment)
         {
+            Guard.ArgumentNotNull(segment, "segment");
+
             _segment = segment._segment;
             _selector = segment._selector;
             _text = segment._text;
@@ -241,7 +244,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <returns><b>true</b> if <paramref name="obj"/> match this <see cref="UriPathSegment"/>, otherwise <b>false</b>.</returns>
         public override bool Equals(object obj)
         {
-            return obj.ToString() == ToString();
+            return obj != null && obj.ToString() == ToString();
         }
 
         #endregion
@@ -256,6 +259,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <returns><see cref="Array"/> of <see cref="UriPathSegment"/> objects.</returns>
         public static IEnumerable<UriPathSegment> FromStrings(IEnumerable<string> segments)
         {
+            Guard.ArgumentNotNull(segments, "segments");
             return segments.SelectMany(Parse).ToArray();
         }
 
@@ -278,7 +282,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <remarks>If the <paramref name="segment"/> starts with a forward slash it is assumed that the segment specifies an absolute path.</remarks>
         public static string AppendPath(string path, string segment)
         {
-            segment = ValidateSegment(segment);
+            Guard.ArgumentNotNullOrEmptyString(segment, "segment");
 
             if (segment.StartsWith(UriFormatter.PathSegmentPrefix))
             {
@@ -301,7 +305,8 @@ namespace Saleslogix.SData.Client.Framework
         /// <remarks>If the <paramref name="segment"/> starts with a forward slash it is assumed that the segment specifies an absolute path.</remarks>
         public static void AppendPath(StringBuilder path, string segment)
         {
-            segment = ValidateSegment(segment);
+            Guard.ArgumentNotNull(path, "path");
+            Guard.ArgumentNotNullOrEmptyString(segment, "segment");
 
             if (segment.StartsWith(UriFormatter.PathSegmentPrefix))
             {
@@ -322,11 +327,6 @@ namespace Saleslogix.SData.Client.Framework
         #endregion
 
         #region Local Methods
-
-        private static string ValidateSegment(string segment)
-        {
-            return segment;
-        }
 
         private void CheckRebuild()
         {

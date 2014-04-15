@@ -2,6 +2,7 @@
 
 using System;
 using System.Reflection;
+using Saleslogix.SData.Client.Utilities;
 
 namespace Saleslogix.SData.Client
 {
@@ -10,6 +11,7 @@ namespace Saleslogix.SData.Client
     {
         public static string GetPath(Type type)
         {
+            Guard.ArgumentNotNull(type, "type");
             var attr = type.GetTypeInfo().GetCustomAttribute<SDataResourceAttribute>();
             return attr != null ? attr.Path : null;
         }

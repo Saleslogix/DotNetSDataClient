@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Net;
 using Saleslogix.SData.Client.Content;
+using Saleslogix.SData.Client.Utilities;
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
 using System.Runtime.Serialization;
@@ -25,7 +26,7 @@ namespace Saleslogix.SData.Client.Framework
         /// Initializes a new instance.
         /// </summary>
         public SDataException(WebException innerException)
-            : base(innerException.Message, innerException, innerException.Status, innerException.Response)
+            : base(GetMessage(innerException), innerException, innerException.Status, innerException.Response)
         {
             if (Response == null)
             {
@@ -120,6 +121,12 @@ namespace Saleslogix.SData.Client.Framework
                            ? string.Join(Environment.NewLine, _diagnoses.Select(diagnosis => diagnosis.Message).ToArray())
                            : base.Message;
             }
+        }
+
+        private static string GetMessage(Exception exception)
+        {
+            Guard.ArgumentNotNull(exception, "exception");
+            return exception.Message;
         }
     }
 }

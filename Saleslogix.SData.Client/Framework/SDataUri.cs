@@ -196,7 +196,7 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         /// <param name="uri">The <see cref="Uri"/> to assign.</param>
         public SDataUri(string uri)
-            : this(string.IsNullOrEmpty(uri) ? null : new Uri(uri))
+            : this(!string.IsNullOrEmpty(uri) ? new Uri(uri) : null)
         {
         }
 
