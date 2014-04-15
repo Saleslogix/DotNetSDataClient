@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using Moq;
 using NUnit.Framework;
 using Remotion.Linq;
@@ -438,8 +439,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 3), CreateCollection<object>(null, 3));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            builder.AddResultOperator(new AllAsyncResultOperator(Expression.Constant(true)));
-            var result = executor.ExecuteScalarAsync<bool>(builder.Build()).Result;
+            builder.AddResultOperator(new AllAsyncResultOperator(Expression.Constant(true), CancellationToken.None));
+            var result = executor.ExecuteScalarAsync<bool>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(0));
             Assert.That(parmsList[1].Count, Is.EqualTo(0));
@@ -454,8 +455,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 3), CreateCollection<object>(null, 2));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            builder.AddResultOperator(new AllAsyncResultOperator(Expression.Constant(true)));
-            var result = executor.ExecuteScalarAsync<bool>(builder.Build()).Result;
+            builder.AddResultOperator(new AllAsyncResultOperator(Expression.Constant(true), CancellationToken.None));
+            var result = executor.ExecuteScalarAsync<bool>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(0));
             Assert.That(parmsList[1].Count, Is.EqualTo(0));
@@ -470,8 +471,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            builder.AddResultOperator(new AnyAsyncResultOperator());
-            var result = executor.ExecuteScalarAsync<bool>(builder.Build()).Result;
+            builder.AddResultOperator(new AnyAsyncResultOperator(CancellationToken.None));
+            var result = executor.ExecuteScalarAsync<bool>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(0));
             Assert.That(result, Is.True);
@@ -485,8 +486,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
             builder.AddResultOperator(new TakeResultOperator(Expression.Constant(0)));
-            builder.AddResultOperator(new AnyAsyncResultOperator());
-            var result = executor.ExecuteScalarAsync<bool>(builder.Build()).Result;
+            builder.AddResultOperator(new AnyAsyncResultOperator(CancellationToken.None));
+            var result = executor.ExecuteScalarAsync<bool>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList, Is.Empty);
             Assert.That(result, Is.False);
@@ -499,8 +500,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            builder.AddResultOperator(new CountAsyncResultOperator());
-            var result = executor.ExecuteScalarAsync<int>(builder.Build()).Result;
+            builder.AddResultOperator(new CountAsyncResultOperator(CancellationToken.None));
+            var result = executor.ExecuteScalarAsync<int>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(0));
             Assert.That(result, Is.EqualTo(10));
@@ -514,8 +515,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
             builder.AddResultOperator(new TakeResultOperator(Expression.Constant(3)));
-            builder.AddResultOperator(new CountAsyncResultOperator());
-            var result = executor.ExecuteScalarAsync<int>(builder.Build()).Result;
+            builder.AddResultOperator(new CountAsyncResultOperator(CancellationToken.None));
+            var result = executor.ExecuteScalarAsync<int>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(0));
             Assert.That(result, Is.EqualTo(3));
@@ -529,8 +530,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
             builder.AddResultOperator(new SkipResultOperator(Expression.Constant(3)));
-            builder.AddResultOperator(new CountAsyncResultOperator());
-            var result = executor.ExecuteScalarAsync<int>(builder.Build()).Result;
+            builder.AddResultOperator(new CountAsyncResultOperator(CancellationToken.None));
+            var result = executor.ExecuteScalarAsync<int>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(0));
             Assert.That(result, Is.EqualTo(7));
@@ -543,8 +544,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            builder.AddResultOperator(new LongCountAsyncResultOperator());
-            var result = executor.ExecuteScalarAsync<long>(builder.Build()).Result;
+            builder.AddResultOperator(new LongCountAsyncResultOperator(CancellationToken.None));
+            var result = executor.ExecuteScalarAsync<long>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(0));
             Assert.That(result, Is.EqualTo(10));
@@ -558,8 +559,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(parmsList, CreateCollection(new[] {expected}, 10));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            builder.AddResultOperator(new FirstAsyncResultOperator(false));
-            var result = executor.ExecuteSingleAsync<Contact>(builder.Build()).Result;
+            builder.AddResultOperator(new FirstAsyncResultOperator(false, CancellationToken.None));
+            var result = executor.ExecuteSingleAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(1));
             Assert.That(result, Is.EqualTo(expected));
@@ -573,8 +574,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
             builder.AddResultOperator(new TakeResultOperator(Expression.Constant(0)));
-            builder.AddResultOperator(new FirstAsyncResultOperator(true));
-            var result = executor.ExecuteSingleAsync<Contact>(builder.Build()).Result;
+            builder.AddResultOperator(new FirstAsyncResultOperator(true, CancellationToken.None));
+            var result = executor.ExecuteSingleAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList, Is.Empty);
             Assert.That(result, Is.Null);
@@ -590,28 +591,28 @@ namespace Saleslogix.SData.Client.Test.Linq
             requestMock.SetupAllProperties();
             var responseMock1 = new Mock<ISDataResults<SDataCollection<object>>>();
             responseMock1.Setup(x => x.Content).Returns(CreateCollection<object>(null, 10));
-            clientMock.Setup(x => x.ExecuteAsync<SDataCollection<object>>(It.IsAny<SDataParameters>()))
+            clientMock.Setup(x => x.ExecuteAsync<SDataCollection<object>>(It.IsAny<SDataParameters>(), CancellationToken.None))
                       .Returns(() =>
                                    {
                                        var taskSource = new TaskCompletionSource<ISDataResults<SDataCollection<object>>>();
                                        taskSource.SetResult(responseMock1.Object);
                                        return taskSource.Task;
                                    })
-                      .Callback((SDataParameters parms) => parmsList.Add(parms));
+                      .Callback((SDataParameters parms, CancellationToken cancel) => parmsList.Add(parms));
             var responseMock2 = new Mock<ISDataResults<SDataCollection<Contact>>>();
             responseMock2.Setup(x => x.Content).Returns(CreateCollection(new[] {expected}, 10));
-            clientMock.Setup(x => x.ExecuteAsync<SDataCollection<Contact>>(It.IsAny<SDataParameters>()))
+            clientMock.Setup(x => x.ExecuteAsync<SDataCollection<Contact>>(It.IsAny<SDataParameters>(), CancellationToken.None))
                       .Returns(() =>
                                    {
                                        var taskSource = new TaskCompletionSource<ISDataResults<SDataCollection<Contact>>>();
                                        taskSource.SetResult(responseMock2.Object);
                                        return taskSource.Task;
                                    })
-                      .Callback((SDataParameters parms) => parmsList.Add(parms));
+                      .Callback((SDataParameters parms, CancellationToken cancel) => parmsList.Add(parms));
             var executor = new SDataQueryExecutor(clientMock.Object);
             var builder = CreateQueryBuilder<Contact>(true);
-            builder.AddResultOperator(new LastAsyncResultOperator(false));
-            var result = executor.ExecuteSingleAsync<Contact>(builder.Build()).Result;
+            builder.AddResultOperator(new LastAsyncResultOperator(false, CancellationToken.None));
+            var result = executor.ExecuteSingleAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(0));
             Assert.That(parmsList[1].Count, Is.EqualTo(1));
@@ -626,8 +627,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 0));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            builder.AddResultOperator(new LastAsyncResultOperator(true));
-            var result = executor.ExecuteSingleAsync<Contact>(builder.Build()).Result;
+            builder.AddResultOperator(new LastAsyncResultOperator(true, CancellationToken.None));
+            var result = executor.ExecuteSingleAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(0));
             Assert.That(result, Is.Null);
@@ -648,8 +649,8 @@ namespace Saleslogix.SData.Client.Test.Linq
                                               new Ordering(((Expression<Func<Contact, string>>) (c => c.FirstName)).Body, OrderingDirection.Asc)
                                           }
                                   });
-            builder.AddResultOperator(new LastAsyncResultOperator(false));
-            var result = executor.ExecuteSingleAsync<Contact>(builder.Build()).Result;
+            builder.AddResultOperator(new LastAsyncResultOperator(false, CancellationToken.None));
+            var result = executor.ExecuteSingleAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(1));
             Assert.That(parmsList[0].OrderBy, Is.EqualTo("FirstName desc"));
@@ -664,8 +665,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(parmsList, CreateCollection(new[] {expected}, 1));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            builder.AddResultOperator(new SingleAsyncResultOperator(false));
-            var result = executor.ExecuteSingleAsync<Contact>(builder.Build()).Result;
+            builder.AddResultOperator(new SingleAsyncResultOperator(false, CancellationToken.None));
+            var result = executor.ExecuteSingleAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(1));
             Assert.That(result, Is.EqualTo(expected));
@@ -679,8 +680,8 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(parmsList, CreateCollection(new[] {expected}, 1));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            builder.AddResultOperator(new ElementAtAsyncResultOperator(3, false));
-            var result = executor.ExecuteSingleAsync<Contact>(builder.Build()).Result;
+            builder.AddResultOperator(new ElementAtAsyncResultOperator(3, false, CancellationToken.None));
+            var result = executor.ExecuteSingleAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(parmsList[0].Count, Is.EqualTo(1));
             Assert.That(parmsList[0].StartIndex, Is.EqualTo(4));
@@ -694,7 +695,7 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(null, expected);
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            var result = executor.ExecuteCollectionAsync<Contact>(builder.Build()).Result;
+            var result = executor.ExecuteCollectionAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(result, Is.EquivalentTo(expected));
         }
@@ -707,7 +708,7 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(null, page1, page2);
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            var result = executor.ExecuteCollectionAsync<Contact>(builder.Build()).Result;
+            var result = executor.ExecuteCollectionAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(result, Is.EquivalentTo(page1.Concat(page2)));
         }
@@ -725,7 +726,7 @@ namespace Saleslogix.SData.Client.Test.Linq
                                   Expression.Property(
                                       new QuerySourceReferenceExpression(builder.MainFromClause),
                                       "LastName")));
-            var result = executor.ExecuteCollectionAsync<string>(builder.Build()).Result;
+            var result = executor.ExecuteCollectionAsync<string>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(result, Is.EquivalentTo(expected));
             Assert.That(parmsList[0].Select, Is.EqualTo("LastName"));
@@ -740,7 +741,7 @@ namespace Saleslogix.SData.Client.Test.Linq
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
             builder.AddResultOperator(new TakeResultOperator(Expression.Constant(3)));
-            var result = executor.ExecuteCollectionAsync<Contact>(builder.Build()).Result;
+            var result = executor.ExecuteCollectionAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(result, Is.EquivalentTo(expected));
             Assert.That(parmsList[0].Count, Is.EqualTo(3));
@@ -756,7 +757,7 @@ namespace Saleslogix.SData.Client.Test.Linq
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
             builder.AddResultOperator(new TakeResultOperator(Expression.Constant(150)));
-            var result = executor.ExecuteCollectionAsync<Contact>(builder.Build()).Result;
+            var result = executor.ExecuteCollectionAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(result, Is.EquivalentTo(page1.Concat(page2.Take(50))));
             Assert.That(parmsList[1].Count, Is.EqualTo(50));
@@ -769,7 +770,7 @@ namespace Saleslogix.SData.Client.Test.Linq
             var client = CreateClientAsync(null, expected, CreateCollection<Contact>(null, null));
             var executor = new SDataQueryExecutor(client);
             var builder = CreateQueryBuilder<Contact>(true);
-            var result = executor.ExecuteCollectionAsync<Contact>(builder.Build()).Result;
+            var result = executor.ExecuteCollectionAsync<Contact>(builder.Build(), CancellationToken.None).Result;
 
             Assert.That(result, Is.EquivalentTo(expected));
         }
@@ -831,9 +832,9 @@ namespace Saleslogix.SData.Client.Test.Linq
                             taskSource.SetResult(responseMock.Object);
                             return taskSource.Task;
                         }));
-            clientMock.Setup(x => x.ExecuteAsync<T>(It.IsAny<SDataParameters>()))
+            clientMock.Setup(x => x.ExecuteAsync<T>(It.IsAny<SDataParameters>(), CancellationToken.None))
                       .Returns(responses.Dequeue)
-                      .Callback((SDataParameters parms) =>
+                      .Callback((SDataParameters parms, CancellationToken cancel) =>
                                     {
                                         if (parmsList != null)
                                         {

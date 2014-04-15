@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System.Linq;
+using System.Threading;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Clauses.StreamedData;
@@ -10,14 +11,17 @@ namespace Saleslogix.SData.Client.Linq
 {
     internal class LastAsyncResultOperator : LastResultOperator
     {
-        public LastAsyncResultOperator(bool returnDefaultWhenEmpty)
+        private readonly CancellationToken _cancel;
+
+        public LastAsyncResultOperator(bool returnDefaultWhenEmpty, CancellationToken cancel)
             : base(returnDefaultWhenEmpty)
         {
+            _cancel = cancel;
         }
 
         public override ResultOperatorBase Clone(CloneContext cloneContext)
         {
-            return new LastAsyncResultOperator(ReturnDefaultWhenEmpty);
+            return new LastAsyncResultOperator(ReturnDefaultWhenEmpty, _cancel);
         }
 
         public override StreamedValue ExecuteInMemory<T>(StreamedSequence input)
@@ -30,7 +34,7 @@ namespace Saleslogix.SData.Client.Linq
         public override IStreamedDataInfo GetOutputDataInfo(IStreamedDataInfo inputInfo)
         {
             var inputSequenceInfo = ArgumentUtility.CheckNotNullAndType<StreamedSequenceInfo>("inputInfo", inputInfo);
-            return new StreamedAsyncSingleInfo(inputSequenceInfo.ResultItemType);
+            return new StreamedAsyncSingleInfo(inputSequenceInfo.ResultItemType, _cancel);
         }
 
         public override string ToString()

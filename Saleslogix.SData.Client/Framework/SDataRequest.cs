@@ -25,6 +25,8 @@ namespace Saleslogix.SData.Client.Framework
         private bool _proxySet;
         private IWebProxy _proxy;
 #endif
+        private int _state;
+        private WebRequest _request;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SDataRequest"/> class.
@@ -152,6 +154,11 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         public SDataResponse GetResponse()
         {
+            if (Interlocked.CompareExchange(ref _state, 1, 0) != 0)
+            {
+                throw new InvalidOperationException("Existing request in progress");
+            }
+
             var uri = Uri;
             RequestOperation operation;
 
@@ -169,47 +176,64 @@ namespace Saleslogix.SData.Client.Framework
             var attempts = TimeoutRetryAttempts;
             var hasContent = operation.Content != null || operation.Form.Count > 0 || operation.Files.Count > 0;
 
-            while (true)
+            try
             {
-                var request = CreateRequest(uri, operation);
-                if (hasContent)
+                while (true)
                 {
-                    using (var stream = request.GetRequestStream())
+                    _request = CreateRequest(uri, operation);
+                    if (hasContent)
                     {
-                        WriteRequestContent(operation, request, stream);
+                        using (var stream = _request.GetRequestStream())
+                        {
+                            var contentType = WriteRequestContent(operation, stream);
+                            if (contentType != null)
+                            {
+                                _request.ContentType = contentType;
+                            }
+                        }
                     }
-                }
 
-                WebResponse response;
-                try
-                {
-                    response = request.GetResponse();
-                }
-                catch (WebException ex)
-                {
-                    if (ex.Status == WebExceptionStatus.Timeout && attempts > 0)
+                    WebResponse response;
+                    try
                     {
-                        attempts--;
-                        continue;
+                        response = _request.GetResponse();
                     }
-                    throw new SDataException(ex);
+                    catch (WebException ex)
+                    {
+                        if (ex.Status == WebExceptionStatus.Timeout && attempts > 0)
+                        {
+                            attempts--;
+                            continue;
+                        }
+                        throw new SDataException(ex);
+                    }
+
+                    var httpResponse = response as HttpWebResponse;
+                    var statusCode = httpResponse != null ? httpResponse.StatusCode : 0;
+
+                    if (statusCode != HttpStatusCode.Found)
+                    {
+                        return new SDataResponse(response, location);
+                    }
+
+                    uri = location = response.Headers["Location"];
                 }
-
-                var httpResponse = response as HttpWebResponse;
-                var statusCode = httpResponse != null ? httpResponse.StatusCode : 0;
-
-                if (statusCode != HttpStatusCode.Found)
-                {
-                    return new SDataResponse(response, location);
-                }
-
-                uri = location = response.Headers["Location"];
+            }
+            finally
+            {
+                _request = null;
+                Interlocked.Exchange(ref _state, 0);
             }
         }
 #endif
 
         public IAsyncResult BeginGetResponse(AsyncCallback callback, object state)
         {
+            if (Interlocked.CompareExchange(ref _state, 1, 0) != 0)
+            {
+                throw new InvalidOperationException("Existing request in progress");
+            }
+
             var uri = Uri;
             RequestOperation operation;
 
@@ -227,37 +251,43 @@ namespace Saleslogix.SData.Client.Framework
             var attempts = TimeoutRetryAttempts;
             var hasContent = operation.Content != null || operation.Form.Count > 0 || operation.Files.Count > 0;
             var result = new AsyncResult<SDataResponse>(callback, state);
-            Action<WebRequest> getResponse = null;
+            Action getResponse = null;
             Action loop =
                 () =>
                     {
-                        var request = CreateRequest(uri, operation);
+                        _request = CreateRequest(uri, operation);
                         if (hasContent)
                         {
-                            request.BeginGetRequestStream(
+                            _request.BeginGetRequestStream(
                                 async =>
                                     {
                                         try
                                         {
-                                            using (var stream = request.EndGetRequestStream(async))
+                                            using (var stream = _request.EndGetRequestStream(async))
                                             {
-                                                WriteRequestContent(operation, request, stream);
+                                                var contentType = WriteRequestContent(operation, stream);
+                                                if (contentType != null)
+                                                {
+                                                    _request.ContentType = contentType;
+                                                }
                                             }
-                                            getResponse(request);
+                                            getResponse();
                                         }
                                         catch (Exception ex)
                                         {
                                             result.Failure(ex, async.CompletedSynchronously);
+                                            _request = null;
+                                            Interlocked.Exchange(ref _state, 0);
                                         }
                                     }, null);
                         }
                         else
                         {
-                            getResponse(request);
+                            getResponse();
                         }
                     };
             getResponse =
-                request => request.BeginGetResponse(
+                () => _request.BeginGetResponse(
                     async =>
                         {
                             try
@@ -265,7 +295,7 @@ namespace Saleslogix.SData.Client.Framework
                                 WebResponse response;
                                 try
                                 {
-                                    response = request.EndGetResponse(async);
+                                    response = _request.EndGetResponse(async);
                                 }
                                 catch (WebException webEx)
                                 {
@@ -288,6 +318,8 @@ namespace Saleslogix.SData.Client.Framework
                                 if (statusCode != HttpStatusCode.Found)
                                 {
                                     result.Success(new SDataResponse(response, location), async.CompletedSynchronously);
+                                    _request = null;
+                                    Interlocked.Exchange(ref _state, 0);
                                 }
                                 else
                                 {
@@ -298,16 +330,43 @@ namespace Saleslogix.SData.Client.Framework
                             catch (Exception ex)
                             {
                                 result.Failure(ex, async.CompletedSynchronously);
+                                _request = null;
+                                Interlocked.Exchange(ref _state, 0);
                             }
                         }, null);
-            loop();
+            try
+            {
+                loop();
+            }
+            catch
+            {
+                _request = null;
+                Interlocked.Exchange(ref _state, 0);
+                throw;
+            }
             return result;
         }
 
         public SDataResponse EndGetResponse(IAsyncResult asyncResult)
         {
             Guard.ArgumentIsType<AsyncResult<SDataResponse>>(asyncResult, "asyncResult");
-            return ((AsyncResult<SDataResponse>) asyncResult).End();
+            try
+            {
+                return ((AsyncResult<SDataResponse>) asyncResult).End();
+            }
+            finally
+            {
+                _request = null;
+                Interlocked.Exchange(ref _state, 0);
+            }
+        }
+
+        public void Abort()
+        {
+            if (Interlocked.CompareExchange(ref _state, 2, 1) == 1)
+            {
+                _request.Abort();
+            }
         }
 
         private RequestOperation CreateBatchOperation()
@@ -488,7 +547,7 @@ namespace Saleslogix.SData.Client.Framework
             return request;
         }
 
-        private void WriteRequestContent(RequestOperation op, WebRequest request, Stream stream)
+        private string WriteRequestContent(RequestOperation op, Stream stream)
         {
             var isMultipart = op.Form.Count > 0 || op.Files.Count > 0;
             var requestStream = isMultipart ? new MemoryStream() : stream;
@@ -577,13 +636,11 @@ namespace Saleslogix.SData.Client.Framework
                     }
 
                     multipart.WriteTo(stream);
-                    request.ContentType = string.Format("multipart/{0}; boundary={1}", (op.Files.Count > 0 ? "related" : "form-data"), multipart.Boundary);
+                    return string.Format("multipart/{0}; boundary={1}", (op.Files.Count > 0 ? "related" : "form-data"), multipart.Boundary);
                 }
             }
-            else if (contentType != null)
-            {
-                request.ContentType = MediaTypeNames.GetMediaType(contentType.Value);
-            }
+
+            return contentType != null ? MediaTypeNames.GetMediaType(contentType.Value) : null;
         }
 
         #region Nested type: AsyncResult

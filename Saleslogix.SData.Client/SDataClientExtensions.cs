@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Utilities;
@@ -30,18 +31,18 @@ namespace Saleslogix.SData.Client
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public static Task<SDataResource> GetAsync(this ISDataClient client, string key, string path, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null)
+        public static Task<SDataResource> GetAsync(this ISDataClient client, string key, string path, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null, CancellationToken cancel = default(CancellationToken))
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync<SDataResource>(GetGetParameters(key, path, include, select, precedence))
-                .ContinueWith(task => task.Result.Content);
+            return client.ExecuteAsync<SDataResource>(GetGetParameters(key, path, include, select, precedence), cancel)
+                .ContinueWith(task => task.Result.Content, cancel);
         }
 
-        public static Task<T> GetAsync<T>(this ISDataClient client, string key, string path = null, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null)
+        public static Task<T> GetAsync<T>(this ISDataClient client, string key, string path = null, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null, CancellationToken cancel = default(CancellationToken))
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync<T>(GetGetParameters(key, path ?? GetPath<T>(client), include, select, precedence))
-                .ContinueWith(task => task.Result.Content);
+            return client.ExecuteAsync<T>(GetGetParameters(key, path ?? GetPath<T>(client), include, select, precedence), cancel)
+                .ContinueWith(task => task.Result.Content, cancel);
         }
 #endif
 
@@ -72,16 +73,16 @@ namespace Saleslogix.SData.Client
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public static Task<SDataResource> PostAsync(this ISDataClient client, SDataResource content, string path)
+        public static Task<SDataResource> PostAsync(this ISDataClient client, SDataResource content, string path, CancellationToken cancel = default(CancellationToken))
         {
-            return client.ExecuteAsync<SDataResource>(GetPostParameters(client, content, path))
-                .ContinueWith(task => task.Result.Content);
+            return client.ExecuteAsync<SDataResource>(GetPostParameters(client, content, path), cancel)
+                .ContinueWith(task => task.Result.Content, cancel);
         }
 
-        public static Task<T> PostAsync<T>(this ISDataClient client, T content, string path = null)
+        public static Task<T> PostAsync<T>(this ISDataClient client, T content, string path = null, CancellationToken cancel = default(CancellationToken))
         {
-            return client.ExecuteAsync<T>(GetPostParameters(client, content, path ?? GetPath<T>(client)))
-                .ContinueWith(task => task.Result.Content);
+            return client.ExecuteAsync<T>(GetPostParameters(client, content, path ?? GetPath<T>(client)), cancel)
+                .ContinueWith(task => task.Result.Content, cancel);
         }
 #endif
 
@@ -112,16 +113,16 @@ namespace Saleslogix.SData.Client
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public static Task<SDataResource> PutAsync(this ISDataClient client, SDataResource content, string path)
+        public static Task<SDataResource> PutAsync(this ISDataClient client, SDataResource content, string path, CancellationToken cancel = default(CancellationToken))
         {
-            return client.ExecuteAsync<SDataResource>(GetPutParameters(client, content, path))
-                .ContinueWith(task => task.Result.Content);
+            return client.ExecuteAsync<SDataResource>(GetPutParameters(client, content, path), cancel)
+                .ContinueWith(task => task.Result.Content, cancel);
         }
 
-        public static Task<T> PutAsync<T>(this ISDataClient client, T content, string path = null)
+        public static Task<T> PutAsync<T>(this ISDataClient client, T content, string path = null, CancellationToken cancel = default(CancellationToken))
         {
-            return client.ExecuteAsync<T>(GetPutParameters(client, content, path ?? GetPath<T>(client)))
-                .ContinueWith(task => task.Result.Content);
+            return client.ExecuteAsync<T>(GetPutParameters(client, content, path ?? GetPath<T>(client)), cancel)
+                .ContinueWith(task => task.Result.Content, cancel);
         }
 #endif
 
@@ -156,16 +157,16 @@ namespace Saleslogix.SData.Client
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public static Task DeleteAsync(this ISDataClient client, SDataResource content, string path = null)
+        public static Task DeleteAsync(this ISDataClient client, SDataResource content, string path = null, CancellationToken cancel = default(CancellationToken))
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync(GetDeleteParameters(content, path));
+            return client.ExecuteAsync(GetDeleteParameters(content, path), cancel);
         }
 
-        public static Task DeleteAsync<T>(this ISDataClient client, T content, string path = null)
+        public static Task DeleteAsync<T>(this ISDataClient client, T content, string path = null, CancellationToken cancel = default(CancellationToken))
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync(GetDeleteParameters(content, path ?? GetPath<T>(client)));
+            return client.ExecuteAsync(GetDeleteParameters(content, path ?? GetPath<T>(client)), cancel);
         }
 #endif
 

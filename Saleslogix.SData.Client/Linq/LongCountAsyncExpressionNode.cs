@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
@@ -13,20 +14,34 @@ namespace Saleslogix.SData.Client.Linq
     internal class LongCountAsyncExpressionNode : LongCountExpressionNode
     {
         public static readonly MethodInfo[] SupportedMethods =
-            new[]
                 {
-                    new Func<IQueryable<object>, Task<long>>(SDataQueryableExtensions.LongCountAsync).GetMethodInfo().GetGenericMethodDefinition(),
-                    new Func<IQueryable<object>, Expression<Func<object, bool>>, Task<long>>(SDataQueryableExtensions.LongCountAsync).GetMethodInfo().GetGenericMethodDefinition()
+                    new Func<IQueryable<object>, Expression<Func<object, bool>>, CancellationToken, Task<long>>(SDataQueryableExtensions.LongCountAsync).GetMethodInfo().GetGenericMethodDefinition()
                 };
 
-        public LongCountAsyncExpressionNode(MethodCallExpressionParseInfo parseInfo, LambdaExpression optionalPredicate)
-            : base(parseInfo, optionalPredicate)
+        private readonly CancellationToken _cancel;
+
+        public LongCountAsyncExpressionNode(MethodCallExpressionParseInfo parseInfo, LambdaExpression predicate, ConstantExpression optionalCancel)
+            : base(parseInfo, predicate)
         {
+            _cancel = (CancellationToken) optionalCancel.Value;
         }
 
         protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
         {
-            return new LongCountAsyncResultOperator();
+            return new LongCountAsyncResultOperator(_cancel);
+        }
+    }
+
+    internal class LongCountAsyncWithoutPredicateExpressionNode : LongCountAsyncExpressionNode
+    {
+        public new static readonly MethodInfo[] SupportedMethods =
+            {
+                new Func<IQueryable<object>, CancellationToken, Task<long>>(SDataQueryableExtensions.LongCountAsync).GetMethodInfo().GetGenericMethodDefinition()
+            };
+
+        public LongCountAsyncWithoutPredicateExpressionNode(MethodCallExpressionParseInfo parseInfo, ConstantExpression optionalCancel)
+            : base(parseInfo, null, optionalCancel)
+        {
         }
     }
 }

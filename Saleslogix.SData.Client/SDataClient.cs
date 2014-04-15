@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System.Net;
+using System.Threading;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Utilities;
@@ -51,20 +52,66 @@ namespace Saleslogix.SData.Client
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public Task<ISDataResults> ExecuteAsync(SDataParameters parms)
+        public Task<ISDataResults> ExecuteAsync(SDataParameters parms, CancellationToken cancel)
         {
             var request = CreateRequest(parms);
+            var cancelScope = cancel.Register(request.Abort);
             return Task.Factory
                        .FromAsync<SDataResponse>(request.BeginGetResponse, request.EndGetResponse, null)
-                       .ContinueWith(task => SDataResults.FromResponse(task.Result));
+                       .ContinueWith(task =>
+                       {
+                           try
+                           {
+                               return SDataResults.FromResponse(task.Result);
+                           }
+                           catch (SDataException ex)
+                           {
+                               if (ex.Status == WebExceptionStatus.RequestCanceled)
+                               {
+                                   cancel.ThrowIfCancellationRequested();
+                               }
+                               if (cancel.IsCancellationRequested)
+                               {
+                                   throw new TaskCanceledException(ex.Message, ex);
+                               }
+                               throw;
+                           }
+                           finally
+                           {
+                               cancelScope.Dispose();
+                           }
+                       }, cancel);
         }
 
-        public Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms)
+        public Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel)
         {
             var request = CreateRequest(parms);
+            var cancelScope = cancel.Register(request.Abort);
             return Task.Factory
                        .FromAsync<SDataResponse>(request.BeginGetResponse, request.EndGetResponse, null)
-                       .ContinueWith(task => CreateResults<T>(task.Result));
+                       .ContinueWith(task =>
+                       {
+                           try
+                           {
+                               return CreateResults<T>(task.Result);
+                           }
+                           catch (SDataException ex)
+                           {
+                               if (ex.Status == WebExceptionStatus.RequestCanceled)
+                               {
+                                   cancel.ThrowIfCancellationRequested();
+                               }
+                               if (cancel.IsCancellationRequested)
+                               {
+                                   throw new TaskCanceledException(ex.Message, ex);
+                               }
+                               throw;
+                           }
+                           finally
+                           {
+                               cancelScope.Dispose();
+                           }
+                       }, cancel);
         }
 #endif
 

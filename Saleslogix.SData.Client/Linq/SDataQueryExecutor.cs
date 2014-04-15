@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ExpressionTreeVisitors;
@@ -201,7 +202,7 @@ namespace Saleslogix.SData.Client.Linq
 #endif
 
 #if !NET_3_5
-        public Task<T> ExecuteScalarAsync<T>(QueryModel queryModel)
+        public Task<T> ExecuteScalarAsync<T>(QueryModel queryModel, CancellationToken cancel)
         {
             var allOperator = queryModel.ResultOperators.Last() as AllResultOperator;
             if (allOperator != null)
@@ -209,20 +210,20 @@ namespace Saleslogix.SData.Client.Linq
                 var countOperator = new LongCountResultOperator();
                 queryModel.ResultOperators.Remove(allOperator);
                 queryModel.ResultOperators.Add(countOperator);
-                return ExecuteScalarAsync<long>(queryModel)
+                return ExecuteScalarAsync<long>(queryModel, cancel)
                     .ContinueWith(
                         task1 =>
                             {
                                 var count1 = task1.Result;
                                 queryModel.BodyClauses.Add(new WhereClause(allOperator.Predicate));
-                                return ExecuteScalarAsync<long>(queryModel)
+                                return ExecuteScalarAsync<long>(queryModel, cancel)
                                     .ContinueWith(
                                         task2 =>
                                             {
                                                 var count2 = task2.Result;
                                                 return (T) Convert.ChangeType(count1 == count2, typeof (T), CultureInfo.InvariantCulture);
-                                            });
-                            }).Unwrap();
+                                            }, cancel);
+                            }, cancel).Unwrap();
             }
 
             int? takeCount;
@@ -235,11 +236,11 @@ namespace Saleslogix.SData.Client.Linq
             }
 
             parms.StartIndex = null;
-            return _client.ExecuteAsync<SDataCollection<object>>(parms)
-                          .ContinueWith(task => PostExecuteScalar<T>(queryModel, task.Result.Content, startIndex, takeCount));
+            return _client.ExecuteAsync<SDataCollection<object>>(parms, cancel)
+                          .ContinueWith(task => PostExecuteScalar<T>(queryModel, task.Result.Content, startIndex, takeCount), cancel);
         }
 
-        public Task<T> ExecuteSingleAsync<T>(QueryModel queryModel)
+        public Task<T> ExecuteSingleAsync<T>(QueryModel queryModel, CancellationToken cancel)
         {
             var lastOperator = queryModel.ResultOperators.Last() as LastResultOperator;
             if (lastOperator != null)
@@ -263,7 +264,7 @@ namespace Saleslogix.SData.Client.Linq
                 {
                     var countOperator = new CountResultOperator();
                     queryModel.ResultOperators.Add(countOperator);
-                    return ExecuteScalarAsync<int>(queryModel)
+                    return ExecuteScalarAsync<int>(queryModel, cancel)
                         .ContinueWith(
                             task =>
                                 {
@@ -278,8 +279,8 @@ namespace Saleslogix.SData.Client.Linq
                                         queryModel.ResultOperators.Add(new SkipResultOperator(Expression.Constant(count - 1)));
                                     }
                                     queryModel.ResultOperators.Add(new FirstResultOperator(lastOperator.ReturnDefaultWhenEmpty));
-                                    return ExecuteSingleAsync<T>(queryModel);
-                                }).Unwrap();
+                                    return ExecuteSingleAsync<T>(queryModel, cancel);
+                                }, cancel).Unwrap();
                 }
 
                 queryModel.ResultOperators.Add(new FirstResultOperator(lastOperator.ReturnDefaultWhenEmpty));
@@ -294,10 +295,10 @@ namespace Saleslogix.SData.Client.Linq
             }
 
             var execute = PrepareAsyncExecuteDelegate<T>(queryModel);
-            return execute(parms).ContinueWith(task => PostExecuteSingle(queryModel, task.Result, parms.StartIndex, takeCount));
+            return execute(parms, cancel).ContinueWith(task => PostExecuteSingle(queryModel, task.Result, parms.StartIndex, takeCount), cancel);
         }
 
-        public Task<ICollection<T>> ExecuteCollectionAsync<T>(QueryModel queryModel)
+        public Task<ICollection<T>> ExecuteCollectionAsync<T>(QueryModel queryModel, CancellationToken cancel)
         {
             int? takeCount;
             var parms = PreExecuteCollection(queryModel, out takeCount);
@@ -305,7 +306,7 @@ namespace Saleslogix.SData.Client.Linq
             ICollection<T> items = new List<T>();
             Func<Task<SDataCollection<T>>> loop = null;
             loop =
-                () => execute(parms)
+                () => execute(parms, cancel)
                           .ContinueWith(
                               task =>
                                   {
@@ -336,49 +337,52 @@ namespace Saleslogix.SData.Client.Linq
                                       }
 
                                       return loop();
-                                  })
+                                  }, cancel)
                           .Unwrap();
-            return loop().ContinueWith(task => items);
+            return loop().ContinueWith(task => items, cancel);
         }
 
-        private Func<SDataParameters, Task<SDataCollection<T>>> PrepareAsyncExecuteDelegate<T>(QueryModel queryModel)
+        private Func<SDataParameters, CancellationToken, Task<SDataCollection<T>>> PrepareAsyncExecuteDelegate<T>(QueryModel queryModel)
         {
             if (queryModel.MainFromClause.ItemType != typeof (T))
             {
-                //this.ExecuteAsync<[queryModel.MainFromClause.ItemType], T>(parms, [queryModel.SelectClause.Selector]);
-                var executeMethod = new Func<SDataParameters, Func<object, T>, Task<SDataCollection<T>>>(ExecuteAsync)
+                //this.ExecuteAsync<[queryModel.MainFromClause.ItemType], T>(parms, [queryModel.SelectClause.Selector], cancel);
+                var executeMethod = new Func<SDataParameters, Func<object, T>, CancellationToken, Task<SDataCollection<T>>>(ExecuteAsync)
                     .GetMethodInfo()
                     .GetGenericMethodDefinition()
                     .MakeGenericMethod(queryModel.MainFromClause.ItemType, typeof (T));
                 var parmsParamExpr = Expression.Parameter(typeof (SDataParameters), "parms");
                 var selectorParamExpr = Expression.Parameter(queryModel.MainFromClause.ItemType, "selector");
+                var cancelParamExpr = Expression.Parameter(typeof (CancellationToken), "cancel");
                 var mapping = new QuerySourceMapping();
                 mapping.AddMapping(queryModel.MainFromClause, selectorParamExpr);
                 var selector = ReferenceReplacingExpressionTreeVisitor.ReplaceClauseReferences(queryModel.SelectClause.Selector, mapping, true);
                 var selectorFunc = Expression.Lambda(typeof (Func<,>).MakeGenericType(queryModel.MainFromClause.ItemType, typeof (T)), selector, selectorParamExpr).Compile();
-                var lambdaExpr = Expression.Lambda<Func<SDataParameters, Task<SDataCollection<T>>>>(
+                var lambdaExpr = Expression.Lambda<Func<SDataParameters, CancellationToken, Task<SDataCollection<T>>>>(
                     Expression.Call(
                         Expression.Constant(this),
                         executeMethod,
                         parmsParamExpr,
-                        Expression.Constant(selectorFunc)),
-                    parmsParamExpr);
+                        Expression.Constant(selectorFunc),
+                        cancelParamExpr),
+                    parmsParamExpr,
+                    cancelParamExpr);
                 return lambdaExpr.Compile();
             }
 
             return ExecuteAsync<T>;
         }
 
-        private Task<SDataCollection<TResult>> ExecuteAsync<TSource, TResult>(SDataParameters parms, Func<TSource, TResult> selector)
+        private Task<SDataCollection<TResult>> ExecuteAsync<TSource, TResult>(SDataParameters parms, Func<TSource, TResult> selector, CancellationToken cancel)
         {
-            return ExecuteAsync<TSource>(parms)
-                .ContinueWith(task => PostExecute(task.Result, selector));
+            return ExecuteAsync<TSource>(parms, cancel)
+                .ContinueWith(task => PostExecute(task.Result, selector), cancel);
         }
 
-        private Task<SDataCollection<T>> ExecuteAsync<T>(SDataParameters parms)
+        private Task<SDataCollection<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel)
         {
-            return _client.ExecuteAsync<SDataCollection<T>>(parms)
-                          .ContinueWith(task => task.Result.Content);
+            return _client.ExecuteAsync<SDataCollection<T>>(parms, cancel)
+                          .ContinueWith(task => task.Result.Content, cancel);
         }
 
         private static Task<T> CreateResultTask<T>(T result)

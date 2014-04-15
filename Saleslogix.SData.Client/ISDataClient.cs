@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System.Net;
+using System.Threading;
 using Saleslogix.SData.Client.Framework;
 
 #if !NET_2_0 && !NET_3_5
@@ -33,8 +34,8 @@ namespace Saleslogix.SData.Client
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        Task<ISDataResults> ExecuteAsync(SDataParameters parms);
-        Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms);
+        Task<ISDataResults> ExecuteAsync(SDataParameters parms, CancellationToken cancel = default(CancellationToken));
+        Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel = default(CancellationToken));
 #endif
     }
 }
