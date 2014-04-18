@@ -50,6 +50,7 @@
     <Compile Include="Content\ContentManager.cs" />
     <Compile Include="Content\IContentHandler.cs" />
     <Compile Include="Content\JsonContentHandler.cs" />
+    <Compile Include="Content\JsonSimpleArrayAttribute.cs" />
     <Compile Include="Content\TextContentHandler.cs" />
     <Compile Include="Content\XmlContentHandler.cs" />
     <Compile Include="Framework\AttachedFile.cs" />

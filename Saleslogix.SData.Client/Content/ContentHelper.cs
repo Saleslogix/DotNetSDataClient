@@ -293,7 +293,7 @@ namespace Saleslogix.SData.Client.Content
 
             public override bool TrySerializeNonPrimitiveObject(object input, out object output)
             {
-                if (!IsObject(input))
+                if (!IsObject(input) || IsDictionary(input))
                 {
                     output = input;
                     return true;
@@ -318,7 +318,7 @@ namespace Saleslogix.SData.Client.Content
                 foreach (var item in dict.ToList())
                 {
                     var value = item.Value;
-                    var surrogate = value as XmlMetadataSurrogate;
+                    var surrogate = value as MetadataSurrogate;
                     if (surrogate != null)
                     {
                         value = surrogate.Value;
@@ -346,9 +346,22 @@ namespace Saleslogix.SData.Client.Content
                     if (surrogate != null && result != null)
                     {
                         var itemInfo = ((ISDataProtocolAware) result).Info;
-                        itemInfo.XmlLocalName = surrogate.XmlLocalName;
-                        itemInfo.XmlNamespace = surrogate.XmlNamespace;
-                        itemInfo.XmlIsFlat = surrogate.XmlIsFlat;
+                        if (surrogate.XmlLocalName != null)
+                        {
+                            itemInfo.XmlLocalName = surrogate.XmlLocalName;
+                        }
+                        if (surrogate.XmlNamespace != null)
+                        {
+                            itemInfo.XmlNamespace = surrogate.XmlNamespace;
+                        }
+                        if (surrogate.XmlIsFlat)
+                        {
+                            itemInfo.XmlIsFlat = surrogate.XmlIsFlat;
+                        }
+                        if (surrogate.JsonIsSimpleArray)
+                        {
+                            itemInfo.JsonIsSimpleArray = surrogate.JsonIsSimpleArray;
+                        }
                     }
 
                     dict[item.Key] = result;
@@ -422,7 +435,7 @@ namespace Saleslogix.SData.Client.Content
                 if (value == null)
                 {
                     return type.GetTypeInfo().IsValueType && !ReflectionUtils.IsNullableType(type)
-                        ? Activator.CreateInstance(type)
+                        ? ConstructorCache[type]()
                         : null;
                 }
 
@@ -462,6 +475,12 @@ namespace Saleslogix.SData.Client.Content
                 var prot = value as ISDataProtocolAware;
                 var dict = AsDictionary(value);
 
+                // workaround: this can happen when type inference gets it wrong
+                if (dict != null && type.IsArray)
+                {
+                    return ConstructorCache[type](0);
+                }
+
                 if (prot != null && dict != null)
                 {
                     foreach (SDataProtocolProperty protocolProp in Enum.GetValues(typeof (SDataProtocolProperty)))
@@ -471,7 +490,7 @@ namespace Saleslogix.SData.Client.Content
                     }
                 }
 
-                // SimpleJson only recognizes IList<object>
+                // workaround: SimpleJson only recognizes IList<object>
                 var items = AsCollection(value);
                 if (items != null && !(value is IList<object>))
                 {
@@ -564,14 +583,17 @@ namespace Saleslogix.SData.Client.Content
                         xmlNamespace = null;
                     }
 
-                    if (xmlLocalName != null || xmlNamespace != null || xmlIsFlat)
+                    var jsonIsSimpleArray = Attribute.IsDefined(memberInfo, typeof (JsonSimpleArrayAttribute));
+
+                    if (xmlLocalName != null || xmlNamespace != null || xmlIsFlat || jsonIsSimpleArray)
                     {
-                        return source => new XmlMetadataSurrogate
+                        return source => new MetadataSurrogate
                             {
                                 Value = baseGetter(source),
                                 XmlLocalName = xmlLocalName,
                                 XmlNamespace = xmlNamespace,
-                                XmlIsFlat = xmlIsFlat
+                                XmlIsFlat = xmlIsFlat,
+                                JsonIsSimpleArray = jsonIsSimpleArray
                             };
                     }
                 }
@@ -657,12 +679,13 @@ namespace Saleslogix.SData.Client.Content
 
         #region Nested type: XmlMetadataSurrogate
 
-        private class XmlMetadataSurrogate
+        private class MetadataSurrogate
         {
             public object Value { get; set; }
             public string XmlLocalName { get; set; }
             public string XmlNamespace { get; set; }
             public bool XmlIsFlat { get; set; }
+            public bool JsonIsSimpleArray { get; set; }
         }
 
         #endregion

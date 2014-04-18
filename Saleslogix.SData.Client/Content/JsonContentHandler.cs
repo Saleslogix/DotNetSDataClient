@@ -141,7 +141,7 @@ namespace Saleslogix.SData.Client.Content
 
         private static SDataCollection<object> ReadSimpleCollection(IEnumerable<object> items)
         {
-            return new SDataCollection<object>(items.Select(ReadObject));
+            return new SDataCollection<object>(items.Select(ReadObject)) {JsonIsSimpleArray = true};
         }
 
         private static T ReadProtocolValue<T>(IDictionary<string, object> obj, string name)
@@ -299,6 +299,11 @@ namespace Saleslogix.SData.Client.Content
             var resources = ContentHelper.AsDictionaries(obj);
             if (resources != null)
             {
+                var prot = resources as ISDataProtocolAware;
+                if (prot != null && prot.Info != null && prot.Info.JsonIsSimpleArray)
+                {
+                    return WriteSimpleCollection(resources, namingScheme);
+                }
                 return WriteResourceCollection(resources, namingScheme);
             }
 

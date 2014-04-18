@@ -46,10 +46,6 @@ namespace Saleslogix.SData.Client
 
         //SYNC: top level collections
         SyncMode,
-        SyncDigest,
-
-        //XML: everything
-        XmlLocalName,
-        XmlNamespace
+        SyncDigest
     }
 }

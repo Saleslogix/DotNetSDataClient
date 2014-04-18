@@ -60,6 +60,9 @@ namespace Saleslogix.SData.Client
         //XML: collections
         public bool XmlIsFlat { get; set; }
 
+        //JSON: collections
+        public bool JsonIsSimpleArray { get; set; }
+
         public object GetValue(SDataProtocolProperty prop)
         {
             switch (prop)
@@ -112,10 +115,6 @@ namespace Saleslogix.SData.Client
                     return SyncMode;
                 case SDataProtocolProperty.SyncDigest:
                     return SyncDigest;
-                case SDataProtocolProperty.XmlLocalName:
-                    return XmlLocalName;
-                case SDataProtocolProperty.XmlNamespace:
-                    return XmlNamespace;
                 default:
                     throw new ArgumentOutOfRangeException("prop");
             }
@@ -196,12 +195,6 @@ namespace Saleslogix.SData.Client
                     break;
                 case SDataProtocolProperty.SyncDigest:
                     SyncDigest = (Digest) value;
-                    break;
-                case SDataProtocolProperty.XmlLocalName:
-                    XmlLocalName = Convert.ToString(value);
-                    break;
-                case SDataProtocolProperty.XmlNamespace:
-                    XmlNamespace = Convert.ToString(value);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("prop");

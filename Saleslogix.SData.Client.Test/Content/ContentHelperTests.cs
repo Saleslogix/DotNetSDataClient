@@ -149,8 +149,6 @@ namespace Saleslogix.SData.Client.Test.Content
                                 IfMatch = "ifmatch",
                                 IsDeleted = true,
                                 SyncState = new SyncState {EndPoint = "endpoint"},
-                                XmlLocalName = "xmllocalname",
-                                XmlNamespace = "xmlnamespace",
                                 TotalResults = 1,
                                 StartIndex = 2,
                                 ItemsPerPage = 3,
@@ -181,8 +179,6 @@ namespace Saleslogix.SData.Client.Test.Content
             Assert.That(info.IfMatch, Is.EqualTo("ifmatch"));
             Assert.That(info.IsDeleted, Is.True);
             Assert.That(info.SyncState.EndPoint, Is.EqualTo("endpoint"));
-            Assert.That(info.XmlLocalName, Is.EqualTo("xmllocalname"));
-            Assert.That(info.XmlNamespace, Is.EqualTo("xmlnamespace"));
             Assert.That(info.TotalResults, Is.EqualTo(1));
             Assert.That(info.StartIndex, Is.EqualTo(2));
             Assert.That(info.ItemsPerPage, Is.EqualTo(3));
@@ -245,8 +241,6 @@ namespace Saleslogix.SData.Client.Test.Content
             Assert.That(result.IfMatch, Is.EqualTo("ifmatch"));
             Assert.That(result.IsDeleted, Is.True);
             Assert.That(result.SyncState.EndPoint, Is.EqualTo("endpoint"));
-            Assert.That(result.XmlLocalName, Is.EqualTo("xmllocalname"));
-            Assert.That(result.XmlNamespace, Is.EqualTo("xmlnamespace"));
             Assert.That(result.TotalResults, Is.EqualTo(1));
             Assert.That(result.StartIndex, Is.EqualTo(2));
             Assert.That(result.ItemsPerPage, Is.EqualTo(3));
@@ -310,12 +304,6 @@ namespace Saleslogix.SData.Client.Test.Content
 
             [SDataProtocolProperty(SDataProtocolProperty.SyncState)]
             public SyncState SyncState { get; set; }
-
-            [SDataProtocolProperty(SDataProtocolProperty.XmlLocalName)]
-            public string XmlLocalName { get; set; }
-
-            [SDataProtocolProperty(SDataProtocolProperty.XmlNamespace)]
-            public string XmlNamespace { get; set; }
 
             [SDataProtocolProperty(SDataProtocolProperty.TotalResults)]
             public int? TotalResults { get; set; }

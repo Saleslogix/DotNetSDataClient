@@ -10,6 +10,39 @@ using System.ComponentModel;
 
 namespace Saleslogix.SData.Client
 {
+    public static class SDataCollection
+    {
+        public static SDataCollection<T> Create<T>(params T[] items)
+        {
+            return new SDataCollection<T>(items);
+        }
+
+        public static SDataCollection<T> Create<T>(bool jsonIsSimpleArray, params T[] items)
+        {
+            return new SDataCollection<T>(items)
+                {
+                    JsonIsSimpleArray = jsonIsSimpleArray
+                };
+        }
+
+        public static SDataCollection<T> Create<T>(string xmlLocalName, params T[] items)
+        {
+            return new SDataCollection<T>(items)
+                {
+                    XmlLocalName = xmlLocalName
+                };
+        }
+
+        public static SDataCollection<T> Create<T>(string xmlLocalName, string xmlNamespace, params T[] items)
+        {
+            return new SDataCollection<T>(items)
+                {
+                    XmlLocalName = xmlLocalName,
+                    XmlNamespace = xmlNamespace
+                };
+        }
+    }
+
     [Serializable]
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
     [TypeConverter(typeof (SDataCollectionTypeConverter))]
@@ -132,6 +165,12 @@ namespace Saleslogix.SData.Client
         {
             get { return _info.XmlIsFlat; }
             set { _info.XmlIsFlat = value; }
+        }
+
+        public bool JsonIsSimpleArray
+        {
+            get { return _info.JsonIsSimpleArray; }
+            set { _info.JsonIsSimpleArray = value; }
         }
     }
 }
