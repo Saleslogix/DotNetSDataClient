@@ -128,6 +128,7 @@
     <Compile Include="Framework\UriPathSegmentTests.cs" />
     <Compile Include="Framework\W3CDateTimeTests.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="Linq\PropertyPathBuilderTests.cs" />
     <Compile Include="Linq\SDataExpressionBuilderVisitorTests.cs" />
     <Compile Include="Linq\SDataQueryExecutorTests.cs" />
     <Compile Include="Linq\SDataQueryModelVisitorTests.cs" />

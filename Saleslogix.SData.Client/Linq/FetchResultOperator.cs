@@ -12,21 +12,21 @@ namespace Saleslogix.SData.Client.Linq
 {
     internal class FetchResultOperator : ResultOperatorBase
     {
-        private readonly IEnumerable<MemberInfo> _memberPath;
+        private readonly IEnumerable<object> _propertyPath;
 
         public FetchResultOperator(Expression selector)
-            : this(MemberPathBuilder.Build(selector))
+            : this(PropertyPathBuilder.Build(selector))
         {
         }
 
-        private FetchResultOperator(IEnumerable<MemberInfo> memberPath)
+        private FetchResultOperator(IEnumerable<object> propertyPath)
         {
-            _memberPath = memberPath;
+            _propertyPath = propertyPath;
         }
 
-        public IEnumerable<MemberInfo> MemberPath
+        public IEnumerable<object> PropertyPath
         {
-            get { return _memberPath; }
+            get { return _propertyPath; }
         }
 
         public override IStreamedData ExecuteInMemory(IStreamedData input)
@@ -41,7 +41,7 @@ namespace Saleslogix.SData.Client.Linq
 
         public override ResultOperatorBase Clone(CloneContext cloneContext)
         {
-            return new FetchResultOperator(_memberPath);
+            return new FetchResultOperator(_propertyPath);
         }
 
         public override void TransformExpressions(Func<Expression, Expression> transformation)
@@ -50,7 +50,12 @@ namespace Saleslogix.SData.Client.Linq
 
         public override string ToString()
         {
-            return string.Format("Fetch({0})", string.Join("/", _memberPath.Select(member => member.Name).ToArray()));
+            return string.Format("Fetch({0})",
+                string.Join("/", _propertyPath.Select(prop =>
+                {
+                    var member = prop as MemberInfo;
+                    return member != null ? member.Name : prop.ToString();
+                }).ToArray()));
         }
     }
 }

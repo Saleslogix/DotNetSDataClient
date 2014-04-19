@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
@@ -80,14 +81,14 @@ namespace Saleslogix.SData.Client.Linq
             OrderBy = string.Join(",", orderings.Select(
                 ordering => string.Format(
                     "{0} {1}",
-                    string.Join(".", MemberPathBuilder.Build(ordering.Expression).Select(item => _namingScheme.GetName(item)).ToArray()),
+                    RenderPropertyPath(PropertyPathBuilder.Build(ordering.Expression), ".", _namingScheme),
                     ordering.OrderingDirection.ToString().ToLowerInvariant())).ToArray()) + OrderBy;
             base.VisitOrderings(orderings, queryModel, orderByClause);
         }
 
         public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
         {
-            var paths = MemberPathExtractionVisitor.ExtractPropertyPaths(selectClause.Selector, _namingScheme);
+            var paths = PropertyPathExtractionExpressionTreeVisitor.ExtractPropertyPaths(selectClause.Selector, _namingScheme);
             if (paths.Count > 0)
             {
                 Select = string.Join(",", paths.ToArray());
@@ -135,7 +136,7 @@ namespace Saleslogix.SData.Client.Linq
             var fetchOperator = resultOperator as FetchResultOperator;
             if (fetchOperator != null)
             {
-                var include = string.Join("/", fetchOperator.MemberPath.Select(item => _namingScheme.GetName(item)).ToArray());
+                var include = RenderPropertyPath(fetchOperator.PropertyPath, "/", _namingScheme);
                 if (Include != null)
                 {
                     include = string.Format("{0},{1}", Include, include);
@@ -194,13 +195,23 @@ namespace Saleslogix.SData.Client.Linq
             throw new NotSupportedException("Group join clauses not supported");
         }
 
+        private static string RenderPropertyPath(IEnumerable<object> propertyPath, string separator, INamingScheme namingScheme)
+        {
+            return string.Join(separator,
+                propertyPath.Select(prop =>
+                {
+                    var member = prop as MemberInfo;
+                    return member != null ? namingScheme.GetName(member) : prop.ToString();
+                }).ToArray());
+        }
+
         #region Nested type: MemberPathExtractionVisitor
 
-        private class MemberPathExtractionVisitor : ExpressionTreeVisitor
+        private class PropertyPathExtractionExpressionTreeVisitor : ExpressionTreeVisitor
         {
             public static ICollection<string> ExtractPropertyPaths(Expression expression, INamingScheme namingScheme)
             {
-                var visitor = new MemberPathExtractionVisitor(namingScheme);
+                var visitor = new PropertyPathExtractionExpressionTreeVisitor(namingScheme);
                 visitor.VisitExpression(expression);
                 return visitor._paths;
             }
@@ -208,21 +219,21 @@ namespace Saleslogix.SData.Client.Linq
             private readonly INamingScheme _namingScheme;
             private readonly ICollection<string> _paths = new HashSet<string>();
 
-            private MemberPathExtractionVisitor(INamingScheme namingScheme)
+            private PropertyPathExtractionExpressionTreeVisitor(INamingScheme namingScheme)
             {
                 _namingScheme = namingScheme;
             }
 
-            protected override Expression VisitMemberExpression(MemberExpression expression)
+            public override Expression VisitExpression(Expression expression)
             {
-                var path = MemberPathBuilder.Build(expression, false);
+                var path = PropertyPathBuilder.Build(expression, false);
                 if (path != null)
                 {
-                    _paths.Add(string.Join("/", path.Select(item => _namingScheme.GetName(item)).ToArray()));
+                    _paths.Add(RenderPropertyPath(path, "/", _namingScheme));
                     return expression;
                 }
 
-                return base.VisitMemberExpression(expression);
+                return base.VisitExpression(expression);
             }
         }
 
