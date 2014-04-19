@@ -216,9 +216,9 @@ namespace Saleslogix.SData.Client.Content
             return collection;
         }
 
-        private static SDataCollection<object> ReadSimpleCollection(XContainer source)
+        private static SDataCollection<string> ReadSimpleCollection(XContainer source)
         {
-            var collection = new SDataCollection<object>();
+            var collection = new SDataCollection<string>();
 
             foreach (var item in source.Elements())
             {

@@ -47,7 +47,7 @@ namespace Saleslogix.SData.Client.Test.ExtensionsJson
 
             var validatorType = (SDataResource) payload["validatorType"];
             var listValidator = (SDataResource) validatorType["listValidator"];
-            Assert.That(listValidator["items"], Is.InstanceOf<SDataCollection<object>>());
+            Assert.That(listValidator["items"], Is.InstanceOf<SDataCollection<string>>());
         }
 
         [Test]
@@ -57,9 +57,9 @@ namespace Saleslogix.SData.Client.Test.ExtensionsJson
 
             var validatorType = (SDataResource) payload["validatorType"];
             var listValidator = (SDataResource) validatorType["listValidator"];
-            Assume.That(listValidator["items"], Is.InstanceOf<SDataCollection<object>>());
+            Assume.That(listValidator["items"], Is.InstanceOf<SDataCollection<string>>());
 
-            var items = (SDataCollection<object>) listValidator["items"];
+            var items = (SDataCollection<string>) listValidator["items"];
             Assert.That(items, Has.Count.EqualTo(4));
         }
 
@@ -70,9 +70,9 @@ namespace Saleslogix.SData.Client.Test.ExtensionsJson
 
             var validatorType = (SDataResource) payload["validatorType"];
             var listValidator = (SDataResource) validatorType["listValidator"];
-            Assume.That(listValidator["items"], Is.InstanceOf<SDataCollection<object>>());
+            Assume.That(listValidator["items"], Is.InstanceOf<SDataCollection<string>>());
 
-            var items = (SDataCollection<object>) listValidator["items"];
+            var items = (SDataCollection<string>) listValidator["items"];
             var res = items.Intersect(ItemValues).Count();
             Assert.That(res, Is.EqualTo(4));
         }

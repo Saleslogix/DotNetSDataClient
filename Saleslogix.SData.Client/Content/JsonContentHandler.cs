@@ -139,9 +139,11 @@ namespace Saleslogix.SData.Client.Content
             return collection;
         }
 
-        private static SDataCollection<object> ReadSimpleCollection(IEnumerable<object> items)
+        private static object ReadSimpleCollection(IEnumerable<object> items)
         {
-            return new SDataCollection<object>(items.Select(ReadObject)) {JsonIsSimpleArray = true};
+            var output = ContentHelper.ToTypedCollection(items.Select(ReadObject));
+            ((ISDataProtocolAware) output).Info.JsonIsSimpleArray = true;
+            return output;
         }
 
         private static T ReadProtocolValue<T>(IDictionary<string, object> obj, string name)

@@ -170,6 +170,23 @@ namespace Saleslogix.SData.Client.Content
             return null;
         }
 
+        public static object ToTypedCollection(IEnumerable<object> items)
+        {
+            var list = items.ToList();
+            var itemTypes = list.Select(result => result.GetType()).Distinct().ToList();
+            if (itemTypes.Count == 1)
+            {
+                var itemType = itemTypes[0];
+                var type = typeof (SDataCollection<>).MakeGenericType(itemType);
+                var ctor = type.GetConstructor(new[] {typeof (IEnumerable<>).MakeGenericType(itemType)});
+                var array = Array.CreateInstance(itemType, list.Count);
+                list.ToArray().CopyTo(array, 0);
+                return ctor.Invoke(new object[] {array});
+            }
+
+            return new SDataCollection<object>(list);
+        }
+
         public static bool IsDictionary(object obj)
         {
             return obj != null &&
@@ -421,9 +438,7 @@ namespace Saleslogix.SData.Client.Content
                     results.Add(result);
                 }
 
-                output = results.All(result => result is SDataResource)
-                    ? new SDataCollection<SDataResource>(results.Cast<SDataResource>())
-                    : (object) new SDataCollection<object>(results);
+                output = ToTypedCollection(results);
 
                 var prot = input as ISDataProtocolAware;
                 if (prot != null)
