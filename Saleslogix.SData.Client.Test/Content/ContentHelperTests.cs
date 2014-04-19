@@ -439,7 +439,7 @@ namespace Saleslogix.SData.Client.Test.Content
         [Test]
         public void Deserialize_Anonymous_Type_Test()
         {
-            var resource = new SDataResource
+            var value = new SDataResource
                 {
                     {"AccountName", "Bloggs Inc."},
                     {"Incorporated", new DateTime(2001, 2, 3, 4, 5, 6)},
@@ -469,7 +469,7 @@ namespace Saleslogix.SData.Client.Test.Content
                                 }
                         }
                 };
-            var result = Deserialize(resource, prototype);
+            var result = Deserialize(value, prototype);
             Assert.That(result.AccountName, Is.EqualTo("Bloggs Inc."));
             Assert.That(result.Incorporated, Is.EqualTo(new DateTime(2001, 2, 3, 4, 5, 6)));
             Assert.That(result.Address, Is.Not.Null);
@@ -478,6 +478,44 @@ namespace Saleslogix.SData.Client.Test.Content
             Assert.That(result.Contacts.Length, Is.EqualTo(1));
             Assert.That(result.Contacts[0].FullName, Is.EqualTo("Joe Bloggs"));
             Assert.That(result.Contacts[0].Age, Is.EqualTo(44));
+        }
+
+        [Test]
+        public void Serialize_Resource_Nested_In_Anonymous_Type_Test()
+        {
+            var value = new {nested = new SDataResource {Key = "abc123"}};
+            var result = ContentHelper.Serialize(value) as IDictionary<string, object>;
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ContainsKey("nested"), Is.True);
+            var nested = result["nested"] as SDataResource;
+            Assert.That(nested, Is.Not.Null);
+            Assert.That(nested.Key, Is.EqualTo("abc123"));
+        }
+
+        [Test]
+        public void Serialize_Anonymous_Type_Nested_In_Resource_Test()
+        {
+            var value = new SDataResource("root") {{"nested", new {id = "abc123"}}};
+            var result = ContentHelper.Serialize(value) as IDictionary<string, object>;
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ContainsKey("nested"), Is.True);
+            var nested = result["nested"] as IDictionary<string, object>;
+            Assert.That(nested, Is.Not.Null);
+            Assert.That(nested.ContainsKey("id"), Is.True);
+            Assert.That(nested["id"], Is.EqualTo("abc123"));
+        }
+
+        [Test]
+        public void Deserialize_Empty_Collection_Inferrence_Workaround_Test()
+        {
+            var value = new SDataResource {{"Items", new SDataResource()}};
+            var result = ContentHelper.Deserialize<Deserialize_Empty_Collection_Inferrence_Workaround_Object>(value);
+            Assert.That(result.Items, Is.Not.Null);
+        }
+
+        private class Deserialize_Empty_Collection_Inferrence_Workaround_Object
+        {
+            public IList<object> Items { get; set; }
         }
 
         private static T Deserialize<T>(object value, T prototype)

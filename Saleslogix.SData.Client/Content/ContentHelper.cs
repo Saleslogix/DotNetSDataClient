@@ -293,7 +293,7 @@ namespace Saleslogix.SData.Client.Content
 
             public override bool TrySerializeNonPrimitiveObject(object input, out object output)
             {
-                if (!IsObject(input) || IsDictionary(input))
+                if (!IsObject(input))
                 {
                     output = input;
                     return true;
@@ -305,13 +305,17 @@ namespace Saleslogix.SData.Client.Content
                     return TrySerializeCollection(items, out output);
                 }
 
-                if (!base.TrySerializeNonPrimitiveObject(input, out output))
+                var dict = AsDictionary(input);
+                if (dict == null)
                 {
-                    output = null;
-                    return false;
+                    if (!base.TrySerializeNonPrimitiveObject(input, out output))
+                    {
+                        output = null;
+                        return false;
+                    }
+                    dict = (IDictionary<string, object>) output;
                 }
 
-                var dict = (IDictionary<string, object>) output;
                 var prot = input as ISDataProtocolAware;
                 var info = prot != null ? prot.Info : null;
 
@@ -471,15 +475,18 @@ namespace Saleslogix.SData.Client.Content
                 {
                     return base.DeserializeObject(value, type);
                 }
-
-                var prot = value as ISDataProtocolAware;
                 var dict = AsDictionary(value);
 
-                // workaround: this can happen when type inference gets it wrong
-                if (dict != null && type.IsArray)
+                // workaround: This can happen when type inference gets it wrong
+                if (dict != null &&
+                    (typeof (IEnumerable).IsAssignableFrom(type) ||
+                     type.GetInterfaces().Any(iface => iface.GetTypeInfo().IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>))))
                 {
-                    return ConstructorCache[type](0);
+                    value = new object[0];
+                    dict = null;
                 }
+
+                var prot = value as ISDataProtocolAware;
 
                 if (prot != null && dict != null)
                 {
@@ -583,7 +590,7 @@ namespace Saleslogix.SData.Client.Content
                         xmlNamespace = null;
                     }
 
-                    var jsonIsSimpleArray = Attribute.IsDefined(memberInfo, typeof (JsonSimpleArrayAttribute));
+                    var jsonIsSimpleArray = memberInfo.GetCustomAttribute<JsonSimpleArrayAttribute>() != null;
 
                     if (xmlLocalName != null || xmlNamespace != null || xmlIsFlat || jsonIsSimpleArray)
                     {

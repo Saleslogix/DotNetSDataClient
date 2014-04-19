@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Test.Model;
+using SimpleJson;
 
 // ReSharper disable InconsistentNaming
 
@@ -42,6 +44,18 @@ namespace Saleslogix.SData.Client.Test.Content
             const string json = @"{""$uuid"":""281018F3-8A96-4CAC-B6C6-957E29F65359""}";
             var resource = Helpers.ReadJson<SDataResource>(json);
             Assert.That(resource.Uuid, Is.EqualTo(new Guid("281018F3-8A96-4CAC-B6C6-957E29F65359")));
+        }
+
+        [Test]
+        public void Read_SimpleArray_Test()
+        {
+            const string json = @"{""Items"":[]}";
+            var resource = Helpers.ReadJson<SDataResource>(json);
+            Assert.That(resource.ContainsKey("Items"), Is.True);
+            var prot = resource["Items"] as ISDataProtocolAware;
+            Assert.That(prot, Is.Not.Null);
+            Assert.That(prot.Info, Is.Not.Null);
+            Assert.That(prot.Info.JsonIsSimpleArray, Is.True);
         }
 
         [Test]
@@ -248,6 +262,28 @@ namespace Saleslogix.SData.Client.Test.Content
             var resource = new SDataResource {{"LastName", ""}};
             var obj = Helpers.WriteJson(resource);
             Assert.That(obj["LastName"], Is.Empty);
+        }
+
+        [Test]
+        public void Write_SimpleArray_Test()
+        {
+            var resource = new {Items = SDataCollection.Create(true, new object[0])};
+            var obj = Helpers.WriteJson(resource);
+            Assert.That(obj["Items"], Is.TypeOf<JsonArray>());
+        }
+
+        [Test]
+        public void Write_SimpleArray_Attribute_Test()
+        {
+            var resource = new Write_SimpleArray_Attribute_Object {Items = new object[0]};
+            var obj = Helpers.WriteJson(resource);
+            Assert.That(obj["Items"], Is.TypeOf<JsonArray>());
+        }
+
+        private class Write_SimpleArray_Attribute_Object
+        {
+            [JsonSimpleArray]
+            public object[] Items { get; set; }
         }
     }
 }

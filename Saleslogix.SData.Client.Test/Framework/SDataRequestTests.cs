@@ -851,7 +851,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(webRequest.Headers["X-HTTP-Method-Override"], Is.EqualTo("PUT"));
         }
 
-        public class ProtocolProperty_Object
+        private class ProtocolProperty_Object
         {
             [SDataProtocolProperty]
             public string Key { get; set; }

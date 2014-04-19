@@ -302,7 +302,11 @@ namespace Saleslogix.SData.Client.Content
                 var prot = resources as ISDataProtocolAware;
                 if (prot != null && prot.Info != null && prot.Info.JsonIsSimpleArray)
                 {
+#if NET_2_0 || NET_3_5
+                    return WriteSimpleCollection(resources.Cast<object>(), namingScheme);
+#else
                     return WriteSimpleCollection(resources, namingScheme);
+#endif
                 }
                 return WriteResourceCollection(resources, namingScheme);
             }

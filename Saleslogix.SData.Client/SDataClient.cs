@@ -52,7 +52,7 @@ namespace Saleslogix.SData.Client
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public Task<ISDataResults> ExecuteAsync(SDataParameters parms, CancellationToken cancel)
+        public Task<ISDataResults> ExecuteAsync(SDataParameters parms, CancellationToken cancel = default(CancellationToken))
         {
             var request = CreateRequest(parms);
             var cancelScope = cancel.Register(request.Abort);
@@ -83,7 +83,7 @@ namespace Saleslogix.SData.Client
                        }, cancel);
         }
 
-        public Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel)
+        public Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel = default(CancellationToken))
         {
             var request = CreateRequest(parms);
             var cancelScope = cancel.Register(request.Abort);

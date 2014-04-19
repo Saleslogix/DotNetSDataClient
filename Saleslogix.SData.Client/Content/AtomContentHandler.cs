@@ -361,7 +361,7 @@ namespace Saleslogix.SData.Client.Content
             root.Add(new XAttribute(XNamespace.Xmlns + Common.Xsi.Prefix, _xsiNs));
             doc.Add(root);
 
-            var writer = XmlWriter.Create(stream, new XmlWriterSettings {Indent = true});
+            var writer = XmlWriter.Create(stream);
             doc.WriteTo(writer);
             writer.Flush();
         }
@@ -531,8 +531,9 @@ namespace Saleslogix.SData.Client.Content
             {
                 var prot = resource as ISDataProtocolAware;
                 var info = prot != null ? prot.Info : null;
-                var itemName = XName.Get((info != null ? info.XmlLocalName : null) ?? name.LocalName,
-                                         (info != null ? info.XmlNamespace : null) ?? name.NamespaceName);
+                var itemName = info != null && info.XmlNamespace != null
+                    ? XName.Get(name.LocalName, prot.Info.XmlNamespace)
+                    : name;
                 return WriteResource(itemName, resource, namingScheme);
             }
 
@@ -593,8 +594,8 @@ namespace Saleslogix.SData.Client.Content
                                          {
                                              var itemProt = item as ISDataProtocolAware;
                                              var itemInfo = itemProt != null ? itemProt.Info : null;
-                                             var itemName = XName.Get(localName ?? (itemProt != null ? itemInfo.XmlLocalName : null) ?? item.GetType().Name,
-                                                                      xmlNs ?? (itemProt != null ? itemInfo.XmlNamespace : null) ?? name.NamespaceName);
+                                             var itemName = XName.Get(localName ?? (itemInfo != null ? itemInfo.XmlLocalName : null) ?? item.GetType().Name,
+                                                                      xmlNs ?? (itemInfo != null ? itemInfo.XmlNamespace : null) ?? name.NamespaceName);
                                              return WriteItem(itemName, item, namingScheme);
                                          }));
             return element;

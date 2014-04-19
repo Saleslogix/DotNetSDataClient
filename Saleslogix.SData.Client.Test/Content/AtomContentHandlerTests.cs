@@ -411,5 +411,27 @@ namespace Saleslogix.SData.Client.Test.Content
             [XmlElement("Address_", Namespace = "Address_NS")]
             public IList<Address> Addresses { get; set; }
         }
+
+        [Test]
+        public void Write_Nested_Poco_Name_Test()
+        {
+            var resource = new Write_Nested_Poco_Name_Object
+                {
+                    PostalAddress = new Address {City = "Melbourne"}
+                };
+            var nav = Helpers.WriteAtom(resource);
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
+            mgr.AddNamespace("sdata", "http://schemas.sage.com/sdata/2008/1");
+            var node = nav.SelectSingleNode("atom:entry/sdata:payload/Account/PostalAddress/City", mgr);
+            Assert.That(node, Is.Not.Null);
+            Assert.That(node.Value, Is.EqualTo("Melbourne"));
+        }
+
+        [XmlType("Account")]
+        private class Write_Nested_Poco_Name_Object
+        {
+            public Address PostalAddress { get; set; }
+        }
     }
 }
