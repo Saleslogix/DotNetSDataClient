@@ -40,13 +40,13 @@ namespace Saleslogix.SData.Client
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
         public ISDataResults Execute(SDataParameters parms)
         {
-            var request = CreateRequest(parms);
+            var request = CreateRequest(parms, true);
             return SDataResults.FromResponse(request.GetResponse());
         }
 
         public ISDataResults<T> Execute<T>(SDataParameters parms)
         {
-            var request = CreateRequest(parms);
+            var request = CreateRequest(parms, false);
             return CreateResults<T>(request.GetResponse());
         }
 #endif
@@ -54,7 +54,7 @@ namespace Saleslogix.SData.Client
 #if !NET_2_0 && !NET_3_5
         public Task<ISDataResults> ExecuteAsync(SDataParameters parms, CancellationToken cancel = default(CancellationToken))
         {
-            var request = CreateRequest(parms);
+            var request = CreateRequest(parms, true);
             var cancelScope = cancel.Register(request.Abort);
             return Task.Factory
                        .FromAsync<SDataResponse>(request.BeginGetResponse, request.EndGetResponse, null)
@@ -85,7 +85,7 @@ namespace Saleslogix.SData.Client
 
         public Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel = default(CancellationToken))
         {
-            var request = CreateRequest(parms);
+            var request = CreateRequest(parms, false);
             var cancelScope = cancel.Register(request.Abort);
             return Task.Factory
                        .FromAsync<SDataResponse>(request.BeginGetResponse, request.EndGetResponse, null)
@@ -115,7 +115,7 @@ namespace Saleslogix.SData.Client
         }
 #endif
 
-        private SDataRequest CreateRequest(SDataParameters parms)
+        private SDataRequest CreateRequest(SDataParameters parms, bool responseContentIgnored)
         {
             Guard.ArgumentNotNull(parms, "parms");
             var uri = new SDataUri(Uri)
@@ -127,7 +127,7 @@ namespace Saleslogix.SData.Client
                               Search = parms.Search,
                               Include = parms.Include,
                               Select = parms.Select,
-                              Precedence = parms.Precedence,
+                              Precedence = parms.Precedence ?? (responseContentIgnored ? 0 : (int?) null),
                               IncludeSchema = parms.IncludeSchema,
                               ReturnDelta = parms.ReturnDelta,
                               TrackingId = parms.TrackingId,
