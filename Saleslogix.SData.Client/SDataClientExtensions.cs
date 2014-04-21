@@ -1,7 +1,5 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Saleslogix.SData.Client.Content;
@@ -17,120 +15,135 @@ namespace Saleslogix.SData.Client
     public static class SDataClientExtensions
     {
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        public static SDataResource Get(this ISDataClient client, string key, string path, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null)
+        public static SDataResource Get(this ISDataClient client, string key, string path, SDataPayloadOptions options = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.Execute<SDataResource>(GetGetParameters(key, path, include, select, precedence)).Content;
+            return client.Execute<SDataResource>(GetGetParameters(key, path, options)).Content;
         }
 
-        public static T Get<T>(this ISDataClient client, string key, string path = null, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null)
+        public static T Get<T>(this ISDataClient client, string key, string path = null, SDataPayloadOptions options = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.Execute<T>(GetGetParameters(key, path ?? GetPath<T>(client), include, select, precedence)).Content;
+            return client.Execute<T>(GetGetParameters(key, path ?? GetPath<T>(client), options)).Content;
         }
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public static Task<SDataResource> GetAsync(this ISDataClient client, string key, string path, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null, CancellationToken cancel = default(CancellationToken))
+        public static Task<SDataResource> GetAsync(this ISDataClient client, string key, string path, SDataPayloadOptions options = null, CancellationToken cancel = default(CancellationToken))
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync<SDataResource>(GetGetParameters(key, path, include, select, precedence), cancel)
+            return client.ExecuteAsync<SDataResource>(GetGetParameters(key, path, options), cancel)
                 .ContinueWith(task => task.Result.Content, cancel);
         }
 
-        public static Task<T> GetAsync<T>(this ISDataClient client, string key, string path = null, IEnumerable<string> include = null, IEnumerable<string> select = null, int? precedence = null, CancellationToken cancel = default(CancellationToken))
+        public static Task<T> GetAsync<T>(this ISDataClient client, string key, string path = null, SDataPayloadOptions options = null, CancellationToken cancel = default(CancellationToken))
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync<T>(GetGetParameters(key, path ?? GetPath<T>(client), include, select, precedence), cancel)
+            return client.ExecuteAsync<T>(GetGetParameters(key, path ?? GetPath<T>(client), options), cancel)
                 .ContinueWith(task => task.Result.Content, cancel);
         }
 #endif
 
-        private static SDataParameters GetGetParameters(string key, string path, IEnumerable<string> include, IEnumerable<string> select, int? precedence)
+        private static SDataParameters GetGetParameters(string key, string path, SDataPayloadOptions options)
         {
-            Guard.ArgumentNotNullOrEmptyString(path, "path");
             Guard.ArgumentNotNullOrEmptyString(key, "key");
+            Guard.ArgumentNotNullOrEmptyString(path, "path");
+            if (options == null)
+            {
+                options = new SDataPayloadOptions();
+            }
             return new SDataParameters
                 {
                     Path = path,
                     Selector = SDataUri.FormatConstant(key),
-                    Include = include != null ? string.Join(",", include.ToArray()) : null,
-                    Select = select != null ? string.Join(",", select.ToArray()) : null,
-                    Precedence = precedence
+                    Include = options.Include,
+                    Select = options.Select,
+                    Precedence = options.Precedence
                 };
         }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        public static SDataResource Post(this ISDataClient client, SDataResource content, string path)
+        public static SDataResource Post(this ISDataClient client, SDataResource content, string path, SDataPayloadOptions options = null)
         {
-            return client.Execute<SDataResource>(GetPostParameters(client, content, path)).Content;
+            return client.Execute<SDataResource>(GetPostParameters(client, content, path, options)).Content;
         }
 
-        public static T Post<T>(this ISDataClient client, T content, string path = null)
+        public static T Post<T>(this ISDataClient client, T content, string path = null, SDataPayloadOptions options = null)
         {
-            return client.Execute<T>(GetPostParameters(client, content, path ?? GetPath<T>(client))).Content;
+            return client.Execute<T>(GetPostParameters(client, content, path ?? GetPath<T>(client), options)).Content;
         }
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public static Task<SDataResource> PostAsync(this ISDataClient client, SDataResource content, string path, CancellationToken cancel = default(CancellationToken))
+        public static Task<SDataResource> PostAsync(this ISDataClient client, SDataResource content, string path, SDataPayloadOptions options = null, CancellationToken cancel = default(CancellationToken))
         {
-            return client.ExecuteAsync<SDataResource>(GetPostParameters(client, content, path), cancel)
+            return client.ExecuteAsync<SDataResource>(GetPostParameters(client, content, path, options), cancel)
                 .ContinueWith(task => task.Result.Content, cancel);
         }
 
-        public static Task<T> PostAsync<T>(this ISDataClient client, T content, string path = null, CancellationToken cancel = default(CancellationToken))
+        public static Task<T> PostAsync<T>(this ISDataClient client, T content, string path = null, SDataPayloadOptions options = null, CancellationToken cancel = default(CancellationToken))
         {
-            return client.ExecuteAsync<T>(GetPostParameters(client, content, path ?? GetPath<T>(client)), cancel)
+            return client.ExecuteAsync<T>(GetPostParameters(client, content, path ?? GetPath<T>(client), options), cancel)
                 .ContinueWith(task => task.Result.Content, cancel);
         }
 #endif
 
-        private static SDataParameters GetPostParameters<T>(ISDataClient client, T content, string path)
+        private static SDataParameters GetPostParameters<T>(ISDataClient client, T content, string path, SDataPayloadOptions options)
         {
             Guard.ArgumentNotNull(client, "client");
             Guard.ArgumentNotNull(content, "content");
             Guard.ArgumentNotNullOrEmptyString(path, "path");
+            if (options == null)
+            {
+                options = new SDataPayloadOptions();
+            }
             return new SDataParameters
                 {
                     Method = HttpMethod.Post,
                     Path = path,
                     Content = content,
-                    ContentType = client.Format ?? MediaType.Json
+                    ContentType = client.Format ?? MediaType.Json,
+                    Include = options.Include,
+                    Select = options.Select,
+                    Precedence = options.Precedence
                 };
         }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        public static SDataResource Put(this ISDataClient client, SDataResource content, string path = null)
+        public static SDataResource Put(this ISDataClient client, SDataResource content, string path = null, SDataPayloadOptions options = null)
         {
-            return client.Execute<SDataResource>(GetPutParameters(client, content, path)).Content;
+            return client.Execute<SDataResource>(GetPutParameters(client, content, path, options)).Content;
         }
 
-        public static T Put<T>(this ISDataClient client, T content, string path = null)
+        public static T Put<T>(this ISDataClient client, T content, string path = null, SDataPayloadOptions options = null)
         {
-            return client.Execute<T>(GetPutParameters(client, content, path ?? GetPath<T>(client))).Content;
+            return client.Execute<T>(GetPutParameters(client, content, path ?? GetPath<T>(client), options)).Content;
         }
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public static Task<SDataResource> PutAsync(this ISDataClient client, SDataResource content, string path, CancellationToken cancel = default(CancellationToken))
+        public static Task<SDataResource> PutAsync(this ISDataClient client, SDataResource content, string path, SDataPayloadOptions options = null, CancellationToken cancel = default(CancellationToken))
         {
-            return client.ExecuteAsync<SDataResource>(GetPutParameters(client, content, path), cancel)
+            return client.ExecuteAsync<SDataResource>(GetPutParameters(client, content, path, options), cancel)
                 .ContinueWith(task => task.Result.Content, cancel);
         }
 
-        public static Task<T> PutAsync<T>(this ISDataClient client, T content, string path = null, CancellationToken cancel = default(CancellationToken))
+        public static Task<T> PutAsync<T>(this ISDataClient client, T content, string path = null, SDataPayloadOptions options = null, CancellationToken cancel = default(CancellationToken))
         {
-            return client.ExecuteAsync<T>(GetPutParameters(client, content, path ?? GetPath<T>(client)), cancel)
+            return client.ExecuteAsync<T>(GetPutParameters(client, content, path ?? GetPath<T>(client), options), cancel)
                 .ContinueWith(task => task.Result.Content, cancel);
         }
 #endif
 
-        private static SDataParameters GetPutParameters<T>(ISDataClient client, T content, string path)
+        private static SDataParameters GetPutParameters<T>(ISDataClient client, T content, string path, SDataPayloadOptions options)
         {
             Guard.ArgumentNotNull(client, "client");
             Guard.ArgumentNotNull(content, "content");
             Guard.ArgumentNotNullOrEmptyString(path, "path");
+            if (options == null)
+            {
+                options = new SDataPayloadOptions();
+            }
             return new SDataParameters
                 {
                     Method = HttpMethod.Put,
@@ -138,7 +151,10 @@ namespace Saleslogix.SData.Client
                     Selector = GetSelector(content),
                     Content = content,
                     ContentType = client.Format ?? MediaType.Json,
-                    ETag = GetETag(content)
+                    ETag = GetETag(content),
+                    Include = options.Include,
+                    Select = options.Select,
+                    Precedence = options.Precedence
                 };
         }
 
@@ -185,12 +201,18 @@ namespace Saleslogix.SData.Client
 
         private static string GetPath<T>(ISDataClient client)
         {
-            return SDataResourceAttribute.GetPath(typeof (T)) ?? client.NamingScheme.GetName(typeof (T).GetTypeInfo());
+            return SDataResourceAttribute.GetPath(typeof (T)) ?? (client.NamingScheme ?? NamingScheme.Default).GetName(typeof (T).GetTypeInfo());
         }
 
         private static string GetSelector(object content)
         {
-            return SDataUri.FormatConstant(ContentHelper.GetProtocolValue<string>(content, SDataProtocolProperty.Key));
+            var key = ContentHelper.GetProtocolValue<string>(content, SDataProtocolProperty.Key);
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new SDataClientException("Unable to extract resource key from content");
+            }
+
+            return SDataUri.FormatConstant(key);
         }
 
         private static string GetETag(object content)

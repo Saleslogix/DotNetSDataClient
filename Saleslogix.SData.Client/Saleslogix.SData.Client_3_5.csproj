@@ -340,6 +340,7 @@
     <Compile Include="SDataCollection.cs" />
     <Compile Include="SDataCollectionTypeConverter.cs" />
     <Compile Include="SDataParameters.cs" />
+    <Compile Include="SDataPayloadOptions.cs" />
     <Compile Include="SDataProtocolInfo.cs" />
     <Compile Include="SDataProtocolProperty.cs" />
     <Compile Include="SDataProtocolPropertyAttribute.cs" />

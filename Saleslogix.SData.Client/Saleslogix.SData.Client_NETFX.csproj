@@ -390,6 +390,7 @@
     <Compile Include="SDataClientExtensions.cs" />
     <Compile Include="SDataCollection.cs" />
     <Compile Include="SDataParameters.cs" />
+    <Compile Include="SDataPayloadOptions.cs" />
     <Compile Include="SDataProtocolInfo.cs" />
     <Compile Include="SDataProtocolProperty.cs" />
     <Compile Include="SDataProtocolPropertyAttribute.cs" />
