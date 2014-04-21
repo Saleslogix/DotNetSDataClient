@@ -335,6 +335,33 @@ namespace Saleslogix.SData.Client.Content
 
                 var prot = input as ISDataProtocolAware;
                 var info = prot != null ? prot.Info : null;
+                var infoCreated = info == null;
+                if (infoCreated)
+                {
+                    info = new SDataProtocolInfo();
+                    var type = input.GetType();
+#if !NET_2_0
+                    var dataAttr = type.GetTypeInfo().GetCustomAttribute<DataContractAttribute>();
+                    if (dataAttr != null)
+                    {
+                        info.XmlLocalName = dataAttr.Name;
+                        info.XmlNamespace = dataAttr.Namespace;
+                    }
+                    else
+#endif
+                    {
+                        var xmlAttr = type.GetTypeInfo().GetCustomAttribute<XmlTypeAttribute>();
+                        if (xmlAttr != null)
+                        {
+                            info.XmlLocalName = xmlAttr.TypeName;
+                            info.XmlNamespace = xmlAttr.Namespace;
+                        }
+                        else
+                        {
+                            info.XmlLocalName = type.Name;
+                        }
+                    }
+                }
 
                 foreach (var item in dict.ToList())
                 {
@@ -347,13 +374,13 @@ namespace Saleslogix.SData.Client.Content
 
                     if (item.Key.StartsWith("$"))
                     {
-                        if (info == null)
+                        if (infoCreated)
                         {
-                            info = new SDataProtocolInfo();
+                            var name = item.Key;
+                            var prop = (SDataProtocolProperty) Enum.Parse(typeof (SDataProtocolProperty), char.ToUpperInvariant(name[1]) + name.Substring(2), false);
+                            info.SetValue(prop, value);
                         }
-                        var name = item.Key;
-                        var prop = (SDataProtocolProperty) Enum.Parse(typeof (SDataProtocolProperty), char.ToUpperInvariant(name[1]) + name.Substring(2), false);
-                        info.SetValue(prop, value);
+                        dict.Remove(item.Key);
                         continue;
                     }
 
@@ -389,37 +416,7 @@ namespace Saleslogix.SData.Client.Content
                 }
 
                 var resource = new SDataResource(dict);
-
-                if (info != null)
-                {
-                    ((ISDataProtocolAware) resource).Info = info;
-                }
-                else
-                {
-                    var type = input.GetType();
-#if !NET_2_0
-                    var dataAttr = type.GetTypeInfo().GetCustomAttribute<DataContractAttribute>();
-                    if (dataAttr != null)
-                    {
-                        resource.XmlLocalName = dataAttr.Name;
-                        resource.XmlNamespace = dataAttr.Namespace;
-                    }
-                    else
-#endif
-                    {
-                        var xmlAttr = type.GetTypeInfo().GetCustomAttribute<XmlTypeAttribute>();
-                        if (xmlAttr != null)
-                        {
-                            resource.XmlLocalName = xmlAttr.TypeName;
-                            resource.XmlNamespace = xmlAttr.Namespace;
-                        }
-                        else
-                        {
-                            resource.XmlLocalName = type.Name;
-                        }
-                    }
-                }
-
+                ((ISDataProtocolAware) resource).Info = info;
                 output = resource;
                 return true;
             }
@@ -558,11 +555,11 @@ namespace Saleslogix.SData.Client.Content
                 var result = new Dictionary<string, ReflectionUtils.GetDelegate>();
                 foreach (var propertyInfo in GetProperties(type))
                 {
-                    result[GetName(propertyInfo)] = GetGetter(ReflectionUtils.GetGetMethod(propertyInfo), propertyInfo, propertyInfo.PropertyType);
+                    result[_namingScheme.GetName(propertyInfo)] = GetGetter(ReflectionUtils.GetGetMethod(propertyInfo), propertyInfo, propertyInfo.PropertyType);
                 }
                 foreach (var fieldInfo in GetFields(type))
                 {
-                    result[GetName(fieldInfo)] = GetGetter(ReflectionUtils.GetGetMethod(fieldInfo), fieldInfo, fieldInfo.FieldType);
+                    result[_namingScheme.GetName(fieldInfo)] = GetGetter(ReflectionUtils.GetGetMethod(fieldInfo), fieldInfo, fieldInfo.FieldType);
                 }
 
                 return result;
@@ -629,12 +626,12 @@ namespace Saleslogix.SData.Client.Content
                 foreach (var propertyInfo in GetProperties(type))
                 {
                     var setter = ReflectionUtils.GetSetMethod(propertyInfo);
-                    result[GetName(propertyInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(propertyInfo.PropertyType, setter);
+                    result[_namingScheme.GetName(propertyInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(propertyInfo.PropertyType, setter);
                 }
                 foreach (var fieldInfo in GetFields(type))
                 {
                     var setter = ReflectionUtils.GetSetMethod(fieldInfo);
-                    result[GetName(fieldInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(fieldInfo.FieldType, setter);
+                    result[_namingScheme.GetName(fieldInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(fieldInfo.FieldType, setter);
                 }
 
                 return result;
@@ -663,22 +660,6 @@ namespace Saleslogix.SData.Client.Content
                         !item.IsDefined(typeof (IgnoreDataMemberAttribute)) &&
 #endif
                         !item.IsDefined(typeof (XmlIgnoreAttribute)));
-            }
-
-            private string GetName(MemberInfo member)
-            {
-                var protocolAttr = member.GetCustomAttribute<SDataProtocolPropertyAttribute>();
-                if (protocolAttr != null)
-                {
-                    var name = protocolAttr.Value != null ? protocolAttr.Value.ToString() : member.Name;
-                    if (char.IsUpper(name[0]))
-                    {
-                        name = char.ToLowerInvariant(name[0]) + name.Substring(1);
-                    }
-                    return "$" + name;
-                }
-
-                return _namingScheme.GetName(member);
             }
 
             private static KeyValuePair<ParameterInfo[], ReflectionUtils.ConstructorDelegate> ConstructorFactory(Type key)

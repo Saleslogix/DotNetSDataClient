@@ -81,7 +81,7 @@ namespace Saleslogix.SData.Client.Linq
             OrderBy = string.Join(",", orderings.Select(
                 ordering => string.Format(
                     "{0} {1}",
-                    RenderPropertyPath(PropertyPathBuilder.Build(ordering.Expression), ".", _namingScheme),
+                    RenderPropertyPath(PropertyPathBuilder.Build(ordering.Expression, true), ".", _namingScheme),
                     ordering.OrderingDirection.ToString().ToLowerInvariant())).ToArray()) + OrderBy;
             base.VisitOrderings(orderings, queryModel, orderByClause);
         }
@@ -226,7 +226,7 @@ namespace Saleslogix.SData.Client.Linq
 
             public override Expression VisitExpression(Expression expression)
             {
-                var path = PropertyPathBuilder.Build(expression, false);
+                var path = PropertyPathBuilder.Build(expression, false, false);
                 if (path != null)
                 {
                     _paths.Add(RenderPropertyPath(path, "/", _namingScheme));

@@ -147,6 +147,26 @@ namespace Saleslogix.SData.Client.Test.Linq
         }
 
         [Test]
+        public void OrderBy_ProtocolProperty_Test()
+        {
+            var builder = new QueryModelBuilder();
+            builder.AddClause(new MainFromClause("x", typeof (Contact), Expression.Constant(null)));
+            builder.AddClause(new OrderByClause
+                                  {
+                                      Orderings =
+                                          {
+                                              new Ordering(GetExpression((Contact c) => c.Key), OrderingDirection.Asc)
+                                          }
+                                  });
+            builder.AddClause(new SelectClause(Expression.Constant(null)));
+
+            var visitor = new SDataQueryModelVisitor();
+            visitor.VisitQueryModel(builder.Build());
+
+            Assert.That(visitor.OrderBy, Is.EqualTo("$key asc"));
+        }
+
+        [Test]
         public void Select_Single_Test()
         {
             var builder = new QueryModelBuilder();
@@ -209,6 +229,19 @@ namespace Saleslogix.SData.Client.Test.Linq
             visitor.VisitQueryModel(builder.Build());
 
             Assert.That(visitor.Select, Is.EqualTo("Address/PostalCode"));
+        }
+
+        [Test]
+        public void Select_ProtocolProperty_Test()
+        {
+            var builder = new QueryModelBuilder();
+            builder.AddClause(new MainFromClause("x", typeof (Contact), Expression.Constant(null)));
+            builder.AddClause(new SelectClause(GetExpression((Contact c) => c.Key)));
+
+            var visitor = new SDataQueryModelVisitor();
+            visitor.VisitQueryModel(builder.Build());
+
+            Assert.That(visitor.Select, Is.Null);
         }
 
         [Test]
@@ -330,6 +363,12 @@ namespace Saleslogix.SData.Client.Test.Linq
             visitor.VisitQueryModel(builder.Build());
 
             Assert.That(visitor.Include, Is.EqualTo("Address,Address/Street"));
+        }
+
+        [Test]
+        public void ResultOperator_Fetch_ProtocolProperty_Test()
+        {
+            Assert.That(() => new FetchResultOperator(GetExpression((Contact c) => c.Key)), Throws.TypeOf<InvalidOperationException>());
         }
 
         [Test]

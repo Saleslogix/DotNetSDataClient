@@ -39,6 +39,18 @@ namespace Saleslogix.SData.Client
             public string GetName(MemberInfo member)
             {
                 Guard.ArgumentNotNull(member, "member");
+
+                var protocolAttr = member.GetCustomAttribute<SDataProtocolPropertyAttribute>();
+                if (protocolAttr != null)
+                {
+                    var name = protocolAttr.Value != null ? protocolAttr.Value.ToString() : member.Name;
+                    if (char.IsUpper(name[0]))
+                    {
+                        name = char.ToLowerInvariant(name[0]) + name.Substring(1);
+                    }
+                    return "$" + name;
+                }
+
 #if !NET_2_0
                 var contractAttr = member.GetCustomAttribute<DataContractAttribute>();
                 if (contractAttr != null && !string.IsNullOrEmpty(contractAttr.Name))

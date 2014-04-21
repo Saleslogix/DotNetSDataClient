@@ -58,108 +58,126 @@ namespace Saleslogix.SData.Client
             set { _info = value; }
         }
 
+        [SDataProtocolProperty]
         public string Id
         {
             get { return _info.Id; }
             set { _info.Id = value; }
         }
 
+        [SDataProtocolProperty]
         public string Title
         {
             get { return _info.Title; }
             set { _info.Title = value; }
         }
 
+        [SDataProtocolProperty]
         public DateTimeOffset? Updated
         {
             get { return _info.Updated; }
             set { _info.Updated = value; }
         }
 
+        [SDataProtocolProperty]
         public Uri Url
         {
             get { return _info.Url; }
             set { _info.Url = value; }
         }
 
+        [SDataProtocolProperty]
         public Diagnoses Diagnoses
         {
             get { return _info.Diagnoses ?? (_info.Diagnoses = new Diagnoses()); }
             set { _info.Diagnoses = value; }
         }
 
+        [SDataProtocolProperty]
         public string Schema
         {
             get { return _info.Schema; }
             set { _info.Schema = value; }
         }
 
+        [SDataProtocolProperty]
         public string Key
         {
             get { return _info.Key; }
             set { _info.Key = value; }
         }
 
+        [SDataProtocolProperty]
         public Guid? Uuid
         {
             get { return _info.Uuid; }
             set { _info.Uuid = value; }
         }
 
+        [SDataProtocolProperty]
         public string Lookup
         {
             get { return _info.Lookup; }
             set { _info.Lookup = value; }
         }
 
+        [SDataProtocolProperty]
         public string Descriptor
         {
             get { return _info.Descriptor; }
             set { _info.Descriptor = value; }
         }
 
+        [SDataProtocolProperty]
         public HttpMethod? HttpMethod
         {
             get { return _info.HttpMethod; }
             set { _info.HttpMethod = value; }
         }
 
+        [SDataProtocolProperty]
         public HttpStatusCode? HttpStatus
         {
             get { return _info.HttpStatus; }
             set { _info.HttpStatus = value; }
         }
 
+        [SDataProtocolProperty]
         public string HttpMessage
         {
             get { return _info.HttpMessage; }
             set { _info.HttpMessage = value; }
         }
 
+        [SDataProtocolProperty]
         public string Location
         {
             get { return _info.Location; }
             set { _info.Location = value; }
         }
 
+        [SDataProtocolProperty]
         public string ETag
         {
             get { return _info.ETag; }
             set { _info.ETag = value; }
         }
 
+        [SDataProtocolProperty]
         public string IfMatch
         {
             get { return _info.IfMatch; }
             set { _info.IfMatch = value; }
         }
 
+        [SDataProtocolProperty]
         public bool? IsDeleted
         {
             get { return _info.IsDeleted; }
             set { _info.IsDeleted = value; }
         }
 
+        [SDataProtocolProperty]
         public SyncState SyncState
         {
             get { return _info.SyncState; }

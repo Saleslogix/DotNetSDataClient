@@ -542,6 +542,12 @@ namespace Saleslogix.SData.Client.Test.Linq
             AssertObject((IDictionary<string, object> c) => (bool) c["Active"], "Active");
         }
 
+        [Test]
+        public void Property_ProtocolProperty_Test()
+        {
+            AssertObject((Contact c) => c.Key, "$key");
+        }
+
         private static void AssertSimple<T>(Expression<Func<T>> lambda, string expected)
         {
             AssertLambda(lambda, expected);

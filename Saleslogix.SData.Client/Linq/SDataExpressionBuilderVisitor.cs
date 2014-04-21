@@ -105,10 +105,7 @@ namespace Saleslogix.SData.Client.Linq
 
         protected override Expression VisitConstantExpression(ConstantExpression expression)
         {
-            var protocolVar = expression.Value as SDataProtocolVariable;
-            Append(protocolVar != null
-                       ? protocolVar.ToString()
-                       : SDataUri.FormatConstant(expression.Value));
+            Append(SDataUri.FormatConstant(expression.Value));
             return expression;
         }
 

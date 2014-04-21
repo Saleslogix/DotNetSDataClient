@@ -77,72 +77,84 @@ namespace Saleslogix.SData.Client
             set { _info = value; }
         }
 
+        [SDataProtocolProperty]
         public string Id
         {
             get { return _info.Id; }
             set { _info.Id = value; }
         }
 
+        [SDataProtocolProperty]
         public string Title
         {
             get { return _info.Title; }
             set { _info.Title = value; }
         }
 
+        [SDataProtocolProperty]
         public DateTimeOffset? Updated
         {
             get { return _info.Updated; }
             set { _info.Updated = value; }
         }
 
+        [SDataProtocolProperty]
         public int? TotalResults
         {
             get { return _info.TotalResults; }
             set { _info.TotalResults = value; }
         }
 
+        [SDataProtocolProperty]
         public int? StartIndex
         {
             get { return _info.StartIndex; }
             set { _info.StartIndex = value; }
         }
 
+        [SDataProtocolProperty]
         public int? ItemsPerPage
         {
             get { return _info.ItemsPerPage; }
             set { _info.ItemsPerPage = value; }
         }
 
+        [SDataProtocolProperty]
         public Uri Url
         {
             get { return _info.Url; }
             set { _info.Url = value; }
         }
 
+        [SDataProtocolProperty]
         public Diagnoses Diagnoses
         {
             get { return _info.Diagnoses ?? (_info.Diagnoses = new Diagnoses()); }
             set { _info.Diagnoses = value; }
         }
 
+        [SDataProtocolProperty]
         public string Schema
         {
             get { return _info.Schema; }
             set { _info.Schema = value; }
         }
 
+        [SDataProtocolProperty]
         public bool? DeleteMissing
         {
             get { return _info.DeleteMissing; }
             set { _info.DeleteMissing = value; }
         }
 
+        [SDataProtocolProperty]
         public SyncMode? SyncMode
         {
             get { return _info.SyncMode; }
             set { _info.SyncMode = value; }
         }
 
+        [SDataProtocolProperty]
         public Digest SyncDigest
         {
             get { return _info.SyncDigest; }

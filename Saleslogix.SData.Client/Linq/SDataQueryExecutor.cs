@@ -168,7 +168,8 @@ namespace Saleslogix.SData.Client.Linq
             {
                 //this.Execute<[queryModel.MainFromClause.ItemType], T>(parms, [queryModel.SelectClause.Selector]);
                 var executeMethod = new Func<SDataParameters, Func<object, T>, SDataCollection<T>>(Execute)
-                    .Method.GetGenericMethodDefinition()
+                    .GetMethodInfo()
+                    .GetGenericMethodDefinition()
                     .MakeGenericMethod(queryModel.MainFromClause.ItemType, typeof (T));
                 var parmsParamExpr = Expression.Parameter(typeof (SDataParameters), "parms");
                 var selectorParamExpr = Expression.Parameter(queryModel.MainFromClause.ItemType, "selector");
