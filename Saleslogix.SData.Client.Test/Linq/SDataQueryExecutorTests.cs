@@ -144,6 +144,20 @@ namespace Saleslogix.SData.Client.Test.Linq
         }
 
         [Test]
+        public void Scalar_ExtensionArgs_Test()
+        {
+            var parmsList = new List<SDataParameters>();
+            var client = CreateClient(parmsList, CreateCollection<object>(null, 10));
+            var executor = new SDataQueryExecutor(client);
+            var builder = CreateQueryBuilder<Contact>(true);
+            builder.AddResultOperator(new WithExtensionArgResultOperator("foo", "bar"));
+            builder.AddResultOperator(new CountResultOperator());
+            executor.ExecuteScalar<int>(builder.Build());
+
+            Assert.That(parmsList[0].ExtensionArgs, Is.EqualTo(new Dictionary<string, string> {{"foo", "bar"}}));
+        }
+
+        [Test]
         public void Single_First_Test()
         {
             var parmsList = new List<SDataParameters>();
@@ -549,6 +563,20 @@ namespace Saleslogix.SData.Client.Test.Linq
 
             Assert.That(parmsList[0].Count, Is.EqualTo(0));
             Assert.That(result, Is.EqualTo(10));
+        }
+
+        [Test]
+        public void ScalarAsync_ExtensionArgs_Test()
+        {
+            var parmsList = new List<SDataParameters>();
+            var client = CreateClientAsync(parmsList, CreateCollection<object>(null, 10));
+            var executor = new SDataQueryExecutor(client);
+            var builder = CreateQueryBuilder<Contact>(true);
+            builder.AddResultOperator(new WithExtensionArgResultOperator("foo", "bar"));
+            builder.AddResultOperator(new CountAsyncResultOperator(CancellationToken.None));
+            executor.ExecuteScalarAsync<int>(builder.Build(), CancellationToken.None).Wait();
+
+            Assert.That(parmsList[0].ExtensionArgs, Is.EqualTo(new Dictionary<string, string> {{"foo", "bar"}}));
         }
 
         [Test]

@@ -1,4 +1,6 @@
-﻿namespace Saleslogix.SData.Client.Test.Model
+﻿using System.Collections.Generic;
+
+namespace Saleslogix.SData.Client.Test.Model
 {
     [SDataResource("contacts")]
     public class Contact
@@ -10,6 +12,7 @@
         public string LastName { get; set; }
         public bool? Active { get; set; }
         public Address Address { get; set; }
+        public IList<Address> Addresses { get; set; }
     }
 
     public enum ContactCivility

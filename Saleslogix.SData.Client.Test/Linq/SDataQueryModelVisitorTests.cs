@@ -242,6 +242,7 @@ namespace Saleslogix.SData.Client.Test.Linq
             visitor.VisitQueryModel(builder.Build());
 
             Assert.That(visitor.Select, Is.Null);
+            Assert.That(visitor.Precedence, Is.EqualTo(0));
         }
 
         [Test]
@@ -366,17 +367,11 @@ namespace Saleslogix.SData.Client.Test.Linq
         }
 
         [Test]
-        public void ResultOperator_Fetch_ProtocolProperty_Test()
-        {
-            Assert.That(() => new FetchResultOperator(GetExpression((Contact c) => c.Key)), Throws.TypeOf<InvalidOperationException>());
-        }
-
-        [Test]
         public void ResultOperator_WithPrecedence_Test()
         {
             var builder = new QueryModelBuilder();
             builder.AddClause(new MainFromClause("x", typeof (Contact), Expression.Constant(null)));
-            builder.AddClause(new SelectClause(Expression.Constant(null)));
+            builder.AddClause(new SelectClause(new QuerySourceReferenceExpression(builder.MainFromClause)));
             builder.AddResultOperator(new WithPrecedenceResultOperator(3));
 
             var visitor = new SDataQueryModelVisitor();
@@ -398,30 +393,6 @@ namespace Saleslogix.SData.Client.Test.Linq
             visitor.VisitQueryModel(builder.Build());
 
             Assert.That(visitor.ExtensionArgs, Is.EqualTo(new Dictionary<string, string> {{"foo", "bar"}, {"hello", "world"}}));
-        }
-
-        [Test]
-        public void SubQuery_Test()
-        {
-            var builder = new QueryModelBuilder();
-            builder.AddClause(new MainFromClause("x", typeof (Contact), Expression.Constant(null)));
-            builder.AddClause(new SelectClause(Expression.Constant(null)));
-            builder.AddClause(new WhereClause(GetExpression((Contact c) => c.Active)));
-            builder.AddResultOperator(new TakeResultOperator(Expression.Constant(10)));
-
-            var subQuery = new SubQueryExpression(builder.Build());
-            builder = new QueryModelBuilder();
-            builder.AddClause(new MainFromClause("x", typeof (Contact), subQuery));
-            builder.AddClause(new SelectClause(Expression.Constant(null)));
-            builder.AddClause(new WhereClause(GetExpression((Contact c) => c.Active)));
-            builder.AddResultOperator(new SkipResultOperator(Expression.Constant(3)));
-
-            var visitor = new SDataQueryModelVisitor();
-            visitor.VisitQueryModel(builder.Build());
-
-            Assert.That(visitor.Where, Is.EqualTo("(Active and Active)"));
-            Assert.That(visitor.StartIndex, Is.EqualTo(4));
-            Assert.That(visitor.Count, Is.EqualTo(7));
         }
 
         private static Expression GetExpression<T, TResult>(Expression<Func<T, TResult>> expression)

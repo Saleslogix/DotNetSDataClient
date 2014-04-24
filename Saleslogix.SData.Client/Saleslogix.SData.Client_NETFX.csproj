@@ -160,7 +160,7 @@
     <Compile Include="Linq\LastAsyncResultOperator.cs" />
     <Compile Include="Linq\LongCountAsyncExpressionNode.cs" />
     <Compile Include="Linq\LongCountAsyncResultOperator.cs" />
-    <Compile Include="Linq\PropertyPathBuilder.cs" />
+    <Compile Include="Linq\PropertyPathExtractionVisitor.cs" />
     <Compile Include="Linq\SDataClientExtensions.cs" />
     <Compile Include="Linq\SDataExpressionBuilderVisitor.cs" />
     <Compile Include="Linq\SDataFunctionExtensions.cs" />

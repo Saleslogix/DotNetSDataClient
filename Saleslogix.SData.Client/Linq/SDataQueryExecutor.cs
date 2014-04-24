@@ -12,6 +12,7 @@ using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Clauses.StreamedData;
+using Remotion.Linq.Parsing.Structure;
 
 #if !NET_3_5
 using System.Threading.Tasks;
@@ -26,14 +27,16 @@ namespace Saleslogix.SData.Client.Linq
         : IAsyncQueryExecutor
 #endif
     {
+        private readonly INodeTypeProvider _nodeTypeProvider;
         private readonly ISDataClient _client;
         private readonly string _path;
         private readonly INamingScheme _namingScheme;
 
-        public SDataQueryExecutor(ISDataClient client, string path = null, INamingScheme namingScheme = null)
+        public SDataQueryExecutor(ISDataClient client, string path = null, INodeTypeProvider nodeTypeProvider = null, INamingScheme namingScheme = null)
         {
             _client = client;
             _path = path;
+            _nodeTypeProvider = nodeTypeProvider ?? ExpressionTreeParser.CreateDefaultNodeTypeProvider();
             _namingScheme = namingScheme ?? NamingScheme.Default;
         }
 
@@ -498,7 +501,7 @@ namespace Saleslogix.SData.Client.Linq
 
         private SDataParameters CreateParameters(QueryModel queryModel)
         {
-            var visitor = new SDataQueryModelVisitor(_namingScheme);
+            var visitor = new SDataQueryModelVisitor(_nodeTypeProvider, _namingScheme);
             visitor.VisitQueryModel(queryModel);
             var parms = new SDataParameters
                        {

@@ -73,7 +73,7 @@ namespace Remotion.Linq.Parsing.Structure.IntermediateModel
     {
       ArgumentUtility.CheckNotNull ("queryModel", queryModel);
 
-      queryModel = WrapQueryModelAfterEndOfQuery (queryModel, clauseGenerationContext);
+      //PATCH: queryModel = WrapQueryModelAfterEndOfQuery (queryModel, clauseGenerationContext);
       queryModel = ApplyNodeSpecificSemantics (queryModel, clauseGenerationContext);
       SetResultTypeOverride (queryModel);
       return queryModel;

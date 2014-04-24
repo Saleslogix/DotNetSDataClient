@@ -73,13 +73,16 @@
     <Compile Include="Framework\UriPathSegmentTests.cs" />
     <Compile Include="Framework\W3CDateTimeTests.cs" />
     <Compile Include="Helpers.cs" />
-    <Compile Include="Linq\PropertyPathBuilderTests.cs" />
+    <Compile Include="Linq\PropertyPathExtractionVisitorTests.cs" />
     <Compile Include="Linq\SDataExpressionBuilderVisitorTests.cs" />
+    <Compile Include="Linq\SDataQueryableExtensionsTests.cs" />
     <Compile Include="Linq\SDataQueryExecutorTests.cs" />
     <Compile Include="Linq\SDataQueryModelVisitorTests.cs" />
+    <Compile Include="Metadata\SDataSchemaTests.cs" />
     <Compile Include="Mime\MimeMessageTests.cs" />
     <Compile Include="Model\Address.cs" />
     <Compile Include="Model\Contact.cs" />
+    <Compile Include="Model\Organization.cs" />
     <Compile Include="Model\Product.cs" />
     <Compile Include="Model\SalesOrder.cs" />
     <Compile Include="Model\SalesOrderLine.cs" />

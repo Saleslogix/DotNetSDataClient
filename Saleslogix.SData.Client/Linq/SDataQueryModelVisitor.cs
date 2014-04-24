@@ -4,23 +4,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
-using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Collections;
-using Remotion.Linq.Parsing;
+using Remotion.Linq.Parsing.Structure;
 
 namespace Saleslogix.SData.Client.Linq
 {
     internal class SDataQueryModelVisitor : QueryModelVisitorBase
     {
         private readonly IDictionary<string, string> _extensionArgs = new Dictionary<string, string>();
+        private readonly INodeTypeProvider _nodeTypeProvider;
         private readonly INamingScheme _namingScheme;
 
-        public SDataQueryModelVisitor(INamingScheme namingScheme = null)
+        public SDataQueryModelVisitor(INodeTypeProvider nodeTypeProvider = null, INamingScheme namingScheme = null)
         {
+            _nodeTypeProvider = nodeTypeProvider ?? ExpressionTreeParser.CreateDefaultNodeTypeProvider();
             _namingScheme = namingScheme ?? NamingScheme.Default;
         }
 
@@ -42,18 +42,14 @@ namespace Saleslogix.SData.Client.Linq
         {
             MainType = fromClause.ItemType;
 
-            var subQueryExpr = fromClause.FromExpression as SubQueryExpression;
-            if (subQueryExpr != null)
+            var constExpr = fromClause.FromExpression as ConstantExpression;
+            if (constExpr == null)
             {
-                VisitQueryModel(subQueryExpr.QueryModel);
+                throw new NotSupportedException(string.Format("From clause expression '{0}' not supported", fromClause.FromExpression.GetType()));
             }
-            else
+            if (constExpr.Value != null && !(constExpr.Value is IQueryable))
             {
-                var constExpr = fromClause.FromExpression as ConstantExpression;
-                if (constExpr == null || (constExpr.Value != null && !(constExpr.Value is IQueryable)))
-                {
-                    throw new NotSupportedException("From expression not supported");
-                }
+                throw new NotSupportedException(string.Format("From clause expression value '{0}' not supported", constExpr.Value.GetType()));
             }
 
             base.VisitMainFromClause(fromClause, queryModel);
@@ -73,26 +69,33 @@ namespace Saleslogix.SData.Client.Linq
 
         protected override void VisitOrderings(ObservableCollection<Ordering> orderings, QueryModel queryModel, OrderByClause orderByClause)
         {
-            if (OrderBy != null)
+            var orders = orderings.SelectMany(ordering => PropertyPathExtractionVisitor.ExtractPaths(ordering.Expression, _nodeTypeProvider, false, true, _namingScheme, ".")
+                .Select(path => string.Format("{0} {1}", path, ordering.OrderingDirection.ToString().ToLowerInvariant())))
+                .ToList();
+            if (orders.Count > 0)
             {
-                OrderBy = "," + OrderBy;
+                if (OrderBy != null)
+                {
+                    OrderBy = "," + OrderBy;
+                }
+                OrderBy = string.Join(",", orders.ToArray()) + OrderBy;
             }
 
-            OrderBy = string.Join(",", orderings.Select(
-                ordering => string.Format(
-                    "{0} {1}",
-                    RenderPropertyPath(PropertyPathBuilder.Build(ordering.Expression, true), ".", _namingScheme),
-                    ordering.OrderingDirection.ToString().ToLowerInvariant())).ToArray()) + OrderBy;
             base.VisitOrderings(orderings, queryModel, orderByClause);
         }
 
         public override void VisitSelectClause(SelectClause selectClause, QueryModel queryModel)
         {
-            var paths = PropertyPathExtractionExpressionTreeVisitor.ExtractPropertyPaths(selectClause.Selector, _namingScheme);
-            if (paths.Count > 0)
+            var paths = PropertyPathExtractionVisitor.ExtractPaths(selectClause.Selector, _nodeTypeProvider, true, false, _namingScheme, "/");
+            if (paths.Count == 0)
+            {
+                Precedence = 0;
+            }
+            else if (!paths.SequenceEqual(new[] {"*"}))
             {
                 Select = string.Join(",", paths.ToArray());
             }
+
             base.VisitSelectClause(selectClause, queryModel);
         }
 
@@ -136,25 +139,23 @@ namespace Saleslogix.SData.Client.Linq
             var fetchOperator = resultOperator as FetchResultOperator;
             if (fetchOperator != null)
             {
-                var include = RenderPropertyPath(fetchOperator.PropertyPath, "/", _namingScheme);
-                if (Include != null)
+                var paths = PropertyPathExtractionVisitor.ExtractPaths(fetchOperator.Selector, _nodeTypeProvider, false, false, _namingScheme, "/");
+                if (paths.Count > 0)
                 {
-                    include = string.Format("{0},{1}", Include, include);
+                    if (Include != null)
+                    {
+                        Include += ",";
+                    }
+                    Include += string.Join(",", paths.ToArray());
                 }
 
-                Include = include;
                 return;
             }
 
             var withPrecedenceOperator = resultOperator as WithPrecedenceResultOperator;
             if (withPrecedenceOperator != null)
             {
-                if (Precedence != null)
-                {
-                    throw new NotSupportedException("Multiple WithPrecedence operators not supported");
-                }
-
-                Precedence = withPrecedenceOperator.Precedence;
+                Precedence = Math.Min(Precedence ?? int.MaxValue, withPrecedenceOperator.Precedence);
                 return;
             }
 
@@ -194,49 +195,5 @@ namespace Saleslogix.SData.Client.Linq
         {
             throw new NotSupportedException("Group join clauses not supported");
         }
-
-        private static string RenderPropertyPath(IEnumerable<object> propertyPath, string separator, INamingScheme namingScheme)
-        {
-            return string.Join(separator,
-                propertyPath.Select(prop =>
-                {
-                    var member = prop as MemberInfo;
-                    return member != null ? namingScheme.GetName(member) : prop.ToString();
-                }).ToArray());
-        }
-
-        #region Nested type: MemberPathExtractionVisitor
-
-        private class PropertyPathExtractionExpressionTreeVisitor : ExpressionTreeVisitor
-        {
-            public static ICollection<string> ExtractPropertyPaths(Expression expression, INamingScheme namingScheme)
-            {
-                var visitor = new PropertyPathExtractionExpressionTreeVisitor(namingScheme);
-                visitor.VisitExpression(expression);
-                return visitor._paths;
-            }
-
-            private readonly INamingScheme _namingScheme;
-            private readonly ICollection<string> _paths = new HashSet<string>();
-
-            private PropertyPathExtractionExpressionTreeVisitor(INamingScheme namingScheme)
-            {
-                _namingScheme = namingScheme;
-            }
-
-            public override Expression VisitExpression(Expression expression)
-            {
-                var path = PropertyPathBuilder.Build(expression, false, false);
-                if (path != null)
-                {
-                    _paths.Add(RenderPropertyPath(path, "/", _namingScheme));
-                    return expression;
-                }
-
-                return base.VisitExpression(expression);
-            }
-        }
-
-        #endregion
     }
 }

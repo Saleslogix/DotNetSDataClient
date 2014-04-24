@@ -6,15 +6,16 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
+using Remotion.Linq.Utilities;
 
 namespace Saleslogix.SData.Client.Linq
 {
     internal class WithExtensionArgExpressionNode : ResultOperatorExpressionNodeBase
     {
         public static readonly MethodInfo[] SupportedMethods =
-        {
-            new Func<IQueryable<object>, string, string, IQueryable<object>>(SDataQueryableExtensions.WithExtensionArg).GetMethodInfo().GetGenericMethodDefinition()
-        };
+            {
+                new Func<IQueryable<object>, string, string, IQueryable<object>>(SDataQueryableExtensions.WithExtensionArg).GetMethodInfo().GetGenericMethodDefinition()
+            };
 
         private readonly string _name;
         private readonly string _value;
@@ -33,7 +34,10 @@ namespace Saleslogix.SData.Client.Linq
 
         public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
         {
-            throw CreateResolveNotSupportedException();
+            ArgumentUtility.CheckNotNull("inputParameter", inputParameter);
+            ArgumentUtility.CheckNotNull("expressionToBeResolved", expressionToBeResolved);
+            ArgumentUtility.CheckNotNull("clauseGenerationContext", clauseGenerationContext);
+            return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
         }
     }
 }

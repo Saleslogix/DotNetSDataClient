@@ -6,33 +6,51 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
+using Remotion.Linq.Utilities;
 
 namespace Saleslogix.SData.Client.Linq
 {
     internal class FetchExpressionNode : ResultOperatorExpressionNodeBase
     {
         public static readonly MethodInfo[] SupportedMethods =
-            new[]
                 {
                     new Func<IQueryable<object>, Expression<Func<object, object>>, IQueryable<object>>(SDataQueryableExtensions.Fetch).GetMethodInfo().GetGenericMethodDefinition()
                 };
 
-        private readonly Expression _selector;
+        private readonly ResolvedExpressionCache<Expression> _cachedSelector;
 
         public FetchExpressionNode(MethodCallExpressionParseInfo parseInfo, LambdaExpression selector)
             : base(parseInfo, null, null)
         {
-            _selector = selector.Body;
+            ArgumentUtility.CheckNotNull("selector", selector);
+
+            if (selector.Parameters.Count != 1)
+            {
+                throw new ArgumentException("Selector must have exactly one parameter", "selector");
+            }
+
+            Selector = selector;
+            _cachedSelector = new ResolvedExpressionCache<Expression>(this);
+        }
+
+        public LambdaExpression Selector { get; private set; }
+
+        public Expression GetResolvedSelector(ClauseGenerationContext clauseGenerationContext)
+        {
+            return _cachedSelector.GetOrCreate(r => r.GetResolvedExpression(Selector.Body, Selector.Parameters[0], clauseGenerationContext));
         }
 
         protected override ResultOperatorBase CreateResultOperator(ClauseGenerationContext clauseGenerationContext)
         {
-            return new FetchResultOperator(_selector);
+            return new FetchResultOperator(GetResolvedSelector(clauseGenerationContext));
         }
 
         public override Expression Resolve(ParameterExpression inputParameter, Expression expressionToBeResolved, ClauseGenerationContext clauseGenerationContext)
         {
-            throw CreateResolveNotSupportedException();
+            ArgumentUtility.CheckNotNull("inputParameter", inputParameter);
+            ArgumentUtility.CheckNotNull("expressionToBeResolved", expressionToBeResolved);
+            ArgumentUtility.CheckNotNull("clauseGenerationContext", clauseGenerationContext);
+            return Source.Resolve(inputParameter, expressionToBeResolved, clauseGenerationContext);
         }
     }
 }

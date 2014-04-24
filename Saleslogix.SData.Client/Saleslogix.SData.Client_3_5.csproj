@@ -86,7 +86,7 @@
     <Compile Include="Linq\ElementAtResultOperator.cs" />
     <Compile Include="Linq\FetchExpressionNode.cs" />
     <Compile Include="Linq\FetchResultOperator.cs" />
-    <Compile Include="Linq\PropertyPathBuilder.cs" />
+    <Compile Include="Linq\PropertyPathExtractionVisitor.cs" />
     <Compile Include="Linq\SDataClientExtensions.cs" />
     <Compile Include="Linq\SDataExpressionBuilderVisitor.cs" />
     <Compile Include="Linq\SDataFunctionExtensions.cs" />
