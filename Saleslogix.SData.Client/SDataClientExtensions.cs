@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System.Reflection;
-using System.Threading;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Utilities;
 
 #if !NET_2_0 && !NET_3_5
+using System.Threading;
 using System.Threading.Tasks;
 #endif
 
@@ -46,7 +46,6 @@ namespace Saleslogix.SData.Client
 
         private static SDataParameters GetGetParameters(string key, string path, SDataPayloadOptions options)
         {
-            Guard.ArgumentNotNullOrEmptyString(key, "key");
             Guard.ArgumentNotNullOrEmptyString(path, "path");
             if (options == null)
             {

@@ -94,7 +94,7 @@ namespace Saleslogix.SData.Client.Test.Framework
         public void Clone_Test()
         {
             var before = new UriFormatter("http://localhost/sdata/aw/dynamic/-/accounts?select=Name");
-            var dummy = before.PathSegments;
+            Assert.That(before.PathSegments, Is.Not.Null);
             var after = new UriFormatter(before);
             Assert.That(after.Scheme, Is.EqualTo(before.Scheme));
             Assert.That(after.Port, Is.EqualTo(before.Port));
@@ -162,8 +162,7 @@ namespace Saleslogix.SData.Client.Test.Framework
         [Test]
         public void Assign_Path_Null_Test()
         {
-            var uri = new UriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?format=json");
-            uri.Path = null;
+            var uri = new UriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?format=json") {Path = null};
             uri.AppendPath("hello", "world");
             Assert.That(uri.ToString(), Is.EqualTo("http://localhost:3333/sdata/hello/world?format=json"));
         }
@@ -171,8 +170,7 @@ namespace Saleslogix.SData.Client.Test.Framework
         [Test]
         public void Assign_Query_Null_Test()
         {
-            var uri = new UriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?format=json");
-            uri.Query = null;
+            var uri = new UriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?format=json") {Query = null};
             uri["hello"] = "world";
             Assert.That(uri.ToString(), Is.EqualTo("http://localhost:3333/sdata/aw/dynamic/-/accounts?hello=world"));
         }

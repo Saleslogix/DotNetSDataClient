@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading;
 using Remotion.Linq;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.ExpressionTreeVisitors;
@@ -15,6 +14,7 @@ using Remotion.Linq.Clauses.StreamedData;
 using Remotion.Linq.Parsing.Structure;
 
 #if !NET_3_5
+using System.Threading;
 using System.Threading.Tasks;
 #endif
 
@@ -30,12 +30,14 @@ namespace Saleslogix.SData.Client.Linq
         private readonly INodeTypeProvider _nodeTypeProvider;
         private readonly ISDataClient _client;
         private readonly string _path;
+        private readonly bool _canDiscoverPath;
         private readonly INamingScheme _namingScheme;
 
-        public SDataQueryExecutor(ISDataClient client, string path = null, INodeTypeProvider nodeTypeProvider = null, INamingScheme namingScheme = null)
+        public SDataQueryExecutor(ISDataClient client, string path = null, bool canDiscoverPath = true, INodeTypeProvider nodeTypeProvider = null, INamingScheme namingScheme = null)
         {
             _client = client;
             _path = path;
+            _canDiscoverPath = canDiscoverPath;
             _nodeTypeProvider = nodeTypeProvider ?? ExpressionTreeParser.CreateDefaultNodeTypeProvider();
             _namingScheme = namingScheme ?? NamingScheme.Default;
         }
@@ -503,9 +505,14 @@ namespace Saleslogix.SData.Client.Linq
         {
             var visitor = new SDataQueryModelVisitor(_nodeTypeProvider, _namingScheme);
             visitor.VisitQueryModel(queryModel);
+            var path = _path;
+            if (path == null && _canDiscoverPath)
+            {
+                path = SDataResourceAttribute.GetPath(visitor.MainType) ?? _namingScheme.GetName(visitor.MainType.GetTypeInfo());
+            }
             var parms = new SDataParameters
                        {
-                           Path = _path ?? SDataResourceAttribute.GetPath(visitor.MainType) ?? _namingScheme.GetName(visitor.MainType.GetTypeInfo()),
+                           Path = path,
                            Select = visitor.Select,
                            Where = visitor.Where,
                            OrderBy = visitor.OrderBy,

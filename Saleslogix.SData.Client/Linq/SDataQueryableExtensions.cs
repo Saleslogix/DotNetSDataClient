@@ -4,11 +4,11 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading;
 using Saleslogix.SData.Client.Utilities;
 
 #if !NET_3_5
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 #endif
 

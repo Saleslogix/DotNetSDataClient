@@ -5,11 +5,9 @@ using System.Xml.XPath;
 using NUnit.Framework;
 using Saleslogix.SData.Client.Metadata;
 
-#if NET_4_0
+#if !NET_2_0 && !NET_3_5
 using System.Xml.Linq;
 #endif
-
-// ReSharper disable InconsistentNaming
 
 namespace Saleslogix.SData.Client.Test.Metadata
 {

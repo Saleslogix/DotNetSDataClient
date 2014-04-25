@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Schema;
 
 namespace Saleslogix.SData.Client.Metadata
@@ -28,7 +29,7 @@ namespace Saleslogix.SData.Client.Metadata
             var simpleType = (XmlSchemaSimpleType) obj;
             var restriction = (XmlSchemaSimpleTypeRestriction) simpleType.Content;
 
-            foreach (XmlSchemaFacet facet in restriction.Facets)
+            foreach (var facet in restriction.Facets.OfType<XmlSchemaFacet>())
             {
                 Facets.Add(facet);
             }

@@ -194,14 +194,14 @@ namespace Saleslogix.SData.Client.Test.Linq
         public void Wildcards_Count_Test()
         {
             AssertSelectPath((Contact c) => c.Addresses.Count(), "Addresses");
-            //TODO: untyped
+            AssertSelectPath((IDictionary<string, object> c) => ((IEnumerable<object>) c["Addresses"]).Count(), "Addresses");
         }
 
         [Test]
         public void Wildcards_First_Test()
         {
             AssertSelectPath((Contact c) => c.Addresses.First(), "Addresses/*");
-            //TODO: untyped
+            AssertSelectPath((IDictionary<string, object> c) => ((IEnumerable<object>) c["Addresses"]).First(), "Addresses/*");
         }
 
         [Test]

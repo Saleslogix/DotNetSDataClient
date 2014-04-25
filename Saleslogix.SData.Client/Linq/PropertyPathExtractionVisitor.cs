@@ -211,7 +211,7 @@ namespace Saleslogix.SData.Client.Linq
         private static bool IsSimpleType(Type type)
         {
             type = Nullable.GetUnderlyingType(type) ?? type;
-            return type.IsValueType || new[] {typeof (string), typeof (Guid), typeof (Uri)}.Contains(type);
+            return type.GetTypeInfo().IsValueType || new[] {typeof (string), typeof (Guid), typeof (Uri)}.Contains(type);
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System.Net;
-using System.Threading;
 using Saleslogix.SData.Client.Framework;
 
 #if !NET_2_0 && !NET_3_5
+using System.Threading;
 using System.Threading.Tasks;
 #endif
 

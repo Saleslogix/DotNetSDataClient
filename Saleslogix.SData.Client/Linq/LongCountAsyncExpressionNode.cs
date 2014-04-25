@@ -13,7 +13,7 @@ namespace Saleslogix.SData.Client.Linq
 {
     internal class LongCountAsyncExpressionNode : LongCountExpressionNode
     {
-        public static readonly MethodInfo[] SupportedMethods =
+        public new static readonly MethodInfo[] SupportedMethods =
                 {
                     new Func<IQueryable<object>, Expression<Func<object, bool>>, CancellationToken, Task<long>>(SDataQueryableExtensions.LongCountAsync).GetMethodInfo().GetGenericMethodDefinition()
                 };

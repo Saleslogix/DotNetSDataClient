@@ -1,13 +1,16 @@
-﻿using System;
+﻿using System.Linq;
+using NUnit.Framework;
+using Saleslogix.SData.Client.Linq;
+using Saleslogix.SData.Client.Test.Model;
+
+#if !NET_3_5
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
-using NUnit.Framework;
-using Saleslogix.SData.Client.Linq;
-using Saleslogix.SData.Client.Test.Model;
+#endif
 
 namespace Saleslogix.SData.Client.Test.Linq
 {

@@ -78,7 +78,6 @@
     <Compile Include="Linq\SDataQueryableExtensionsTests.cs" />
     <Compile Include="Linq\SDataQueryExecutorTests.cs" />
     <Compile Include="Linq\SDataQueryModelVisitorTests.cs" />
-    <Compile Include="Metadata\SDataSchemaTests.cs" />
     <Compile Include="Mime\MimeMessageTests.cs" />
     <Compile Include="Model\Address.cs" />
     <Compile Include="Model\Contact.cs" />

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
 using Moq;
 using NUnit.Framework;
 using Remotion.Linq;
@@ -13,10 +12,9 @@ using Saleslogix.SData.Client.Linq;
 using Saleslogix.SData.Client.Test.Model;
 
 #if !NET_3_5
+using System.Threading;
 using System.Threading.Tasks;
 #endif
-
-// ReSharper disable InconsistentNaming
 
 namespace Saleslogix.SData.Client.Test.Linq
 {

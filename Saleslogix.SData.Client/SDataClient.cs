@@ -1,12 +1,16 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
+using System;
+using System.IO;
 using System.Net;
-using System.Threading;
+using System.Text;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
+using Saleslogix.SData.Client.Metadata;
 using Saleslogix.SData.Client.Utilities;
 
 #if !NET_2_0 && !NET_3_5
+using System.Threading;
 using System.Threading.Tasks;
 #endif
 
@@ -55,37 +59,17 @@ namespace Saleslogix.SData.Client
         public Task<ISDataResults> ExecuteAsync(SDataParameters parms, CancellationToken cancel = default(CancellationToken))
         {
             var request = CreateRequest(parms, true);
-            var cancelScope = cancel.Register(request.Abort);
-            return Task.Factory
-                       .FromAsync<SDataResponse>(request.BeginGetResponse, request.EndGetResponse, null)
-                       .ContinueWith(task =>
-                       {
-                           try
-                           {
-                               return SDataResults.FromResponse(task.Result);
-                           }
-                           catch (SDataException ex)
-                           {
-                               if (ex.Status == WebExceptionStatus.RequestCanceled)
-                               {
-                                   cancel.ThrowIfCancellationRequested();
-                               }
-                               if (cancel.IsCancellationRequested)
-                               {
-                                   throw new TaskCanceledException(ex.Message, ex);
-                               }
-                               throw;
-                           }
-                           finally
-                           {
-                               cancelScope.Dispose();
-                           }
-                       }, cancel);
+            return ExecuteAsync(request, SDataResults.FromResponse, cancel);
         }
 
         public Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel = default(CancellationToken))
         {
             var request = CreateRequest(parms, false);
+            return ExecuteAsync(request, CreateResults<T>, cancel);
+        }
+
+        private static Task<T> ExecuteAsync<T>(SDataRequest request, Func<SDataResponse, T> createResults, CancellationToken cancel)
+        {
             var cancelScope = cancel.Register(request.Abort);
             return Task.Factory
                        .FromAsync<SDataResponse>(request.BeginGetResponse, request.EndGetResponse, null)
@@ -93,7 +77,7 @@ namespace Saleslogix.SData.Client
                        {
                            try
                            {
-                               return CreateResults<T>(task.Result);
+                               return createResults(task.Result);
                            }
                            catch (SDataException ex)
                            {
@@ -143,6 +127,16 @@ namespace Saleslogix.SData.Client
             {
                 uri["_" + item.Key] = item.Value;
             }
+
+            var operation = CreateOperation(parms);
+            var request = CreateRequest(uri, operation);
+            request.Accept = parms.Accept;
+            request.AcceptLanguage = parms.Language ?? Language;
+            return request;
+        }
+
+        private static RequestOperation CreateOperation(SDataParameters parms)
+        {
             var operation = new RequestOperation(parms.Method, parms.Content)
                                 {
                                     Selector = parms.Selector,
@@ -157,15 +151,18 @@ namespace Saleslogix.SData.Client
             {
                 operation.Files.Add(file);
             }
-            var request = new SDataRequest(uri.ToString(), operation)
+            return operation;
+        }
+
+        private SDataRequest CreateRequest(SDataUri uri, params RequestOperation[] operations)
+        {
+            var request = new SDataRequest(uri.ToString(), operations)
                               {
                                   UserName = UserName,
                                   Password = Password,
                                   Credentials = Credentials,
                                   NamingScheme = NamingScheme,
                                   Cookies = _cookies,
-                                  Accept = parms.Accept,
-                                  AcceptLanguage = parms.Language ?? Language,
                                   UseHttpMethodOverride = UseHttpMethodOverride
                               };
 #if !PCL && !SILVERLIGHT
@@ -187,7 +184,22 @@ namespace Saleslogix.SData.Client
 
         private ISDataResults<T> CreateResults<T>(SDataResponse response)
         {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+            T content;
+            if (typeof (T) == typeof (SDataSchema) && response.Content is string)
+            {
+                using (var memory = new MemoryStream(Encoding.UTF8.GetBytes((string) response.Content)))
+                {
+                    content = (T) (object) SDataSchema.Read(memory);
+                }
+            }
+            else
+            {
+                content = ContentHelper.Deserialize<T>(response.Content, NamingScheme);
+            }
+#else
             var content = ContentHelper.Deserialize<T>(response.Content, NamingScheme);
+#endif
             return SDataResults.FromResponse(response, content);
         }
     }

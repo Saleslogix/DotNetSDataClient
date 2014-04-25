@@ -9,13 +9,13 @@ namespace Saleslogix.SData.Client.Linq
 {
     internal class SDataQueryable<T> : QueryableBase<T>
     {
-        private SDataQueryable( QueryParser queryParser, ISDataClient client, string path, INamingScheme namingScheme)
-            : base(queryParser, new SDataQueryExecutor(client, path: path, nodeTypeProvider: queryParser.NodeTypeProvider, namingScheme: namingScheme))
+        private SDataQueryable(QueryParser queryParser, ISDataClient client, string path, bool canDiscoverPath, INamingScheme namingScheme)
+            : base(queryParser, new SDataQueryExecutor(client, path, canDiscoverPath, queryParser.NodeTypeProvider, namingScheme))
         {
         }
 
-        public SDataQueryable(ISDataClient client, string path, INamingScheme namingScheme)
-            : this(QueryParser.CreateDefault(), client, path, namingScheme)
+        public SDataQueryable(ISDataClient client, string path, bool canDiscoverPath, INamingScheme namingScheme)
+            : this(QueryParser.CreateDefault(), client, path, canDiscoverPath, namingScheme)
         {
         }
 
