@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using Saleslogix.SData.Client.Content;
@@ -18,11 +20,18 @@ namespace Saleslogix.SData.Client
 {
     public class SDataClient : ISDataClient
     {
+        private readonly Func<string, SDataRequest> _requestFactory;
         private readonly CookieContainer _cookies = new CookieContainer();
 
         public SDataClient(string uri)
+            : this(uri, targetUri => new SDataRequest(targetUri))
+        {
+        }
+
+        internal SDataClient(string uri, Func<string, SDataRequest> requestFactory)
         {
             Uri = uri;
+            _requestFactory = requestFactory;
         }
 
         public string Uri { get; set; }
@@ -53,6 +62,12 @@ namespace Saleslogix.SData.Client
             var request = CreateRequest(parms, false);
             return CreateResults<T>(request.GetResponse());
         }
+
+        public ISDataResults<IList<T>> ExecuteBatch<T>(IList<SDataParameters> items)
+        {
+            var request = CreateBatchRequest(items);
+            return CreateResults<IList<T>>(request.GetResponse());
+        }
 #endif
 
 #if !NET_2_0 && !NET_3_5
@@ -66,6 +81,12 @@ namespace Saleslogix.SData.Client
         {
             var request = CreateRequest(parms, false);
             return ExecuteAsync(request, CreateResults<T>, cancel);
+        }
+
+        public Task<ISDataResults<IList<T>>> ExecuteBatchAsync<T>(IList<SDataParameters> items, CancellationToken cancel = new CancellationToken())
+        {
+            var request = CreateBatchRequest(items);
+            return ExecuteAsync(request, CreateResults<IList<T>>, cancel);
         }
 
         private static Task<T> ExecuteAsync<T>(SDataRequest request, Func<SDataResponse, T> createResults, CancellationToken cancel)
@@ -102,6 +123,7 @@ namespace Saleslogix.SData.Client
         private SDataRequest CreateRequest(SDataParameters parms, bool responseContentIgnored)
         {
             Guard.ArgumentNotNull(parms, "parms");
+
             var uri = new SDataUri(Uri)
                           {
                               StartIndex = parms.StartIndex,
@@ -123,48 +145,252 @@ namespace Saleslogix.SData.Client
             {
                 uri.AppendPath(parms.Path);
             }
-            foreach (var item in parms.ExtensionArgs)
+            foreach (var arg in parms.ExtensionArgs)
             {
-                uri["_" + item.Key] = item.Value;
+                uri["_" + arg.Key] = arg.Value;
             }
 
-            var operation = CreateOperation(parms);
-            var request = CreateRequest(uri, operation);
+            var request = CreateRequest(uri, parms.Method, parms.Content);
+            request.Selector = parms.Selector;
+            request.ContentType = parms.ContentType;
+            request.ETag = parms.ETag;
+            foreach (var item in parms.Form)
+            {
+                request.Form.Add(item.Key, item.Value);
+            }
+            foreach (var file in parms.Files)
+            {
+                request.Files.Add(file);
+            }
             request.Accept = parms.Accept;
             request.AcceptLanguage = parms.Language ?? Language;
             return request;
         }
 
-        private static RequestOperation CreateOperation(SDataParameters parms)
+        private SDataRequest CreateBatchRequest(ICollection<SDataParameters> items)
         {
-            var operation = new RequestOperation(parms.Method, parms.Content)
-                                {
-                                    Selector = parms.Selector,
-                                    ContentType = parms.ContentType,
-                                    ETag = parms.ETag
-                                };
-            foreach (var item in parms.Form)
+            Guard.ArgumentNotNull(items, "items");
+
+            var resources = new SDataCollection<SDataResource>(items.Count);
+            string path = null;
+            MediaType? contentType = null;
+            var include = new List<string>();
+            var select = new List<string>();
+            int? precedence = null;
+            MediaType? format = null;
+            string language = null;
+            string version = null;
+            var accept = new List<MediaType>();
+            var form = new Dictionary<string, string>();
+            var files = new List<AttachedFile>();
+            var extensionArgs = new Dictionary<string, string>();
+
+            foreach (var parms in items)
             {
-                operation.Form.Add(item.Key, item.Value);
+                if (parms.StartIndex != null)
+                {
+                    throw new SDataClientException("StartIndex not supported in batch requests");
+                }
+                if (parms.Count != null)
+                {
+                    throw new SDataClientException("Count not supported in batch requests");
+                }
+                if (parms.Where != null)
+                {
+                    throw new SDataClientException("Where not supported in batch requests");
+                }
+                if (parms.OrderBy != null)
+                {
+                    throw new SDataClientException("OrderBy not supported in batch requests");
+                }
+                if (parms.Search != null)
+                {
+                    throw new SDataClientException("Search not supported in batch requests");
+                }
+                if (parms.TrackingId != null)
+                {
+                    throw new SDataClientException("TrackingId not supported in batch requests");
+                }
+                if (parms.IncludeSchema != null)
+                {
+                    throw new SDataClientException("IncludeSchema not supported in batch requests");
+                }
+                if (parms.ReturnDelta != null)
+                {
+                    throw new SDataClientException("ReturnDelta not supported in batch requests");
+                }
+                if (parms.Path != path)
+                {
+                    if (path != null)
+                    {
+                        throw new SDataClientException("All non-null path values must be the same");
+                    }
+                    path = parms.Path;
+                }
+                if (parms.ContentType != contentType)
+                {
+                    if (contentType != null)
+                    {
+                        throw new SDataClientException("All non-null content type values must be the same");
+                    }
+                    contentType = parms.ContentType;
+                }
+                if (parms.Include != null)
+                {
+                    include.AddRange(parms.Include.Split(','));
+                }
+                if (parms.Select != null)
+                {
+                    select.AddRange(parms.Select.Split(','));
+                }
+                if (parms.Precedence != null && parms.Precedence != precedence)
+                {
+                    precedence = Math.Max(precedence ?? 0, parms.Precedence.Value);
+                }
+                if (parms.Format != format)
+                {
+                    if (format != null)
+                    {
+                        throw new SDataClientException("All non-null format values must be the same");
+                    }
+                    format = parms.Format;
+                }
+                if (parms.Language != language)
+                {
+                    if (language != null)
+                    {
+                        throw new SDataClientException("All non-null language values must be the same");
+                    }
+                    language = parms.Language;
+                }
+                if (parms.Version != version)
+                {
+                    if (version != null)
+                    {
+                        throw new SDataClientException("All non-null version values must be the same");
+                    }
+                    version = parms.Version;
+                }
+                if (parms.Accept != null)
+                {
+                    accept.AddRange(parms.Accept);
+                }
+                foreach (var data in parms.Form)
+                {
+                    form.Add(data.Key, data.Value);
+                }
+                files.AddRange(parms.Files);
+                foreach (var arg in parms.ExtensionArgs)
+                {
+                    extensionArgs[arg.Key] = arg.Value;
+                }
+
+                var selector = parms.Selector;
+
+                SDataResource resource;
+                if (parms.Content == null)
+                {
+                    resource = new SDataResource();
+                }
+                else
+                {
+                    resource = ContentHelper.Serialize(parms.Content, NamingScheme) as SDataResource;
+                    if (resource == null)
+                    {
+                        throw new SDataClientException("Only resources can be submitted in batch requests");
+                    }
+
+                    if (selector == null && resource.Key != null)
+                    {
+                        selector = SDataUri.FormatConstant(resource.Key);
+                    }
+                }
+
+                resource.HttpMethod = parms.Method;
+                if (parms.Method != HttpMethod.Post)
+                {
+                    if (selector == null)
+                    {
+                        throw new SDataClientException("A selector must be specified for GET, PUT and DELETE batch requests");
+                    }
+
+                    var itemUri = new SDataUri(Uri);
+                    if (path != null)
+                    {
+                        itemUri.AppendPath(path);
+                    }
+                    itemUri.LastPathSegment.Selector = selector;
+                    resource.Id = itemUri.ToString();
+                    resource.Url = itemUri.Uri;
+                }
+
+                if (parms.ETag != null)
+                {
+                    resource.ETag = parms.ETag;
+                }
+
+                resources.Add(resource);
             }
-            foreach (var file in parms.Files)
+
+            var uri = new SDataUri(Uri)
+                {
+                    Precedence = precedence,
+                    Format = format ?? Format,
+                    Language = language ?? Language,
+                    Version = version ?? Version
+                };
+            if (path != null)
             {
-                operation.Files.Add(file);
+                uri.AppendPath(path);
             }
-            return operation;
+            uri.AppendPath("$batch");
+            if (include.Count > 0)
+            {
+                uri.Include = string.Join(",", include.Distinct().ToArray());
+            }
+            if (select.Count > 0)
+            {
+                uri.Select = string.Join(",", select.Distinct().ToArray());
+            }
+            foreach (var arg in extensionArgs)
+            {
+                uri["_" + arg.Key] = arg.Value;
+            }
+
+            var request = CreateRequest(uri, HttpMethod.Post, resources);
+            request.ContentType = contentType;
+
+            if (accept.Count > 0)
+            {
+                request.Accept = accept.Distinct().ToArray();
+            }
+            foreach (var data in form)
+            {
+                request.Form.Add(data.Key, data.Value);
+            }
+            foreach (var file in files)
+            {
+                request.Files.Add(file);
+            }
+            if (language != null)
+            {
+                request.AcceptLanguage = language ?? Language;
+            }
+
+            return request;
         }
 
-        private SDataRequest CreateRequest(SDataUri uri, params RequestOperation[] operations)
+        private SDataRequest CreateRequest(SDataUri uri, HttpMethod method, object content)
         {
-            var request = new SDataRequest(uri.ToString(), operations)
-                              {
-                                  UserName = UserName,
-                                  Password = Password,
-                                  Credentials = Credentials,
-                                  NamingScheme = NamingScheme,
-                                  Cookies = _cookies,
-                                  UseHttpMethodOverride = UseHttpMethodOverride
-                              };
+            var request = _requestFactory(uri.ToString());
+            request.Method = method;
+            request.Content = content;
+            request.UserName = UserName;
+            request.Password = Password;
+            request.Credentials = Credentials;
+            request.NamingScheme = NamingScheme;
+            request.Cookies = _cookies;
+            request.UseHttpMethodOverride = UseHttpMethodOverride;
 #if !PCL && !SILVERLIGHT
             request.Proxy = Proxy;
 #endif

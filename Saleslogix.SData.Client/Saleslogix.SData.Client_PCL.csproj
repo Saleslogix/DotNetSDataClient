@@ -62,7 +62,6 @@
     <Compile Include="Framework\MailBnfHelper.cs" />
     <Compile Include="Framework\MediaType.cs" />
     <Compile Include="Framework\MediaTypeNames.cs" />
-    <Compile Include="Framework\RequestOperation.cs" />
     <Compile Include="Framework\SDataException.cs" />
     <Compile Include="Framework\SDataRequest.cs" />
     <Compile Include="Framework\SDataResponse.cs" />
@@ -75,6 +74,7 @@
     <Compile Include="Framework\UriPathSegment.cs" />
     <Compile Include="Framework\W3CDateTime.cs" />
     <Compile Include="INamingScheme.cs" />
+    <Compile Include="ISDataBatch.cs" />
     <Compile Include="ISDataClient.cs" />
     <Compile Include="ISDataProtocolAware.cs" />
     <Compile Include="ISDataResults.cs" />
@@ -322,6 +322,7 @@
     <Compile Include="Relinq\Utilities\ReSharperAnnotations\NoEnumerationAttribute.cs" />
     <Compile Include="Relinq\Utilities\ReSharperAnnotations\UsedImplicitlyAttribute.cs" />
     <Compile Include="Relinq\Utilities\SeparatedStringBuilder.cs" />
+    <Compile Include="SDataBatch.cs" />
     <Compile Include="SDataClient.cs" />
     <Compile Include="SDataClientException.cs" />
     <Compile Include="SDataClientExtensions.cs" />

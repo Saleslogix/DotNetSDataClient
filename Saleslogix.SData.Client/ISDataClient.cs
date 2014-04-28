@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
+using System.Collections.Generic;
 using System.Net;
 using Saleslogix.SData.Client.Framework;
 
@@ -31,11 +32,13 @@ namespace Saleslogix.SData.Client
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
         ISDataResults Execute(SDataParameters parms);
         ISDataResults<T> Execute<T>(SDataParameters parms);
+        ISDataResults<IList<T>> ExecuteBatch<T>(IList<SDataParameters> items);
 #endif
 
 #if !NET_2_0 && !NET_3_5
         Task<ISDataResults> ExecuteAsync(SDataParameters parms, CancellationToken cancel = default(CancellationToken));
         Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel = default(CancellationToken));
+        Task<ISDataResults<IList<T>>> ExecuteBatchAsync<T>(IList<SDataParameters> items, CancellationToken cancel = default(CancellationToken));
 #endif
     }
 }

@@ -5,7 +5,6 @@ using System.Net;
 using System.Text;
 using Moq;
 using NUnit.Framework;
-using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 
 #if !NETFX_CORE
@@ -61,8 +60,9 @@ namespace Saleslogix.SData.Client.Test.Framework
             var proxy = new WebProxy("test://dummy");
             var cookies = new CookieContainer();
             var credentials = new NetworkCredential("admin", "");
-            var request = new SDataRequest("test://localhost/sdata/invoices", new RequestOperation {ETag = "abc123"})
+            var request = new SDataRequest("test://localhost/sdata/invoices")
                                {
+                                   ETag = "abc123",
                                    Timeout = 123,
                                    UserAgent = "test agent",
                                    Proxy = proxy,
@@ -133,64 +133,6 @@ namespace Saleslogix.SData.Client.Test.Framework
         }
 
         [Test]
-        public void Resource_Content_Test()
-        {
-            var requestMock = new Mock<HttpWebRequest> {CallBase = true};
-            var responseMock = new Mock<HttpWebResponse>();
-            var content = new MemoryStream();
-            requestMock.Setup(x => x.GetRequestStream()).Returns(content);
-            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
-            responseMock.Setup(x => x.Headers).Returns(new WebHeaderCollection());
-            requestMock.Setup(x => x.GetResponse()).Returns(responseMock.Object);
-            var webRequest = requestMock.Object;
-            webRequest.Headers = new WebHeaderCollection();
-            _requests.Enqueue(webRequest);
-
-            var request = new SDataRequest("test://localhost/sdata/invoices",
-                                            HttpMethod.Post,
-                                            new SDataResource
-                                                {
-                                                    Key = "abc",
-                                                    ETag = "abc123"
-                                                });
-            var response = request.GetResponse();
-
-            Assert.That(new SDataUri(webRequest.Address).LastPathSegment.Selector, Is.EqualTo("'abc'"));
-            Assert.That(webRequest.Headers["If-Match"], Is.EqualTo("abc123"));
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-            Assert.That(content.ToArray(), Is.Not.Empty);
-        }
-
-        [Test]
-        public void Resource_Content_ProtocolProperty_Test()
-        {
-            var requestMock = new Mock<HttpWebRequest> {CallBase = true};
-            var responseMock = new Mock<HttpWebResponse>();
-            var content = new MemoryStream();
-            requestMock.Setup(x => x.GetRequestStream()).Returns(content);
-            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
-            responseMock.Setup(x => x.Headers).Returns(new WebHeaderCollection());
-            requestMock.Setup(x => x.GetResponse()).Returns(responseMock.Object);
-            var webRequest = requestMock.Object;
-            webRequest.Headers = new WebHeaderCollection();
-            _requests.Enqueue(webRequest);
-
-            var request = new SDataRequest("test://localhost/sdata/invoices",
-                                            HttpMethod.Post,
-                                            new ProtocolProperty_Object
-                                                {
-                                                    Key = "abc",
-                                                    ETag = "abc123"
-                                                });
-            var response = request.GetResponse();
-
-            Assert.That(new SDataUri(webRequest.Address).LastPathSegment.Selector, Is.EqualTo("'abc'"));
-            Assert.That(webRequest.Headers["If-Match"], Is.EqualTo("abc123"));
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-            Assert.That(content.ToArray(), Is.Not.Empty);
-        }
-
-        [Test]
         public void Retry_Attmpts_Test()
         {
             var requestMock = new Mock<HttpWebRequest> {CallBase = true};
@@ -230,8 +172,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             webRequest.Headers = new WebHeaderCollection();
             _requests.Enqueue(webRequest);
 
-            var op = new RequestOperation(HttpMethod.Post) {Form = {{"id", "123"}}};
-            var request = new SDataRequest("test://localhost/sdata/invoices", op);
+            var request = new SDataRequest("test://localhost/sdata/invoices", HttpMethod.Post) {Form = {{"id", "123"}}};
             var response = request.GetResponse();
             var text = Encoding.UTF8.GetString(content.ToArray());
 
@@ -255,8 +196,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             webRequest.Headers = new WebHeaderCollection();
             _requests.Enqueue(webRequest);
 
-            var op = new RequestOperation(HttpMethod.Post) {Files = {new AttachedFile("text/plain", "hello.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}};
-            var request = new SDataRequest("test://localhost/sdata/invoices", op);
+            var request = new SDataRequest("test://localhost/sdata/invoices", HttpMethod.Post) {Files = {new AttachedFile("text/plain", "hello.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}};
             var response = request.GetResponse();
             var text = Encoding.UTF8.GetString(content.ToArray());
 
@@ -280,8 +220,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             webRequest.Headers = new WebHeaderCollection();
             _requests.Enqueue(webRequest);
 
-            var op = new RequestOperation(HttpMethod.Post) {Files = {new AttachedFile("text/plain", "\x65b0\x65e5\x9244\x4f4f\x91d1.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}};
-            var request = new SDataRequest("test://localhost/sdata/invoices", op);
+            var request = new SDataRequest("test://localhost/sdata/invoices", HttpMethod.Post) {Files = {new AttachedFile("text/plain", "\x65b0\x65e5\x9244\x4f4f\x91d1.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}};
             var response = request.GetResponse();
             var text = Encoding.UTF8.GetString(content.ToArray());
 
@@ -305,12 +244,11 @@ namespace Saleslogix.SData.Client.Test.Framework
             webRequest.Headers = new WebHeaderCollection();
             _requests.Enqueue(webRequest);
 
-            var op = new RequestOperation(HttpMethod.Post, "main content")
+            var request = new SDataRequest("test://localhost/sdata/invoices", HttpMethod.Post, "main content")
                          {
                              Form = {{"id", "123"}},
                              Files = {new AttachedFile("text/plain", "hello.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}
                          };
-            var request = new SDataRequest("test://localhost/sdata/invoices", op);
             var response = request.GetResponse();
             var text = Encoding.UTF8.GetString(content.ToArray());
 
@@ -320,99 +258,6 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(text, Is.StringContaining("123"));
             Assert.That(text, Is.StringContaining("attachment; filename=hello.txt"));
             Assert.That(text, Is.StringContaining("world"));
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-        }
-
-        [Test]
-        public void Batch_Test()
-        {
-            var requestMock = new Mock<HttpWebRequest> {CallBase = true};
-            var responseMock = new Mock<HttpWebResponse>();
-            requestMock.Setup(x => x.GetRequestStream()).Returns(default(Stream));
-            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
-            responseMock.Setup(x => x.Headers).Returns(new WebHeaderCollection());
-            requestMock.Setup(x => x.GetResponse()).Returns(responseMock.Object);
-            var webRequest = requestMock.Object;
-            webRequest.Headers = new WebHeaderCollection();
-            _requests.Enqueue(webRequest);
-
-            var handlerMock = new Mock<IContentHandler>();
-            SDataCollection<SDataResource> resources = null;
-            handlerMock.Setup(x => x.WriteTo(It.IsAny<object>(), It.IsAny<Stream>(), null))
-                       .Callback((object obj, Stream stream, INamingScheme scheme) => resources = obj as SDataCollection<SDataResource>);
-            ContentManager.SetHandler(MediaType.ImagePng, handlerMock.Object);
-
-            var request = new SDataRequest("test://localhost/sdata/invoices",
-                                            new RequestOperation
-                                                {
-                                                    Selector = "'abc'",
-                                                    ETag = "abc123"
-                                                },
-                                            new RequestOperation(HttpMethod.Post)
-                                                {
-                                                    Content = new SDataResource(),
-                                                    ContentType = MediaType.ImagePng
-                                                });
-            var response = request.GetResponse();
-
-            ContentManager.SetHandler(MediaType.ImagePng, null);
-
-            Assert.That(webRequest.ContentType, Is.EqualTo("image/png"));
-            Assert.That(resources, Has.Count.EqualTo(2));
-            Assert.That(resources[0].HttpMethod, Is.EqualTo(HttpMethod.Get));
-            Assert.That(resources[0].Id, Is.EqualTo("test://localhost/sdata/invoices('abc')"));
-            Assert.That(resources[0].Url, Is.EqualTo(new Uri("test://localhost/sdata/invoices('abc')")));
-            Assert.That(resources[0].ETag, Is.EqualTo("abc123"));
-            Assert.That(resources[1].HttpMethod, Is.EqualTo(HttpMethod.Post));
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-        }
-
-        [Test]
-        public void Batch_ProtocolProperty_Test()
-        {
-            var requestMock = new Mock<HttpWebRequest> {CallBase = true};
-            var responseMock = new Mock<HttpWebResponse>();
-            requestMock.Setup(x => x.GetRequestStream()).Returns(default(Stream));
-            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
-            responseMock.Setup(x => x.Headers).Returns(new WebHeaderCollection());
-            requestMock.Setup(x => x.GetResponse()).Returns(responseMock.Object);
-            var webRequest = requestMock.Object;
-            webRequest.Headers = new WebHeaderCollection();
-            _requests.Enqueue(webRequest);
-
-            var handlerMock = new Mock<IContentHandler>();
-            SDataCollection<SDataResource> resources = null;
-            handlerMock.Setup(x => x.WriteTo(It.IsAny<object>(), It.IsAny<Stream>(), null))
-                       .Callback((object obj, Stream stream, INamingScheme scheme) => resources = obj as SDataCollection<SDataResource>);
-            ContentManager.SetHandler(MediaType.ImagePng, handlerMock.Object);
-
-            var request = new SDataRequest("test://localhost/sdata/invoices",
-                                            new RequestOperation
-                                                {
-                                                    Selector = "'abc'",
-                                                    ETag = "abc123"
-                                                },
-                                            new RequestOperation(HttpMethod.Put)
-                                                {
-                                                    Content = new ProtocolProperty_Object
-                                                                  {
-                                                                      Key = "def",
-                                                                      ETag = "def123"
-                                                                  },
-                                                    ContentType = MediaType.ImagePng
-                                                });
-            var response = request.GetResponse();
-
-            ContentManager.SetHandler(MediaType.ImagePng, null);
-
-            Assert.That(webRequest.ContentType, Is.EqualTo("image/png"));
-            Assert.That(resources, Has.Count.EqualTo(2));
-            Assert.That(resources[0].HttpMethod, Is.EqualTo(HttpMethod.Get));
-            Assert.That(resources[0].Id, Is.EqualTo("test://localhost/sdata/invoices('abc')"));
-            Assert.That(resources[0].ETag, Is.EqualTo("abc123"));
-            Assert.That(resources[1].HttpMethod, Is.EqualTo(HttpMethod.Put));
-            Assert.That(resources[1].Id, Is.EqualTo("test://localhost/sdata/invoices('def')"));
-            Assert.That(resources[1].ETag, Is.EqualTo("def123"));
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
 
@@ -455,8 +300,9 @@ namespace Saleslogix.SData.Client.Test.Framework
 #endif
             var cookies = new CookieContainer();
             var credentials = new NetworkCredential("admin", "");
-            var request = new SDataRequest("test://localhost/sdata/invoices", new RequestOperation {ETag = "abc123"})
+            var request = new SDataRequest("test://localhost/sdata/invoices")
                               {
+                                  ETag = "abc123",
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
                                   Timeout = 123,
                                   UserAgent = "test agent",
@@ -537,68 +383,6 @@ namespace Saleslogix.SData.Client.Test.Framework
         }
 
         [Test]
-        public void Async_Resource_Content_Test()
-        {
-            var requestMock = new Mock<HttpWebRequest> {CallBase = true};
-            var responseMock = new Mock<HttpWebResponse>();
-            var content = new MemoryStream();
-            SetupGetRequestStreamAsync(requestMock, content);
-            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
-            responseMock.Setup(x => x.Headers).Returns(new WebHeaderCollection());
-            SetupGetResponseAsync(requestMock, responseMock.Object);
-            var webRequest = requestMock.Object;
-            webRequest.Headers = new WebHeaderCollection();
-            _requests.Enqueue(webRequest);
-
-            var request = new SDataRequest("test://localhost/sdata/invoices",
-                HttpMethod.Post,
-                new SDataResource
-                    {
-                        Key = "abc",
-                        ETag = "abc123"
-                    });
-            var response = request.EndGetResponse(request.BeginGetResponse(null, null));
-
-#if !NETFX_CORE
-            Assert.That(new SDataUri(webRequest.Address).LastPathSegment.Selector, Is.EqualTo("'abc'"));
-#endif
-            Assert.That(webRequest.Headers["If-Match"], Is.EqualTo("abc123"));
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-            Assert.That(content.ToArray(), Is.Not.Empty);
-        }
-
-        [Test]
-        public void Async_Resource_Content_ProtocolProperty_Test()
-        {
-            var requestMock = new Mock<HttpWebRequest> {CallBase = true};
-            var responseMock = new Mock<HttpWebResponse>();
-            var content = new MemoryStream();
-            SetupGetRequestStreamAsync(requestMock, content);
-            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
-            responseMock.Setup(x => x.Headers).Returns(new WebHeaderCollection());
-            SetupGetResponseAsync(requestMock, responseMock.Object);
-            var webRequest = requestMock.Object;
-            webRequest.Headers = new WebHeaderCollection();
-            _requests.Enqueue(webRequest);
-
-            var request = new SDataRequest("test://localhost/sdata/invoices",
-                HttpMethod.Post,
-                new ProtocolProperty_Object
-                    {
-                        Key = "abc",
-                        ETag = "abc123"
-                    });
-            var response = request.EndGetResponse(request.BeginGetResponse(null, null));
-
-#if !NETFX_CORE
-            Assert.That(new SDataUri(webRequest.Address).LastPathSegment.Selector, Is.EqualTo("'abc'"));
-#endif
-            Assert.That(webRequest.Headers["If-Match"], Is.EqualTo("abc123"));
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-            Assert.That(content.ToArray(), Is.Not.Empty);
-        }
-
-        [Test]
         public void Async_Retry_Attmpts_Test()
         {
             var requestMock = new Mock<HttpWebRequest> {CallBase = true};
@@ -644,8 +428,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             webRequest.Headers = new WebHeaderCollection();
             _requests.Enqueue(webRequest);
 
-            var op = new RequestOperation(HttpMethod.Post) {Form = {{"id", "123"}}};
-            var request = new SDataRequest("test://localhost/sdata/invoices", op);
+            var request = new SDataRequest("test://localhost/sdata/invoices", HttpMethod.Post) {Form = {{"id", "123"}}};
             var response = request.EndGetResponse(request.BeginGetResponse(null, null));
             var text = Encoding.UTF8.GetString(content.ToArray());
 
@@ -669,8 +452,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             webRequest.Headers = new WebHeaderCollection();
             _requests.Enqueue(webRequest);
 
-            var op = new RequestOperation(HttpMethod.Post) {Files = {new AttachedFile("text/plain", "hello.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}};
-            var request = new SDataRequest("test://localhost/sdata/invoices", op);
+            var request = new SDataRequest("test://localhost/sdata/invoices", HttpMethod.Post) {Files = {new AttachedFile("text/plain", "hello.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}};
             var response = request.EndGetResponse(request.BeginGetResponse(null, null));
             var text = Encoding.UTF8.GetString(content.ToArray());
 
@@ -694,8 +476,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             webRequest.Headers = new WebHeaderCollection();
             _requests.Enqueue(webRequest);
 
-            var op = new RequestOperation(HttpMethod.Post) {Files = {new AttachedFile("text/plain", "\x65b0\x65e5\x9244\x4f4f\x91d1.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}};
-            var request = new SDataRequest("test://localhost/sdata/invoices", op);
+            var request = new SDataRequest("test://localhost/sdata/invoices", HttpMethod.Post) {Files = {new AttachedFile("text/plain", "\x65b0\x65e5\x9244\x4f4f\x91d1.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}};
             var response = request.EndGetResponse(request.BeginGetResponse(null, null));
             var text = Encoding.UTF8.GetString(content.ToArray());
 
@@ -719,12 +500,11 @@ namespace Saleslogix.SData.Client.Test.Framework
             webRequest.Headers = new WebHeaderCollection();
             _requests.Enqueue(webRequest);
 
-            var op = new RequestOperation(HttpMethod.Post, "main content")
+            var request = new SDataRequest("test://localhost/sdata/invoices", HttpMethod.Post, "main content")
                          {
                              Form = {{"id", "123"}},
                              Files = {new AttachedFile("text/plain", "hello.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}
                          };
-            var request = new SDataRequest("test://localhost/sdata/invoices", op);
             var response = request.EndGetResponse(request.BeginGetResponse(null, null));
             var text = Encoding.UTF8.GetString(content.ToArray());
 
@@ -734,99 +514,6 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(text, Is.StringContaining("123"));
             Assert.That(text, Is.StringContaining("attachment; filename=hello.txt"));
             Assert.That(text, Is.StringContaining("world"));
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-        }
-
-        [Test]
-        public void Async_Batch_Test()
-        {
-            var requestMock = new Mock<HttpWebRequest> {CallBase = true};
-            var responseMock = new Mock<HttpWebResponse>();
-            SetupGetRequestStreamAsync(requestMock, null);
-            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
-            responseMock.Setup(x => x.Headers).Returns(new WebHeaderCollection());
-            SetupGetResponseAsync(requestMock, responseMock.Object);
-            var webRequest = requestMock.Object;
-            webRequest.Headers = new WebHeaderCollection();
-            _requests.Enqueue(webRequest);
-
-            var handlerMock = new Mock<IContentHandler>();
-            SDataCollection<SDataResource> resources = null;
-            handlerMock.Setup(x => x.WriteTo(It.IsAny<object>(), It.IsAny<Stream>(), null))
-                       .Callback((object obj, Stream stream, INamingScheme scheme) => resources = obj as SDataCollection<SDataResource>);
-            ContentManager.SetHandler(MediaType.ImagePng, handlerMock.Object);
-
-            var request = new SDataRequest("test://localhost/sdata/invoices",
-                                           new RequestOperation
-                                               {
-                                                   Selector = "'abc'",
-                                                   ETag = "abc123"
-                                               },
-                                           new RequestOperation(HttpMethod.Post)
-                                               {
-                                                   Content = new SDataResource(),
-                                                   ContentType = MediaType.ImagePng
-                                               });
-            var response = request.EndGetResponse(request.BeginGetResponse(null, null));
-
-            ContentManager.SetHandler(MediaType.ImagePng, null);
-
-            Assert.That(webRequest.ContentType, Is.EqualTo("image/png"));
-            Assert.That(resources, Has.Count.EqualTo(2));
-            Assert.That(resources[0].HttpMethod, Is.EqualTo(HttpMethod.Get));
-            Assert.That(resources[0].Id, Is.EqualTo("test://localhost/sdata/invoices('abc')"));
-            Assert.That(resources[0].Url, Is.EqualTo(new Uri("test://localhost/sdata/invoices('abc')")));
-            Assert.That(resources[0].ETag, Is.EqualTo("abc123"));
-            Assert.That(resources[1].HttpMethod, Is.EqualTo(HttpMethod.Post));
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
-        }
-
-        [Test]
-        public void Async_Batch_ProtocolProperty_Test()
-        {
-            var requestMock = new Mock<HttpWebRequest> {CallBase = true};
-            var responseMock = new Mock<HttpWebResponse>();
-            SetupGetRequestStreamAsync(requestMock, null);
-            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
-            responseMock.Setup(x => x.Headers).Returns(new WebHeaderCollection());
-            SetupGetResponseAsync(requestMock, responseMock.Object);
-            var webRequest = requestMock.Object;
-            webRequest.Headers = new WebHeaderCollection();
-            _requests.Enqueue(webRequest);
-
-            var handlerMock = new Mock<IContentHandler>();
-            SDataCollection<SDataResource> resources = null;
-            handlerMock.Setup(x => x.WriteTo(It.IsAny<object>(), It.IsAny<Stream>(), null))
-                .Callback((object obj, Stream stream, INamingScheme scheme) => resources = obj as SDataCollection<SDataResource>);
-            ContentManager.SetHandler(MediaType.ImagePng, handlerMock.Object);
-
-            var request = new SDataRequest("test://localhost/sdata/invoices",
-                new RequestOperation
-                    {
-                        Selector = "'abc'",
-                        ETag = "abc123"
-                    },
-                new RequestOperation(HttpMethod.Put)
-                    {
-                        Content = new ProtocolProperty_Object
-                            {
-                                Key = "def",
-                                ETag = "def123"
-                            },
-                        ContentType = MediaType.ImagePng
-                    });
-            var response = request.EndGetResponse(request.BeginGetResponse(null, null));
-
-            ContentManager.SetHandler(MediaType.ImagePng, null);
-
-            Assert.That(webRequest.ContentType, Is.EqualTo("image/png"));
-            Assert.That(resources, Has.Count.EqualTo(2));
-            Assert.That(resources[0].HttpMethod, Is.EqualTo(HttpMethod.Get));
-            Assert.That(resources[0].Id, Is.EqualTo("test://localhost/sdata/invoices('abc')"));
-            Assert.That(resources[0].ETag, Is.EqualTo("abc123"));
-            Assert.That(resources[1].HttpMethod, Is.EqualTo(HttpMethod.Put));
-            Assert.That(resources[1].Id, Is.EqualTo("test://localhost/sdata/invoices('def')"));
-            Assert.That(resources[1].ETag, Is.EqualTo("def123"));
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
 
@@ -849,15 +536,6 @@ namespace Saleslogix.SData.Client.Test.Framework
             request.EndGetResponse(request.BeginGetResponse(null, null));
 
             Assert.That(webRequest.Headers["X-HTTP-Method-Override"], Is.EqualTo("PUT"));
-        }
-
-        private class ProtocolProperty_Object
-        {
-            [SDataProtocolProperty]
-            public string Key { get; set; }
-
-            [SDataProtocolProperty]
-            public string ETag { get; set; }
         }
 
         private static void SetupGetRequestStreamAsync(Mock<HttpWebRequest> requestMock, Stream content)

@@ -23,8 +23,29 @@ namespace Saleslogix.SData.Client.Framework
         private readonly DateTime? _expires;
         private readonly DateTime? _retryAfter;
         private readonly object _content;
-        private IDictionary<string, string> _form;
+        private readonly IDictionary<string, string> _form;
         private readonly IList<AttachedFile> _files;
+
+        internal SDataResponse(HttpStatusCode statusCode,
+            MediaType? contentType,
+            string eTag,
+            string location,
+            DateTime? expires,
+            DateTime? retryAfter,
+            object content,
+            IDictionary<string, string> form,
+            IList<AttachedFile> files)
+        {
+            _statusCode = statusCode;
+            _contentType = contentType;
+            _eTag = eTag;
+            _location = location;
+            _expires = expires;
+            _retryAfter = retryAfter;
+            _content = content;
+            _form = form;
+            _files = files;
+        }
 
         internal SDataResponse(WebResponse response, string redirectLocation)
         {
@@ -208,7 +229,7 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         public IDictionary<string, string> Form
         {
-            get { return _form ?? (_form = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)); }
+            get { return _form; }
         }
 
         /// <summary>

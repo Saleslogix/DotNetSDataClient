@@ -20,7 +20,8 @@ namespace Saleslogix.SData.Client.Framework
     /// </summary>
     public class SDataRequest
     {
-        private readonly IList<RequestOperation> _operations;
+        private IDictionary<string, string> _form;
+        private IList<AttachedFile> _files;
 #if !PCL && !SILVERLIGHT
         private bool _proxySet;
         private IWebProxy _proxy;
@@ -31,31 +32,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <summary>
         /// Initializes a new instance of the <see cref="SDataRequest"/> class.
         /// </summary>
-        public SDataRequest(string uri)
-            : this(uri, new RequestOperation())
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SDataRequest"/> class.
-        /// </summary>
-        public SDataRequest(string uri, HttpMethod method)
-            : this(uri, new RequestOperation(method))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SDataRequest"/> class.
-        /// </summary>
-        public SDataRequest(string uri, HttpMethod method, object content)
-            : this(uri, new RequestOperation(method, content))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SDataRequest"/> class.
-        /// </summary>
-        public SDataRequest(string uri, params RequestOperation[] operations)
+        public SDataRequest(string uri = null, HttpMethod method = HttpMethod.Get, object content = null)
         {
             Uri = uri;
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
@@ -63,7 +40,8 @@ namespace Saleslogix.SData.Client.Framework
             Timeout = 120000;
 #endif
             TimeoutRetryAttempts = 1;
-            _operations = new List<RequestOperation>(operations);
+            Method = method;
+            Content = content;
         }
 
         /// <summary>
@@ -80,6 +58,47 @@ namespace Saleslogix.SData.Client.Framework
         /// Gets or sets the password used by requests.
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the method for the request.
+        /// </summary>
+        public HttpMethod Method { get; set; }
+
+        /// <summary>
+        /// Gets or sets the selector for the request.
+        /// </summary>
+        public string Selector { get; set; }
+
+        /// <summary>
+        /// Gets or sets the input resource for the request.
+        /// </summary>
+        public object Content { get; set; }
+
+        /// <summary>
+        /// Gets or sets the input content type for the request.
+        /// </summary>
+        public MediaType? ContentType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ETag value for the request.
+        /// </summary>
+        public string ETag { get; set; }
+
+        /// <summary>
+        /// Gets the form data associated with the request.
+        /// </summary>
+        public IDictionary<string, string> Form
+        {
+            get { return _form ?? (_form = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)); }
+        }
+
+        /// <summary>
+        /// Gets the files that will be attached to the request content.
+        /// </summary>
+        public IList<AttachedFile> Files
+        {
+            get { return _files ?? (_files = new List<AttachedFile>()); }
+        }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
         /// <summary>
@@ -140,19 +159,11 @@ namespace Saleslogix.SData.Client.Framework
 
         public INamingScheme NamingScheme { get; set; }
 
-        /// <summary>
-        /// Lists the operations associated with this request.
-        /// </summary>
-        public IList<RequestOperation> Operations
-        {
-            get { return _operations; }
-        }
-
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
         /// <summary>
         /// Execute the request and return a response object.
         /// </summary>
-        public SDataResponse GetResponse()
+        public virtual SDataResponse GetResponse()
         {
             if (Interlocked.CompareExchange(ref _state, 1, 0) != 0)
             {
@@ -160,32 +171,20 @@ namespace Saleslogix.SData.Client.Framework
             }
 
             var uri = Uri;
-            RequestOperation operation;
-
-            if (_operations.Count == 1)
-            {
-                operation = _operations[0];
-            }
-            else
-            {
-                operation = CreateBatchOperation();
-                uri = new SDataUri(uri).AppendPath("$batch").ToString();
-            }
-
             string location = null;
             var attempts = TimeoutRetryAttempts;
-            var hasContent = operation.Content != null || operation.Form.Count > 0 || operation.Files.Count > 0;
+            var hasContent = Content != null || Form.Count > 0 || Files.Count > 0;
 
             try
             {
                 while (true)
                 {
-                    _request = CreateRequest(uri, operation);
+                    _request = CreateRequest(uri);
                     if (hasContent)
                     {
                         using (var stream = _request.GetRequestStream())
                         {
-                            var contentType = WriteRequestContent(operation, stream);
+                            var contentType = WriteRequestContent(stream);
                             if (contentType != null)
                             {
                                 _request.ContentType = contentType;
@@ -227,7 +226,7 @@ namespace Saleslogix.SData.Client.Framework
         }
 #endif
 
-        public IAsyncResult BeginGetResponse(AsyncCallback callback, object state)
+        public virtual IAsyncResult BeginGetResponse(AsyncCallback callback, object state)
         {
             if (Interlocked.CompareExchange(ref _state, 1, 0) != 0)
             {
@@ -235,27 +234,15 @@ namespace Saleslogix.SData.Client.Framework
             }
 
             var uri = Uri;
-            RequestOperation operation;
-
-            if (_operations.Count == 1)
-            {
-                operation = _operations[0];
-            }
-            else
-            {
-                operation = CreateBatchOperation();
-                uri = new SDataUri(uri).AppendPath("$batch").ToString();
-            }
-
             string location = null;
             var attempts = TimeoutRetryAttempts;
-            var hasContent = operation.Content != null || operation.Form.Count > 0 || operation.Files.Count > 0;
+            var hasContent = Content != null || Form.Count > 0 || Files.Count > 0;
             var result = new AsyncResult<SDataResponse>(callback, state);
             Action getResponse = null;
             Action loop =
                 () =>
                     {
-                        _request = CreateRequest(uri, operation);
+                        _request = CreateRequest(uri);
                         if (hasContent)
                         {
                             _request.BeginGetRequestStream(
@@ -265,7 +252,7 @@ namespace Saleslogix.SData.Client.Framework
                                         {
                                             using (var stream = _request.EndGetRequestStream(async))
                                             {
-                                                var contentType = WriteRequestContent(operation, stream);
+                                                var contentType = WriteRequestContent(stream);
                                                 if (contentType != null)
                                                 {
                                                     _request.ContentType = contentType;
@@ -347,7 +334,7 @@ namespace Saleslogix.SData.Client.Framework
             return result;
         }
 
-        public SDataResponse EndGetResponse(IAsyncResult asyncResult)
+        public virtual SDataResponse EndGetResponse(IAsyncResult asyncResult)
         {
             Guard.ArgumentIsType<AsyncResult<SDataResponse>>(asyncResult, "asyncResult");
             try
@@ -369,115 +356,22 @@ namespace Saleslogix.SData.Client.Framework
             }
         }
 
-        private RequestOperation CreateBatchOperation()
+        private WebRequest CreateRequest(string uri)
         {
-            var resources = new SDataCollection<SDataResource>(_operations.Count);
-            var batchOp = new RequestOperation(HttpMethod.Post, resources);
-
-            foreach (var op in _operations)
+            if (Selector != null)
             {
-                var selector = op.Selector;
-                var eTag = op.ETag;
-
-                SDataResource resource;
-                if (op.Content == null)
-                {
-                    resource = new SDataResource();
-                }
-                else
-                {
-                    resource = op.Content as SDataResource ?? ContentHelper.Serialize(op.Content, NamingScheme) as SDataResource;
-                    if (resource == null)
-                    {
-                        throw new InvalidOperationException("Only resources can be submitted in batch requests");
-                    }
-
-                    if (selector == null && resource.Key != null)
-                    {
-                        selector = SDataUri.FormatConstant(resource.Key);
-                    }
-                    if (eTag == null)
-                    {
-                        eTag = resource.ETag;
-                    }
-                }
-
-                if (op.Method != HttpMethod.Post)
-                {
-                    if (selector == null)
-                    {
-                        throw new InvalidOperationException("A selector must be specified for GET, PUT and DELETE batch requests");
-                    }
-
-                    var uri = new SDataUri(Uri) {LastPathSegment = {Selector = selector}};
-                    resource.Id = uri.ToString();
-                    resource.Url = uri.Uri;
-                }
-
-                if (op.ContentType != null)
-                {
-                    if (batchOp.ContentType == null)
-                    {
-                        batchOp.ContentType = op.ContentType;
-                    }
-                    else if (batchOp.ContentType != op.ContentType)
-                    {
-                        throw new InvalidOperationException("All non-null request operation content types must be the same");
-                    }
-                }
-
-                resource.HttpMethod = op.Method;
-                resource.ETag = eTag;
-                resources.Add(resource);
-
-                foreach (var data in op.Form)
-                {
-                    batchOp.Form.Add(data.Key, data.Value);
-                }
-
-                foreach (var file in op.Files)
-                {
-                    batchOp.Files.Add(file);
-                }
-            }
-
-            return batchOp;
-        }
-
-        private WebRequest CreateRequest(string uri, RequestOperation op)
-        {
-            var selector = op.Selector;
-            var eTag = op.ETag;
-            if (op.Content != null && (selector == null || eTag == null))
-            {
-                var prot = op.Content as ISDataProtocolAware ?? ContentHelper.Serialize(op.Content, NamingScheme) as ISDataProtocolAware;
-                if (prot != null && prot.Info != null)
-                {
-                    if (selector == null && prot.Info.Key != null)
-                    {
-                        selector = SDataUri.FormatConstant(prot.Info.Key);
-                    }
-                    if (eTag == null)
-                    {
-                        eTag = prot.Info.ETag;
-                    }
-                }
-            }
-
-            if (selector != null)
-            {
-                uri = new SDataUri(Uri) {LastPathSegment = {Selector = selector}}.ToString();
+                uri = new SDataUri(Uri) {LastPathSegment = {Selector = Selector}}.ToString();
             }
 
             var request = WebRequest.Create(uri);
-            if (UseHttpMethodOverride && op.Method != HttpMethod.Get && op.Method != HttpMethod.Post)
+            if (UseHttpMethodOverride && Method != HttpMethod.Get && Method != HttpMethod.Post)
             {
                 request.Method = "POST";
-                request.Headers["X-HTTP-Method-Override"] = op.Method.ToString().ToUpperInvariant();
+                request.Headers["X-HTTP-Method-Override"] = Method.ToString().ToUpperInvariant();
             }
             else
             {
-                request.Method = op.Method.ToString().ToUpperInvariant();
+                request.Method = Method.ToString().ToUpperInvariant();
             }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
@@ -487,7 +381,7 @@ namespace Saleslogix.SData.Client.Framework
 #if !PCL && !SILVERLIGHT
             if (_proxySet)
             {
-                request.Proxy = _proxy;
+                request.Proxy = Proxy;
             }
 #endif
 
@@ -536,48 +430,48 @@ namespace Saleslogix.SData.Client.Framework
             }
 #endif
 
-            if (eTag != null)
+            if (ETag != null)
             {
-                var header = op.Method == HttpMethod.Get
+                var header = Method == HttpMethod.Get
                                  ? HttpRequestHeader.IfNoneMatch
                                  : HttpRequestHeader.IfMatch;
-                request.Headers[header] = eTag;
+                request.Headers[header] = ETag;
             }
 
             return request;
         }
 
-        private string WriteRequestContent(RequestOperation op, Stream stream)
+        private string WriteRequestContent(Stream stream)
         {
-            var isMultipart = op.Form.Count > 0 || op.Files.Count > 0;
+            var isMultipart = Form.Count > 0 || Files.Count > 0;
             var requestStream = isMultipart ? new MemoryStream() : stream;
-            var contentType = op.ContentType;
+            var contentType = ContentType;
 
             if (contentType == null)
             {
-                if (ContentHelper.IsDictionary(op.Content))
+                if (ContentHelper.IsDictionary(Content))
                 {
                     contentType = MediaType.AtomEntry;
                 }
-                else if (ContentHelper.IsCollection(op.Content))
+                else if (ContentHelper.IsCollection(Content))
                 {
                     contentType = MediaType.Atom;
                 }
-                else if (op.Content is IXmlSerializable)
+                else if (Content is IXmlSerializable)
                 {
                     contentType = MediaType.Xml;
                 }
-                else if (op.Content is string)
+                else if (Content is string)
                 {
                     contentType = MediaType.Text;
                 }
-                else if (ContentHelper.IsObject(op.Content))
+                else if (ContentHelper.IsObject(Content))
                 {
                     contentType = MediaType.AtomEntry;
                 }
             }
 
-            if (contentType != null && op.Content != null)
+            if (contentType != null && Content != null)
             {
                 var handler = ContentManager.GetHandler(contentType.Value);
                 if (handler == null)
@@ -585,7 +479,7 @@ namespace Saleslogix.SData.Client.Framework
                     throw new InvalidOperationException(string.Format("Content type '{0}' not supported", contentType));
                 }
 
-                handler.WriteTo(op.Content, requestStream, NamingScheme);
+                handler.WriteTo(Content, requestStream, NamingScheme);
             }
 
             if (isMultipart)
@@ -600,7 +494,7 @@ namespace Saleslogix.SData.Client.Framework
                         multipart.Add(part);
                     }
 
-                    foreach (var data in op.Form)
+                    foreach (var data in Form)
                     {
                         var part = new MimePart(new MemoryStream(Encoding.UTF8.GetBytes(data.Value)))
                                        {
@@ -611,7 +505,7 @@ namespace Saleslogix.SData.Client.Framework
                         multipart.Add(part);
                     }
 
-                    foreach (var file in op.Files)
+                    foreach (var file in Files)
                     {
                         var contentDisposition = "attachment";
                         if (file.FileName != null)
@@ -636,7 +530,7 @@ namespace Saleslogix.SData.Client.Framework
                     }
 
                     multipart.WriteTo(stream);
-                    return string.Format("multipart/{0}; boundary={1}", (op.Files.Count > 0 ? "related" : "form-data"), multipart.Boundary);
+                    return string.Format("multipart/{0}; boundary={1}", (Files.Count > 0 ? "related" : "form-data"), multipart.Boundary);
                 }
             }
 

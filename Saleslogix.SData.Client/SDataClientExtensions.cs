@@ -54,7 +54,7 @@ namespace Saleslogix.SData.Client
             return new SDataParameters
                 {
                     Path = path,
-                    Selector = SDataUri.FormatConstant(key),
+                    Selector = key != null ? SDataUri.FormatConstant(key) : null,
                     Include = options.Include,
                     Select = options.Select,
                     Precedence = options.Precedence
@@ -196,6 +196,18 @@ namespace Saleslogix.SData.Client
                     Selector = GetSelector(content),
                     ETag = GetETag(content)
                 };
+        }
+
+        public static ISDataBatch<SDataResource> CreateBatch(this ISDataClient client, string path, SDataPayloadOptions options = null)
+        {
+            Guard.ArgumentNotNull(client, "client");
+            return new SDataBatch<SDataResource>(client, path, options);
+        }
+
+        public static ISDataBatch<T> CreateBatch<T>(this ISDataClient client, string path = null, SDataPayloadOptions options = null)
+        {
+            Guard.ArgumentNotNull(client, "client");
+            return new SDataBatch<T>(client, path ?? GetPath<T>(client), options);
         }
 
         private static string GetPath<T>(ISDataClient client)

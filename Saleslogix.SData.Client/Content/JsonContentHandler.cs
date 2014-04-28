@@ -340,7 +340,7 @@ namespace Saleslogix.SData.Client.Content
                 WriteProtocolValue(obj, "etag", info.ETag);
                 WriteProtocolValue(obj, "ifMatch", info.IfMatch);
                 WriteProtocolValue(obj, "httpMethod", info.HttpMethod);
-                WriteProtocolValue(obj, "httpStatus", info.HttpStatus);
+                WriteProtocolValue(obj, "httpStatus", (int?) info.HttpStatus);
                 WriteProtocolValue(obj, "httpMessage", info.HttpMessage);
                 WriteProtocolValue(obj, "key", info.Key);
                 WriteProtocolValue(obj, "url", info.Url != null ? info.Url.AbsoluteUri : null);
@@ -439,6 +439,11 @@ namespace Saleslogix.SData.Client.Content
 
         private class SerializerStrategy : PocoJsonSerializerStrategy
         {
+            protected override object SerializeEnum(Enum value)
+            {
+                return value.ToString();
+            }
+
             protected override bool TrySerializeKnownTypes(object input, out object output)
             {
                 if (input is DateTime)
