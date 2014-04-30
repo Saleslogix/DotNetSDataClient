@@ -68,6 +68,7 @@ namespace System
     }
 }
 #endif
+using Saleslogix.SData.Client.Utilities;
 
 #if NET_2_0 || NET_3_5
 namespace System.IO
@@ -81,6 +82,31 @@ namespace System.IO
             while ((num = source.Read(buffer, 0, buffer.Length)) > 0)
             {
                 destination.Write(buffer, 0, num);
+            }
+        }
+    }
+}
+#endif
+
+#if NET_3_5
+namespace System.Linq
+{
+    using Collections.Generic;
+
+    internal static class EnumerableExtensions
+    {
+        public static IEnumerable<TResult> Zip<TFirst, TSecond, TResult>(this IEnumerable<TFirst> first, IEnumerable<TSecond> second, Func<TFirst, TSecond, TResult> func)
+        {
+            Guard.ArgumentNotNull(first, "first");
+            Guard.ArgumentNotNull(first, "second");
+            Guard.ArgumentNotNull(first, "func");
+            using (var ie1 = first.GetEnumerator())
+            using (var ie2 = second.GetEnumerator())
+            {
+                while (ie1.MoveNext() && ie2.MoveNext())
+                {
+                    yield return func(ie1.Current, ie2.Current);
+                }
             }
         }
     }
@@ -112,6 +138,11 @@ namespace System.Reflection
     internal static class CustomAttributeExtensions
     {
         public static T GetCustomAttribute<T>(this MemberInfo element) where T : Attribute
+        {
+            return (T) Attribute.GetCustomAttribute(element, typeof (T));
+        }
+
+        public static T GetCustomAttribute<T>(this ParameterInfo element) where T : Attribute
         {
             return (T) Attribute.GetCustomAttribute(element, typeof (T));
         }

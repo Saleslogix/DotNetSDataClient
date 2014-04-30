@@ -66,24 +66,43 @@ namespace Saleslogix.SData.Client
 #endif
 
                 var elementAttr = member.GetCustomAttribute<XmlElementAttribute>();
-                if (elementAttr != null)
+                if (elementAttr != null && !string.IsNullOrEmpty(elementAttr.ElementName))
                 {
                     return elementAttr.ElementName;
                 }
 
                 var attributeAttr = member.GetCustomAttribute<XmlAttributeAttribute>();
-                if (attributeAttr != null)
+                if (attributeAttr != null && !string.IsNullOrEmpty(attributeAttr.AttributeName))
                 {
                     return attributeAttr.AttributeName;
                 }
 
                 var arrayAttr = member.GetCustomAttribute<XmlArrayAttribute>();
-                if (arrayAttr != null)
+                if (arrayAttr != null && !string.IsNullOrEmpty(arrayAttr.ElementName))
                 {
                     return arrayAttr.ElementName;
                 }
 
+                var serviceAttr = member.GetCustomAttribute<SDataServiceOperationAttribute>();
+                if (serviceAttr != null && !string.IsNullOrEmpty(serviceAttr.Name))
+                {
+                    return serviceAttr.Name;
+                }
+
                 return _transform(member.Name);
+            }
+
+            public string GetName(ParameterInfo param)
+            {
+                Guard.ArgumentNotNull(param, "param");
+
+                var paramAttr = param.GetCustomAttribute<SDataServiceParameterAttribute>();
+                if (paramAttr != null && !string.IsNullOrEmpty(paramAttr.Name))
+                {
+                    return paramAttr.Name;
+                }
+
+                return _transform(param.Name);
             }
         }
 

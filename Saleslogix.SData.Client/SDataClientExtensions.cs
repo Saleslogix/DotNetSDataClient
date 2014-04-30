@@ -1,9 +1,15 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
-using System.Reflection;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Utilities;
+
+#if !NET_2_0
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+#endif
 
 #if !NET_2_0 && !NET_3_5
 using System.Threading;
@@ -24,7 +30,7 @@ namespace Saleslogix.SData.Client
         public static T Get<T>(this ISDataClient client, string key, string path = null, SDataPayloadOptions options = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.Execute<T>(GetGetParameters(key, path ?? GetPath<T>(client), options)).Content;
+            return client.Execute<T>(GetGetParameters(key, GetPath<T>(path), options)).Content;
         }
 #endif
 
@@ -39,7 +45,7 @@ namespace Saleslogix.SData.Client
         public static Task<T> GetAsync<T>(this ISDataClient client, string key, string path = null, SDataPayloadOptions options = null, CancellationToken cancel = default(CancellationToken))
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync<T>(GetGetParameters(key, path ?? GetPath<T>(client), options), cancel)
+            return client.ExecuteAsync<T>(GetGetParameters(key, GetPath<T>(path), options), cancel)
                 .ContinueWith(task => task.Result.Content, cancel);
         }
 #endif
@@ -69,7 +75,7 @@ namespace Saleslogix.SData.Client
 
         public static T Post<T>(this ISDataClient client, T content, string path = null, SDataPayloadOptions options = null)
         {
-            return client.Execute<T>(GetPostParameters(client, content, path ?? GetPath<T>(client), options)).Content;
+            return client.Execute<T>(GetPostParameters(client, content, GetPath<T>(path), options)).Content;
         }
 #endif
 
@@ -82,7 +88,7 @@ namespace Saleslogix.SData.Client
 
         public static Task<T> PostAsync<T>(this ISDataClient client, T content, string path = null, SDataPayloadOptions options = null, CancellationToken cancel = default(CancellationToken))
         {
-            return client.ExecuteAsync<T>(GetPostParameters(client, content, path ?? GetPath<T>(client), options), cancel)
+            return client.ExecuteAsync<T>(GetPostParameters(client, content, GetPath<T>(path), options), cancel)
                 .ContinueWith(task => task.Result.Content, cancel);
         }
 #endif
@@ -116,7 +122,7 @@ namespace Saleslogix.SData.Client
 
         public static T Put<T>(this ISDataClient client, T content, string path = null, SDataPayloadOptions options = null)
         {
-            return client.Execute<T>(GetPutParameters(client, content, path ?? GetPath<T>(client), options)).Content;
+            return client.Execute<T>(GetPutParameters(client, content, GetPath<T>(path), options)).Content;
         }
 #endif
 
@@ -129,7 +135,7 @@ namespace Saleslogix.SData.Client
 
         public static Task<T> PutAsync<T>(this ISDataClient client, T content, string path = null, SDataPayloadOptions options = null, CancellationToken cancel = default(CancellationToken))
         {
-            return client.ExecuteAsync<T>(GetPutParameters(client, content, path ?? GetPath<T>(client), options), cancel)
+            return client.ExecuteAsync<T>(GetPutParameters(client, content, GetPath<T>(path), options), cancel)
                 .ContinueWith(task => task.Result.Content, cancel);
         }
 #endif
@@ -167,7 +173,7 @@ namespace Saleslogix.SData.Client
         public static void Delete<T>(this ISDataClient client, T content, string path = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            client.Execute(GetDeleteParameters(content, path ?? GetPath<T>(client)));
+            client.Execute(GetDeleteParameters(content, GetPath<T>(path)));
         }
 #endif
 
@@ -181,7 +187,7 @@ namespace Saleslogix.SData.Client
         public static Task DeleteAsync<T>(this ISDataClient client, T content, string path = null, CancellationToken cancel = default(CancellationToken))
         {
             Guard.ArgumentNotNull(client, "client");
-            return client.ExecuteAsync(GetDeleteParameters(content, path ?? GetPath<T>(client)), cancel);
+            return client.ExecuteAsync(GetDeleteParameters(content, GetPath<T>(path)), cancel);
         }
 #endif
 
@@ -207,12 +213,12 @@ namespace Saleslogix.SData.Client
         public static ISDataBatch<T> CreateBatch<T>(this ISDataClient client, string path = null, SDataPayloadOptions options = null)
         {
             Guard.ArgumentNotNull(client, "client");
-            return new SDataBatch<T>(client, path ?? GetPath<T>(client), options);
+            return new SDataBatch<T>(client, GetPath<T>(path), options);
         }
 
-        private static string GetPath<T>(ISDataClient client)
+        private static string GetPath<T>(string path)
         {
-            return SDataResourceAttribute.GetPath(typeof (T)) ?? (client.NamingScheme ?? NamingScheme.Default).GetName(typeof (T).GetTypeInfo());
+            return path ?? SDataResourceAttribute.GetPath(typeof (T));
         }
 
         private static string GetSelector(object content)
@@ -230,5 +236,121 @@ namespace Saleslogix.SData.Client
         {
             return ContentHelper.GetProtocolValue<string>(content, SDataProtocolProperty.ETag);
         }
+
+#if !NET_2_0
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+        public static void CallService(this ISDataClient client, Expression<Action> methodCall, string path = null)
+        {
+            client.Execute(GetServiceParameters(client, methodCall.Body, path));
+        }
+
+        public static T CallService<T>(this ISDataClient client, Expression<Func<T>> methodCall, string path = null)
+        {
+            var content = client.Execute<SDataResource>(GetServiceParameters(client, methodCall.Body, path)).Content;
+            return GetServiceResult<T>(client, methodCall.Body, content);
+        }
+#endif
+
+#if !NET_3_5
+        public static Task CallServiceAsync(this ISDataClient client, Expression<Action> methodCall, string path = null, CancellationToken cancel = default(CancellationToken))
+        {
+            return client.ExecuteAsync(GetServiceParameters(client, methodCall.Body, path), cancel);
+        }
+
+        public static Task<T> CallServiceAsync<T>(this ISDataClient client, Expression<Func<T>> methodCall, string path = null, CancellationToken cancel = default(CancellationToken))
+        {
+            return client.ExecuteAsync<SDataResource>(GetServiceParameters(client, methodCall.Body, path), cancel)
+                .ContinueWith(task => GetServiceResult<T>(client, methodCall.Body, task.Result.Content), cancel);
+        }
+#endif
+
+        private static SDataParameters GetServiceParameters(ISDataClient client, Expression bodyExpr, string path)
+        {
+            Guard.ArgumentNotNull(client, "client");
+
+            var callExpr = bodyExpr as MethodCallExpression;
+            if (callExpr == null)
+            {
+                throw new SDataClientException("Expression must be a method call");
+            }
+
+            var attr = callExpr.Method.GetCustomAttribute<SDataServiceOperationAttribute>();
+            var namingScheme = client.NamingScheme ?? NamingScheme.Default;
+            var request = new SDataResource();
+            object instance;
+
+            if (callExpr.Object != null)
+            {
+                if (attr == null || string.IsNullOrEmpty(attr.InstancePropertyName))
+                {
+                    throw new SDataClientException("Instance methods must be decorated with SDataServiceOperation attribute with InstancePropertyName specified");
+                }
+
+                instance = Expression.Lambda(callExpr.Object).Compile().DynamicInvoke();
+                request[attr.InstancePropertyName] = instance;
+            }
+            else
+            {
+                instance = null;
+            }
+            foreach (var pair in callExpr.Method.GetParameters().Zip(callExpr.Arguments, (param, arg) => new {param, arg}))
+            {
+                request[namingScheme.GetName(pair.param)] = Expression.Lambda(pair.arg).Compile().DynamicInvoke();
+            }
+
+            if (path == null)
+            {
+                path = attr != null && attr.IsPathSpecified
+                    ? attr.Path
+                    : SDataResourceAttribute.GetPath(instance != null ? instance.GetType() : callExpr.Method.DeclaringType);
+            }
+            if (path != null)
+            {
+                path += "/";
+            }
+            path += "$service/" + namingScheme.GetName(callExpr.Method);
+
+            var xmlLocalName = attr != null ? attr.XmlLocalName : null;
+            var xmlNamespace = attr != null ? attr.XmlNamespace : null;
+            var content = new SDataResource(xmlLocalName, xmlNamespace) {{"request", request}};
+            return new SDataParameters
+                {
+                    Method = HttpMethod.Post,
+                    Path = path,
+                    Content = content,
+                    ContentType = client.Format ?? MediaType.Json
+                };
+        }
+
+        private static T GetServiceResult<T>(ISDataClient client, Expression bodyExpr, SDataResource content)
+        {
+            var value = content["response"];
+            var response = (SDataResource) value;
+
+            var attr = ((MethodCallExpression) bodyExpr).Method.GetCustomAttribute<SDataServiceOperationAttribute>();
+            if (attr != null && !string.IsNullOrEmpty(attr.ResultPropertyName))
+            {
+                value = response[attr.ResultPropertyName];
+            }
+            else if (response.Count == 1)
+            {
+                var firstValue = response.Values.First();
+                if (typeof (IConvertible).IsAssignableFrom(typeof (T)))
+                {
+                    if (!(firstValue is IConvertible))
+                    {
+                        throw new SDataClientException(string.Format("Service operation result type '{0}' is incompatible with method return type '{1}'", firstValue.GetType(), typeof (T)));
+                    }
+                    return (T) Convert.ChangeType(firstValue, typeof (T));
+                }
+                if (!(firstValue is IConvertible))
+                {
+                    value = firstValue;
+                }
+            }
+
+            return ContentHelper.Deserialize<T>(value, client.NamingScheme);
+        }
+#endif
     }
 }

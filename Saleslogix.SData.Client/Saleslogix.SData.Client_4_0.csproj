@@ -371,6 +371,8 @@
     <Compile Include="SDataResourceAttribute.cs" />
     <Compile Include="SDataResourceTypeDescriptionProvider.cs" />
     <Compile Include="SDataResults.cs" />
+    <Compile Include="SDataServiceOperationAttribute.cs" />
+    <Compile Include="SDataServiceParameterAttribute.cs" />
     <Compile Include="SimpleJson.cs" />
     <Compile Include="Stubs.cs" />
     <Compile Include="Utilities\EnumEx.cs" />

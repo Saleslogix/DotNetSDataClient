@@ -7,5 +7,6 @@ namespace Saleslogix.SData.Client
     public interface INamingScheme
     {
         string GetName(MemberInfo member);
+        string GetName(ParameterInfo param);
     }
 }
