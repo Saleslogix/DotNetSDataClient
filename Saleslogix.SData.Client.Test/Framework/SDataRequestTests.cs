@@ -207,6 +207,30 @@ namespace Saleslogix.SData.Client.Test.Framework
         }
 
         [Test]
+        public void Multipart_Space_File_Only_Test()
+        {
+            var requestMock = new Mock<HttpWebRequest> {CallBase = true};
+            var responseMock = new Mock<HttpWebResponse>();
+            var content = new MemoryStream();
+            requestMock.Setup(x => x.GetRequestStream()).Returns(content);
+            responseMock.Setup(x => x.StatusCode).Returns(HttpStatusCode.NoContent);
+            responseMock.Setup(x => x.Headers).Returns(new WebHeaderCollection());
+            requestMock.Setup(x => x.GetResponse()).Returns(responseMock.Object);
+            var webRequest = requestMock.Object;
+            webRequest.Headers = new WebHeaderCollection();
+            _requests.Enqueue(webRequest);
+
+            var request = new SDataRequest("test://localhost/sdata/invoices", HttpMethod.Post) {Files = {new AttachedFile("text/plain", "hel lo.txt", new MemoryStream(Encoding.UTF8.GetBytes("world")))}};
+            var response = request.GetResponse();
+            var text = Encoding.UTF8.GetString(content.ToArray());
+
+            Assert.That(webRequest.ContentType, Is.StringStarting("multipart/related;"));
+            Assert.That(text, Is.StringContaining("attachment; filename=\"hel lo.txt\""));
+            Assert.That(text, Is.StringContaining("world"));
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        }
+
+        [Test]
         public void Multipart_Unicode_File_Only_Test()
         {
             var requestMock = new Mock<HttpWebRequest> {CallBase = true};

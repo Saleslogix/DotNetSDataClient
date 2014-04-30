@@ -508,15 +508,20 @@ namespace Saleslogix.SData.Client.Framework
                     foreach (var file in Files)
                     {
                         var contentDisposition = "attachment";
-                        if (file.FileName != null)
+                        var fileName = file.FileName;
+                        if (fileName != null)
                         {
-                            if (Encoding.UTF8.GetByteCount(file.FileName) == file.FileName.Length)
+                            if (Encoding.UTF8.GetByteCount(fileName) == fileName.Length)
                             {
-                                contentDisposition += "; filename=" + file.FileName;
+                                if (fileName.Contains(" "))
+                                {
+                                    fileName = string.Format("\"{0}\"", fileName.Replace("\"", "\\\""));
+                                }
+                                contentDisposition += "; filename=" + fileName;
                             }
                             else
                             {
-                                contentDisposition += "; filename*=" + string.Format("{0}''{1}", Encoding.UTF8.WebName, System.Uri.EscapeDataString(file.FileName));
+                                contentDisposition += "; filename*=" + string.Format("{0}''{1}", Encoding.UTF8.WebName, System.Uri.EscapeDataString(fileName));
                             }
                         }
 
