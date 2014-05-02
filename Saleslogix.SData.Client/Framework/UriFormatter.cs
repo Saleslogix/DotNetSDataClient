@@ -107,8 +107,6 @@ namespace Saleslogix.SData.Client.Framework
         private string _scheme;
         private int _port;
         private string _host;
-        private string _pathPrefix;
-        private string _server;
         private string _fragment;
 
         private string _pathInternal;
@@ -196,8 +194,6 @@ namespace Saleslogix.SData.Client.Framework
             _scheme = uri._scheme;
             _port = uri._port;
             _host = uri._host;
-            _pathPrefix = uri._pathPrefix;
-            _server = uri._server;
             _fragment = uri._fragment;
 
             _pathInternal = uri._pathInternal;
@@ -300,44 +296,6 @@ namespace Saleslogix.SData.Client.Framework
             {
                 CheckParseUri();
                 _host = value;
-                _requiresRebuildUri = true;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the path prefix for the <see cref="Uri"/>.
-        /// </summary>
-        /// <remarks>Represents the virtual root when hosting in IIS, otherwise empty.</remarks>
-        public string PathPrefix
-        {
-            get
-            {
-                CheckParseUri();
-                return _pathPrefix;
-            }
-            set
-            {
-                CheckParseUri();
-                _pathPrefix = value;
-                _requiresRebuildUri = true;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the server for the <see cref="Uri"/>.
-        /// </summary>
-        /// <value>The server for the <see cref="Uri"/>.</value>
-        public string Server
-        {
-            get
-            {
-                CheckParseUri();
-                return _server;
-            }
-            set
-            {
-                CheckParseUri();
-                _server = value;
                 _requiresRebuildUri = true;
             }
         }
@@ -824,8 +782,10 @@ namespace Saleslogix.SData.Client.Framework
         /// </summary>
         protected virtual void OnBuildUri()
         {
+            var uri = new StringBuilder();
+
             // http
-            var uri = new StringBuilder(string.IsNullOrEmpty(_scheme) ? Http : _scheme);
+            uri.Append(string.IsNullOrEmpty(_scheme) ? Http : _scheme);
 
             // http:
             uri.Append(SchemeSuffix);
@@ -844,57 +804,32 @@ namespace Saleslogix.SData.Client.Framework
                 uri.Append(_port.ToString(CultureInfo.InvariantCulture));
             }
 
-            // http://host<:port>/serverPrefix
-            if (!string.IsNullOrEmpty(_pathPrefix))
-            {
-                if (!_pathPrefix.StartsWith(PathSegmentPrefix))
-                {
-                    uri.Append(PathSegmentPrefix);
-                }
-
-                uri.Append(_pathPrefix);
-            }
-
-            // http://host<:port>/serverPrefix/server
-            if (!string.IsNullOrEmpty(_server))
-            {
-                if (!_server.StartsWith(PathSegmentPrefix))
-                {
-                    uri.Append(PathSegmentPrefix);
-                }
-
-                uri.Append(_server);
-            }
-
             // http://<host><:port>/<path>
             CheckRebuildPath();
-
             if (!string.IsNullOrEmpty(_pathInternal))
             {
                 if (!_pathInternal.StartsWith(PathSegmentPrefix))
                 {
                     uri.Append(PathSegmentPrefix);
                 }
-
                 uri.Append(_pathInternal);
             }
 
             // http://<host><:port>/<path><?query>
             CheckRebuildQuery();
-
             if (!string.IsNullOrEmpty(_query))
             {
                 uri.Append(QueryPrefix);
                 uri.Append(_query);
             }
 
+            // http://<host><:port>/<path><?query><#fragment>
             if (!string.IsNullOrEmpty(_fragment))
             {
                 if (!_fragment.StartsWith(FragmentPrefix))
                 {
                     uri.Append(FragmentPrefix);
                 }
-
                 uri.Append(_fragment);
             }
 
@@ -930,8 +865,6 @@ namespace Saleslogix.SData.Client.Framework
                 _port = UnspecifiedPort;
                 _scheme = Http;
                 _host = null;
-                _pathPrefix = null;
-                _server = null;
                 _fragment = null;
                 _pathInternal = null;
                 _query = null;
@@ -943,33 +876,16 @@ namespace Saleslogix.SData.Client.Framework
                 _host = _uri.Host;
 
                 var path = Uri.UnescapeDataString(_uri.AbsolutePath);
-
                 if (path.StartsWith(PathSegmentPrefix))
                 {
                     path = path.Substring(PathSegmentPrefix.Length);
                 }
-
-                var pos = path.IndexOf(PathSegmentPrefix[0]);
-                if (pos < 0)
-                {
-                    _server = path;
-                    _pathInternal = null;
-                }
-                else
-                {
-                    _server = path.Substring(0, pos);
-                    _pathInternal = path.Substring(pos + 1);
-                }
+                _pathInternal = path;
 
                 _fragment = _uri.Fragment;
                 if (_fragment.StartsWith(FragmentPrefix))
                 {
                     _fragment = _fragment.Substring(FragmentPrefix.Length);
-                }
-
-                if (_pathInternal != null && _pathInternal.StartsWith(PathSegmentPrefix))
-                {
-                    _pathInternal = _pathInternal.Substring(PathSegmentPrefix.Length);
                 }
 
                 _query = _uri.Query;

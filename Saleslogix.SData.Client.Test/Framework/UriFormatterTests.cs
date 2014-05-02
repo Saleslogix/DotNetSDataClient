@@ -17,11 +17,11 @@ namespace Saleslogix.SData.Client.Test.Framework
         public void Assign_New_Uri_To_Existing_Test()
         {
             var uri = new UriFormatter("http://test.com/sdata/-/-/-/");
-            var expected = new[] {new UriPathSegment("-"), new UriPathSegment("-"), new UriPathSegment("-")};
+            var expected = new[] {new UriPathSegment("sdata"), new UriPathSegment("-"), new UriPathSegment("-"), new UriPathSegment("-")};
             Assert.That(uri.PathSegments, Is.EquivalentTo(expected));
 
             uri.Uri = new Uri("http://localhost:3333/sdata/aw/dynamic/-/");
-            expected = new[] {new UriPathSegment("aw"), new UriPathSegment("dynamic"), new UriPathSegment("-")};
+            expected = new[] {new UriPathSegment("sdata"), new UriPathSegment("aw"), new UriPathSegment("dynamic"), new UriPathSegment("-")};
             Assert.That(uri.PathSegments, Is.EquivalentTo(expected));
         }
 
@@ -99,8 +99,6 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(after.Scheme, Is.EqualTo(before.Scheme));
             Assert.That(after.Port, Is.EqualTo(before.Port));
             Assert.That(after.Host, Is.EqualTo(before.Host));
-            Assert.That(after.PathPrefix, Is.EqualTo(before.PathPrefix));
-            Assert.That(after.Server, Is.EqualTo(before.Server));
             Assert.That(after.Fragment, Is.EqualTo(before.Fragment));
             Assert.That(after.Path, Is.EqualTo(before.Path));
             Assert.That(after.PathSegments, Is.EqualTo(before.PathSegments));
@@ -164,7 +162,7 @@ namespace Saleslogix.SData.Client.Test.Framework
         {
             var uri = new UriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?format=json") {Path = null};
             uri.AppendPath("hello", "world");
-            Assert.That(uri.ToString(), Is.EqualTo("http://localhost:3333/sdata/hello/world?format=json"));
+            Assert.That(uri.ToString(), Is.EqualTo("http://localhost:3333/hello/world?format=json"));
         }
 
         [Test]

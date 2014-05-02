@@ -15,9 +15,9 @@ namespace Saleslogix.SData.Client.Test.Framework
         {
             var uri = new SDataUri("http://test.com/sdata/-/-/-/resource/$service/name");
             uri.AppendPath("test");
-            Assert.AreEqual("resource", uri.GetPathSegment(3).Text);
-            Assert.AreEqual("name", uri.GetPathSegment(5).Text);
-            Assert.AreEqual("-/-/-/resource/$service/name/test", uri.DirectPath);
+            Assert.AreEqual("resource", uri.GetPathSegment(4).Text);
+            Assert.AreEqual("name", uri.GetPathSegment(6).Text);
+            Assert.AreEqual("sdata/-/-/-/resource/$service/name/test", uri.DirectPath);
             Assert.AreEqual("http://test.com/sdata/-/-/-/resource/$service/name/test", uri.ToString());
         }
 

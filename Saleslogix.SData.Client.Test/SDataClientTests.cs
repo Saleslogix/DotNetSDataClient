@@ -21,7 +21,7 @@ namespace Saleslogix.SData.Client.Test
                 requestUri = new SDataUri(uri);
                 return requestMock.Object;
             });
-            var client = new SDataClient("test://dummy/root", requestFactory);
+            var client = new SDataClient("test://dummy", requestFactory);
             var content = new object();
             var file = new AttachedFile(null, null, null);
             var parms = new SDataParameters
@@ -92,7 +92,7 @@ namespace Saleslogix.SData.Client.Test
                 requestUri = new SDataUri(uri);
                 return requestMock.Object;
             });
-            var client = new SDataClient("test://dummy/root", requestFactory);
+            var client = new SDataClient("test://dummy", requestFactory);
             var file1 = new AttachedFile(null, null, null);
             var params1 = new SDataParameters
                 {
