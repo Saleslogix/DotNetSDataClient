@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Data;
+using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
-using Saleslogix.SData.Client.Core;
-using Saleslogix.SData.Client.Extensions;
+using Saleslogix.SData.Client;
+using Saleslogix.SData.Client.Framework;
 
 namespace SDataClientApp
 {
     public partial class ResourceProperties : BaseControl
     {
-        private SDataResourcePropertyRequest _sdataResourcePropertyRequest;
-
         public ResourceProperties()
         {
             InitializeComponent();
@@ -18,110 +15,102 @@ namespace SDataClientApp
 
         public override void Refresh()
         {
-            try
-            {
-                _sdataResourcePropertyRequest = new SDataResourcePropertyRequest(Service)
-                                                    {
-                                                        ResourceKind = tbRPResourceKind.Text,
-                                                        ResourceSelector = tbRPResourceSelector.Text
-                                                    };
-                tbResourcePropertiesURL.Text = _sdataResourcePropertyRequest.ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            UpdateUrl();
         }
 
         private void btnAddProperty_Click(object sender, EventArgs e)
         {
-            try
+            if (!string.IsNullOrEmpty(tbResourceProperty.Text))
             {
-                if (tbResourceProperty.Text != string.Empty)
-                {
-                    _sdataResourcePropertyRequest.ResourceProperties.Add(tbResourceProperty.Text);
-                    lbProperties.Items.Add(tbResourceProperty.Text);
-                    tbResourcePropertiesURL.Text = _sdataResourcePropertyRequest.ToString();
-                    tbResourceProperty.Text = "";
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
+                lbProperties.Items.Add(tbResourceProperty.Text);
+                UpdateUrl();
             }
         }
 
         private void tbRPResourceKind_TextChanged(object sender, EventArgs e)
         {
-            try
-            {
-                _sdataResourcePropertyRequest.ResourceKind = tbRPResourceKind.Text;
-                tbResourcePropertiesURL.Text = _sdataResourcePropertyRequest.ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            UpdateUrl();
         }
 
         private void tbRPResourceSelector_TextChanged(object sender, EventArgs e)
         {
-            try
-            {
-                _sdataResourcePropertyRequest.ResourceSelector = tbRPResourceSelector.Text;
-                tbResourcePropertiesURL.Text = _sdataResourcePropertyRequest.ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            UpdateUrl();
         }
 
         private void btnClearProperties_Click(object sender, EventArgs e)
         {
             lbProperties.Items.Clear();
-            _sdataResourcePropertyRequest.ResourceProperties.Clear();
-            tbResourcePropertiesURL.Text = "";
+            UpdateUrl();
+        }
+
+        private void UpdateUrl()
+        {
+            var uri = new SDataUri(Client.Uri);
+            if (!string.IsNullOrEmpty(tbRPResourceKind.Text))
+            {
+                var selector = tbRPResourceSelector.Text;
+                if (!string.IsNullOrEmpty(selector))
+                {
+                    selector = SDataUri.FormatConstant(selector);
+                }
+                uri.AppendPath(new UriPathSegment(tbRPResourceKind.Text, selector));
+            }
+            if (lbProperties.Items.Count > 0)
+            {
+                uri.AppendPath(lbProperties.Items.Cast<string>().ToArray());
+            }
+            tbResourcePropertiesURL.Text = uri.ToString();
         }
 
         private void btnPropertiesRead_Click(object sender, EventArgs e)
         {
             if (cbIsFeed.Checked)
             {
-                var feed = _sdataResourcePropertyRequest.ReadFeed();
-                var table = new DataTable();
-                table.Columns.Add("Author");
-                table.Columns.Add("Id");
-                table.Columns.Add("Title");
-
-                // iterate through the list of entries in the feed
-                foreach (var atomentry in feed.Entries)
+                var parts = new List<string>();
+                if (!string.IsNullOrEmpty(tbRPResourceKind.Text))
                 {
-                    var dr = table.NewRow();
-                    dr[0] = atomentry.Authors.Select(author => author.Name).FirstOrDefault();
-                    dr[1] = atomentry.Id.Uri.AbsoluteUri;
-                    dr[2] = atomentry.Title.Content;
-
-                    table.Rows.Add(dr);
+                    var selector = tbRPResourceSelector.Text;
+                    if (!string.IsNullOrEmpty(selector))
+                    {
+                        selector = SDataUri.FormatConstant(selector);
+                    }
+                    parts.Add(new UriPathSegment(tbRPResourceKind.Text, selector).Segment);
+                }
+                if (lbProperties.Items.Count > 0)
+                {
+                    parts.AddRange(lbProperties.Items.Cast<string>());
                 }
 
+                var collection = Client.Execute<SDataCollection<SDataResource>>(
+                    new SDataParameters
+                        {
+                            Path = string.Join("/", parts)
+                        }).Content;
                 gridRPPayloads.SelectedObject = null;
 
-                // show it in the grid
-                rpGridEntries.DataSource = table;
+                rpGridEntries.Rows.Clear();
+                rpGridEntries.Columns.Clear();
+                if (collection.Count > 0)
+                {
+                    foreach (var key in collection[0].Keys)
+                    {
+                        rpGridEntries.Columns.Add(key, key);
+                    }
+                    foreach (var item in collection)
+                    {
+                        rpGridEntries.Rows.Add(item.Values.ToArray());
+                    }
+                }
 
                 rpGridEntries.Refresh();
                 rpGridEntries.AutoResizeColumns();
             }
             else
             {
-                var entry = _sdataResourcePropertyRequest.Read();
-                var payload = entry.GetSDataPayload();
-
-                rpGridEntries.DataSource = null;
-
-                // show it in the grid
-                gridRPPayloads.SelectedObject = payload;
+                var resource = Client.Get(tbRPResourceSelector.Text, tbRPResourceKind.Text);
+                rpGridEntries.Rows.Clear();
+                rpGridEntries.Columns.Clear();
+                gridRPPayloads.SelectedObject = resource;
             }
         }
     }

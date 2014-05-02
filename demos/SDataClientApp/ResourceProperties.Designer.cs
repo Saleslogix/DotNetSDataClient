@@ -144,8 +144,6 @@
             this.rpGridEntries.AllowUserToDeleteRows = false;
             this.rpGridEntries.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.rpGridEntries.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.rpGridEntries.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.rpGridEntries.Location = new System.Drawing.Point(8, 176);
             this.rpGridEntries.MultiSelect = false;
             this.rpGridEntries.Name = "rpGridEntries";

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using Saleslogix.SData.Client.Core;
+using Saleslogix.SData.Client;
 using SDataClientApp.Properties;
 
 namespace SDataClientApp
@@ -11,11 +11,11 @@ namespace SDataClientApp
         {
             InitializeComponent();
 
-            var service = new SDataService();
+            var client = new SDataClient(null);
 
             foreach (TabPage tab in tabControl1.TabPages)
             {
-                ((BaseControl) tab.Controls[0]).Service = service;
+                ((BaseControl) tab.Controls[0]).Client = client;
             }
 
             tabControl1_SelectedIndexChanged(null, null);

@@ -11,6 +11,7 @@ namespace SDataClientApp
         [STAThread]
         private static void Main()
         {
+            Application.ThreadException += (sender, e) => MessageBox.Show(e.Exception.ToString());
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());

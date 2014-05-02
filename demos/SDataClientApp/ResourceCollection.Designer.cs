@@ -1,6 +1,4 @@
-﻿using Saleslogix.SData.Client.Core;
-
-namespace SDataClientApp
+﻿namespace SDataClientApp
 {
     partial class ResourceCollection
     {
@@ -32,9 +30,6 @@ namespace SDataClientApp
         {
             System.Windows.Forms.Label label23;
             System.Windows.Forms.Label label22;
-            System.Windows.Forms.Label label29;
-            System.Windows.Forms.Label label27;
-            System.Windows.Forms.Button btnReaderRead;
             System.Windows.Forms.Button btnCollectionRead;
             System.Windows.Forms.Label label9;
             System.Windows.Forms.Label label8;
@@ -42,8 +37,6 @@ namespace SDataClientApp
             System.Windows.Forms.Label label10;
             this.atomEntryGrid = new System.Windows.Forms.DataGridView();
             this.collectionPayloadGrid = new System.Windows.Forms.PropertyGrid();
-            this.tbCurrentItem = new System.Windows.Forms.TextBox();
-            this.tbReaderCount = new System.Windows.Forms.TextBox();
             this.numStartIndex = new System.Windows.Forms.NumericUpDown();
             this.numCount = new System.Windows.Forms.NumericUpDown();
             this.btnLast = new System.Windows.Forms.Button();
@@ -54,14 +47,12 @@ namespace SDataClientApp
             this.tbCollectionResourceKind = new System.Windows.Forms.TextBox();
             label23 = new System.Windows.Forms.Label();
             label22 = new System.Windows.Forms.Label();
-            label29 = new System.Windows.Forms.Label();
-            label27 = new System.Windows.Forms.Label();
-            btnReaderRead = new System.Windows.Forms.Button();
             btnCollectionRead = new System.Windows.Forms.Button();
             label9 = new System.Windows.Forms.Label();
             label8 = new System.Windows.Forms.Label();
             splitContainer1 = new System.Windows.Forms.SplitContainer();
             label10 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(splitContainer1)).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
@@ -90,37 +81,6 @@ namespace SDataClientApp
             label22.TabIndex = 4;
             label22.Text = "Count:";
             // 
-            // label29
-            // 
-            label29.AutoSize = true;
-            label29.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            label29.Location = new System.Drawing.Point(488, 8);
-            label29.Name = "label29";
-            label29.Size = new System.Drawing.Size(67, 13);
-            label29.TabIndex = 8;
-            label29.Text = "Current Item:";
-            // 
-            // label27
-            // 
-            label27.AutoSize = true;
-            label27.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            label27.Location = new System.Drawing.Point(380, 8);
-            label27.Name = "label27";
-            label27.Size = new System.Drawing.Size(59, 13);
-            label27.TabIndex = 6;
-            label27.Text = "Total Items";
-            // 
-            // btnReaderRead
-            // 
-            btnReaderRead.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            btnReaderRead.Location = new System.Drawing.Point(112, 100);
-            btnReaderRead.Name = "btnReaderRead";
-            btnReaderRead.Size = new System.Drawing.Size(100, 23);
-            btnReaderRead.TabIndex = 13;
-            btnReaderRead.Text = "Read Reader";
-            btnReaderRead.UseVisualStyleBackColor = true;
-            btnReaderRead.Click += new System.EventHandler(this.btnReaderRead_Click);
-            // 
             // btnCollectionRead
             // 
             btnCollectionRead.ImeMode = System.Windows.Forms.ImeMode.NoControl;
@@ -128,7 +88,7 @@ namespace SDataClientApp
             btnCollectionRead.Name = "btnCollectionRead";
             btnCollectionRead.Size = new System.Drawing.Size(100, 23);
             btnCollectionRead.TabIndex = 12;
-            btnCollectionRead.Text = "Read Normal";
+            btnCollectionRead.Text = "Read";
             btnCollectionRead.UseVisualStyleBackColor = true;
             btnCollectionRead.Click += new System.EventHandler(this.btnCollectionRead_Click);
             // 
@@ -154,9 +114,9 @@ namespace SDataClientApp
             // 
             // splitContainer1
             // 
-            splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             splitContainer1.Location = new System.Drawing.Point(8, 132);
             splitContainer1.Name = "splitContainer1";
             splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -177,8 +137,6 @@ namespace SDataClientApp
             // 
             this.atomEntryGrid.AllowUserToAddRows = false;
             this.atomEntryGrid.AllowUserToDeleteRows = false;
-            this.atomEntryGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.atomEntryGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.atomEntryGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.atomEntryGrid.Location = new System.Drawing.Point(0, 0);
             this.atomEntryGrid.MultiSelect = false;
@@ -188,7 +146,7 @@ namespace SDataClientApp
             this.atomEntryGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.atomEntryGrid.Size = new System.Drawing.Size(785, 227);
             this.atomEntryGrid.TabIndex = 0;
-            this.atomEntryGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.atomEntryGrid_CellContentClick);
+            this.atomEntryGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.atomEntryGrid_CellClick);
             // 
             // collectionPayloadGrid
             // 
@@ -211,21 +169,6 @@ namespace SDataClientApp
             label10.TabIndex = 0;
             label10.Text = "Payload";
             // 
-            // tbCurrentItem
-            // 
-            this.tbCurrentItem.Enabled = false;
-            this.tbCurrentItem.Location = new System.Drawing.Point(488, 24);
-            this.tbCurrentItem.Name = "tbCurrentItem";
-            this.tbCurrentItem.Size = new System.Drawing.Size(100, 20);
-            this.tbCurrentItem.TabIndex = 9;
-            // 
-            // tbReaderCount
-            // 
-            this.tbReaderCount.Location = new System.Drawing.Point(380, 24);
-            this.tbReaderCount.Name = "tbReaderCount";
-            this.tbReaderCount.Size = new System.Drawing.Size(100, 20);
-            this.tbReaderCount.TabIndex = 7;
-            // 
             // numStartIndex
             // 
             this.numStartIndex.DataBindings.Add(new System.Windows.Forms.Binding("Value", global::SDataClientApp.Properties.Settings.Default, "CollectionStartIndex", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
@@ -244,6 +187,7 @@ namespace SDataClientApp
             this.numStartIndex.Size = new System.Drawing.Size(80, 20);
             this.numStartIndex.TabIndex = 3;
             this.numStartIndex.Value = global::SDataClientApp.Properties.Settings.Default.CollectionStartIndex;
+            this.numStartIndex.ValueChanged += new System.EventHandler(this.numStartIndex_ValueChanged);
             // 
             // numCount
             // 
@@ -258,6 +202,7 @@ namespace SDataClientApp
             this.numCount.Size = new System.Drawing.Size(80, 20);
             this.numCount.TabIndex = 5;
             this.numCount.Value = global::SDataClientApp.Properties.Settings.Default.CollectionCount;
+            this.numCount.ValueChanged += new System.EventHandler(this.numCount_ValueChanged);
             // 
             // btnLast
             // 
@@ -309,8 +254,8 @@ namespace SDataClientApp
             // 
             // tbCollectionURL
             // 
-            this.tbCollectionURL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbCollectionURL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbCollectionURL.Location = new System.Drawing.Point(8, 72);
             this.tbCollectionURL.Name = "tbCollectionURL";
             this.tbCollectionURL.Size = new System.Drawing.Size(784, 20);
@@ -330,11 +275,6 @@ namespace SDataClientApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(label29);
-            this.Controls.Add(this.tbCurrentItem);
-            this.Controls.Add(label27);
-            this.Controls.Add(this.tbReaderCount);
-            this.Controls.Add(btnReaderRead);
             this.Controls.Add(this.numStartIndex);
             this.Controls.Add(this.numCount);
             this.Controls.Add(this.btnLast);
@@ -353,6 +293,7 @@ namespace SDataClientApp
             this.Size = new System.Drawing.Size(800, 600);
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(splitContainer1)).EndInit();
             splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.atomEntryGrid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStartIndex)).EndInit();
@@ -370,8 +311,6 @@ namespace SDataClientApp
         private System.Windows.Forms.Button btnFirst;
         private System.Windows.Forms.DataGridView atomEntryGrid;
         private System.Windows.Forms.PropertyGrid collectionPayloadGrid;
-        private System.Windows.Forms.TextBox tbCurrentItem;
-        private System.Windows.Forms.TextBox tbReaderCount;
         private System.Windows.Forms.NumericUpDown numStartIndex;
         private System.Windows.Forms.NumericUpDown numCount;
         private System.Windows.Forms.TextBox tbCollectionURL;

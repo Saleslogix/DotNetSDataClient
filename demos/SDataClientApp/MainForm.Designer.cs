@@ -77,7 +77,6 @@
             // 
             resources.ApplyResources(this.resourceProperties1, "resourceProperties1");
             this.resourceProperties1.Name = "resourceProperties1";
-            this.resourceProperties1.Service = null;
             this.resourceProperties1.StatusLabel = this.statusLabel;
             // 
             // tabSchema
@@ -91,7 +90,6 @@
             // 
             resources.ApplyResources(this.resourceSchema1, "resourceSchema1");
             this.resourceSchema1.Name = "resourceSchema1";
-            this.resourceSchema1.Service = null;
             this.resourceSchema1.StatusLabel = this.statusLabel;
             // 
             // tabTemplate
@@ -105,7 +103,6 @@
             // 
             resources.ApplyResources(this.resourceTemplate1, "resourceTemplate1");
             this.resourceTemplate1.Name = "resourceTemplate1";
-            this.resourceTemplate1.Service = null;
             this.resourceTemplate1.StatusLabel = this.statusLabel;
             // 
             // tabSingle
@@ -119,7 +116,6 @@
             // 
             resources.ApplyResources(this.singleResource1, "singleResource1");
             this.singleResource1.Name = "singleResource1";
-            this.singleResource1.Service = null;
             this.singleResource1.StatusLabel = this.statusLabel;
             // 
             // tabCollection
@@ -133,7 +129,6 @@
             // 
             resources.ApplyResources(this.resourceCollection1, "resourceCollection1");
             this.resourceCollection1.Name = "resourceCollection1";
-            this.resourceCollection1.Service = null;
             this.resourceCollection1.StatusLabel = this.statusLabel;
             // 
             // tabService
@@ -147,7 +142,6 @@
             // 
             resources.ApplyResources(this.serviceConfig1, "serviceConfig1");
             this.serviceConfig1.Name = "serviceConfig1";
-            this.serviceConfig1.Service = null;
             this.serviceConfig1.StatusLabel = this.statusLabel;
             // 
             // tabControl1

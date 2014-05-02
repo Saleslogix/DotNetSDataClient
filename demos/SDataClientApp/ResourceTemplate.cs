@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Windows.Forms;
-using Saleslogix.SData.Client.Core;
-using Saleslogix.SData.Client.Extensions;
+using Saleslogix.SData.Client;
+using Saleslogix.SData.Client.Framework;
 
 namespace SDataClientApp
 {
     public partial class ResourceTemplate : BaseControl
     {
-        private SDataTemplateResourceRequest _sdataTemplateResourceRequest;
-
         public ResourceTemplate()
         {
             InitializeComponent();
@@ -16,46 +14,37 @@ namespace SDataClientApp
 
         public override void Refresh()
         {
-            try
-            {
-                _sdataTemplateResourceRequest = new SDataTemplateResourceRequest(Service) {ResourceKind = tbTemplateResourceKind.Text};
-                tbTemplateURL.Text = _sdataTemplateResourceRequest.ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            UpdateUrl();
         }
 
         private void tbTemplateResourceKind_TextChanged(object sender, EventArgs e)
         {
-            if (_sdataTemplateResourceRequest != null)
+            UpdateUrl();
+        }
+
+        private void UpdateUrl()
+        {
+            var uri = new SDataUri(Client.Uri);
+            if (!string.IsNullOrEmpty(tbTemplateResourceKind.Text))
             {
-                _sdataTemplateResourceRequest.ResourceKind = tbTemplateResourceKind.Text;
-                tbTemplateURL.Text = _sdataTemplateResourceRequest.ToString();
+                uri.AppendPath(tbTemplateResourceKind.Text);
             }
+            uri.AppendPath("$template");
+            tbTemplateURL.Text = uri.ToString();
         }
 
         private void btnTemplateRead_Click(object sender, EventArgs e)
         {
-            try
+            var path = tbTemplateResourceKind.Text;
+            if (!string.IsNullOrEmpty(path))
             {
-                var entry = _sdataTemplateResourceRequest.Read();
-
-                if (entry == null)
-                {
-                    templatePayloadGrid.SelectedObject = null;
-                    MessageBox.Show("$template not supported");
-                }
-                else
-                {
-                    // show it in the grid
-                    templatePayloadGrid.SelectedObject = entry.GetSDataPayload();
-                }
+                path += "/";
             }
-            catch (Exception ex)
+            var template = Client.Get(null, path + "$template");
+            templatePayloadGrid.SelectedObject = template;
+            if (template == null)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("$template not supported");
             }
         }
     }

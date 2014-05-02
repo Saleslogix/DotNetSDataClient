@@ -1,15 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Saleslogix.SData.Client.Core;
+using Saleslogix.SData.Client;
+using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Metadata;
-using SDataClientApp.Properties;
 
 namespace SDataClientApp
 {
     public partial class ResourceSchema : BaseControl
     {
-        private SDataResourceSchemaRequest _sdataResourceSchemaRequest;
         private SDataSchema _schema;
 
         public ResourceSchema()
@@ -19,36 +18,44 @@ namespace SDataClientApp
 
         public override void Refresh()
         {
-            _sdataResourceSchemaRequest = new SDataResourceSchemaRequest(Service) {ResourceKind = tbSchemaResourceKind.Text};
-            tbSchemaURL.Text = _sdataResourceSchemaRequest.ToString();
+            UpdateUrl();
         }
 
         private void tbSchemaResourceKind_TextChanged(object sender, EventArgs e)
         {
-            if (_sdataResourceSchemaRequest != null)
+            UpdateUrl();
+        }
+
+        private void UpdateUrl()
+        {
+            var uri = new SDataUri(Client.Uri);
+            if (!string.IsNullOrEmpty(tbSchemaResourceKind.Text))
             {
-                _sdataResourceSchemaRequest.ResourceKind = tbSchemaResourceKind.Text;
-                tbSchemaURL.Text = _sdataResourceSchemaRequest.ToString();
+                uri.AppendPath(tbSchemaResourceKind.Text);
             }
+            uri.AppendPath("$schema");
+            tbSchemaURL.Text = uri.ToString();
         }
 
         private void btnSchemaRead_Click(object sender, EventArgs e)
         {
-            try
+            var path = tbSchemaResourceKind.Text;
+            if (!string.IsNullOrEmpty(path))
             {
-                _schema = (SDataSchema) _sdataResourceSchemaRequest.Read();
-                if (_schema != null)
-                {
-                    MessageBox.Show(Resources.statusSchemaReadComplete);
-                    btnSchemaSave.Enabled = true;
-                    btnSchemaSave.Visible = true;
-                    lbSchemaFileName.Visible = true;
-                    tbSchemaFileName.Visible = true;
-                }
+                path += "/";
             }
-            catch (Exception ex)
+            _schema = Client.Execute<SDataSchema>(
+                new SDataParameters
+                    {
+                        Path = path + "$schema"
+                    }).Content;
+            if (_schema != null)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Read schema completed successfully.");
+                btnSchemaSave.Enabled = true;
+                btnSchemaSave.Visible = true;
+                lbSchemaFileName.Visible = true;
+                tbSchemaFileName.Visible = true;
             }
         }
 
@@ -59,7 +66,7 @@ namespace SDataClientApp
                 _schema.Write(stream);
             }
 
-            MessageBox.Show(Resources.statusSchemaSaveComplete);
+            MessageBox.Show("Schema saved successfully.");
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using Saleslogix.SData.Client.Framework;
-using SDataClientApp.Properties;
 
 namespace SDataClientApp
 {
@@ -13,61 +12,52 @@ namespace SDataClientApp
 
         public override void Refresh()
         {
-            FormatURL();
+            FormatUrl();
         }
 
         private void cbProtocol_SelectedIndexChanged(object sender, EventArgs e)
         {
-            FormatURL();
+            FormatUrl();
         }
 
         private void tbServer_TextChanged(object sender, EventArgs e)
         {
-            FormatURL();
+            FormatUrl();
         }
 
         private void tbApplication_TextChanged(object sender, EventArgs e)
         {
-            FormatURL();
+            FormatUrl();
         }
 
         private void tbContract_TextChanged(object sender, EventArgs e)
         {
-            FormatURL();
+            FormatUrl();
         }
 
         private void tbDataSet_TextChanged(object sender, EventArgs e)
         {
-            FormatURL();
+            FormatUrl();
         }
 
-        private void FormatURL()
+        private void FormatUrl()
         {
-            try
+            var server = tbServer.Text;
+            var pos = server.IndexOf(':');
+            var uri = new SDataUri();
+            int port;
+
+            if (pos >= 0 && int.TryParse(server.Substring(pos + 1), out port))
             {
-                var server = tbServer.Text;
-                var pos = server.IndexOf(':');
-                var uri = new SDataUri();
-                int port;
-
-                if (pos >= 0 && int.TryParse(server.Substring(pos + 1), out port))
-                {
-                    server = server.Substring(0, pos);
-                    uri.Port = port;
-                }
-
-                uri.Scheme = cbProtocol.Text;
-                uri.Host = server;
-                uri.Server = tbVirtualDirectory.Text;
-                uri.Product = tbApplication.Text;
-                uri.Contract = tbContract.Text;
-                uri.CompanyDataset = tbDataSet.Text;
-
-                tbURL.Text = uri.ToString();
+                server = server.Substring(0, pos);
+                uri.Port = port;
             }
-            catch (UriFormatException)
-            {
-            }
+
+            uri.Scheme = cbProtocol.Text;
+            uri.Host = server;
+            uri.AppendPath(tbVirtualDirectory.Text, tbApplication.Text, tbContract.Text, tbDataSet.Text);
+
+            tbURL.Text = uri.ToString();
         }
 
         private void btnInitialize_Click(object sender, EventArgs e)
@@ -85,17 +75,19 @@ namespace SDataClientApp
                 port = 80;
             }
 
-            Service.Protocol = cbProtocol.Text;
-            Service.ServerName = server;
-            Service.Port = port;
-            Service.VirtualDirectory = tbVirtualDirectory.Text;
-            Service.ApplicationName = tbApplication.Text;
-            Service.ContractName = tbContract.Text;
-            Service.DataSet = tbDataSet.Text;
-            Service.UserName = tbUserName.Text;
-            Service.Password = tbPassword.Text;
+            var uri = new SDataUri
+                {
+                    Scheme = cbProtocol.Text,
+                    Host = server,
+                    Port = port
+                };
+            uri.AppendPath(tbVirtualDirectory.Text, tbApplication.Text, tbContract.Text, tbDataSet.Text);
 
-            StatusLabel.Text = Resources.statusInitializationComplete;
+            Client.Uri = uri.ToString();
+            Client.UserName = tbUserName.Text;
+            Client.Password = tbPassword.Text;
+
+            StatusLabel.Text = "SData client initialized.";
         }
     }
 }
