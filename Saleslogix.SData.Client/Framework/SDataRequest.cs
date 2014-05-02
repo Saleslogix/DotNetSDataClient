@@ -476,7 +476,7 @@ namespace Saleslogix.SData.Client.Framework
                 var handler = ContentManager.GetHandler(contentType.Value);
                 if (handler == null)
                 {
-                    throw new InvalidOperationException(string.Format("Content type '{0}' not supported", contentType));
+                    throw new NotSupportedException(string.Format("Content type '{0}' not supported", contentType));
                 }
 
                 handler.WriteTo(Content, requestStream, NamingScheme);

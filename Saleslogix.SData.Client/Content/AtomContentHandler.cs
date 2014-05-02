@@ -34,7 +34,7 @@ namespace Saleslogix.SData.Client.Content
 
             if (root == null)
             {
-                throw new FormatException("No root element found");
+                throw new SDataClientException("No root element found");
             }
 
             if (root.Name == _atomNs + "feed")
@@ -47,7 +47,7 @@ namespace Saleslogix.SData.Client.Content
                 return ReadEntry(root);
             }
 
-            throw new FormatException(string.Format("Unexpected root element '{0}' found", root.Name));
+            throw new SDataClientException(string.Format("Unexpected root element '{0}' found", root.Name));
         }
 
         private static SDataCollection<SDataResource> ReadFeed(XContainer feed)
@@ -369,7 +369,7 @@ namespace Saleslogix.SData.Client.Content
             var root = WriteAtomObject(obj, namingScheme) ?? WriteAtomObject(ContentHelper.Serialize(obj, namingScheme), namingScheme);
             if (root == null)
             {
-                throw new NotSupportedException(string.Format("Type '{0}' cannot be written", obj.GetType()));
+                throw new SDataClientException(string.Format("Type '{0}' cannot be written", obj.GetType()));
             }
 
             var doc = new XDocument();

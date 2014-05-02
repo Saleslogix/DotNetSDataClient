@@ -68,14 +68,14 @@ namespace Saleslogix.SData.Client.Metadata
                 {
                     if (type.ContentModel.Content == null)
                     {
-                        throw new InvalidOperationException(string.Format("Missing content on complex type content model '{0}'", type.Name));
+                        throw new SDataClientException(string.Format("Missing content on complex type content model '{0}'", type.Name));
                     }
 
                     var extension = type.ContentModel.Content as XmlSchemaComplexContentExtension;
 
                     if (extension == null)
                     {
-                        throw new InvalidOperationException(string.Format("Unexpected content type '{0}' on complex type content model '{1}'", type.ContentModel.Content.GetType(), type.Name));
+                        throw new SDataClientException(string.Format("Unexpected content type '{0}' on complex type content model '{1}'", type.ContentModel.Content.GetType(), type.Name));
                     }
 
                     AnyAttribute = extension.AnyAttribute;
@@ -93,7 +93,7 @@ namespace Saleslogix.SData.Client.Metadata
 
                     if (all == null)
                     {
-                        throw new InvalidOperationException(string.Format("Unexpected particle type '{0}' on complex type '{1}'", particle.GetType(), type.Name));
+                        throw new SDataClientException(string.Format("Unexpected particle type '{0}' on complex type '{1}'", particle.GetType(), type.Name));
                     }
 
                     foreach (var item in all.Items)
@@ -102,7 +102,7 @@ namespace Saleslogix.SData.Client.Metadata
 
                         if (element == null)
                         {
-                            throw new InvalidOperationException(string.Format("Unexpected all item type '{0}' on complex type '{1}'", item.GetType(), type.Name));
+                            throw new SDataClientException(string.Format("Unexpected all item type '{0}' on complex type '{1}'", item.GetType(), type.Name));
                         }
 
                         SDataSchemaProperty prop;

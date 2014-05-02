@@ -32,14 +32,14 @@ namespace Saleslogix.SData.Client.Metadata
 
             if (type.Particle == null)
             {
-                throw new InvalidOperationException(string.Format("Missing particle on choice type '{0}'", type.Name));
+                throw new SDataClientException(string.Format("Missing particle on choice type '{0}'", type.Name));
             }
 
             var choice = type.Particle as XmlSchemaChoice;
 
             if (choice == null)
             {
-                throw new InvalidOperationException(string.Format("Unexpected particle type '{0}' on choice type '{1}'", type.Particle.GetType(), type.Name));
+                throw new SDataClientException(string.Format("Unexpected particle type '{0}' on choice type '{1}'", type.Particle.GetType(), type.Name));
             }
 
             MaxOccurs = !string.IsNullOrEmpty(choice.MaxOccursString) ? choice.MaxOccurs : (decimal?) null;
@@ -50,7 +50,7 @@ namespace Saleslogix.SData.Client.Metadata
 
                 if (element == null)
                 {
-                    throw new InvalidOperationException(string.Format("Unexpected item type '{0}' on choice type '{1}'", item.GetType(), type.Name));
+                    throw new SDataClientException(string.Format("Unexpected item type '{0}' on choice type '{1}'", item.GetType(), type.Name));
                 }
 
                 var choiceType = new SDataSchemaChoiceItem();

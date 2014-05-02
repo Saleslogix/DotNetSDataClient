@@ -167,7 +167,7 @@ namespace Saleslogix.SData.Client.Metadata
 
                             if (roleAttr == null)
                             {
-                                throw new InvalidOperationException(string.Format("Role attribute on top level element '{0}' not found", element.Name));
+                                throw new SDataClientException(string.Format("Role attribute on top level element '{0}' not found", element.Name));
                             }
 
                             switch (roleAttr.Value)
@@ -182,7 +182,7 @@ namespace Saleslogix.SData.Client.Metadata
                                     type = new SDataSchemaNamedQueryType();
                                     break;
                                 default:
-                                    throw new InvalidOperationException(string.Format("Unexpected role attribute value '{0}' on top level element '{1}'", roleAttr.Value, element.Name));
+                                    throw new SDataClientException(string.Format("Unexpected role attribute value '{0}' on top level element '{1}'", roleAttr.Value, element.Name));
                             }
 
                             type.Read(element);
@@ -199,14 +199,14 @@ namespace Saleslogix.SData.Client.Metadata
 
                         if (sequence.Items.Count != 1)
                         {
-                            throw new InvalidOperationException(string.Format("Particle on list complex type '{0}' does not contain exactly one element", xmlComplexType.Name));
+                            throw new SDataClientException(string.Format("Particle on list complex type '{0}' does not contain exactly one element", xmlComplexType.Name));
                         }
 
                         var element = sequence.Items[0] as XmlSchemaElement;
 
                         if (element == null)
                         {
-                            throw new InvalidOperationException(string.Format("Unexpected sequence item type '{0}' on list complex type '{1}'", sequence.Items[0].GetType(), xmlComplexType.Name));
+                            throw new SDataClientException(string.Format("Unexpected sequence item type '{0}' on list complex type '{1}'", sequence.Items[0].GetType(), xmlComplexType.Name));
                         }
 
                         SDataSchemaType complexType;
@@ -231,7 +231,7 @@ namespace Saleslogix.SData.Client.Metadata
                     }
                     else
                     {
-                        throw new InvalidOperationException(string.Format("Unexpected particle type '{0}' on complex type '{1}'", xmlComplexType.Particle.GetType(), xmlComplexType.Name));
+                        throw new SDataClientException(string.Format("Unexpected particle type '{0}' on complex type '{1}'", xmlComplexType.Particle.GetType(), xmlComplexType.Name));
                     }
                 }
                 else if (item is XmlSchemaSimpleType)
@@ -240,14 +240,14 @@ namespace Saleslogix.SData.Client.Metadata
 
                     if (simpleType.Content == null)
                     {
-                        throw new InvalidOperationException(string.Format("Missing content on simple type '{0}'", simpleType.Name));
+                        throw new SDataClientException(string.Format("Missing content on simple type '{0}'", simpleType.Name));
                     }
 
                     var restriction = simpleType.Content as XmlSchemaSimpleTypeRestriction;
 
                     if (restriction == null)
                     {
-                        throw new InvalidOperationException(string.Format("Unexpected content type '{0}' on simple type '{1}'", simpleType.Content.GetType(), simpleType.Name));
+                        throw new SDataClientException(string.Format("Unexpected content type '{0}' on simple type '{1}'", simpleType.Content.GetType(), simpleType.Name));
                     }
 
                     if (restriction.Facets.Cast<XmlSchemaObject>().All(facet => facet is XmlSchemaEnumerationFacet))
@@ -261,7 +261,7 @@ namespace Saleslogix.SData.Client.Metadata
                 }
                 else
                 {
-                    throw new InvalidOperationException(string.Format("Unexpected item type '{0}'", item.GetType()));
+                    throw new SDataClientException(string.Format("Unexpected item type '{0}'", item.GetType()));
                 }
 
                 XmlSchemaComplexType complexList;
@@ -350,7 +350,7 @@ namespace Saleslogix.SData.Client.Metadata
                 }
                 else
                 {
-                    throw new InvalidOperationException(string.Format("Unexpected type '{0}'", type.GetType()));
+                    throw new SDataClientException(string.Format("Unexpected type '{0}'", type.GetType()));
                 }
 
                 if (type.ListName != null)
