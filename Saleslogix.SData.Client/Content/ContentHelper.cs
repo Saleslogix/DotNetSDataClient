@@ -70,11 +70,11 @@ namespace Saleslogix.SData.Client.Content
 
             if (generic != null)
             {
-                var prot = obj as ISDataProtocolAware;
+                var prot = obj as ISDataProtocolObject;
                 if (prot != null)
                 {
                     generic = new SDataCollection<IDictionary<string, object>>(generic);
-                    ((ISDataProtocolAware) generic).Info = prot.Info;
+                    ((ISDataProtocolObject) generic).Info = prot.Info;
                 }
 
                 return generic;
@@ -123,11 +123,11 @@ namespace Saleslogix.SData.Client.Content
 
                 if (generic != null)
                 {
-                    var prot = obj as ISDataProtocolAware;
+                    var prot = obj as ISDataProtocolObject;
                     if (prot != null)
                     {
                         generic = new SDataResource(generic);
-                        ((ISDataProtocolAware) generic).Info = prot.Info;
+                        ((ISDataProtocolObject) generic).Info = prot.Info;
                     }
 
                     return generic;
@@ -152,11 +152,11 @@ namespace Saleslogix.SData.Client.Content
                 {
                     generic = nonGeneric.Cast<object>();
 
-                    var prot = obj as ISDataProtocolAware;
+                    var prot = obj as ISDataProtocolObject;
                     if (prot != null)
                     {
                         generic = new SDataCollection<object>(generic);
-                        ((ISDataProtocolAware) generic).Info = prot.Info;
+                        ((ISDataProtocolObject) generic).Info = prot.Info;
                     }
                     else
                     {
@@ -212,7 +212,7 @@ namespace Saleslogix.SData.Client.Content
         {
             Guard.ArgumentNotNull(obj, "obj");
 
-            var prot = obj as ISDataProtocolAware;
+            var prot = obj as ISDataProtocolObject;
             if (prot != null)
             {
                 return (T) prot.Info.GetValue(prop);
@@ -227,7 +227,7 @@ namespace Saleslogix.SData.Client.Content
         {
             Guard.ArgumentNotNull(obj, "obj");
 
-            var prot = obj as ISDataProtocolAware;
+            var prot = obj as ISDataProtocolObject;
             if (prot != null)
             {
                 prot.Info.SetValue(prop, value);
@@ -333,7 +333,7 @@ namespace Saleslogix.SData.Client.Content
                     dict = (IDictionary<string, object>) output;
                 }
 
-                var prot = input as ISDataProtocolAware;
+                var prot = input as ISDataProtocolObject;
                 var info = prot != null ? prot.Info : null;
                 var infoCreated = info == null;
                 if (infoCreated)
@@ -393,7 +393,7 @@ namespace Saleslogix.SData.Client.Content
 
                     if (surrogate != null && result != null)
                     {
-                        var itemInfo = ((ISDataProtocolAware) result).Info;
+                        var itemInfo = ((ISDataProtocolObject) result).Info;
                         if (surrogate.XmlLocalName != null)
                         {
                             itemInfo.XmlLocalName = surrogate.XmlLocalName;
@@ -416,7 +416,7 @@ namespace Saleslogix.SData.Client.Content
                 }
 
                 var resource = new SDataResource(dict);
-                ((ISDataProtocolAware) resource).Info = info;
+                ((ISDataProtocolObject) resource).Info = info;
                 output = resource;
                 return true;
             }
@@ -437,10 +437,10 @@ namespace Saleslogix.SData.Client.Content
 
                 output = ToTypedCollection(results);
 
-                var prot = input as ISDataProtocolAware;
+                var prot = input as ISDataProtocolObject;
                 if (prot != null)
                 {
-                    ((ISDataProtocolAware) output).Info = prot.Info;
+                    ((ISDataProtocolObject) output).Info = prot.Info;
                 }
 
                 return true;
@@ -499,7 +499,7 @@ namespace Saleslogix.SData.Client.Content
                     dict = null;
                 }
 
-                var prot = value as ISDataProtocolAware;
+                var prot = value as ISDataProtocolObject;
 
                 if (prot != null && dict != null)
                 {
@@ -531,7 +531,7 @@ namespace Saleslogix.SData.Client.Content
 
                 if (prot != null)
                 {
-                    var resultProt = result as ISDataProtocolAware;
+                    var resultProt = result as ISDataProtocolObject;
                     if (resultProt == null && items != null)
                     {
                         var itemType = type.GetTypeInfo().IsGenericType ? type.GetGenericArguments()[0] : typeof (object);
@@ -539,7 +539,7 @@ namespace Saleslogix.SData.Client.Content
                         if (type.IsAssignableFrom(colType))
                         {
                             result = Activator.CreateInstance(colType, new[] {result});
-                            resultProt = (ISDataProtocolAware) result;
+                            resultProt = (ISDataProtocolObject) result;
                         }
                     }
                     if (resultProt != null)

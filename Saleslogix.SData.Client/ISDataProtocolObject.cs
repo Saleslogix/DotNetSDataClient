@@ -2,7 +2,7 @@
 
 namespace Saleslogix.SData.Client
 {
-    public interface ISDataProtocolAware
+    public interface ISDataProtocolObject
     {
         SDataProtocolInfo Info { get; set; }
     }

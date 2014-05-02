@@ -74,7 +74,7 @@ namespace Saleslogix.SData.Client.Test.Content
             const string json = @"{""Items"":[]}";
             var resource = Helpers.ReadJson<SDataResource>(json);
             Assert.That(resource.ContainsKey("Items"), Is.True);
-            var prot = resource["Items"] as ISDataProtocolAware;
+            var prot = resource["Items"] as ISDataProtocolObject;
             Assert.That(prot, Is.Not.Null);
             Assert.That(prot.Info, Is.Not.Null);
             Assert.That(prot.Info.JsonIsSimpleArray, Is.True);

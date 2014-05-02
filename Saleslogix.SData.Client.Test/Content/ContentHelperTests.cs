@@ -19,55 +19,55 @@ namespace Saleslogix.SData.Client.Test.Content
     public class ContentHelperTests
     {
         [Test]
-        public void Serialize_SDataProtocolAware_Test()
+        public void Serialize_SDataProtocolObject_Test()
         {
-            var value = new SDataProtocolAware_Object {Info = new SDataProtocolInfo {XmlLocalName = "contact"}};
+            var value = new SDataProtocolObject_Object {Info = new SDataProtocolInfo {XmlLocalName = "contact"}};
             var result = ContentHelper.Serialize(value);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Not.SameAs(value));
-            Assert.That(result, Is.InstanceOf<ISDataProtocolAware>());
-            Assert.That(((ISDataProtocolAware) result).Info.XmlLocalName, Is.EqualTo("contact"));
+            Assert.That(result, Is.InstanceOf<ISDataProtocolObject>());
+            Assert.That(((ISDataProtocolObject) result).Info.XmlLocalName, Is.EqualTo("contact"));
         }
 
         [Test]
-        public void Deserialize_SDataProtocolAware_Test()
+        public void Deserialize_SDataProtocolObject_Test()
         {
             var value = new SDataResource {XmlLocalName = "contact"};
-            var result = ContentHelper.Deserialize<SDataProtocolAware_Object>(value);
+            var result = ContentHelper.Deserialize<SDataProtocolObject_Object>(value);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Not.SameAs(value));
-            Assert.That(result, Is.InstanceOf<ISDataProtocolAware>());
+            Assert.That(result, Is.InstanceOf<ISDataProtocolObject>());
             Assert.That(result.Info.XmlLocalName, Is.EqualTo("contact"));
         }
 
-        private class SDataProtocolAware_Object : ISDataProtocolAware
+        private class SDataProtocolObject_Object : ISDataProtocolObject
         {
             public SDataProtocolInfo Info { get; set; }
         }
 
         [Test]
-        public void Serialize_SDataProtocolAware_Collection_Test()
+        public void Serialize_SDataProtocolObject_Collection_Test()
         {
-            var value = new SDataProtocolAware_Collection {Info = new SDataProtocolInfo {XmlLocalName = "contact"}};
+            var value = new SDataProtocolObject_Collection {Info = new SDataProtocolInfo {XmlLocalName = "contact"}};
             var result = ContentHelper.Serialize(value);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Not.SameAs(value));
-            Assert.That(result, Is.InstanceOf<ISDataProtocolAware>());
-            Assert.That(((ISDataProtocolAware) result).Info.XmlLocalName, Is.EqualTo("contact"));
+            Assert.That(result, Is.InstanceOf<ISDataProtocolObject>());
+            Assert.That(((ISDataProtocolObject) result).Info.XmlLocalName, Is.EqualTo("contact"));
         }
 
         [Test]
-        public void Deserialize_SDataProtocolAware_Collection_Test()
+        public void Deserialize_SDataProtocolObject_Collection_Test()
         {
             var value = new SDataCollection<object> {XmlLocalName = "contact"};
-            var result = ContentHelper.Deserialize<SDataProtocolAware_Collection>(value);
+            var result = ContentHelper.Deserialize<SDataProtocolObject_Collection>(value);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Not.SameAs(value));
-            Assert.That(result, Is.InstanceOf<ISDataProtocolAware>());
+            Assert.That(result, Is.InstanceOf<ISDataProtocolObject>());
             Assert.That(result.Info.XmlLocalName, Is.EqualTo("contact"));
         }
 
-        private class SDataProtocolAware_Collection : List<object>, ISDataProtocolAware
+        private class SDataProtocolObject_Collection : List<object>, ISDataProtocolObject
         {
             public SDataProtocolInfo Info { get; set; }
         }
@@ -79,8 +79,8 @@ namespace Saleslogix.SData.Client.Test.Content
             var value = new DataContractAttribute_Object();
             var result = ContentHelper.Serialize(value);
             Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.InstanceOf<ISDataProtocolAware>());
-            Assert.That(((ISDataProtocolAware) result).Info.XmlLocalName, Is.EqualTo("contact"));
+            Assert.That(result, Is.InstanceOf<ISDataProtocolObject>());
+            Assert.That(((ISDataProtocolObject) result).Info.XmlLocalName, Is.EqualTo("contact"));
         }
 
         [DataContract(Name = "contact")]
@@ -114,16 +114,16 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
-        public void Deserialize_ProtcolAware_Enumerable_Test()
+        public void Deserialize_ProtocolObject_Enumerable_Test()
         {
             var value = new SDataCollection<string> {"Smith"};
-            ((ISDataProtocolAware) value).Info = new SDataProtocolInfo {Url = new Uri("http://www.example.com")};
+            ((ISDataProtocolObject) value).Info = new SDataProtocolInfo {Url = new Uri("http://www.example.com")};
             var result = ContentHelper.Deserialize<IList<object>>(value);
-            Assert.That(result, Is.InstanceOf<ISDataProtocolAware>());
+            Assert.That(result, Is.InstanceOf<ISDataProtocolObject>());
             Assert.That(result, Is.Not.SameAs(value));
             Assert.That(result, Has.Count.EqualTo(1));
             Assert.That(result[0], Is.EqualTo("Smith"));
-            Assert.That(((ISDataProtocolAware) result).Info.Url, Is.EqualTo(new Uri("http://www.example.com")));
+            Assert.That(((ISDataProtocolObject) result).Info.Url, Is.EqualTo(new Uri("http://www.example.com")));
         }
 
         [Test]
@@ -159,8 +159,8 @@ namespace Saleslogix.SData.Client.Test.Content
 
             var result = ContentHelper.Serialize(value);
             Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.InstanceOf<ISDataProtocolAware>());
-            var info = ((ISDataProtocolAware) result).Info;
+            Assert.That(result, Is.InstanceOf<ISDataProtocolObject>());
+            var info = ((ISDataProtocolObject) result).Info;
             Assert.That(info.Id, Is.EqualTo("id"));
             Assert.That(info.Title, Is.EqualTo("title"));
             Assert.That(info.Updated, Is.EqualTo(new DateTimeOffset(2001, 1, 1, 1, 1, 1, TimeSpan.FromHours(1))));
@@ -213,7 +213,7 @@ namespace Saleslogix.SData.Client.Test.Content
                                 XmlLocalName = "xmllocalname",
                                 XmlNamespace = "xmlnamespace"
                             };
-            var info = ((ISDataProtocolAware) value).Info;
+            var info = ((ISDataProtocolObject) value).Info;
             info.TotalResults = 1;
             info.StartIndex = 2;
             info.ItemsPerPage = 3;

@@ -25,7 +25,7 @@ namespace Saleslogix.SData.Client
 #if !NET_2_0 && !NET_3_5
         DynamicObject,
 #endif
-        IDictionary<string, object>, ISDataProtocolAware
+        IDictionary<string, object>, ISDataProtocolObject
     {
         private readonly IDictionary<string, object> _values;
         private SDataProtocolInfo _info = new SDataProtocolInfo();
@@ -52,7 +52,7 @@ namespace Saleslogix.SData.Client
             XmlNamespace = xmlNamespace;
         }
 
-        SDataProtocolInfo ISDataProtocolAware.Info
+        SDataProtocolInfo ISDataProtocolObject.Info
         {
             get { return _info; }
             set { _info = value; }

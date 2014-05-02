@@ -142,7 +142,7 @@ namespace Saleslogix.SData.Client.Content
         private static object ReadSimpleCollection(IEnumerable<object> items)
         {
             var output = ContentHelper.ToTypedCollection(items.Select(ReadObject));
-            ((ISDataProtocolAware) output).Info.JsonIsSimpleArray = true;
+            ((ISDataProtocolObject) output).Info.JsonIsSimpleArray = true;
             return output;
         }
 
@@ -321,7 +321,7 @@ namespace Saleslogix.SData.Client.Content
             var resources = ContentHelper.AsDictionaries(obj);
             if (resources != null)
             {
-                var prot = resources as ISDataProtocolAware;
+                var prot = resources as ISDataProtocolObject;
                 if (prot != null && prot.Info != null && prot.Info.JsonIsSimpleArray)
                 {
 #if NET_2_0 || NET_3_5
@@ -349,7 +349,7 @@ namespace Saleslogix.SData.Client.Content
         {
             var obj = new Dictionary<string, object>();
 
-            var prot = resource as ISDataProtocolAware;
+            var prot = resource as ISDataProtocolObject;
             var info = prot != null ? prot.Info : null;
             if (info != null)
             {
@@ -395,7 +395,7 @@ namespace Saleslogix.SData.Client.Content
         {
             var obj = new Dictionary<string, object>();
 
-            var prot = collection as ISDataProtocolAware;
+            var prot = collection as ISDataProtocolObject;
             var info = prot != null ? prot.Info : null;
             if (info != null)
             {

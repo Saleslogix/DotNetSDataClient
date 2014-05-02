@@ -813,7 +813,7 @@ namespace Saleslogix.SData.Client.Test.Linq
 
             if (totalResults != null)
             {
-                ((ISDataProtocolAware) list).Info = new SDataProtocolInfo {TotalResults = totalResults};
+                ((ISDataProtocolObject) list).Info = new SDataProtocolInfo {TotalResults = totalResults};
             }
 
             return list;

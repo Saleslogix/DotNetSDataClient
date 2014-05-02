@@ -47,7 +47,7 @@ namespace Saleslogix.SData.Client
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
     [TypeConverter(typeof (SDataCollectionTypeConverter))]
 #endif
-    public class SDataCollection<T> : List<T>, ISDataProtocolAware
+    public class SDataCollection<T> : List<T>, ISDataProtocolObject
     {
         private SDataProtocolInfo _info = new SDataProtocolInfo();
 
@@ -71,7 +71,7 @@ namespace Saleslogix.SData.Client
             XmlNamespace = xmlNamespace;
         }
 
-        SDataProtocolInfo ISDataProtocolAware.Info
+        SDataProtocolInfo ISDataProtocolObject.Info
         {
             get { return _info; }
             set { _info = value; }

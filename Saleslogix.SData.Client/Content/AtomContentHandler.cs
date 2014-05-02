@@ -406,7 +406,7 @@ namespace Saleslogix.SData.Client.Content
         {
             var feed = new XElement(_atomNs + "feed");
 
-            var prot = resources as ISDataProtocolAware;
+            var prot = resources as ISDataProtocolObject;
             var info = prot != null ? prot.Info : null;
             if (info != null)
             {
@@ -450,7 +450,7 @@ namespace Saleslogix.SData.Client.Content
         {
             var entry = new XElement(_atomNs + "entry");
 
-            var prot = resource as ISDataProtocolAware;
+            var prot = resource as ISDataProtocolObject;
             var info = prot != null ? prot.Info : null;
             if (info != null)
             {
@@ -501,7 +501,7 @@ namespace Saleslogix.SData.Client.Content
         {
             var payload = new XElement(name);
 
-            var prot = resource as ISDataProtocolAware;
+            var prot = resource as ISDataProtocolObject;
             var info = prot != null ? prot.Info : null;
             if (info != null)
             {
@@ -552,7 +552,7 @@ namespace Saleslogix.SData.Client.Content
             var resource = ContentHelper.AsDictionary(value);
             if (resource != null)
             {
-                var prot = resource as ISDataProtocolAware;
+                var prot = resource as ISDataProtocolObject;
                 var info = prot != null ? prot.Info : null;
                 var itemName = info != null && info.XmlNamespace != null
                     ? XName.Get(name.LocalName, prot.Info.XmlNamespace)
@@ -578,13 +578,13 @@ namespace Saleslogix.SData.Client.Content
         private static object WriteResourceCollection(XName name, IEnumerable<IDictionary<string, object>> resources, INamingScheme namingScheme)
         {
             var element = new XElement(name);
-            var prot = resources as ISDataProtocolAware;
+            var prot = resources as ISDataProtocolObject;
             var info = prot != null ? prot.Info : null;
             var localName = info != null ? info.XmlLocalName : null;
             var xmlNs = info != null ? info.XmlNamespace : null;
             var elements = resources.Select(item =>
                                                 {
-                                                    var itemProt = item as ISDataProtocolAware;
+                                                    var itemProt = item as ISDataProtocolObject;
                                                     var itemInfo = itemProt != null ? itemProt.Info : null;
                                                     var itemName = XName.Get(localName ?? (itemInfo != null ? itemInfo.XmlLocalName : null) ?? item.GetType().Name,
                                                                              xmlNs ?? (itemInfo != null ? itemInfo.XmlNamespace : null) ?? name.NamespaceName);
@@ -609,13 +609,13 @@ namespace Saleslogix.SData.Client.Content
         private static object WriteSimpleCollection(XName name, IEnumerable<object> items, INamingScheme namingScheme)
         {
             var element = new XElement(name);
-            var prot = items as ISDataProtocolAware;
+            var prot = items as ISDataProtocolObject;
             var info = prot != null ? prot.Info : null;
             var localName = info != null ? info.XmlLocalName : null;
             var xmlNs = info != null ? info.XmlNamespace : null;
             element.Add(items.Select(item =>
                                          {
-                                             var itemProt = item as ISDataProtocolAware;
+                                             var itemProt = item as ISDataProtocolObject;
                                              var itemInfo = itemProt != null ? itemProt.Info : null;
                                              var itemName = XName.Get(localName ?? (itemInfo != null ? itemInfo.XmlLocalName : null) ?? item.GetType().Name,
                                                                       xmlNs ?? (itemInfo != null ? itemInfo.XmlNamespace : null) ?? name.NamespaceName);

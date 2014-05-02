@@ -495,7 +495,7 @@ namespace Saleslogix.SData.Client.Linq
         private static SDataCollection<TResult> PostExecute<TSource, TResult>(SDataCollection<TSource> collection, Func<TSource, TResult> selector)
         {
             var projected = new SDataCollection<TResult>(collection.Select(selector));
-            ((ISDataProtocolAware) projected).Info = ((ISDataProtocolAware) collection).Info;
+            ((ISDataProtocolObject) projected).Info = ((ISDataProtocolObject) collection).Info;
             return projected;
         }
 

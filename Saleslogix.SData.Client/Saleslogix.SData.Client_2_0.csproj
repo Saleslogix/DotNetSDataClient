@@ -74,7 +74,7 @@
     <Compile Include="INamingScheme.cs" />
     <Compile Include="ISDataBatch.cs" />
     <Compile Include="ISDataClient.cs" />
-    <Compile Include="ISDataProtocolAware.cs" />
+    <Compile Include="ISDataProtocolObject.cs" />
     <Compile Include="ISDataResults.cs" />
     <Compile Include="LinqBridge.cs" />
     <Compile Include="LinqToXml\Extensions.cs" />
