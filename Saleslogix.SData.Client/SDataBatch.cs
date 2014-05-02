@@ -127,7 +127,6 @@ namespace Saleslogix.SData.Client
                 if (method != HttpMethod.Delete)
                 {
                     parms.Content = content;
-                    parms.ContentType = _client.Format ?? MediaType.Json;
                 }
             }
 

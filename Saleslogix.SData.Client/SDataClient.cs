@@ -35,6 +35,7 @@ namespace Saleslogix.SData.Client
         {
             Uri = uri;
             _requestFactory = requestFactory;
+            Format = MediaType.Json;
         }
 
         public string Uri { get; set; }
@@ -155,7 +156,7 @@ namespace Saleslogix.SData.Client
 
             var request = CreateRequest(uri, parms.Method, parms.Content);
             request.Selector = parms.Selector;
-            request.ContentType = parms.ContentType;
+            request.ContentType = parms.ContentType ?? Format;
             request.ETag = parms.ETag;
             foreach (var item in parms.Form)
             {
@@ -361,7 +362,7 @@ namespace Saleslogix.SData.Client
             }
 
             var request = CreateRequest(uri, HttpMethod.Post, resources);
-            request.ContentType = contentType;
+            request.ContentType = contentType ?? Format;
 
             if (accept.Count > 0)
             {

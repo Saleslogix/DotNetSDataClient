@@ -107,7 +107,6 @@ namespace Saleslogix.SData.Client
                     Method = HttpMethod.Post,
                     Path = path,
                     Content = content,
-                    ContentType = client.Format ?? MediaType.Json,
                     Include = options.Include,
                     Select = options.Select,
                     Precedence = options.Precedence
@@ -155,7 +154,6 @@ namespace Saleslogix.SData.Client
                     Path = path,
                     Selector = GetSelector(content),
                     Content = content,
-                    ContentType = client.Format ?? MediaType.Json,
                     ETag = GetETag(content),
                     Include = options.Include,
                     Select = options.Select,
@@ -317,8 +315,7 @@ namespace Saleslogix.SData.Client
                 {
                     Method = HttpMethod.Post,
                     Path = path,
-                    Content = content,
-                    ContentType = client.Format ?? MediaType.Json
+                    Content = content
                 };
         }
 
