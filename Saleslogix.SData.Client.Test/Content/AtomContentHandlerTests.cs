@@ -52,6 +52,35 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
+        public void Read_Links_Test()
+        {
+            const string xml = @"
+                    <atom:entry xmlns:atom=""http://www.w3.org/2005/Atom"">
+                      <atom:link href=""http://dummy/$schema"" rel=""schemas.sage.com/sdata/link-relations/schema"" type=""application/xml"" title=""Schema""/>
+                      <atom:link href=""http://dummy/$template"" rel=""schemas.sage.com/sdata/link-relations/template"" type=""application/atom+xml; type=entry"" title=""Template""/>
+                      <atom:link href=""http://dummy/$service"" rel=""schemas.sage.com/sdata/link-relations/service"" type=""application/atom+xml; type=feed"" title=""Service""/>
+                    </atom:entry>";
+            var resource = Helpers.ReadAtom<SDataResource>(xml);
+            Assert.That(resource.Links, Is.Not.Null);
+            Assert.That(resource.Links.Count, Is.EqualTo(3));
+            var link = resource.Links[0];
+            Assert.That(link.Uri, Is.EqualTo(new Uri("http://dummy/$schema")));
+            Assert.That(link.Relation, Is.EqualTo("schemas.sage.com/sdata/link-relations/schema"));
+            Assert.That(link.Type, Is.EqualTo(MediaType.Xml));
+            Assert.That(link.Title, Is.EqualTo("Schema"));
+            link = resource.Links[1];
+            Assert.That(link.Uri, Is.EqualTo(new Uri("http://dummy/$template")));
+            Assert.That(link.Relation, Is.EqualTo("schemas.sage.com/sdata/link-relations/template"));
+            Assert.That(link.Type, Is.EqualTo(MediaType.AtomEntry));
+            Assert.That(link.Title, Is.EqualTo("Template"));
+            link = resource.Links[2];
+            Assert.That(link.Uri, Is.EqualTo(new Uri("http://dummy/$service")));
+            Assert.That(link.Relation, Is.EqualTo("schemas.sage.com/sdata/link-relations/service"));
+            Assert.That(link.Type, Is.EqualTo(MediaType.Atom));
+            Assert.That(link.Title, Is.EqualTo("Service"));
+        }
+
+        [Test]
         public void Write_DateTime_Test()
         {
             var resource = new SDataResource {SyncState = new SyncState {Stamp = new DateTime(2013, 6, 15, 8, 0, 0)}};
@@ -432,6 +461,41 @@ namespace Saleslogix.SData.Client.Test.Content
         private class Write_Nested_Poco_Name_Object
         {
             public Address PostalAddress { get; set; }
+        }
+
+        [Test]
+        public void Write_Links_Test()
+        {
+            var resource = new SDataResource
+                {
+                    Links = new List<SDataLink>
+                        {
+                            new SDataLink {Uri = new Uri("http://dummy/$schema"), Relation = "schemas.sage.com/sdata/link-relations/schema", Type = MediaType.Xml, Title = "Schema"},
+                            new SDataLink {Uri = new Uri("http://dummy/$template"), Relation = "schemas.sage.com/sdata/link-relations/template", Type = MediaType.AtomEntry, Title = "Template"},
+                            new SDataLink {Uri = new Uri("http://dummy/$service"), Relation = "schemas.sage.com/sdata/link-relations/service", Type = MediaType.Atom, Title = "Service"}
+                        }
+                };
+            var nav = Helpers.WriteAtom(resource);
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
+            var nodes = nav.Select("atom:entry/atom:link", mgr);
+            Assert.That(nodes, Is.Not.Null);
+            Assert.That(nodes.Count, Is.EqualTo(3));
+            nodes.MoveNext();
+            Assert.That(nodes.Current.SelectSingleNode("@href").Value, Is.EqualTo("http://dummy/$schema"));
+            Assert.That(nodes.Current.SelectSingleNode("@rel").Value, Is.EqualTo("schemas.sage.com/sdata/link-relations/schema"));
+            Assert.That(nodes.Current.SelectSingleNode("@type").Value, Is.EqualTo("application/xml"));
+            Assert.That(nodes.Current.SelectSingleNode("@title").Value, Is.EqualTo("Schema"));
+            nodes.MoveNext();
+            Assert.That(nodes.Current.SelectSingleNode("@href").Value, Is.EqualTo("http://dummy/$template"));
+            Assert.That(nodes.Current.SelectSingleNode("@rel").Value, Is.EqualTo("schemas.sage.com/sdata/link-relations/template"));
+            Assert.That(nodes.Current.SelectSingleNode("@type").Value, Is.EqualTo("application/atom+xml;type=entry"));
+            Assert.That(nodes.Current.SelectSingleNode("@title").Value, Is.EqualTo("Template"));
+            nodes.MoveNext();
+            Assert.That(nodes.Current.SelectSingleNode("@href").Value, Is.EqualTo("http://dummy/$service"));
+            Assert.That(nodes.Current.SelectSingleNode("@rel").Value, Is.EqualTo("schemas.sage.com/sdata/link-relations/service"));
+            Assert.That(nodes.Current.SelectSingleNode("@type").Value, Is.EqualTo("application/atom+xml"));
+            Assert.That(nodes.Current.SelectSingleNode("@title").Value, Is.EqualTo("Service"));
         }
     }
 }

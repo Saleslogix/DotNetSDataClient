@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using Saleslogix.SData.Client.Framework;
 
@@ -25,6 +26,7 @@ namespace Saleslogix.SData.Client
         //SDATA: top level everything
         public Diagnoses Diagnoses { get; set; }
         public string Schema { get; set; }
+        public IList<SDataLink> Links { get; set; }
 
         //SDATA: resources
         public string Key { get; set; }
@@ -85,6 +87,8 @@ namespace Saleslogix.SData.Client
                     return Diagnoses;
                 case SDataProtocolProperty.Schema:
                     return Schema;
+                case SDataProtocolProperty.Links:
+                    return Links;
                 case SDataProtocolProperty.Key:
                     return Key;
                 case SDataProtocolProperty.Uuid:
@@ -150,6 +154,9 @@ namespace Saleslogix.SData.Client
                     break;
                 case SDataProtocolProperty.Schema:
                     Schema = Convert.ToString(value);
+                    break;
+                case SDataProtocolProperty.Links:
+                    Links = (IList<SDataLink>) value;
                     break;
                 case SDataProtocolProperty.Key:
                     Key = Convert.ToString(value);

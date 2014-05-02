@@ -61,6 +61,7 @@ namespace Saleslogix.SData.Client.Content
                                      StartIndex = ReadElementValue<int?>(feed, _openSearchNs + "startIndex"),
                                      ItemsPerPage = ReadElementValue<int?>(feed, _openSearchNs + "itemsPerPage"),
                                      Schema = ReadElementValue<string>(feed, _sDataNs + "schema"),
+                                     Links = ReadLinks(feed),
                                      SyncMode = ReadElementValue<SyncMode?>(feed, _syncNs + "syncMode")
                                  };
 
@@ -158,6 +159,7 @@ namespace Saleslogix.SData.Client.Content
                 resource.Title = ReadElementValue<string>(entry, _atomNs + "title");
                 resource.Updated = ReadElementValue<DateTimeOffset?>(entry, _atomNs + "updated");
                 resource.Schema = ReadElementValue<string>(entry, _sDataNs + "schema");
+                resource.Links = ReadLinks(entry);
                 resource.HttpMethod = ReadElementValue<HttpMethod?>(entry, _httpNs + "httpMethod");
                 resource.HttpStatus = (HttpStatusCode?) ReadElementValue<int?>(entry, _httpNs + "httpStatus");
                 resource.HttpMessage = ReadElementValue<string>(entry, _httpNs + "httpMessage");
@@ -310,6 +312,23 @@ namespace Saleslogix.SData.Client.Content
 #endif
         }
 
+        private static IList<SDataLink> ReadLinks(XContainer container)
+        {
+            return container.Elements(_atomNs + "link")
+                .Select(element =>
+                {
+                    MediaType type;
+                    return new SDataLink
+                        {
+                            Uri = ReadAttributeValue<Uri>(element, "href"),
+                            Relation = ReadAttributeValue<string>(element, "rel"),
+                            Type = MediaTypeNames.TryGetMediaType(ReadAttributeValue<string>(element, "type"), out type) ? type : (MediaType?) null,
+                            Title = ReadAttributeValue<string>(element, "title")
+                        };
+                })
+                .ToList();
+        }
+
         private static T ReadElementValue<T>(XContainer container, XName name)
         {
             var element = container.Element(name);
@@ -414,6 +433,8 @@ namespace Saleslogix.SData.Client.Content
                     feed.Add(new XElement(_sDataNs + "schema", schema));
                 }
 
+                WriteLinks(feed, info.Links);
+
                 var syncDigest = info.SyncDigest;
                 if (syncDigest != null)
                 {
@@ -457,6 +478,8 @@ namespace Saleslogix.SData.Client.Content
                 {
                     entry.Add(new XElement(_sDataNs + "schema", schema));
                 }
+
+                WriteLinks(entry, info.Links);
 
                 var syncState = info.SyncState;
                 if (syncState != null)
@@ -609,6 +632,22 @@ namespace Saleslogix.SData.Client.Content
                 new XmlSerializer(typeof (T)).Serialize(writer, obj);
             }
             return doc.Root;
+        }
+
+        private static void WriteLinks(XContainer container, IEnumerable<SDataLink> links)
+        {
+            if (links != null)
+            {
+                foreach (var link in links)
+                {
+                    var element = new XElement(_atomNs + "link");
+                    WriteAttributeValue(element, "href", link.Uri != null ? link.Uri.AbsoluteUri : null);
+                    WriteAttributeValue(element, "rel", link.Relation);
+                    WriteAttributeValue(element, "type", link.Type != null ? MediaTypeNames.GetMediaType(link.Type.Value) : null);
+                    WriteAttributeValue(element, "title", link.Title);
+                    container.Add(element);
+                }
+            }
         }
 
         private static void WriteElementValue(XContainer container, XName name, object value)

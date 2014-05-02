@@ -348,6 +348,7 @@
     <Compile Include="SDataClientException.cs" />
     <Compile Include="SDataClientExtensions.cs" />
     <Compile Include="SDataCollection.cs" />
+    <Compile Include="SDataLink.cs" />
     <Compile Include="SDataParameters.cs" />
     <Compile Include="SDataPayloadOptions.cs" />
     <Compile Include="SDataProtocolInfo.cs" />

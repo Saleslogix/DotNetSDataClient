@@ -20,6 +20,7 @@ namespace Saleslogix.SData.Client
         //SDATA: top level everything
         Diagnoses,
         Schema,
+        Links,
 
         //SDATA: resources
         Key,

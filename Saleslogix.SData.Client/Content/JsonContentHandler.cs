@@ -86,7 +86,7 @@ namespace Saleslogix.SData.Client.Content
                     Uuid = ReadProtocolValue<Guid?>(obj, "uuid"),
                     Lookup = ReadProtocolValue<string>(obj, "lookup"),
                     Descriptor = ReadProtocolValue<string>(obj, "descriptor"),
-                    Schema = ReadProtocolValue<string>(obj, "schema"),
+                    Links = ReadLinks(obj),
                     IsDeleted = ReadProtocolValue<bool?>(obj, "isDeleted")
                 };
 
@@ -120,7 +120,7 @@ namespace Saleslogix.SData.Client.Content
                     ItemsPerPage = ReadProtocolValue<int?>(obj, "itemsPerPage"),
                     Url = ReadProtocolValue<Uri>(obj, "url"),
                     DeleteMissing = ReadProtocolValue<bool?>(obj, "deleteMissing"),
-                    Schema = ReadProtocolValue<string>(obj, "schema"),
+                    Links = ReadLinks(obj),
                     SyncMode = ReadProtocolValue<SyncMode?>(obj, "syncMode")
                 };
 
@@ -144,6 +144,26 @@ namespace Saleslogix.SData.Client.Content
             var output = ContentHelper.ToTypedCollection(items.Select(ReadObject));
             ((ISDataProtocolAware) output).Info.JsonIsSimpleArray = true;
             return output;
+        }
+
+        private static IList<SDataLink> ReadLinks(IEnumerable<KeyValuePair<string, object>> obj)
+        {
+            var links = new List<SDataLink>();
+            foreach (var pair in obj)
+            {
+                var str = pair.Value as string;
+                if (pair.Key.StartsWith("$") && str != null)
+                {
+                    var name = pair.Key.Substring(1);
+                    Uri uri;
+                    if ((name == "schema" || !Enum.GetNames(typeof (SDataProtocolProperty)).Any(item => string.Equals(item, name, StringComparison.OrdinalIgnoreCase))) &&
+                        Uri.TryCreate(str, UriKind.Absolute, out uri))
+                    {
+                        links.Add(new SDataLink {Uri = uri, Relation = name});
+                    }
+                }
+            }
+            return links;
         }
 
         private static T ReadProtocolValue<T>(IDictionary<string, object> obj, string name)
@@ -347,7 +367,7 @@ namespace Saleslogix.SData.Client.Content
                 WriteProtocolValue(obj, "uuid", info.Uuid);
                 WriteProtocolValue(obj, "lookup", info.Lookup);
                 WriteProtocolValue(obj, "descriptor", info.Descriptor);
-                WriteProtocolValue(obj, "schema", info.Schema);
+                WriteLinks(obj, info.Links);
                 WriteProtocolValue(obj, "isDeleted", info.IsDeleted);
 
                 var diagnoses = info.Diagnoses;
@@ -387,7 +407,7 @@ namespace Saleslogix.SData.Client.Content
                 WriteProtocolValue(obj, "itemsPerPage", info.ItemsPerPage);
                 WriteProtocolValue(obj, "url", info.Url != null ? info.Url.AbsoluteUri : null);
                 WriteProtocolValue(obj, "deleteMissing", info.DeleteMissing);
-                WriteProtocolValue(obj, "schema", info.Schema);
+                WriteLinks(obj, info.Links);
                 WriteProtocolValue(obj, "syncMode", info.SyncMode);
 
                 var diagnoses = info.Diagnoses;
@@ -410,6 +430,17 @@ namespace Saleslogix.SData.Client.Content
         private static ICollection<object> WriteSimpleCollection(IEnumerable<object> items, INamingScheme namingScheme)
         {
             return items.Select(item => WriteItem(item, false, namingScheme)).ToArray();
+        }
+
+        private static void WriteLinks(IDictionary<string, object> obj, IEnumerable<SDataLink> links)
+        {
+            if (links != null)
+            {
+                foreach (var link in links)
+                {
+                    obj["$" + link.Relation] = link.Uri != null ? link.Uri.AbsoluteUri : null;
+                }
+            }
         }
 
         private static void WriteProtocolValue(IDictionary<string, object> obj, string name, object value)

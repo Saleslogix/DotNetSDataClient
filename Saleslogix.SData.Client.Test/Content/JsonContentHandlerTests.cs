@@ -47,6 +47,28 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
+        public void Read_Links_Test()
+        {
+            const string json = @"{
+                  ""$schema"":""http://dummy/$schema"",
+                  ""$template"":""http://dummy/$template"",
+                  ""$service"":""http://dummy/$service""
+                }";
+            var resource = Helpers.ReadJson<SDataResource>(json);
+            Assert.That(resource.Links, Is.Not.Null);
+            Assert.That(resource.Links.Count, Is.EqualTo(3));
+            var link = resource.Links[0];
+            Assert.That(link.Uri, Is.EqualTo(new Uri("http://dummy/$schema")));
+            Assert.That(link.Relation, Is.EqualTo("schema"));
+            link = resource.Links[1];
+            Assert.That(link.Uri, Is.EqualTo(new Uri("http://dummy/$template")));
+            Assert.That(link.Relation, Is.EqualTo("template"));
+            link = resource.Links[2];
+            Assert.That(link.Uri, Is.EqualTo(new Uri("http://dummy/$service")));
+            Assert.That(link.Relation, Is.EqualTo("service"));
+        }
+
+        [Test]
         public void Read_SimpleArray_Test()
         {
             const string json = @"{""Items"":[]}";
@@ -103,18 +125,6 @@ namespace Saleslogix.SData.Client.Test.Content
             Assert.That(diagnoses[0], Is.InstanceOf<IDictionary<string, object>>());
             var diagnosis = (IDictionary<string, object>) diagnoses[0];
             Assert.That(diagnosis["sdataCode"], Is.EqualTo("BadUrlSyntax"));
-        }
-
-        [Test]
-        public void Write_Collection_Schema_Test()
-        {
-            var resources = new SDataCollection<SDataResource>
-                                {
-                                    Schema = @"<schema xmlns=""http://www.w3.org/2001/XMLSchema"">"
-                                };
-            var obj = Helpers.WriteJson(resources);
-            var schema = obj["$schema"];
-            Assert.That(schema, Is.EqualTo(@"<schema xmlns=""http://www.w3.org/2001/XMLSchema"">"));
         }
 
         [Test]
@@ -179,17 +189,6 @@ namespace Saleslogix.SData.Client.Test.Content
             Assert.That(diagnoses[0], Is.InstanceOf<IDictionary<string, object>>());
             var diagnosis = (IDictionary<string, object>) diagnoses[0];
             Assert.That(diagnosis["sdataCode"], Is.EqualTo("BadUrlSyntax"));
-        }
-
-        [Test]
-        public void Write_Resource_Schema_Test()
-        {
-            var resources = new SDataResource
-                                {
-                                    Schema = @"<schema xmlns=""http://www.w3.org/2001/XMLSchema"">"
-                                };
-            var obj = Helpers.WriteJson(resources);
-            Assert.That(obj["$schema"], Is.EqualTo(@"<schema xmlns=""http://www.w3.org/2001/XMLSchema"">"));
         }
 
         [Test]
@@ -284,6 +283,24 @@ namespace Saleslogix.SData.Client.Test.Content
         {
             [JsonSimpleArray]
             public object[] Items { get; set; }
+        }
+
+        [Test]
+        public void Write_Links_Test()
+        {
+            var resource = new SDataResource
+                {
+                    Links = new List<SDataLink>
+                        {
+                            new SDataLink {Uri = new Uri("http://dummy/$schema"), Relation = "schema"},
+                            new SDataLink {Uri = new Uri("http://dummy/$template"), Relation = "template"},
+                            new SDataLink {Uri = new Uri("http://dummy/$service"), Relation = "service"}
+                        }
+                };
+            var obj = Helpers.WriteJson(resource);
+            Assert.That(obj["$schema"], Is.EqualTo("http://dummy/$schema"));
+            Assert.That(obj["$template"], Is.EqualTo("http://dummy/$template"));
+            Assert.That(obj["$service"], Is.EqualTo("http://dummy/$service"));
         }
     }
 }

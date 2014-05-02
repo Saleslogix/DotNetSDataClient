@@ -100,6 +100,12 @@ namespace Saleslogix.SData.Client
             set { _info.Schema = value; }
         }
 
+        public IList<SDataLink> Links
+        {
+            get { return _info.Links; }
+            set { _info.Links = value; }
+        }
+
         [SDataProtocolProperty]
         public string Key
         {
