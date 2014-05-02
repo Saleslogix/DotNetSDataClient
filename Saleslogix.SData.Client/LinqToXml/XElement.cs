@@ -90,7 +90,6 @@ namespace System.Xml.Linq
 			Add (other.Contents);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator bool (XElement element)
 		{
 			if (element == null)
@@ -98,7 +97,6 @@ namespace System.Xml.Linq
 			return XUtil.ConvertToBoolean (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator bool? (XElement element)
 		{
 			if (element == null)
@@ -107,7 +105,6 @@ namespace System.Xml.Linq
 			return element.Value == null ? (bool?) null : XUtil.ConvertToBoolean (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator DateTime (XElement element)
 		{
 			if (element == null)
@@ -115,7 +112,6 @@ namespace System.Xml.Linq
 			return XUtil.ToDateTime (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator DateTime? (XElement element)
 		{
 			if (element == null)
@@ -126,7 +122,6 @@ namespace System.Xml.Linq
 
 #if !TARGET_JVM // Same as for System.Xml.XmlConvert.ToDateTimeOffset
 
-		[CLSCompliant (false)]
 		public static explicit operator DateTimeOffset (XElement element)
 		{
 			if (element == null)
@@ -134,7 +129,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToDateTimeOffset (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator DateTimeOffset? (XElement element)
 		{
 			if (element == null)
@@ -145,7 +139,6 @@ namespace System.Xml.Linq
 
 #endif
 
-		[CLSCompliant (false)]
 		public static explicit operator decimal (XElement element)
 		{
 			if (element == null)
@@ -153,7 +146,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToDecimal (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator decimal? (XElement element)
 		{
 			if (element == null)
@@ -162,7 +154,6 @@ namespace System.Xml.Linq
 			return element.Value == null ? (decimal?) null : XmlConvert.ToDecimal (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator double (XElement element)
 		{
 			if (element == null)
@@ -170,7 +161,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToDouble (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator double? (XElement element)
 		{
 			if (element == null)
@@ -179,7 +169,6 @@ namespace System.Xml.Linq
 			return element.Value == null ? (double?) null : XmlConvert.ToDouble (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator float (XElement element)
 		{
 			if (element == null)
@@ -187,7 +176,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToSingle (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator float? (XElement element)
 		{
 			if (element == null)
@@ -196,7 +184,6 @@ namespace System.Xml.Linq
 			return element.Value == null ? (float?) null : XmlConvert.ToSingle (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator Guid (XElement element)
 		{
 			if (element == null)
@@ -204,7 +191,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToGuid (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator Guid? (XElement element)
 		{
 			if (element == null)
@@ -213,7 +199,6 @@ namespace System.Xml.Linq
 			return element.Value == null ? (Guid?) null : XmlConvert.ToGuid (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator int (XElement element)
 		{
 			if (element == null)
@@ -221,7 +206,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToInt32 (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator int? (XElement element)
 		{
 			if (element == null)
@@ -230,7 +214,6 @@ namespace System.Xml.Linq
 			return element.Value == null ? (int?) null : XmlConvert.ToInt32 (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator long (XElement element)
 		{
 			if (element == null)
@@ -238,7 +221,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToInt64 (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator long? (XElement element)
 		{
 			if (element == null)
@@ -247,7 +229,6 @@ namespace System.Xml.Linq
 			return element.Value == null ? (long?) null : XmlConvert.ToInt64 (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator uint (XElement element)
 		{
 			if (element == null)
@@ -255,7 +236,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToUInt32 (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator uint? (XElement element)
 		{
 			if (element == null)
@@ -264,7 +244,6 @@ namespace System.Xml.Linq
 			return element.Value == null ? (uint?) null : XmlConvert.ToUInt32 (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator ulong (XElement element)
 		{
 			if (element == null)
@@ -272,7 +251,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToUInt64 (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator ulong? (XElement element)
 		{
 			if (element == null)
@@ -281,7 +259,6 @@ namespace System.Xml.Linq
 			return element.Value == null ? (ulong?) null : XmlConvert.ToUInt64 (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator TimeSpan (XElement element)
 		{
 			if (element == null)
@@ -289,7 +266,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToTimeSpan (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator TimeSpan? (XElement element)
 		{
 			if (element == null)
@@ -298,7 +274,6 @@ namespace System.Xml.Linq
 			return element.Value == null ? (TimeSpan?) null : XmlConvert.ToTimeSpan (element.Value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator string (XElement element)
 		{
 			if (element == null)

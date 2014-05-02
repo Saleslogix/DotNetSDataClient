@@ -475,7 +475,8 @@ namespace Saleslogix.SData.Client.Content
                 }
 #if NETFX_CORE
                 else if (type == typeof (byte) || type == typeof (short) || type == typeof (int) || type == typeof (long) ||
-                         type == typeof (float) || type == typeof (double) || type == typeof (decimal) || type == typeof (bool))
+                         type == typeof (float) || type == typeof (double) || type == typeof (decimal) || type == typeof (bool) ||
+                         type == typeof (char) || type == typeof (string) || type.GetTypeInfo().IsEnum)
 #else
                 else if (typeof (IConvertible).IsAssignableFrom(type))
 #endif

@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 
 #if !NET_2_0 && !NET_3_5
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 #endif

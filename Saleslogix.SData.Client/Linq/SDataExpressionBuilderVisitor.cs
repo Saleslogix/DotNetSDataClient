@@ -577,6 +577,7 @@ namespace Saleslogix.SData.Client.Linq
             return parts;
         }
 
+#if !SILVERLIGHT
         private static IEnumerable RenderTruncateFunction(MethodCallExpression expression)
         {
             return new object[]
@@ -586,6 +587,7 @@ namespace Saleslogix.SData.Client.Linq
                            ")"
                        };
         }
+#endif
 
         private static IEnumerable RenderFloorFunction(MethodCallExpression expression)
         {

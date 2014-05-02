@@ -1,9 +1,12 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
 using Saleslogix.SData.Client.Framework;
+
+#if !NET_2_0 && !NET_3_5
+using System.Threading;
+using System.Threading.Tasks;
+#endif
 
 // ReSharper disable InconsistentNaming
 
@@ -12,6 +15,7 @@ namespace Saleslogix.SData.Client.Test
     [TestFixture]
     public class SDataClientExtensionsTests
     {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         [Test]
         public void CallService_Static_Action_Test()
         {
@@ -97,9 +101,11 @@ namespace Saleslogix.SData.Client.Test
             Assert.That(resource["arg"], Is.EqualTo("hello"));
             Assert.That(result, Is.EqualTo("world"));
         }
+#endif
 
+#if !NET_2_0 && !NET_3_5
         [Test]
-        public void CallServiceAsync_Action_Test()
+        public void CallServiceAsync_Static_Action_Test()
         {
             var clientMock = new Mock<ISDataClient>();
             SDataParameters parms = null;
@@ -121,7 +127,31 @@ namespace Saleslogix.SData.Client.Test
         }
 
         [Test]
-        public void CallServiceAsync_Func_Test()
+        public void CallServiceAsync_Instance_Action_Test()
+        {
+            var clientMock = new Mock<ISDataClient>();
+            SDataParameters parms = null;
+            var taskSource = new TaskCompletionSource<ISDataResults>();
+            taskSource.SetResult(null);
+            clientMock.Setup(x => x.ExecuteAsync(It.IsAny<SDataParameters>(), CancellationToken.None))
+                .Callback((SDataParameters p, CancellationToken c) => parms = p)
+                .Returns(taskSource.Task);
+            var obj = new CallService_Object();
+            clientMock.Object.CallServiceAsync(() => obj.InstanceAction("hello"), null, CancellationToken.None).Wait(CancellationToken.None);
+
+            Assert.That(parms, Is.Not.Null);
+            Assert.That(parms.Method, Is.EqualTo(HttpMethod.Post));
+            Assert.That(parms.Path, Is.EqualTo("dummy/$service/InstanceAction"));
+            var resource = parms.Content as SDataResource;
+            Assert.That(resource, Is.Not.Null);
+            resource = resource["request"] as SDataResource;
+            Assert.That(resource, Is.Not.Null);
+            Assert.That(resource["entity"], Is.EqualTo(obj));
+            Assert.That(resource["arg"], Is.EqualTo("hello"));
+        }
+
+        [Test]
+        public void CallServiceAsync_Static_Func_Test()
         {
             var clientMock = new Mock<ISDataClient>();
             SDataParameters parms = null;
@@ -144,6 +174,32 @@ namespace Saleslogix.SData.Client.Test
             Assert.That(resource["arg"], Is.EqualTo("hello"));
             Assert.That(result, Is.EqualTo("world"));
         }
+
+        [Test]
+        public void CallServiceAsync_Instance_Func_Test()
+        {
+            var clientMock = new Mock<ISDataClient>();
+            SDataParameters parms = null;
+            var resultsMock = new Mock<ISDataResults<SDataResource>>();
+            resultsMock.Setup(x => x.Content).Returns(new SDataResource {{"response", new SDataResource {{"value", "world"}}}});
+            var taskSource = new TaskCompletionSource<ISDataResults<SDataResource>>();
+            taskSource.SetResult(resultsMock.Object);
+            clientMock.Setup(x => x.ExecuteAsync<SDataResource>(It.IsAny<SDataParameters>(), CancellationToken.None))
+                .Callback((SDataParameters p, CancellationToken c) => parms = p)
+                .Returns(taskSource.Task);
+            var result = clientMock.Object.CallServiceAsync(() => new CallService_Object().InstanceFunc("hello"), null, CancellationToken.None).Result;
+
+            Assert.That(parms, Is.Not.Null);
+            Assert.That(parms.Method, Is.EqualTo(HttpMethod.Post));
+            Assert.That(parms.Path, Is.EqualTo("dummy/$service/InstanceFunc"));
+            var resource = parms.Content as SDataResource;
+            Assert.That(resource, Is.Not.Null);
+            resource = resource["request"] as SDataResource;
+            Assert.That(resource, Is.Not.Null);
+            Assert.That(resource["arg"], Is.EqualTo("hello"));
+            Assert.That(result, Is.EqualTo("world"));
+        }
+#endif
 
         [SDataResource("dummy")]
         private class CallService_Object
@@ -169,6 +225,7 @@ namespace Saleslogix.SData.Client.Test
             }
         }
 
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         [Test]
         public void ResultPropertyName_Test()
         {
@@ -228,5 +285,6 @@ namespace Saleslogix.SData.Client.Test
 
             public string Name { get; set; }
         }
+#endif
     }
 }

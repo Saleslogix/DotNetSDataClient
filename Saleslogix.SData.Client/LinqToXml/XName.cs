@@ -140,7 +140,6 @@ namespace System.Xml.Linq
 				left.local == right.local && left.ns == right.ns;
 		}
 
-		[CLSCompliant (false)]
 		public static implicit operator XName (string expandedName)
 		{
 			return expandedName == null ? null : Get (expandedName);

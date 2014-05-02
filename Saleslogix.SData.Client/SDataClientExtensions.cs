@@ -335,15 +335,20 @@ namespace Saleslogix.SData.Client
             else if (response.Count == 1)
             {
                 var firstValue = response.Values.First();
-                if (typeof (IConvertible).IsAssignableFrom(typeof (T)))
-                {
-                    if (!(firstValue is IConvertible))
-                    {
-                        throw new SDataClientException(string.Format("Service operation result type '{0}' is incompatible with method return type '{1}'", firstValue.GetType(), typeof (T)));
-                    }
-                    return (T) Convert.ChangeType(firstValue, typeof (T));
-                }
-                if (!(firstValue is IConvertible))
+                var type = typeof (T);
+                type = Nullable.GetUnderlyingType(type) ?? type;
+                if (type.IsInstanceOfType(firstValue) ||
+#if NETFX_CORE
+                    type.GetTypeInfo().IsEnum || type == typeof (byte) || type == typeof (short) || type == typeof (int) || type == typeof (long) ||
+                    type == typeof (float) || type == typeof (double) || type == typeof (decimal) || type == typeof (bool) ||
+                    type == typeof (DateTime) || type == typeof (DateTimeOffset) || type == typeof (char) || type == typeof (string) ||
+                    !(firstValue is Enum || firstValue is byte || firstValue is short || firstValue is int || firstValue is long ||
+                      firstValue is float || firstValue is double || firstValue is decimal || firstValue is bool ||
+                      firstValue is DateTime || firstValue is DateTimeOffset || firstValue is char || firstValue is string))
+#else
+                    typeof (IConvertible).IsAssignableFrom(type) ||
+                    !(firstValue is IConvertible))
+#endif
                 {
                     value = firstValue;
                 }

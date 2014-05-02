@@ -60,7 +60,6 @@ namespace System.Xml.Linq
 			SetValue (value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator bool (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -68,7 +67,6 @@ namespace System.Xml.Linq
 			return XUtil.ConvertToBoolean (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator bool? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -77,7 +75,6 @@ namespace System.Xml.Linq
 			return attribute.value == null ? (bool?) null : XUtil.ConvertToBoolean (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator DateTime (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -85,7 +82,6 @@ namespace System.Xml.Linq
 			return XUtil.ToDateTime (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator DateTime? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -96,7 +92,6 @@ namespace System.Xml.Linq
 
 #if !TARGET_JVM // Same as for System.Xml.XmlConvert.ToDateTimeOffset
 
-		[CLSCompliant (false)]
 		public static explicit operator DateTimeOffset (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -104,7 +99,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToDateTimeOffset (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator DateTimeOffset? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -115,7 +109,6 @@ namespace System.Xml.Linq
 
 #endif
 
-		[CLSCompliant (false)]
 		public static explicit operator decimal (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -123,7 +116,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToDecimal (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator decimal? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -132,7 +124,6 @@ namespace System.Xml.Linq
 			return attribute.value == null ? (decimal?) null : XmlConvert.ToDecimal (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator double (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -140,7 +131,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToDouble (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator double? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -149,7 +139,6 @@ namespace System.Xml.Linq
 			return attribute.value == null ? (double?) null : XmlConvert.ToDouble (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator float (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -157,7 +146,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToSingle (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator float? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -166,7 +154,6 @@ namespace System.Xml.Linq
 			return attribute.value == null ? (float?) null : XmlConvert.ToSingle (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator Guid (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -174,7 +161,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToGuid (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator Guid? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -183,7 +169,6 @@ namespace System.Xml.Linq
 			return attribute.value == null ? (Guid?) null : XmlConvert.ToGuid (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator int (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -191,7 +176,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToInt32 (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator int? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -200,7 +184,6 @@ namespace System.Xml.Linq
 			return attribute.value == null ? (int?) null : XmlConvert.ToInt32 (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator long (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -208,7 +191,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToInt64 (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator long? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -217,7 +199,6 @@ namespace System.Xml.Linq
 			return attribute.value == null ? (long?) null : XmlConvert.ToInt64 (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator uint (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -225,7 +206,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToUInt32 (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator uint? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -234,7 +214,6 @@ namespace System.Xml.Linq
 			return attribute.value == null ? (uint?) null : XmlConvert.ToUInt32 (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator ulong (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -242,7 +221,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToUInt64 (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator ulong? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -251,7 +229,6 @@ namespace System.Xml.Linq
 			return attribute.value == null ? (ulong?) null : XmlConvert.ToUInt64 (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator TimeSpan (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -259,7 +236,6 @@ namespace System.Xml.Linq
 			return XmlConvert.ToTimeSpan (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator TimeSpan? (XAttribute attribute)
 		{
 			if (attribute == null)
@@ -268,7 +244,6 @@ namespace System.Xml.Linq
 			return attribute.value == null ? (TimeSpan?) null : XmlConvert.ToTimeSpan (attribute.value);
 		}
 
-		[CLSCompliant (false)]
 		public static explicit operator string (XAttribute attribute)
 		{
 			if (attribute == null)

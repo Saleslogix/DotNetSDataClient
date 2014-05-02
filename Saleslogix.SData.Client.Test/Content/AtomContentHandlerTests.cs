@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Xml.XPath;
 using NUnit.Framework;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Test.Model;
@@ -478,24 +480,21 @@ namespace Saleslogix.SData.Client.Test.Content
             var nav = Helpers.WriteAtom(resource);
             var mgr = new XmlNamespaceManager(nav.NameTable);
             mgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
-            var nodes = nav.Select("atom:entry/atom:link", mgr);
+            var nodes = nav.Select("atom:entry/atom:link", mgr).Cast<XPathNavigator>().ToList();
             Assert.That(nodes, Is.Not.Null);
             Assert.That(nodes.Count, Is.EqualTo(3));
-            nodes.MoveNext();
-            Assert.That(nodes.Current.SelectSingleNode("@href").Value, Is.EqualTo("http://dummy/$schema"));
-            Assert.That(nodes.Current.SelectSingleNode("@rel").Value, Is.EqualTo("schemas.sage.com/sdata/link-relations/schema"));
-            Assert.That(nodes.Current.SelectSingleNode("@type").Value, Is.EqualTo("application/xml"));
-            Assert.That(nodes.Current.SelectSingleNode("@title").Value, Is.EqualTo("Schema"));
-            nodes.MoveNext();
-            Assert.That(nodes.Current.SelectSingleNode("@href").Value, Is.EqualTo("http://dummy/$template"));
-            Assert.That(nodes.Current.SelectSingleNode("@rel").Value, Is.EqualTo("schemas.sage.com/sdata/link-relations/template"));
-            Assert.That(nodes.Current.SelectSingleNode("@type").Value, Is.EqualTo("application/atom+xml;type=entry"));
-            Assert.That(nodes.Current.SelectSingleNode("@title").Value, Is.EqualTo("Template"));
-            nodes.MoveNext();
-            Assert.That(nodes.Current.SelectSingleNode("@href").Value, Is.EqualTo("http://dummy/$service"));
-            Assert.That(nodes.Current.SelectSingleNode("@rel").Value, Is.EqualTo("schemas.sage.com/sdata/link-relations/service"));
-            Assert.That(nodes.Current.SelectSingleNode("@type").Value, Is.EqualTo("application/atom+xml"));
-            Assert.That(nodes.Current.SelectSingleNode("@title").Value, Is.EqualTo("Service"));
+            Assert.That(nodes[0].SelectSingleNode("@href").Value, Is.EqualTo("http://dummy/$schema"));
+            Assert.That(nodes[0].SelectSingleNode("@rel").Value, Is.EqualTo("schemas.sage.com/sdata/link-relations/schema"));
+            Assert.That(nodes[0].SelectSingleNode("@type").Value, Is.EqualTo("application/xml"));
+            Assert.That(nodes[0].SelectSingleNode("@title").Value, Is.EqualTo("Schema"));
+            Assert.That(nodes[1].SelectSingleNode("@href").Value, Is.EqualTo("http://dummy/$template"));
+            Assert.That(nodes[1].SelectSingleNode("@rel").Value, Is.EqualTo("schemas.sage.com/sdata/link-relations/template"));
+            Assert.That(nodes[1].SelectSingleNode("@type").Value, Is.EqualTo("application/atom+xml;type=entry"));
+            Assert.That(nodes[1].SelectSingleNode("@title").Value, Is.EqualTo("Template"));
+            Assert.That(nodes[2].SelectSingleNode("@href").Value, Is.EqualTo("http://dummy/$service"));
+            Assert.That(nodes[2].SelectSingleNode("@rel").Value, Is.EqualTo("schemas.sage.com/sdata/link-relations/service"));
+            Assert.That(nodes[2].SelectSingleNode("@type").Value, Is.EqualTo("application/atom+xml"));
+            Assert.That(nodes[2].SelectSingleNode("@title").Value, Is.EqualTo("Service"));
         }
     }
 }

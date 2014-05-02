@@ -13,7 +13,6 @@ namespace Saleslogix.SData.Client.Linq
     internal class ElementAtExpressionNode : ResultOperatorExpressionNodeBase
     {
         public static readonly MethodInfo[] SupportedMethods =
-            new[]
                 {
                     new Func<IEnumerable<object>, int, object>(Enumerable.ElementAt).GetMethodInfo().GetGenericMethodDefinition(),
                     new Func<IQueryable<object>, int, object>(Queryable.ElementAt).GetMethodInfo().GetGenericMethodDefinition(),

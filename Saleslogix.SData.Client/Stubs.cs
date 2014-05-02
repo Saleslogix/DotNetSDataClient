@@ -68,7 +68,6 @@ namespace System
     }
 }
 #endif
-using Saleslogix.SData.Client.Utilities;
 
 #if NET_2_0 || NET_3_5
 namespace System.IO
@@ -92,6 +91,7 @@ namespace System.IO
 namespace System.Linq
 {
     using Collections.Generic;
+    using Saleslogix.SData.Client.Utilities;
 
     internal static class EnumerableExtensions
     {

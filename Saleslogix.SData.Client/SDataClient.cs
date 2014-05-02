@@ -2,18 +2,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
-using Saleslogix.SData.Client.Metadata;
 using Saleslogix.SData.Client.Utilities;
 
 #if !NET_2_0 && !NET_3_5
 using System.Threading;
 using System.Threading.Tasks;
+#endif
+
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+using System.IO;
+using System.Text;
+using Saleslogix.SData.Client.Metadata;
 #endif
 
 namespace Saleslogix.SData.Client
