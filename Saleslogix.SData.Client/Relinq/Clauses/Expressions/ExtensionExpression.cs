@@ -1,18 +1,18 @@
-// This file is part of the re-linq project (relinq.codeplex.com)
 // Copyright (c) rubicon IT GmbH, www.rubicon.eu
-// 
-// re-linq is free software; you can redistribute it and/or modify it under 
-// the terms of the GNU Lesser General Public License as published by the 
-// Free Software Foundation; either version 2.1 of the License, 
-// or (at your option) any later version.
-// 
-// re-linq is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-// GNU Lesser General Public License for more details.
-// 
-// You should have received a copy of the GNU Lesser General Public License
-// along with re-linq; if not, see http://www.gnu.org/licenses.
+//
+// See the NOTICE file distributed with this work for additional information
+// regarding copyright ownership.  rubicon licenses this file to you under 
+// the Apache License, Version 2.0 (the "License"); you may not use this 
+// file except in compliance with the License.  You may obtain a copy of the 
+// License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software 
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the 
+// License for the specific language governing permissions and limitations
+// under the License.
 // 
 using System;
 using System.Linq.Expressions;
@@ -31,6 +31,11 @@ namespace Remotion.Linq.Clauses.Expressions
   /// </remarks>
   internal abstract class ExtensionExpression : Expression
   {
+#if !NET_3_5
+    private readonly Type _type;
+    private readonly ExpressionType _nodeType;
+#endif
+
     /// <summary>
     /// Defines a standard <see cref="ExpressionType"/> value that is used by all <see cref="ExtensionExpression"/> subclasses unless they specify
     /// their own <see cref="ExpressionType"/> value.
@@ -42,7 +47,7 @@ namespace Remotion.Linq.Clauses.Expressions
     /// </summary>
     /// <param name="type">The type of the value represented by the <see cref="ExtensionExpression"/>.</param>
     protected ExtensionExpression (Type type)
-        : this (ArgumentUtility.CheckNotNull ("type", type), DefaultExtensionExpressionNodeType)
+        : this (ArgumentUtility.CheckNotNull ("", type), DefaultExtensionExpressionNodeType)
     {
     }
 
@@ -54,26 +59,30 @@ namespace Remotion.Linq.Clauses.Expressions
     /// LINQ providers should use values starting from 150001 and above.</param>
     protected ExtensionExpression (Type type, ExpressionType nodeType)
 #if NET_3_5
-        : base (nodeType, ArgumentUtility.CheckNotNull ("", type))
+        : base(nodeType, type)
+#endif
     {
-    }
-#else
-    {
+      ArgumentUtility.CheckNotNull ("type", type);
+      
+#if !NET_3_5
+      _type = type;
       _nodeType = nodeType;
-      _type = ArgumentUtility.CheckNotNull ("type", type);
+#endif
     }
-    private readonly ExpressionType _nodeType;
+      
+#if !NET_3_5
     public override ExpressionType NodeType
     {
       get { return _nodeType; }
     }
-    private readonly Type _type;
+
     public override Type Type
     {
       get { return _type; }
     }
 #endif
 
+#if NET_3_5
     /// <summary>
     /// Gets a value indicating whether this instance can be reduced to a tree of standard expressions.
     /// </summary>
@@ -144,7 +153,7 @@ namespace Remotion.Linq.Clauses.Expressions
         throw new InvalidOperationException ("Reduce and check can only be called on reducible nodes.");
 
       var result = Reduce();
-      
+    
       if (result == null)
         throw new InvalidOperationException ("Reduce cannot return null.");
       if (result == this)
@@ -154,6 +163,7 @@ namespace Remotion.Linq.Clauses.Expressions
 
       return result;
     }
+#endif
 
     /// <summary>
     /// Accepts the specified visitor, by default dispatching to <see cref="ExpressionTreeVisitor.VisitExtensionExpression"/>. 

@@ -116,11 +116,17 @@ namespace System.Linq
 #if !NETFX_CORE
 namespace System.Reflection
 {
+    using Collections.Generic;
     using Saleslogix.SData.Client.Utilities;
 
     internal static class IntrospectionExtensions
     {
         public static Type GetTypeInfo(this Type type)
+        {
+            return type;
+        }
+
+        public static Type AsType(this Type type)
         {
             return type;
         }
@@ -132,6 +138,26 @@ namespace System.Reflection
         {
             Guard.ArgumentNotNull(del, "del");
             return del.Method;
+        }
+
+        public static IEnumerable<MethodInfo> GetRuntimeMethods(this Type type)
+        {
+            return type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+        }
+
+        public static MethodInfo GetRuntimeMethod(this Type type, string name, Type[] parameters)
+        {
+            return type.GetMethod(name, parameters);
+        }
+
+        public static PropertyInfo GetRuntimeProperty(this Type type, string name)
+        {
+            return type.GetProperty(name);
+        }
+
+        public static FieldInfo GetRuntimeField(this Type type, string name)
+        {
+            return type.GetField(name);
         }
     }
 

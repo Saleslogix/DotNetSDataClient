@@ -1,18 +1,18 @@
-// This file is part of the re-linq project (relinq.codeplex.com)
 // Copyright (c) rubicon IT GmbH, www.rubicon.eu
-// 
-// re-linq is free software; you can redistribute it and/or modify it under 
-// the terms of the GNU Lesser General Public License as published by the 
-// Free Software Foundation; either version 2.1 of the License, 
-// or (at your option) any later version.
-// 
-// re-linq is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-// GNU Lesser General Public License for more details.
-// 
-// You should have received a copy of the GNU Lesser General Public License
-// along with re-linq; if not, see http://www.gnu.org/licenses.
+//
+// See the NOTICE file distributed with this work for additional information
+// regarding copyright ownership.  rubicon licenses this file to you under 
+// the Apache License, Version 2.0 (the "License"); you may not use this 
+// file except in compliance with the License.  You may obtain a copy of the 
+// License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software 
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the 
+// License for the specific language governing permissions and limitations
+// under the License.
 // 
 using System;
 using System.Collections;
@@ -26,7 +26,7 @@ namespace Remotion.Linq.Clauses.StreamedData
   /// Holds the data needed to represent the output or input of a part of a query in memory. This is mainly used for 
   /// <see cref="ResultOperatorBase.ExecuteInMemory"/>.  The data consists of a sequence of items.
   /// </summary>
-  internal class StreamedSequence : IStreamedData
+  internal sealed class StreamedSequence : IStreamedData
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="StreamedSequence"/> class, setting the <see cref="Sequence"/> and 
@@ -36,10 +36,8 @@ namespace Remotion.Linq.Clauses.StreamedData
     /// <param name="streamedSequenceInfo">An instance of <see cref="StreamedSequenceInfo"/> describing the sequence.</param>
     public StreamedSequence (IEnumerable sequence, StreamedSequenceInfo streamedSequenceInfo)
     {
-      ArgumentUtility.CheckNotNull ("sequence", sequence);
       ArgumentUtility.CheckNotNull ("streamedSequenceInfo", streamedSequenceInfo);
-      if (!streamedSequenceInfo.DataType.IsInstanceOfType (sequence))
-        throw new ArgumentTypeException ("sequence", streamedSequenceInfo.DataType, sequence.GetType ());
+      ArgumentUtility.CheckNotNullAndType ("sequence", sequence, streamedSequenceInfo.DataType);
 
       DataInfo = streamedSequenceInfo;
       Sequence = sequence;

@@ -1,18 +1,18 @@
-// This file is part of the re-linq project (relinq.codeplex.com)
 // Copyright (c) rubicon IT GmbH, www.rubicon.eu
-// 
-// re-linq is free software; you can redistribute it and/or modify it under 
-// the terms of the GNU Lesser General Public License as published by the 
-// Free Software Foundation; either version 2.1 of the License, 
-// or (at your option) any later version.
-// 
-// re-linq is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-// GNU Lesser General Public License for more details.
-// 
-// You should have received a copy of the GNU Lesser General Public License
-// along with re-linq; if not, see http://www.gnu.org/licenses.
+//
+// See the NOTICE file distributed with this work for additional information
+// regarding copyright ownership.  rubicon licenses this file to you under 
+// the Apache License, Version 2.0 (the "License"); you may not use this 
+// file except in compliance with the License.  You may obtain a copy of the 
+// License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software 
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the 
+// License for the specific language governing permissions and limitations
+// under the License.
 // 
 using System;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace Remotion.Linq.Parsing.Structure.NodeTypeProviders
   /// This is used by <see cref="ExpressionTreeParser"/> when a <see cref="MethodCallExpression"/> is encountered to instantiate the right 
   /// <see cref="IExpressionNode"/> for the given method.
   /// </summary>
-  internal class MethodNameBasedNodeTypeRegistry : INodeTypeProvider
+  internal sealed class MethodNameBasedNodeTypeRegistry : INodeTypeProvider
   {
     /// <summary>
     /// Creates a <see cref="MethodNameBasedNodeTypeRegistry"/> and automatically registers all types implementing <see cref="IExpressionNode"/> 
@@ -39,21 +39,25 @@ namespace Remotion.Linq.Parsing.Structure.NodeTypeProviders
     /// </summary>
     /// <returns>A <see cref="MethodInfoBasedNodeTypeRegistry"/> with all <see cref="IExpressionNode"/> types with a <c>SupportedMethodNames</c>
     /// field registered.</returns>
-    public static MethodNameBasedNodeTypeRegistry CreateFromTypes (Type[] searchedTypes)
+    public static MethodNameBasedNodeTypeRegistry CreateFromTypes (IEnumerable<Type> searchedTypes)
     {
+      ArgumentUtility.CheckNotNull ("searchedTypes", searchedTypes);
+
       var expressionNodeTypes = from t in searchedTypes
-                                where typeof (IExpressionNode).IsAssignableFrom (t)
+                                where typeof (IExpressionNode).GetTypeInfo().IsAssignableFrom (t.GetTypeInfo())
                                 select t;
 
-      var infoForTypes = from t in expressionNodeTypes
-                                     let supportedMethodNamesField = t.GetFields().FirstOrDefault(f => f.Name == "SupportedMethodNames" && f.IsStatic)
-                                     select new { 
-                                         Type = t,
-                                         RegistrationInfo =
-                                         supportedMethodNamesField != null
-                                             ? ((IEnumerable<NameBasedRegistrationInfo>) supportedMethodNamesField.GetValue (null))
-                                             : Enumerable.Empty<NameBasedRegistrationInfo> ()
-                                     };
+      var infoForTypes =
+          from t in expressionNodeTypes
+          let supportedMethodNamesField = t.GetRuntimeField ("SupportedMethodNames")
+          select new
+                 {
+                     Type = t,
+                     RegistrationInfo =
+                         supportedMethodNamesField != null && supportedMethodNamesField.IsStatic
+                             ? ((IEnumerable<NameBasedRegistrationInfo>) supportedMethodNamesField.GetValue (null))
+                             : Enumerable.Empty<NameBasedRegistrationInfo>()
+                 };
 
       var registry = new MethodNameBasedNodeTypeRegistry();
 
@@ -63,8 +67,8 @@ namespace Remotion.Linq.Parsing.Structure.NodeTypeProviders
       return registry;
     }
 
-    private readonly MultiDictionary<string, KeyValuePair<NameBasedRegistrationInfo, Type>> _registeredNamedTypes =
-        new MultiDictionary<string, KeyValuePair<NameBasedRegistrationInfo, Type>> ();
+    private readonly IDictionary<string, ICollection<KeyValuePair<NameBasedRegistrationInfo, Type>>> _registeredNamedTypes =
+        new Dictionary<string, ICollection<KeyValuePair<NameBasedRegistrationInfo, Type>>> ();
 
     /// <summary>
     /// Returns the count of the registered method names.
@@ -107,7 +111,7 @@ namespace Remotion.Linq.Parsing.Structure.NodeTypeProviders
     {
       ArgumentUtility.CheckNotNull ("method", method);
 
-      IList<KeyValuePair<NameBasedRegistrationInfo, Type>> result;
+      ICollection<KeyValuePair<NameBasedRegistrationInfo, Type>> result;
       if (!_registeredNamedTypes.TryGetValue (method.Name, out result))
         return null;
       

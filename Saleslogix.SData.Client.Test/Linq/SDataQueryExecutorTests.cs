@@ -808,7 +808,10 @@ namespace Saleslogix.SData.Client.Test.Linq
 
             if (collection != null)
             {
-                list.AddRange(collection);
+                foreach (var item in collection)
+                {
+                    list.Add(item);
+                }
             }
 
             if (totalResults != null)

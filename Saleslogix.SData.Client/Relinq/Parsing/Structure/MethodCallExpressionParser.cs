@@ -1,18 +1,18 @@
-// This file is part of the re-linq project (relinq.codeplex.com)
 // Copyright (c) rubicon IT GmbH, www.rubicon.eu
-// 
-// re-linq is free software; you can redistribute it and/or modify it under 
-// the terms of the GNU Lesser General Public License as published by the 
-// Free Software Foundation; either version 2.1 of the License, 
-// or (at your option) any later version.
-// 
-// re-linq is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-// GNU Lesser General Public License for more details.
-// 
-// You should have received a copy of the GNU Lesser General Public License
-// along with re-linq; if not, see http://www.gnu.org/licenses.
+//
+// See the NOTICE file distributed with this work for additional information
+// regarding copyright ownership.  rubicon licenses this file to you under 
+// the Apache License, Version 2.0 (the "License"); you may not use this 
+// file except in compliance with the License.  You may obtain a copy of the 
+// License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software 
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the 
+// License for the specific language governing permissions and limitations
+// under the License.
 // 
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace Remotion.Linq.Parsing.Structure
   /// Parses a <see cref="MethodCallExpression"/> and creates an <see cref="IExpressionNode"/> from it. This is used by 
   /// <see cref="ExpressionTreeParser"/> for parsing whole expression trees.
   /// </summary>
-  internal class MethodCallExpressionParser
+  internal sealed class MethodCallExpressionParser
   {
     private readonly INodeTypeProvider _nodeTypeProvider;
 
@@ -42,10 +42,13 @@ namespace Remotion.Linq.Parsing.Structure
     public IExpressionNode Parse (
         string associatedIdentifier, IExpressionNode source, IEnumerable<Expression> arguments, MethodCallExpression expressionToParse)
     {
+      ArgumentUtility.CheckNotNullOrEmpty ("associatedIdentifier", associatedIdentifier);
+      ArgumentUtility.CheckNotNull ("source", source);
       ArgumentUtility.CheckNotNull ("expressionToParse", expressionToParse);
+      ArgumentUtility.CheckNotNull ("arguments", arguments);
 
       Type nodeType = GetNodeType (expressionToParse);
-      var additionalConstructorParameters = arguments.Select (expr => ProcessArgumentExpression (expr)).ToArray();
+      var additionalConstructorParameters = arguments.Select (ProcessArgumentExpression).ToArray();
 
       var parseInfo = new MethodCallExpressionParseInfo (associatedIdentifier, source, expressionToParse);
       return CreateExpressionNode (nodeType, parseInfo, additionalConstructorParameters);
@@ -56,12 +59,11 @@ namespace Remotion.Linq.Parsing.Structure
       var nodeType = _nodeTypeProvider.GetNodeType (expressionToParse.Method);
       if (nodeType == null)
       {
-        string message = string.Format (
-            "Could not parse expression '{0}': This overload of the method '{1}.{2}' is currently not supported.",
-            FormattingExpressionTreeVisitor.Format (expressionToParse),
+        throw CreateParsingErrorException (
+            expressionToParse,
+            "This overload of the method '{0}.{1}' is currently not supported.",
             expressionToParse.Method.DeclaringType.FullName,
             expressionToParse.Method.Name);
-        throw new ParserException (message);
       }
       return nodeType;
     }
@@ -93,10 +95,7 @@ namespace Remotion.Linq.Parsing.Structure
         return expression;
     }
 
-    private IExpressionNode CreateExpressionNode (
-        Type nodeType,
-        MethodCallExpressionParseInfo parseInfo,
-        object[] additionalConstructorParameters)
+    private IExpressionNode CreateExpressionNode (Type nodeType, MethodCallExpressionParseInfo parseInfo, object[] additionalConstructorParameters)
     {
       try
       {
@@ -104,12 +103,15 @@ namespace Remotion.Linq.Parsing.Structure
       }
       catch (ExpressionNodeInstantiationException ex)
       {
-        string message = string.Format (
-            "Could not parse expression '{0}': {1}",
-            FormattingExpressionTreeVisitor.Format (parseInfo.ParsedExpression),
-            ex.Message);
-        throw new ParserException (message);
+        throw CreateParsingErrorException (parseInfo.ParsedExpression, "{0}", ex.Message);
       }
+    }
+
+    private NotSupportedException CreateParsingErrorException ( MethodCallExpression expression, string message, params object[] args)
+    {
+      return new NotSupportedException (
+          string.Format ("Could not parse expression '{0}': ", FormattingExpressionTreeVisitor.Format (expression))
+          + string.Format (message, args));
     }
   }
 }

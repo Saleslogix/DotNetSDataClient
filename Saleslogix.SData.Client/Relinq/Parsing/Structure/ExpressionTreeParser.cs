@@ -1,24 +1,25 @@
-// This file is part of the re-linq project (relinq.codeplex.com)
 // Copyright (c) rubicon IT GmbH, www.rubicon.eu
-// 
-// re-linq is free software; you can redistribute it and/or modify it under 
-// the terms of the GNU Lesser General Public License as published by the 
-// Free Software Foundation; either version 2.1 of the License, 
-// or (at your option) any later version.
-// 
-// re-linq is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-// GNU Lesser General Public License for more details.
-// 
-// You should have received a copy of the GNU Lesser General Public License
-// along with re-linq; if not, see http://www.gnu.org/licenses.
+//
+// See the NOTICE file distributed with this work for additional information
+// regarding copyright ownership.  rubicon licenses this file to you under 
+// the Apache License, Version 2.0 (the "License"); you may not use this 
+// file except in compliance with the License.  You may obtain a copy of the 
+// License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software 
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the 
+// License for the specific language governing permissions and limitations
+// under the License.
 // 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Remotion.Linq.Clauses.ExpressionTreeVisitors;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors.Transformation;
 using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
@@ -32,9 +33,13 @@ namespace Remotion.Linq.Parsing.Structure
   /// Parses an expression tree into a chain of <see cref="IExpressionNode"/> objects after executing a sequence of 
   /// <see cref="IExpressionTreeProcessor"/> objects.
   /// </summary>
-  internal class ExpressionTreeParser
+  internal sealed class ExpressionTreeParser
   {
-    private static readonly MethodInfo s_getArrayLengthMethod = typeof (Array).GetMethod ("get_Length");
+#if NETFX_CORE
+    private static readonly MethodInfo s_getArrayLengthMethod = typeof (Array).GetRuntimeProperty ("Length").GetMethod;
+#else
+    private static readonly MethodInfo s_getArrayLengthMethod = typeof (Array).GetProperty ("Length").GetGetMethod();
+#endif
 
     [Obsolete (
         "This method has been removed. Use QueryParser.CreateDefault, or create a customized ExpressionTreeParser using the constructor. (1.13.93)", 
@@ -52,7 +57,11 @@ namespace Remotion.Linq.Parsing.Structure
     /// registered.</returns>
     public static CompoundNodeTypeProvider CreateDefaultNodeTypeProvider ()
     {
-      var searchedTypes = typeof (MethodInfoBasedNodeTypeRegistry).GetTypeInfo().Assembly.GetTypes ();
+#if NETFX_CORE
+      var searchedTypes = typeof (MethodInfoBasedNodeTypeRegistry).GetTypeInfo().Assembly.DefinedTypes.Select (ti => ti.AsType()).ToList();
+#else
+      var searchedTypes = typeof (MethodInfoBasedNodeTypeRegistry).GetTypeInfo().Assembly.GetTypes().Select (ti => ti.AsType()).ToList();
+#endif
       var innerProviders = new INodeTypeProvider[]
                            {
                                MethodInfoBasedNodeTypeRegistry.CreateFromTypes (searchedTypes),
@@ -143,7 +152,10 @@ namespace Remotion.Linq.Parsing.Structure
       ArgumentUtility.CheckNotNull ("expressionTree", expressionTree);
 
       if (expressionTree.Type == typeof (void))
-        throw new ParserException (String.Format ("Expressions of type void ('{0}') are not supported.", expressionTree));
+      {
+        throw new NotSupportedException (
+            string.Format ("Expressions of type void ('{0}') are not supported.", FormattingExpressionTreeVisitor.Format (expressionTree)));
+      }
 
       var processedExpressionTree = _processor.Process (expressionTree);
       return ParseNode (processedExpressionTree, null);
@@ -171,7 +183,11 @@ namespace Remotion.Linq.Parsing.Structure
         if (propertyInfo == null)
           return null;
 
-        var getterMethod = propertyInfo.GetGetMethod ();
+#if NETFX_CORE
+        var getterMethod = propertyInfo.GetMethod;
+#else
+        var getterMethod = propertyInfo.GetGetMethod();
+#endif
         if (getterMethod == null || !_nodeTypeProvider.IsRegistered (getterMethod))
           return null;
 
@@ -227,15 +243,19 @@ namespace Remotion.Linq.Parsing.Structure
 
       try
       {
+        // Assertions to ensure the argument exception can only happen because of an unsupported type in expression.
+        Assertion.IsNotNull (expression);
+        Assertion.IsFalse (string.IsNullOrEmpty (associatedIdentifier));
+
         return new MainSourceExpressionNode (associatedIdentifier, preprocessedExpression);
       }
-      catch (ArgumentTypeException ex)
+      catch (ArgumentException ex)
       {
-        var message = String.Format (
+        var message = string.Format (
             "Cannot parse expression '{0}' as it has an unsupported type. Only query sources (that is, expressions that implement IEnumerable) "
             + "and query operators can be parsed.",
-            preprocessedExpression);
-        throw new ParserException (message, ex);
+            FormattingExpressionTreeVisitor.Format (preprocessedExpression));
+        throw new NotSupportedException (message, ex);
       }
     }
 

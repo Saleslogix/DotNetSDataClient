@@ -1,21 +1,20 @@
-// This file is part of the re-linq project (relinq.codeplex.com)
 // Copyright (c) rubicon IT GmbH, www.rubicon.eu
-// 
-// re-linq is free software; you can redistribute it and/or modify it under 
-// the terms of the GNU Lesser General Public License as published by the 
-// Free Software Foundation; either version 2.1 of the License, 
-// or (at your option) any later version.
-// 
-// re-linq is distributed in the hope that it will be useful, 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-// GNU Lesser General Public License for more details.
-// 
-// You should have received a copy of the GNU Lesser General Public License
-// along with re-linq; if not, see http://www.gnu.org/licenses.
+//
+// See the NOTICE file distributed with this work for additional information
+// regarding copyright ownership.  rubicon licenses this file to you under 
+// the Apache License, Version 2.0 (the "License"); you may not use this 
+// file except in compliance with the License.  You may obtain a copy of the 
+// License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software 
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT 
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the 
+// License for the specific language governing permissions and limitations
+// under the License.
 // 
 using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using Remotion.Linq.Clauses.ExpressionTreeVisitors;
@@ -168,7 +167,7 @@ namespace Remotion.Linq.Clauses
     protected T GetConstantValueFromExpression<T> (string expressionName, Expression expression)
     {
       ArgumentUtility.CheckNotNull ("expression", expression);
-      if (!typeof (T).IsAssignableFrom (expression.Type))
+      if (!typeof (T).GetTypeInfo().IsAssignableFrom (expression.Type.GetTypeInfo()))
       {
         var message = string.Format (
             "The value stored by the {0} expression ('{1}') is not of type '{2}', it is of type '{3}'.",
@@ -176,7 +175,7 @@ namespace Remotion.Linq.Clauses
             FormattingExpressionTreeVisitor.Format (expression),
             typeof (T),
             expression.Type);
-        throw new InvalidOperationException (message);
+        throw new ArgumentException (message, "expression");
       }
 
       var itemAsConstantExpression = expression as ConstantExpression;
@@ -191,20 +190,20 @@ namespace Remotion.Linq.Clauses
             expressionName,
             FormattingExpressionTreeVisitor.Format (expression),
             expression.GetType ().Name);
-        throw new InvalidOperationException (message);
+        throw new ArgumentException (message, "expression");
       }
     }
 
-    protected void CheckSequenceItemType (StreamedSequenceInfo sequenceInfo, Type expectedItemType)
+    protected void CheckSequenceItemType (StreamedSequenceInfo inputInfo, Type expectedItemType)
     {
-      if (!expectedItemType.IsAssignableFrom (sequenceInfo.ResultItemType))
+      if (!expectedItemType.GetTypeInfo().IsAssignableFrom (inputInfo.ResultItemType.GetTypeInfo()))
       {
         var message = string.Format (
             "The input sequence must have items of type '{0}', but it has items of type '{1}'.",
             expectedItemType,
-            sequenceInfo.ResultItemType);
+            inputInfo.ResultItemType);
 
-        throw new ArgumentTypeException (message, "inputInfo", typeof (IEnumerable<>).MakeGenericType (expectedItemType), sequenceInfo.ResultItemType);
+        throw new ArgumentException (message, "inputInfo");
       }
     }
   }
