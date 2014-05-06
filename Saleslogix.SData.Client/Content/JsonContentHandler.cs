@@ -487,6 +487,11 @@ namespace Saleslogix.SData.Client.Content
                     output = FormatMicrosoftDate((DateTimeOffset) input);
                     return true;
                 }
+                if (input is char)
+                {
+                    output = char.ToString((char) input);
+                    return true;
+                }
 
                 return base.TrySerializeKnownTypes(input, out output);
             }
