@@ -86,7 +86,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDataClientExtensionsTests.cs" />
     <Compile Include="SDataClientTests.cs" />
+    <Compile Include="SDataCollectionTests.cs" />
     <Compile Include="SDataCollectionTypeConverterTests.cs" />
+    <Compile Include="SDataResourceTests.cs" />
     <Compile Include="SDataResourceTypeDescriptionProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>

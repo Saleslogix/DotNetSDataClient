@@ -103,6 +103,7 @@
     <Compile Include="Model\SalesOrderLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDataClientExtensionsTests.cs" />
+    <Compile Include="SDataCollectionTests.cs" />
     <Compile Include="SDataResourceTests.cs" />
   </ItemGroup>
   <ItemGroup>

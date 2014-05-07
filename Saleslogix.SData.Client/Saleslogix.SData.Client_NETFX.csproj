@@ -12,6 +12,7 @@
     <AssemblyName>Saleslogix.SData.Client</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <DefaultLanguage>en-US</DefaultLanguage>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -136,6 +137,7 @@
     <Compile Include="Framework\UriFormatter.cs" />
     <Compile Include="Framework\UriPathSegment.cs" />
     <Compile Include="Framework\W3CDateTime.cs" />
+    <Compile Include="IChangeTracking.cs" />
     <Compile Include="INamingScheme.cs" />
     <Compile Include="ISDataBatch.cs" />
     <Compile Include="ISDataClient.cs" />

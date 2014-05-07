@@ -87,7 +87,7 @@ namespace System.IO
 }
 #endif
 
-#if NET_3_5
+#if NET_2_0 || NET_3_5
 namespace System.Linq
 {
     using Collections.Generic;

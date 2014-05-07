@@ -3,12 +3,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Net;
 using Saleslogix.SData.Client.Framework;
-
-#if !PCL && !NETFX_CORE && !SILVERLIGHT
-using System.ComponentModel;
-#endif
 
 #if !NET_2_0 && !NET_3_5
 using System.Dynamic;
@@ -25,29 +23,33 @@ namespace Saleslogix.SData.Client
 #if !NET_2_0 && !NET_3_5
         DynamicObject,
 #endif
-        IDictionary<string, object>, ISDataProtocolObject
+        IDictionary<string, object>, IDictionary, ISDataProtocolObject, IChangeTracking, IRevertibleChangeTracking
     {
-        private readonly IDictionary<string, object> _values;
+        private IDictionary<string, object> _values;
+        private IDictionary<string, object> _snapshot;
         private SDataProtocolInfo _info = new SDataProtocolInfo();
 
         public SDataResource()
         {
             _values = new Dictionary<string, object>();
+            _snapshot = new Dictionary<string, object>();
         }
 
         public SDataResource(int capacity)
         {
             _values = new Dictionary<string, object>(capacity);
+            _snapshot = new Dictionary<string, object>(capacity);
         }
 
         public SDataResource(IDictionary<string, object> dictionary)
         {
             _values = new Dictionary<string, object>(dictionary);
+            _snapshot = new Dictionary<string, object>(dictionary);
         }
 
         public SDataResource(string xmlLocalName, string xmlNamespace = null)
+            : this()
         {
-            _values = new Dictionary<string, object>();
             XmlLocalName = xmlLocalName;
             XmlNamespace = xmlNamespace;
         }
@@ -207,16 +209,83 @@ namespace Saleslogix.SData.Client
             return Descriptor ?? base.ToString();
         }
 
-        #region IDictionary Members
+        #region IChangeTracking Members
 
-        public bool ContainsKey(string key)
+        public bool IsChanged
         {
-            return _values.ContainsKey(key);
+            get
+            {
+                return _values.Count != _snapshot.Count ||
+                       _values.Any(pair =>
+                       {
+                           object snapshot;
+                           if (_snapshot.TryGetValue(pair.Key, out snapshot) && Equals(pair.Value, snapshot))
+                           {
+                               var tracking = pair.Value as IChangeTracking;
+                               return tracking != null && tracking.IsChanged;
+                           }
+                           return true;
+                       });
+            }
         }
+
+        public object GetChanges()
+        {
+            var changes = _values
+                .Select(pair =>
+                {
+                    var value = pair.Value;
+                    object snapshot;
+                    if (_snapshot.TryGetValue(pair.Key, out snapshot) && Equals(value, snapshot))
+                    {
+                        var tracking = value as IChangeTracking;
+                        if (tracking == null)
+                        {
+                            return null;
+                        }
+                        value = tracking.GetChanges();
+                        if (value == null)
+                        {
+                            return null;
+                        }
+                    }
+                    return new {pair.Key, value};
+                })
+                .Where(item => item != null)
+                .ToDictionary(item => item.Key, item => item.value);
+            return changes.Count > 0 ? new SDataResource(changes) : null;
+        }
+
+        public void AcceptChanges()
+        {
+            _snapshot = new Dictionary<string, object>(_values);
+            foreach (var value in Values.OfType<IChangeTracking>())
+            {
+                value.AcceptChanges();
+            }
+        }
+
+        public void RejectChanges()
+        {
+            _values = new Dictionary<string, object>(_snapshot);
+            foreach (var value in Values.OfType<IRevertibleChangeTracking>())
+            {
+                value.RejectChanges();
+            }
+        }
+
+        #endregion
+
+        #region IDictionary Members
 
         public void Add(string key, object value)
         {
             _values.Add(key, value);
+        }
+
+        public bool ContainsKey(string key)
+        {
+            return _values.ContainsKey(key);
         }
 
         public bool Remove(string key)
@@ -243,6 +312,47 @@ namespace Saleslogix.SData.Client
         public ICollection<object> Values
         {
             get { return _values.Values; }
+        }
+
+        void IDictionary.Add(object key, object value)
+        {
+            ((IDictionary) _values).Add(key, value);
+        }
+
+        bool IDictionary.Contains(object key)
+        {
+            return ((IDictionary) _values).Contains(key);
+        }
+
+        IDictionaryEnumerator IDictionary.GetEnumerator()
+        {
+            return ((IDictionary) _values).GetEnumerator();
+        }
+
+        void IDictionary.Remove(object key)
+        {
+            ((IDictionary) _values).Remove(key);
+        }
+
+        object IDictionary.this[object key]
+        {
+            get { return ((IDictionary) _values)[key]; }
+            set { ((IDictionary) _values)[key] = value; }
+        }
+
+        bool IDictionary.IsFixedSize
+        {
+            get { return ((IDictionary) _values).IsFixedSize; }
+        }
+
+        ICollection IDictionary.Keys
+        {
+            get { return ((IDictionary) _values).Keys; }
+        }
+
+        ICollection IDictionary.Values
+        {
+            get { return ((IDictionary) _values).Values; }
         }
 
         #endregion
@@ -282,6 +392,21 @@ namespace Saleslogix.SData.Client
         public bool IsReadOnly
         {
             get { return _values.IsReadOnly; }
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            ((ICollection) _values).CopyTo(array, index);
+        }
+
+        bool ICollection.IsSynchronized
+        {
+            get { return ((ICollection) _values).IsSynchronized; }
+        }
+
+        object ICollection.SyncRoot
+        {
+            get { return ((ICollection) _values).SyncRoot; }
         }
 
         #endregion

@@ -351,7 +351,13 @@ namespace Saleslogix.SData.Client
                 }
             }
 
-            return ContentHelper.Deserialize<T>(value, client.NamingScheme);
+            var result = ContentHelper.Deserialize<T>(value, client.NamingScheme);
+            var tracking = result as IChangeTracking;
+            if (tracking != null)
+            {
+                tracking.AcceptChanges();
+            }
+            return result;
         }
 #endif
     }

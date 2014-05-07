@@ -36,6 +36,7 @@ namespace Saleslogix.SData.Client
             Uri = uri;
             _requestFactory = requestFactory;
             Format = MediaType.Json;
+            DifferentialUpdate = true;
         }
 
         public string Uri { get; set; }
@@ -53,6 +54,7 @@ namespace Saleslogix.SData.Client
         public MediaType? Format { get; set; }
         public string Language { get; set; }
         public string Version { get; set; }
+        public bool DifferentialUpdate { get; set; }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
         public ISDataResults Execute(SDataParameters parms)
@@ -154,7 +156,21 @@ namespace Saleslogix.SData.Client
                 uri["_" + arg.Key] = arg.Value;
             }
 
-            var request = CreateRequest(uri, parms.Method, parms.Content);
+            var content = parms.Content;
+            if (parms.Method == HttpMethod.Put && DifferentialUpdate)
+            {
+                var tracking = content as IChangeTracking;
+                if (tracking != null)
+                {
+                    content = tracking.GetChanges();
+                    if (content == null)
+                    {
+                        throw new SDataClientException("Content doesn't have any changes");
+                    }
+                }
+            }
+
+            var request = CreateRequest(uri, parms.Method, content);
             request.Selector = parms.Selector;
             request.ContentType = parms.ContentType ?? Format;
             request.ETag = parms.ETag;
@@ -298,7 +314,21 @@ namespace Saleslogix.SData.Client
                 }
                 else
                 {
-                    resource = ContentHelper.Serialize(parms.Content, NamingScheme) as SDataResource;
+                    var content = parms.Content;
+                    if (parms.Method == HttpMethod.Put && DifferentialUpdate)
+                    {
+                        var tracking = content as IChangeTracking;
+                        if (tracking != null)
+                        {
+                            content = tracking.GetChanges();
+                            if (content == null)
+                            {
+                                throw new SDataClientException("Content doesn't have any changes");
+                            }
+                        }
+                    }
+
+                    resource = ContentHelper.Serialize(content, NamingScheme) as SDataResource;
                     if (resource == null)
                     {
                         throw new SDataClientException("Only resources can be submitted in batch requests");
@@ -430,6 +460,11 @@ namespace Saleslogix.SData.Client
 #else
             var content = ContentHelper.Deserialize<T>(response.Content, NamingScheme);
 #endif
+            var tracking = content as IChangeTracking;
+            if (tracking != null)
+            {
+                tracking.AcceptChanges();
+            }
             return SDataResults.FromResponse(response, content);
         }
     }
