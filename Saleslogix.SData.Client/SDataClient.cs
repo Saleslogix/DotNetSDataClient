@@ -146,14 +146,33 @@ namespace Saleslogix.SData.Client
                               Search = parms.Search,
                               Include = parms.Include,
                               Select = parms.Select,
-                              Precedence = parms.Precedence ?? (responseContentIgnored ? 0 : (int?) null),
+                              Precedence = parms.Precedence,
                               IncludeSchema = parms.IncludeSchema,
                               ReturnDelta = parms.ReturnDelta,
                               TrackingId = parms.TrackingId,
-                              Format = parms.Format ?? Format,
-                              Language = parms.Language ?? Language,
-                              Version = parms.Version ?? Version
+                              Format = parms.Format,
+                              Language = parms.Language,
+                              Version = parms.Version
                           };
+            if (parms.Method != HttpMethod.Delete)
+            {
+                if (uri.Precedence == null && responseContentIgnored)
+                {
+                    uri.Precedence = 0;
+                }
+                if (uri.Format == null)
+                {
+                    uri.Format = Format;
+                }
+                if (uri.Language == null)
+                {
+                    uri.Language = Language;
+                }
+                if (uri.Version == null)
+                {
+                    uri.Version = Version;
+                }
+            }
             if (parms.Path != null)
             {
                 uri.AppendPath(parms.Path);
