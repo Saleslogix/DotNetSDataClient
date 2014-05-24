@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Saleslogix.SData.Client.Test.Model
 {
-    [SDataResource("salesOrders")]
+    [SDataPath("salesOrders")]
     public class SalesOrder
     {
         public string OrderNumber { get; set; }

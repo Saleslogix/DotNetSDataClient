@@ -503,7 +503,7 @@ namespace Saleslogix.SData.Client.Linq
         {
             var visitor = new SDataQueryModelVisitor(_nodeTypeProvider, _namingScheme);
             visitor.VisitQueryModel(queryModel);
-            var path = _path ?? SDataResourceAttribute.GetPath(visitor.MainType);
+            var path = _path ?? SDataPathAttribute.GetPath(visitor.MainType);
             var parms = new SDataParameters
                        {
                            Path = path,

@@ -1,6 +1,6 @@
 ﻿namespace Saleslogix.SData.Client.Test.Model
 {
-    [SDataResource("products")]
+    [SDataPath("products")]
     public class Product
     {
         public string ProductNumber { get; set; }

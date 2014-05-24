@@ -1,6 +1,6 @@
 ﻿namespace Saleslogix.SData.Client.Test.Model
 {
-    [SDataResource("addresses")]
+    [SDataPath("addresses")]
     public class Address
     {
         [SDataProtocolProperty]

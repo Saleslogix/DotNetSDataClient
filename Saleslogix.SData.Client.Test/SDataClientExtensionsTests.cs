@@ -201,7 +201,7 @@ namespace Saleslogix.SData.Client.Test
         }
 #endif
 
-        [SDataResource("dummy")]
+        [SDataPath("dummy")]
         private class CallService_Object
         {
             public static void StaticAction(string arg)

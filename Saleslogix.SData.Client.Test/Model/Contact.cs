@@ -2,7 +2,7 @@
 
 namespace Saleslogix.SData.Client.Test.Model
 {
-    [SDataResource("contacts")]
+    [SDataPath("contacts")]
     public class Contact
     {
         [SDataProtocolProperty]

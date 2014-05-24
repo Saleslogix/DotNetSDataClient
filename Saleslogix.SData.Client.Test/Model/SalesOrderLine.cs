@@ -1,6 +1,6 @@
 ﻿namespace Saleslogix.SData.Client.Test.Model
 {
-    [SDataResource("salesOrderLines")]
+    [SDataPath("salesOrderLines")]
     public class SalesOrderLine
     {
         public decimal? OrderQty { get; set; }

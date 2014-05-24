@@ -377,12 +377,12 @@
     <Compile Include="SDataCollection.cs" />
     <Compile Include="SDataLink.cs" />
     <Compile Include="SDataParameters.cs" />
+    <Compile Include="SDataPathAttribute.cs" />
     <Compile Include="SDataPayloadOptions.cs" />
     <Compile Include="SDataProtocolInfo.cs" />
     <Compile Include="SDataProtocolProperty.cs" />
     <Compile Include="SDataProtocolPropertyAttribute.cs" />
     <Compile Include="SDataResource.cs" />
-    <Compile Include="SDataResourceAttribute.cs" />
     <Compile Include="SDataResults.cs" />
     <Compile Include="SDataServiceOperationAttribute.cs" />
     <Compile Include="SDataServiceParameterAttribute.cs" />

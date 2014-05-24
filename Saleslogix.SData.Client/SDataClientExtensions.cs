@@ -216,7 +216,7 @@ namespace Saleslogix.SData.Client
 
         private static string GetPath<T>(string path)
         {
-            return path ?? SDataResourceAttribute.GetPath(typeof (T));
+            return path ?? SDataPathAttribute.GetPath(typeof (T));
         }
 
         private static string GetSelector(object content)
@@ -298,9 +298,8 @@ namespace Saleslogix.SData.Client
 
             if (path == null)
             {
-                path = attr != null && attr.IsPathSpecified
-                    ? attr.Path
-                    : SDataResourceAttribute.GetPath(instance != null ? instance.GetType() : callExpr.Method.DeclaringType);
+                path = SDataPathAttribute.GetPath(callExpr.Method) ??
+                       SDataPathAttribute.GetPath(instance != null ? instance.GetType() : callExpr.Method.DeclaringType);
             }
             if (path != null)
             {

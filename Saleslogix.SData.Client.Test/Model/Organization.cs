@@ -2,7 +2,7 @@
 
 namespace Saleslogix.SData.Client.Test.Model
 {
-    [SDataResource("organizations")]
+    [SDataPath("organizations")]
     public class Organization
     {
         public string Name { get; set; }
