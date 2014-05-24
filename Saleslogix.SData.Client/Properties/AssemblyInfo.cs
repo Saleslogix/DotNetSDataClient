@@ -25,8 +25,8 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("2.0.0.1525")]
-[assembly: AssemblyFileVersion("2.0.0.1525")]
+[assembly: AssemblyVersion("2.0.0.1526")]
+[assembly: AssemblyFileVersion("2.0.0.1526")]
 [assembly: NeutralResourcesLanguage("en-US")]
 [assembly: AssemblyInformationalVersion("2.0")]
 [assembly: InternalsVisibleTo("Saleslogix.SData.Client.Test")]

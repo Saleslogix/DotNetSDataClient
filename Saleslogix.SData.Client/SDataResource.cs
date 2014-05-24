@@ -206,7 +206,15 @@ namespace Saleslogix.SData.Client
 
         public override string ToString()
         {
-            return Descriptor ?? base.ToString();
+            if (!string.IsNullOrEmpty(Descriptor))
+            {
+                return Descriptor;
+            }
+            if (!string.IsNullOrEmpty(Key))
+            {
+                return Key;
+            }
+            return base.ToString();
         }
 
         #region IChangeTracking Members
