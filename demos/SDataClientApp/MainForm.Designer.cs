@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.tabResourceProperties = new System.Windows.Forms.TabPage();
@@ -57,92 +56,137 @@
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            resources.ApplyResources(this.statusLabel, "statusLabel");
+            this.statusLabel.Size = new System.Drawing.Size(0, 17);
             // 
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusLabel});
-            resources.ApplyResources(this.statusStrip, "statusStrip");
+            this.statusStrip.Location = new System.Drawing.Point(0, 539);
             this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(784, 22);
+            this.statusStrip.TabIndex = 1;
+            this.statusStrip.Text = "statusStrip";
             // 
             // tabResourceProperties
             // 
             this.tabResourceProperties.Controls.Add(this.resourceProperties1);
-            resources.ApplyResources(this.tabResourceProperties, "tabResourceProperties");
+            this.tabResourceProperties.Location = new System.Drawing.Point(4, 22);
             this.tabResourceProperties.Name = "tabResourceProperties";
+            this.tabResourceProperties.Padding = new System.Windows.Forms.Padding(3);
+            this.tabResourceProperties.Size = new System.Drawing.Size(776, 513);
+            this.tabResourceProperties.TabIndex = 6;
+            this.tabResourceProperties.Text = "Resource Properties";
             this.tabResourceProperties.UseVisualStyleBackColor = true;
             // 
             // resourceProperties1
             // 
-            resources.ApplyResources(this.resourceProperties1, "resourceProperties1");
+            this.resourceProperties1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.resourceProperties1.Location = new System.Drawing.Point(3, 3);
             this.resourceProperties1.Name = "resourceProperties1";
+            this.resourceProperties1.Size = new System.Drawing.Size(770, 507);
             this.resourceProperties1.StatusLabel = this.statusLabel;
+            this.resourceProperties1.TabIndex = 0;
             // 
             // tabSchema
             // 
             this.tabSchema.Controls.Add(this.resourceSchema1);
-            resources.ApplyResources(this.tabSchema, "tabSchema");
+            this.tabSchema.Location = new System.Drawing.Point(4, 22);
             this.tabSchema.Name = "tabSchema";
+            this.tabSchema.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSchema.Size = new System.Drawing.Size(776, 513);
+            this.tabSchema.TabIndex = 4;
+            this.tabSchema.Text = "Resource Schema";
             this.tabSchema.UseVisualStyleBackColor = true;
             // 
             // resourceSchema1
             // 
-            resources.ApplyResources(this.resourceSchema1, "resourceSchema1");
+            this.resourceSchema1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.resourceSchema1.Location = new System.Drawing.Point(3, 3);
             this.resourceSchema1.Name = "resourceSchema1";
+            this.resourceSchema1.Size = new System.Drawing.Size(770, 507);
             this.resourceSchema1.StatusLabel = this.statusLabel;
+            this.resourceSchema1.TabIndex = 0;
             // 
             // tabTemplate
             // 
             this.tabTemplate.Controls.Add(this.resourceTemplate1);
-            resources.ApplyResources(this.tabTemplate, "tabTemplate");
+            this.tabTemplate.Location = new System.Drawing.Point(4, 22);
             this.tabTemplate.Name = "tabTemplate";
+            this.tabTemplate.Padding = new System.Windows.Forms.Padding(3);
+            this.tabTemplate.Size = new System.Drawing.Size(776, 513);
+            this.tabTemplate.TabIndex = 3;
+            this.tabTemplate.Text = "Resource Template";
             this.tabTemplate.UseVisualStyleBackColor = true;
             // 
             // resourceTemplate1
             // 
-            resources.ApplyResources(this.resourceTemplate1, "resourceTemplate1");
+            this.resourceTemplate1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.resourceTemplate1.Location = new System.Drawing.Point(3, 3);
             this.resourceTemplate1.Name = "resourceTemplate1";
+            this.resourceTemplate1.Size = new System.Drawing.Size(770, 507);
             this.resourceTemplate1.StatusLabel = this.statusLabel;
+            this.resourceTemplate1.TabIndex = 0;
             // 
             // tabSingle
             // 
             this.tabSingle.Controls.Add(this.singleResource1);
-            resources.ApplyResources(this.tabSingle, "tabSingle");
+            this.tabSingle.Location = new System.Drawing.Point(4, 22);
             this.tabSingle.Name = "tabSingle";
+            this.tabSingle.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSingle.Size = new System.Drawing.Size(776, 513);
+            this.tabSingle.TabIndex = 2;
+            this.tabSingle.Text = "Single Resource";
             this.tabSingle.UseVisualStyleBackColor = true;
             // 
             // singleResource1
             // 
-            resources.ApplyResources(this.singleResource1, "singleResource1");
+            this.singleResource1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.singleResource1.Location = new System.Drawing.Point(3, 3);
             this.singleResource1.Name = "singleResource1";
+            this.singleResource1.Size = new System.Drawing.Size(770, 507);
             this.singleResource1.StatusLabel = this.statusLabel;
+            this.singleResource1.TabIndex = 0;
             // 
             // tabCollection
             // 
             this.tabCollection.Controls.Add(this.resourceCollection1);
-            resources.ApplyResources(this.tabCollection, "tabCollection");
+            this.tabCollection.Location = new System.Drawing.Point(4, 22);
             this.tabCollection.Name = "tabCollection";
+            this.tabCollection.Padding = new System.Windows.Forms.Padding(3);
+            this.tabCollection.Size = new System.Drawing.Size(776, 513);
+            this.tabCollection.TabIndex = 1;
+            this.tabCollection.Text = "Resource Collection";
             this.tabCollection.UseVisualStyleBackColor = true;
             // 
             // resourceCollection1
             // 
-            resources.ApplyResources(this.resourceCollection1, "resourceCollection1");
+            this.resourceCollection1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.resourceCollection1.Location = new System.Drawing.Point(3, 3);
             this.resourceCollection1.Name = "resourceCollection1";
+            this.resourceCollection1.Size = new System.Drawing.Size(770, 507);
             this.resourceCollection1.StatusLabel = this.statusLabel;
+            this.resourceCollection1.TabIndex = 0;
             // 
             // tabService
             // 
             this.tabService.Controls.Add(this.serviceConfig1);
-            resources.ApplyResources(this.tabService, "tabService");
+            this.tabService.Location = new System.Drawing.Point(4, 22);
             this.tabService.Name = "tabService";
+            this.tabService.Padding = new System.Windows.Forms.Padding(3);
+            this.tabService.Size = new System.Drawing.Size(776, 513);
+            this.tabService.TabIndex = 0;
+            this.tabService.Text = "Service Config";
             this.tabService.UseVisualStyleBackColor = true;
             // 
             // serviceConfig1
             // 
-            resources.ApplyResources(this.serviceConfig1, "serviceConfig1");
+            this.serviceConfig1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.serviceConfig1.Location = new System.Drawing.Point(3, 3);
             this.serviceConfig1.Name = "serviceConfig1";
+            this.serviceConfig1.Size = new System.Drawing.Size(770, 507);
             this.serviceConfig1.StatusLabel = this.statusLabel;
+            this.serviceConfig1.TabIndex = 0;
             // 
             // tabControl1
             // 
@@ -152,18 +196,24 @@
             this.tabControl1.Controls.Add(this.tabTemplate);
             this.tabControl1.Controls.Add(this.tabSchema);
             this.tabControl1.Controls.Add(this.tabResourceProperties);
-            resources.ApplyResources(this.tabControl1, "tabControl1");
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(784, 539);
+            this.tabControl1.TabIndex = 0;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // MainForm
             // 
-            resources.ApplyResources(this, "$this");
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(784, 561);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.statusStrip);
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "SData Client App";
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.tabResourceProperties.ResumeLayout(false);

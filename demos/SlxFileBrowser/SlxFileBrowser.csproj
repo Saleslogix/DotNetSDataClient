@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{908FFE7B-070B-41FC-8D3E-B0FEAE1AB972}</ProjectGuid>
+    <ProjectGuid>{4625AC10-022D-4362-9B69-4B17F3A1239C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SDataClientApp</RootNamespace>
-    <AssemblyName>SDataClientApp</AssemblyName>
+    <RootNamespace>SlxFileBrowser</RootNamespace>
+    <AssemblyName>SlxFileBrowser</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -33,87 +33,69 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseControl.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="FileSystem\AttachmentDirectoryInfo.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ResourceProperties.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="FileSystem\AttachmentFileInfo.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ResourceProperties.Designer.cs">
-      <DependentUpon>ResourceProperties.cs</DependentUpon>
+    <Compile Include="FileSystem\DiskDirectoryInfo.cs" />
+    <Compile Include="FileSystem\DiskDriveInfo.cs" />
+    <Compile Include="FileSystem\DiskFileInfo.cs" />
+    <Compile Include="FileSystem\DiskFileSystemInfo.cs" />
+    <Compile Include="FileSystem\ICachedDirectoryInfo.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ResourceSchema.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="FileSystem\IDirectoryInfo.cs" />
+    <Compile Include="FileSystem\IDriveInfo.cs" />
+    <Compile Include="FileSystem\IFileInfo.cs" />
+    <Compile Include="FileSystem\IFileSystemInfo.cs" />
+    <Compile Include="FileSystem\IResourceHolder.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ResourceSchema.Designer.cs">
-      <DependentUpon>ResourceSchema.cs</DependentUpon>
+    <Compile Include="FileSystem\LibraryDirectoryInfo.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ResourceTemplate.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="FileSystem\LibraryFileInfo.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ResourceTemplate.Designer.cs">
-      <DependentUpon>ResourceTemplate.cs</DependentUpon>
+    <Compile Include="FileSystem\ResourceFileInfo.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SingleResource.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="FileSystem\SDataDirectoryInfo.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SingleResource.Designer.cs">
-      <DependentUpon>SingleResource.cs</DependentUpon>
+    <Compile Include="FileSystem\SDataDriveInfo.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ResourceCollection.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ResourceCollection.Designer.cs">
-      <DependentUpon>ResourceCollection.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Model\Attachment.cs" />
+    <Compile Include="Model\LibraryDirectory.cs" />
+    <Compile Include="Model\LibraryDocument.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="ServiceConfig.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="ShellUtils.cs" />
+    <Compile Include="UserCredentialsDialog.cs">
+      <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ServiceConfig.Designer.cs">
-      <DependentUpon>ServiceConfig.cs</DependentUpon>
-    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ResourceCollection.resx">
-      <DependentUpon>ResourceCollection.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ResourceProperties.resx">
-      <DependentUpon>ResourceProperties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ResourceSchema.resx">
-      <DependentUpon>ResourceSchema.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ResourceTemplate.resx">
-      <DependentUpon>ResourceTemplate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ServiceConfig.resx">
-      <DependentUpon>ServiceConfig.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SingleResource.resx">
-      <DependentUpon>SingleResource.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +103,7 @@
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>

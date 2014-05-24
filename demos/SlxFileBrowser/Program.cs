@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace SDataClientApp
+namespace SlxFileBrowser
 {
     internal static class Program
     {
