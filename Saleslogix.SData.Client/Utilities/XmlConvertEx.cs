@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
 using System.Xml;
 
 namespace Saleslogix.SData.Client.Utilities
@@ -49,12 +48,6 @@ namespace Saleslogix.SData.Client.Utilities
 
             var type = typeof (T);
             type = Nullable.GetUnderlyingType(type) ?? type;
-
-            if (type.GetTypeInfo().IsEnum)
-            {
-                return (T) EnumEx.Parse(type, value);
-            }
-
             Func<string, object> method;
             return (T) (_methods.TryGetValue(type, out method)
                             ? method(value)

@@ -205,7 +205,25 @@ namespace Saleslogix.SData.Client.Content
 
         public static bool IsObject(object obj)
         {
-            return obj != null && !(obj is string) && !(obj is ValueType);
+            return obj != null && IsObject(obj.GetType());
+        }
+
+        public static bool IsObject(Type type)
+        {
+            type = Nullable.GetUnderlyingType(type) ?? type;
+            return !type.GetTypeInfo().IsPrimitive &&
+                   !type.GetTypeInfo().IsEnum &&
+                   !new[]
+                       {
+                           typeof (decimal),
+                           typeof (string),
+                           typeof (DateTime),
+                           typeof (DateTimeOffset),
+                           typeof (TimeSpan),
+                           typeof (Guid),
+                           typeof (Version),
+                           typeof (Uri)
+                       }.Contains(type);
         }
 
         public static T GetProtocolValue<T>(object obj, SDataProtocolProperty prop)
@@ -251,18 +269,18 @@ namespace Saleslogix.SData.Client.Content
                 {
                     continue;
                 }
-                var attr = propertyInfo.GetCustomAttribute<SDataProtocolPropertyAttribute>();
-                if (attr != null && attr.Value != null)
+                var prop = GetProtocolProperty(propertyInfo);
+                if (prop != null)
                 {
-                    result[attr.Value.Value] = ReflectionUtils.GetGetMethod(propertyInfo);
+                    result[prop.Value] = ReflectionUtils.GetGetMethod(propertyInfo);
                 }
             }
             foreach (var fieldInfo in ReflectionUtils.GetFields(type).Where(info => !info.IsStatic && info.IsPublic))
             {
-                var attr = fieldInfo.GetCustomAttribute<SDataProtocolPropertyAttribute>();
-                if (attr != null && attr.Value != null)
+                var prop = GetProtocolProperty(fieldInfo);
+                if (prop != null)
                 {
-                    result[attr.Value.Value] = ReflectionUtils.GetGetMethod(fieldInfo);
+                    result[prop.Value] = ReflectionUtils.GetGetMethod(fieldInfo);
                 }
             }
             return result;
@@ -278,21 +296,48 @@ namespace Saleslogix.SData.Client.Content
                 {
                     continue;
                 }
-                var attr = propertyInfo.GetCustomAttribute<SDataProtocolPropertyAttribute>();
-                if (attr != null && attr.Value != null)
+                var prop = GetProtocolProperty(propertyInfo);
+                if (prop != null)
                 {
-                    result[attr.Value.Value] = ReflectionUtils.GetSetMethod(propertyInfo);
+                    result[prop.Value] = ReflectionUtils.GetSetMethod(propertyInfo);
                 }
             }
             foreach (var fieldInfo in ReflectionUtils.GetFields(type).Where(info => !info.IsInitOnly && !info.IsStatic && info.IsPublic))
             {
-                var attr = fieldInfo.GetCustomAttribute<SDataProtocolPropertyAttribute>();
-                if (attr != null && attr.Value != null)
+                var prop = GetProtocolProperty(fieldInfo);
+                if (prop != null)
                 {
-                    result[attr.Value.Value] = ReflectionUtils.GetSetMethod(fieldInfo);
+                    result[prop.Value] = ReflectionUtils.GetSetMethod(fieldInfo);
                 }
             }
             return result;
+        }
+
+        private static SDataProtocolProperty? GetProtocolProperty(MemberInfo memberInfo)
+        {
+            var attr = memberInfo.GetCustomAttribute<SDataProtocolPropertyAttribute>();
+            if (attr == null)
+            {
+                return null;
+            }
+            if (attr.Value != null)
+            {
+                return attr.Value.Value;
+            }
+
+#if NET_2_0 || NET_3_5
+            try
+            {
+                return (SDataProtocolProperty) Enum.Parse(typeof (SDataProtocolProperty), memberInfo.Name);
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
+#else
+            SDataProtocolProperty prop;
+            return Enum.TryParse(memberInfo.Name, out prop) ? prop : (SDataProtocolProperty?) null;
+#endif
         }
 
         #region Nested type: SerializerStrategy
@@ -456,38 +501,65 @@ namespace Saleslogix.SData.Client.Content
                 }
 
                 type = Nullable.GetUnderlyingType(type) ?? type;
-
                 if (type.IsInstanceOfType(value))
                 {
                     return value;
                 }
 
-                if (type == typeof (DateTime) || type == typeof (DateTimeOffset))
-                {
-                    if (value is DateTime)
-                    {
-                        return (DateTimeOffset) (DateTime) value;
-                    }
-                    if (value is DateTimeOffset)
-                    {
-                        return ((DateTimeOffset) value).DateTime;
-                    }
-                }
-#if NETFX_CORE
-                else if (type == typeof (byte) || type == typeof (short) || type == typeof (int) || type == typeof (long) ||
-                         type == typeof (float) || type == typeof (double) || type == typeof (decimal) || type == typeof (bool) ||
-                         type == typeof (char) || type == typeof (string) || type.GetTypeInfo().IsEnum)
-#else
-                else if (typeof (IConvertible).IsAssignableFrom(type))
-#endif
-                {
-                    return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
-                }
-
                 if (!IsObject(value))
                 {
+                    if (type == typeof (DateTime) || type == typeof (DateTimeOffset))
+                    {
+                        if (value is DateTime)
+                        {
+                            return (DateTimeOffset) (DateTime) value;
+                        }
+                        if (value is DateTimeOffset)
+                        {
+                            return ((DateTimeOffset) value).DateTime;
+                        }
+                    }
+                    else if (!IsObject(type))
+                    {
+                        var str = value as string;
+                        if (str != null)
+                        {
+                            if (type.GetTypeInfo().IsEnum)
+                            {
+                                return EnumEx.Parse(type, str);
+                            }
+                            if (type == typeof (TimeSpan))
+                            {
+#if NET_2_0 || NET_3_5
+                                return TimeSpan.Parse(str);
+#else
+                                return TimeSpan.Parse(str, CultureInfo.InvariantCulture);
+#endif
+                            }
+                            if (type == typeof (Guid))
+                            {
+                                return new Guid(str);
+                            }
+                            if (type == typeof (Version))
+                            {
+                                return new Version(str);
+                            }
+                            if (type == typeof (Uri))
+                            {
+                                return new Uri(str);
+                            }
+                        }
+                        else if (type.GetTypeInfo().IsEnum)
+                        {
+                            return Enum.ToObject(type, value);
+                        }
+
+                        return Convert.ChangeType(value, type, CultureInfo.InvariantCulture);
+                    }
+
                     return base.DeserializeObject(value, type);
                 }
+
                 var dict = AsDictionary(value);
 
                 // workaround: This can happen when type inference gets it wrong
@@ -554,7 +626,7 @@ namespace Saleslogix.SData.Client.Content
             internal override IDictionary<string, ReflectionUtils.GetDelegate> GetterValueFactory(Type type)
             {
                 var result = new Dictionary<string, ReflectionUtils.GetDelegate>();
-                foreach (var propertyInfo in GetProperties(type))
+                foreach (var propertyInfo in GetProperties(type, prop => prop.CanRead))
                 {
                     result[_namingScheme.GetName(propertyInfo)] = GetGetter(ReflectionUtils.GetGetMethod(propertyInfo), propertyInfo, propertyInfo.PropertyType);
                 }
@@ -624,12 +696,12 @@ namespace Saleslogix.SData.Client.Content
             internal override IDictionary<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>> SetterValueFactory(Type type)
             {
                 var result = new Dictionary<string, KeyValuePair<Type, ReflectionUtils.SetDelegate>>();
-                foreach (var propertyInfo in GetProperties(type))
+                foreach (var propertyInfo in GetProperties(type, prop => prop.CanWrite))
                 {
                     var setter = ReflectionUtils.GetSetMethod(propertyInfo);
                     result[_namingScheme.GetName(propertyInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(propertyInfo.PropertyType, setter);
                 }
-                foreach (var fieldInfo in GetFields(type))
+                foreach (var fieldInfo in GetFields(type, field => !field.IsInitOnly))
                 {
                     var setter = ReflectionUtils.GetSetMethod(fieldInfo);
                     result[_namingScheme.GetName(fieldInfo)] = new KeyValuePair<Type, ReflectionUtils.SetDelegate>(fieldInfo.FieldType, setter);
@@ -638,10 +710,11 @@ namespace Saleslogix.SData.Client.Content
                 return result;
             }
 
-            private static IEnumerable<PropertyInfo> GetProperties(Type type)
+            private static IEnumerable<PropertyInfo> GetProperties(Type type, Func<PropertyInfo, bool> predicate)
             {
                 return ReflectionUtils.GetProperties(type)
-                    .Where(item => item.CanRead &&
+                    .Where(item => predicate(item) &&
+                                   item.GetIndexParameters().Length == 0 &&
 #if !NET_2_0
                         !item.IsDefined(typeof (IgnoreDataMemberAttribute)) &&
 #endif
@@ -653,10 +726,11 @@ namespace Saleslogix.SData.Client.Content
                     });
             }
 
-            private static IEnumerable<FieldInfo> GetFields(Type type)
+            private static IEnumerable<FieldInfo> GetFields(Type type, Func<FieldInfo, bool> predicate = null)
             {
                 return ReflectionUtils.GetFields(type)
-                    .Where(item => !item.IsInitOnly && !item.IsStatic && item.IsPublic &&
+                    .Where(item => (predicate == null || predicate(item)) &&
+                                   !item.IsStatic && item.IsPublic &&
 #if !NET_2_0
                         !item.IsDefined(typeof (IgnoreDataMemberAttribute)) &&
 #endif

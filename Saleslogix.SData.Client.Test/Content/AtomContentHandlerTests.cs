@@ -108,6 +108,19 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
+        public void Write_TimeSpan_Test()
+        {
+            var resource = new SDataResource("test") {{"time", TimeSpan.FromTicks(100000000000)}};
+            var nav = Helpers.WriteAtom(resource);
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
+            mgr.AddNamespace("sdata", "http://schemas.sage.com/sdata/2008/1");
+            var node = nav.SelectSingleNode("atom:entry/sdata:payload/test/time", mgr);
+            Assert.That(node, Is.Not.Null);
+            Assert.That(node.Value, Is.EqualTo("PT2H46M40S"));
+        }
+
+        [Test]
         public void Write_Feed_Id_Test()
         {
             var resources = new SDataCollection<SDataResource> {Id = "id"};

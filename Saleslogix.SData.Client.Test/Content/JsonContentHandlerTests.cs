@@ -83,8 +83,8 @@ namespace Saleslogix.SData.Client.Test.Content
         [Test]
         public void Write_DateTime_Test()
         {
-            var resources = new SDataResource {SyncState = new SyncState {Stamp = new DateTime(2013, 6, 15, 8, 0, 0)}};
-            var obj = Helpers.WriteJson(resources);
+            var resource = new SDataResource {SyncState = new SyncState {Stamp = new DateTime(2013, 6, 15, 8, 0, 0)}};
+            var obj = Helpers.WriteJson(resource);
             Assert.That(obj["$syncState"], Is.InstanceOf<IDictionary<string, object>>());
             var syncState = (IDictionary<string, object>) obj["$syncState"];
             Assert.That(syncState["stamp"], Is.EqualTo("/Date(1371283200000)/"));
@@ -93,10 +93,18 @@ namespace Saleslogix.SData.Client.Test.Content
         [Test]
         public void Write_DateTimeOffset_Test()
         {
-            var resources = new SDataResource {Updated = new DateTimeOffset(2013, 6, 15, 8, 0, 0, TimeSpan.FromHours(10))};
-            var obj = Helpers.WriteJson(resources);
+            var resource = new SDataResource {Updated = new DateTimeOffset(2013, 6, 15, 8, 0, 0, TimeSpan.FromHours(10))};
+            var obj = Helpers.WriteJson(resource);
             var updated = obj["$updated"];
             Assert.That(updated, Is.EqualTo("/Date(1371247200000+1000)/"));
+        }
+
+        [Test]
+        public void Write_TimeSpan_Test()
+        {
+            var resource = new SDataResource {{"time", TimeSpan.FromTicks(100000000000)}};
+            var obj = Helpers.WriteJson(resource);
+            Assert.That(obj["time"], Is.EqualTo("02:46:40"));
         }
 
         [Test]
@@ -167,22 +175,22 @@ namespace Saleslogix.SData.Client.Test.Content
         [Test]
         public void Write_Resource_Id_Test()
         {
-            var resources = new SDataResource {Id = "id"};
-            var obj = Helpers.WriteJson(resources);
+            var resource = new SDataResource {Id = "id"};
+            var obj = Helpers.WriteJson(resource);
             Assert.That(obj["$id"], Is.EqualTo("id"));
         }
 
         [Test]
         public void Write_Resource_Diagnoses_Test()
         {
-            var resources = new SDataResource
+            var resource = new SDataResource
                                 {
                                     Diagnoses =
                                         {
                                             new Diagnosis {SDataCode = DiagnosisCode.BadUrlSyntax}
                                         }
                                 };
-            var obj = Helpers.WriteJson(resources);
+            var obj = Helpers.WriteJson(resource);
             Assert.That(obj["$diagnoses"], Is.InstanceOf<IList<object>>());
             var diagnoses = (IList<object>) obj["$diagnoses"];
             Assert.That(diagnoses, Has.Count.EqualTo(1));
@@ -194,14 +202,14 @@ namespace Saleslogix.SData.Client.Test.Content
         [Test]
         public void Write_Resource_SyncState_Test()
         {
-            var resources = new SDataResource
+            var resource = new SDataResource
                                 {
                                     SyncState = new SyncState
                                                     {
                                                         Tick = 123
                                                     }
                                 };
-            var obj = Helpers.WriteJson(resources);
+            var obj = Helpers.WriteJson(resource);
             Assert.That(obj["$syncState"], Is.InstanceOf<IDictionary<string, object>>());
             var syncState = (IDictionary<string, object>) obj["$syncState"];
             Assert.That(syncState["tick"], Is.EqualTo(123));

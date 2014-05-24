@@ -257,7 +257,7 @@ namespace Saleslogix.SData.Client.Content
                 return false;
             }
 
-            var ms = Convert.ToInt64(match.Groups[1].Value);
+            var ms = long.Parse(match.Groups[1].Value);
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0);
             var dt = epoch.AddMilliseconds(ms);
 
@@ -487,9 +487,9 @@ namespace Saleslogix.SData.Client.Content
                     output = FormatMicrosoftDate((DateTimeOffset) input);
                     return true;
                 }
-                if (input is char)
+                if (input is char || input is TimeSpan || input is Version)
                 {
-                    output = char.ToString((char) input);
+                    output = input.ToString();
                     return true;
                 }
 

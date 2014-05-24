@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Utilities;
@@ -16,7 +17,6 @@ using System.Threading.Tasks;
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using Saleslogix.SData.Client.Metadata;
 #endif
 
@@ -474,26 +474,49 @@ namespace Saleslogix.SData.Client
         {
             TraceResponse(response);
 
-#if !PCL && !NETFX_CORE && !SILVERLIGHT
-            T content;
-            if (typeof (T) == typeof (SDataSchema) && response.Content is string)
+            object obj = null;
+            if (typeof (T) == typeof (byte[]))
             {
-                using (var memory = new MemoryStream(Encoding.UTF8.GetBytes((string) response.Content)))
+                var str = response.Content as string;
+                if (str != null)
                 {
-                    content = (T) (object) SDataSchema.Read(memory);
+                    obj = Encoding.UTF8.GetBytes(str);
                 }
+            }
+            else if (typeof (T) == typeof (string))
+            {
+                var data = response.Content as byte[];
+                if (data != null)
+                {
+                    obj = Encoding.UTF8.GetString(data);
+                }
+            }
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+            else if (typeof (T) == typeof (SDataSchema))
+            {
+                var str = response.Content as string;
+                if (str != null)
+                {
+                    using (var memory = new MemoryStream(Encoding.UTF8.GetBytes(str)))
+                    {
+                        obj = SDataSchema.Read(memory);
+                    }
+                }
+            }
+#endif
+            T content;
+            if (obj != null)
+            {
+                content = (T) obj;
             }
             else
             {
                 content = ContentHelper.Deserialize<T>(response.Content, NamingScheme);
-            }
-#else
-            var content = ContentHelper.Deserialize<T>(response.Content, NamingScheme);
-#endif
-            var tracking = content as IChangeTracking;
-            if (tracking != null)
-            {
-                tracking.AcceptChanges();
+                var tracking = content as IChangeTracking;
+                if (tracking != null)
+                {
+                    tracking.AcceptChanges();
+                }
             }
             return SDataResults.FromResponse(response, content);
         }

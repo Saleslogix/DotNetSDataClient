@@ -469,7 +469,7 @@ namespace Saleslogix.SData.Client.Test.Content
                                 }
                         }
                 };
-            var result = Deserialize(value, prototype);
+            var result = DeserializeAnonymous(value, prototype);
             Assert.That(result.AccountName, Is.EqualTo("Bloggs Inc."));
             Assert.That(result.Incorporated, Is.EqualTo(new DateTime(2001, 2, 3, 4, 5, 6)));
             Assert.That(result.Address, Is.Not.Null);
@@ -478,6 +478,11 @@ namespace Saleslogix.SData.Client.Test.Content
             Assert.That(result.Contacts.Length, Is.EqualTo(1));
             Assert.That(result.Contacts[0].FullName, Is.EqualTo("Joe Bloggs"));
             Assert.That(result.Contacts[0].Age, Is.EqualTo(44));
+        }
+
+        private static T DeserializeAnonymous<T>(object value, T prototype)
+        {
+            return ContentHelper.Deserialize<T>(value);
         }
 
         [Test]
@@ -518,9 +523,181 @@ namespace Saleslogix.SData.Client.Test.Content
             public IList<object> Items { get; set; }
         }
 
-        private static T Deserialize<T>(object value, T prototype)
+        [Test]
+        public void Deserialize_Simple_Types_From_String_Test()
         {
-            return ContentHelper.Deserialize<T>(value);
+            var value = new SDataResource
+                {
+                    {"SByteProp", "1"},
+                    {"ShortProp", "1"},
+                    {"IntProp", "1"},
+                    {"LongProp", "1"},
+                    {"ByteProp", "1"},
+                    {"UShortProp", "1"},
+                    {"UIntProp", "1"},
+                    {"ULongProp", "1"},
+                    {"FloatProp", "1.1"},
+                    {"DoubleProp", "1.1"},
+                    {"BoolProp", "true"},
+                    {"CharProp", "1"},
+                    {"DecimalProp", "1.1"},
+                    {"DateTimeProp", "2001-01-01T01:01:01Z"},
+                    {"EnumProp", "1"},
+                    {"StringProp", "1"},
+                    {"DateTimeOffsetProp", "2001-01-01T01:01:01Z"},
+                    {"GuidProp", "11111111-1111-1111-1111-111111111111"},
+                    {"TimeSpanProp", "01:01:01"},
+                    {"VersionProp", "1.1"},
+                    {"UriProp", "http://1.com"},
+                    {"ByteArrayProp", "1"}
+                };
+            var result = ContentHelper.Deserialize<Simple_Types_Object>(value);
+            Assert.That(result.SByteProp, Is.EqualTo(1));
+            Assert.That(result.ShortProp, Is.EqualTo(1));
+            Assert.That(result.IntProp, Is.EqualTo(1));
+            Assert.That(result.LongProp, Is.EqualTo(1));
+            Assert.That(result.ByteProp, Is.EqualTo(1));
+            Assert.That(result.UShortProp, Is.EqualTo(1));
+            Assert.That(result.UIntProp, Is.EqualTo(1));
+            Assert.That(result.ULongProp, Is.EqualTo(1));
+            Assert.That(result.FloatProp, Is.EqualTo(1.1F));
+            Assert.That(result.DoubleProp, Is.EqualTo(1.1));
+            Assert.That(result.BoolProp, Is.True);
+            Assert.That(result.CharProp, Is.EqualTo('1'));
+            Assert.That(result.DecimalProp, Is.EqualTo(1.1));
+            Assert.That(result.DateTimeProp, Is.EqualTo(new DateTime(2001, 1, 1, 1, 1, 1)));
+            Assert.That(result.EnumProp, Is.EqualTo(DayOfWeek.Monday));
+            Assert.That(result.StringProp, Is.EqualTo("1"));
+            Assert.That(result.DateTimeOffsetProp, Is.EqualTo(new DateTimeOffset(2001, 1, 1, 1, 1, 1, TimeSpan.Zero)));
+            Assert.That(result.GuidProp, Is.EqualTo(new Guid("11111111-1111-1111-1111-111111111111")));
+            Assert.That(result.TimeSpanProp, Is.EqualTo(new TimeSpan(1, 1, 1)));
+            Assert.That(result.VersionProp, Is.EqualTo(new Version(1, 1)));
+            Assert.That(result.UriProp, Is.EqualTo(new Uri("http://1.com")));
+        }
+
+        [Test]
+        public void Serialize_Simple_Types_Test()
+        {
+            var value = new Simple_Types_Object
+                {
+                    SByteProp = 1,
+                    ShortProp = 1,
+                    IntProp = 1,
+                    LongProp = 1,
+                    ByteProp = 1,
+                    UShortProp = 1,
+                    UIntProp = 1,
+                    ULongProp = 1,
+                    FloatProp = 1.1F,
+                    DoubleProp = 1.1,
+                    BoolProp = true,
+                    CharProp = '1',
+                    DecimalProp = 1.1M,
+                    DateTimeProp = new DateTime(2001, 1, 1, 1, 1, 1),
+                    EnumProp = DayOfWeek.Monday,
+                    StringProp = "1",
+                    DateTimeOffsetProp = new DateTimeOffset(2001, 1, 1, 1, 1, 1, TimeSpan.Zero),
+                    GuidProp = new Guid("11111111-1111-1111-1111-111111111111"),
+                    TimeSpanProp = new TimeSpan(1, 1, 1),
+                    VersionProp = new Version(1, 1),
+                    UriProp = new Uri("http://1.com")
+                };
+            var result = (IDictionary<string, object>) ContentHelper.Serialize(value);
+            Assert.That(result["SByteProp"], Is.EqualTo(1));
+            Assert.That(result["ShortProp"], Is.EqualTo(1));
+            Assert.That(result["IntProp"], Is.EqualTo(1));
+            Assert.That(result["LongProp"], Is.EqualTo(1));
+            Assert.That(result["ByteProp"], Is.EqualTo(1));
+            Assert.That(result["UShortProp"], Is.EqualTo(1));
+            Assert.That(result["UIntProp"], Is.EqualTo(1));
+            Assert.That(result["ULongProp"], Is.EqualTo(1));
+            Assert.That(result["FloatProp"], Is.EqualTo(1.1F));
+            Assert.That(result["DoubleProp"], Is.EqualTo(1.1));
+            Assert.That(result["BoolProp"], Is.True);
+            Assert.That(result["CharProp"], Is.EqualTo('1'));
+            Assert.That(result["DecimalProp"], Is.EqualTo(1.1));
+            Assert.That(result["DateTimeProp"], Is.EqualTo(new DateTime(2001, 1, 1, 1, 1, 1)));
+            Assert.That(result["EnumProp"], Is.EqualTo(DayOfWeek.Monday));
+            Assert.That(result["StringProp"], Is.EqualTo("1"));
+            Assert.That(result["DateTimeOffsetProp"], Is.EqualTo(new DateTimeOffset(2001, 1, 1, 1, 1, 1, TimeSpan.Zero)));
+            Assert.That(result["GuidProp"], Is.EqualTo(new Guid("11111111-1111-1111-1111-111111111111")));
+            Assert.That(result["TimeSpanProp"], Is.EqualTo(new TimeSpan(1, 1, 1)));
+            Assert.That(result["VersionProp"], Is.EqualTo(new Version(1, 1)));
+            Assert.That(result["UriProp"], Is.EqualTo(new Uri("http://1.com")));
+        }
+
+        private class Simple_Types_Object
+        {
+            public sbyte SByteProp { get; set; }
+            public short ShortProp { get; set; }
+            public int IntProp { get; set; }
+            public long LongProp { get; set; }
+            public byte ByteProp { get; set; }
+            public ushort UShortProp { get; set; }
+            public uint UIntProp { get; set; }
+            public ulong ULongProp { get; set; }
+            public float FloatProp { get; set; }
+            public double DoubleProp { get; set; }
+            public decimal DecimalProp { get; set; }
+            public DateTime DateTimeProp { get; set; }
+            public DayOfWeek EnumProp { get; set; }
+            public bool BoolProp { get; set; }
+            public char CharProp { get; set; }
+            public string StringProp { get; set; }
+            public DateTimeOffset DateTimeOffsetProp { get; set; }
+            public Guid GuidProp { get; set; }
+            public TimeSpan TimeSpanProp { get; set; }
+            public Version VersionProp { get; set; }
+            public Uri UriProp { get; set; }
+        }
+
+        [Test]
+        public void Deserialize_Object_With_ReadOnly_Property_Test()
+        {
+            var value = new SDataResource();
+            var result = ContentHelper.Deserialize<Deserialize_Object_With_ReadOnly_Property_Object>(value);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        private class Deserialize_Object_With_ReadOnly_Property_Object
+        {
+            public string Name
+            {
+                get { throw new NotSupportedException(); }
+            }
+        }
+
+        [Test]
+        public void Serialize_Object_With_WriteOnly_Property_Test()
+        {
+            var value = new Serialize_Object_With_WriteOnly_Property_Object();
+            var result = ContentHelper.Serialize(value);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        private class Serialize_Object_With_WriteOnly_Property_Object
+        {
+            public string Name
+            {
+                set { throw new NotSupportedException(); }
+            }
+        }
+
+        [Test]
+        public void Serialize_Object_With_Indexer_Test()
+        {
+            var value = new Serialize_Object_With_Indexer_Object();
+            var result = ContentHelper.Serialize(value);
+            Assert.That(result, Is.Not.Null);
+        }
+
+        private class Serialize_Object_With_Indexer_Object
+        {
+            public object this[string name]
+            {
+                get { throw new NotSupportedException(); }
+                set { throw new NotSupportedException(); }
+            }
         }
     }
 }

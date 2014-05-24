@@ -8,6 +8,7 @@ using System.Reflection;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
 using Remotion.Linq.Parsing.Structure;
+using Saleslogix.SData.Client.Content;
 
 namespace Saleslogix.SData.Client.Linq
 {
@@ -58,7 +59,7 @@ namespace Saleslogix.SData.Client.Linq
         {
             if (expression.Member is PropertyInfo || expression.Member is FieldInfo)
             {
-                if (_selectMode && _parts.Count == 0 && !IsSimpleType(expression.Type))
+                if (_selectMode && _parts.Count == 0 && ContentHelper.IsObject(expression.Type))
                 {
                     _parts.Add("*");
                 }
@@ -137,7 +138,7 @@ namespace Saleslogix.SData.Client.Linq
         {
             if (expression.NodeType == ExpressionType.Convert)
             {
-                _convertedToSimple = IsSimpleType(expression.Type);
+                _convertedToSimple = !ContentHelper.IsObject(expression.Type);
                 try
                 {
                     return BaseVisitUnaryExpression(expression);
@@ -206,12 +207,6 @@ namespace Saleslogix.SData.Client.Linq
         protected override Exception CreateUnhandledItemException<T>(T unhandledItem, string visitMethod)
         {
             throw new NotSupportedException(string.Format("Expression type '{0}' not supported", typeof (T)));
-        }
-
-        private static bool IsSimpleType(Type type)
-        {
-            type = Nullable.GetUnderlyingType(type) ?? type;
-            return type.GetTypeInfo().IsValueType || new[] {typeof (string), typeof (Guid), typeof (Uri)}.Contains(type);
         }
     }
 }

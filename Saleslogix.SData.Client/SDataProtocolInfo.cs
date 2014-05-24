@@ -129,10 +129,10 @@ namespace Saleslogix.SData.Client
             switch (prop)
             {
                 case SDataProtocolProperty.Id:
-                    Id = Convert.ToString(value);
+                    Id = value != null ? Convert.ToString(value) : null;
                     break;
                 case SDataProtocolProperty.Title:
-                    Title = Convert.ToString(value);
+                    Title = value != null ? Convert.ToString(value) : null;
                     break;
                 case SDataProtocolProperty.Updated:
                     Updated = (value as DateTimeOffset?) ?? (value != null ? Convert.ToDateTime(value) : (DateTimeOffset?) null);
@@ -153,22 +153,22 @@ namespace Saleslogix.SData.Client
                     Diagnoses = (Diagnoses) value;
                     break;
                 case SDataProtocolProperty.Schema:
-                    Schema = Convert.ToString(value);
+                    Schema = value != null ? Convert.ToString(value) : null;
                     break;
                 case SDataProtocolProperty.Links:
                     Links = (IList<SDataLink>) value;
                     break;
                 case SDataProtocolProperty.Key:
-                    Key = Convert.ToString(value);
+                    Key = value != null ? Convert.ToString(value) : null;
                     break;
                 case SDataProtocolProperty.Uuid:
                     Uuid = (Guid?) value;
                     break;
                 case SDataProtocolProperty.Lookup:
-                    Lookup = Convert.ToString(value);
+                    Lookup = value != null ? Convert.ToString(value) : null;
                     break;
                 case SDataProtocolProperty.Descriptor:
-                    Descriptor = Convert.ToString(value);
+                    Descriptor = value != null ? Convert.ToString(value) : null;
                     break;
                 case SDataProtocolProperty.HttpMethod:
                     HttpMethod = (HttpMethod?) value;
@@ -177,16 +177,16 @@ namespace Saleslogix.SData.Client
                     HttpStatus = (HttpStatusCode?) value;
                     break;
                 case SDataProtocolProperty.HttpMessage:
-                    HttpMessage = Convert.ToString(value);
+                    HttpMessage = value != null ? Convert.ToString(value) : null;
                     break;
                 case SDataProtocolProperty.Location:
-                    Location = Convert.ToString(value);
+                    Location = value != null ? Convert.ToString(value) : null;
                     break;
                 case SDataProtocolProperty.ETag:
-                    ETag = Convert.ToString(value);
+                    ETag = value != null ? Convert.ToString(value) : null;
                     break;
                 case SDataProtocolProperty.IfMatch:
-                    IfMatch = Convert.ToString(value);
+                    IfMatch = value != null ? Convert.ToString(value) : null;
                     break;
                 case SDataProtocolProperty.DeleteMissing:
                     DeleteMissing = value != null ? Convert.ToBoolean(value) : (bool?) null;

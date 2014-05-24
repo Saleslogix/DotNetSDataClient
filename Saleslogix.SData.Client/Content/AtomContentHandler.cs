@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -337,7 +338,7 @@ namespace Saleslogix.SData.Client.Content
                 return default(T);
             }
 
-            return XmlConvertEx.FromString<T>(element.Value);
+            return ReadValue<T>(element.Value);
         }
 
         private static T ReadAttributeValue<T>(XElement element, XName name)
@@ -348,12 +349,24 @@ namespace Saleslogix.SData.Client.Content
                 return default(T);
             }
 
-            if (typeof (T) == typeof (Uri))
+            return ReadValue<T>(attr.Value);
+        }
+
+        private static T ReadValue<T>(string value)
+        {
+            var type = typeof (T);
+            if (type == typeof (Uri))
             {
-                return (T) (object) new Uri(attr.Value);
+                return (T) (object) new Uri(value);
             }
 
-            return XmlConvertEx.FromString<T>(attr.Value);
+            type = Nullable.GetUnderlyingType(type) ?? type;
+            if (type.GetTypeInfo().IsEnum)
+            {
+                return (T) EnumEx.Parse(type, value);
+            }
+
+            return XmlConvertEx.FromString<T>(value);
         }
 
         public void WriteTo(object obj, Stream stream, INamingScheme namingScheme = null)

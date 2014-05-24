@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
@@ -593,41 +592,31 @@ namespace Saleslogix.SData.Client.Framework
             {
                 return "null";
             }
-#if !PCL && !NETFX_CORE
-            if (value is DBNull)
-            {
-                return "null";
-            }
-#endif
-
-            var type = value.GetType();
-            type = Nullable.GetUnderlyingType(type) ?? type;
-
-            if (type == typeof (bool))
+            if (value is bool)
             {
                 return (bool) value ? "true" : "false";
             }
-            if (type == typeof (string))
+            if (value is string)
             {
                 return string.Format(CultureInfo.InvariantCulture, "'{0}'", ((string) value).Replace("'", "''"));
             }
-            if (type == typeof (DateTime) || type == typeof (DateTimeOffset))
+            if (value is DateTime || value is DateTimeOffset)
             {
                 return string.Format(CultureInfo.InvariantCulture, "@{0:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}@", value);
             }
-            if (type == typeof (TimeSpan))
+            if (value is TimeSpan)
             {
                 return string.Format(CultureInfo.InvariantCulture, "@{0:hh':'mm':'ss}@", value);
             }
-            if (type == typeof (Guid) || type == typeof (char) || type.GetTypeInfo().IsEnum)
+            if (value is Guid || value is char || value is Enum || value is Version || value is Uri)
             {
                 return string.Format(CultureInfo.InvariantCulture, "'{0}'", value);
             }
-            if (typeof (IFormattable).IsAssignableFrom(type))
+            if (value is IFormattable)
             {
                 return Convert.ToString(value, CultureInfo.InvariantCulture);
             }
-            if (type.IsArray)
+            if (value is Array)
             {
                 return string.Format(CultureInfo.InvariantCulture, "({0})", string.Join(",", ((Array) value).Cast<object>().Select(FormatConstant).ToArray()));
             }
