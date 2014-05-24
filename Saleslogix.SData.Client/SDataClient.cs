@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 #endif
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Saleslogix.SData.Client.Metadata;
@@ -23,6 +24,10 @@ namespace Saleslogix.SData.Client
 {
     public class SDataClient : ISDataClient
     {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+        public static readonly TraceSource Trace = new TraceSource("SDataClient");
+#endif
+
         private readonly Func<string, SDataRequest> _requestFactory;
         private readonly CookieContainer _cookies = new CookieContainer();
 
@@ -60,7 +65,9 @@ namespace Saleslogix.SData.Client
         public ISDataResults Execute(SDataParameters parms)
         {
             var request = CreateRequest(parms, true);
-            return SDataResults.FromResponse(request.GetResponse());
+            var response = request.GetResponse();
+            TraceResponse(response);
+            return SDataResults.FromResponse(response);
         }
 
         public ISDataResults<T> Execute<T>(SDataParameters parms)
@@ -184,6 +191,7 @@ namespace Saleslogix.SData.Client
             }
             request.Accept = parms.Accept;
             request.AcceptLanguage = parms.Language ?? Language;
+            TraceRequest(request);
             return request;
         }
 
@@ -411,6 +419,7 @@ namespace Saleslogix.SData.Client
                 request.AcceptLanguage = language ?? Language;
             }
 
+            TraceRequest(request);
             return request;
         }
 
@@ -444,6 +453,8 @@ namespace Saleslogix.SData.Client
 
         private ISDataResults<T> CreateResults<T>(SDataResponse response)
         {
+            TraceResponse(response);
+
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
             T content;
             if (typeof (T) == typeof (SDataSchema) && response.Content is string)
@@ -466,6 +477,20 @@ namespace Saleslogix.SData.Client
                 tracking.AcceptChanges();
             }
             return SDataResults.FromResponse(response, content);
+        }
+
+        private static void TraceRequest(SDataRequest request)
+        {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+            Trace.TraceData(TraceEventType.Information, 0, request);
+#endif
+        }
+
+        private static void TraceResponse(SDataResponse response)
+        {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+            Trace.TraceData(TraceEventType.Information, 1, response);
+#endif
         }
     }
 }

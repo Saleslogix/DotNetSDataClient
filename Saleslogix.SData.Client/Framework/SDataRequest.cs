@@ -12,6 +12,10 @@ using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Mime;
 using Saleslogix.SData.Client.Utilities;
 
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+using System.Diagnostics;
+#endif
+
 namespace Saleslogix.SData.Client.Framework
 {
     /// <summary>
@@ -20,6 +24,10 @@ namespace Saleslogix.SData.Client.Framework
     /// </summary>
     public class SDataRequest
     {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+        public static readonly TraceSource Trace = new TraceSource("SDataRequest");
+#endif
+
         private IDictionary<string, string> _form;
         private IList<AttachedFile> _files;
 #if !PCL && !SILVERLIGHT
@@ -195,7 +203,9 @@ namespace Saleslogix.SData.Client.Framework
                     WebResponse response;
                     try
                     {
+                        TraceRequest(_request);
                         response = _request.GetResponse();
+                        TraceResponse(response);
                     }
                     catch (WebException ex)
                     {
@@ -258,6 +268,7 @@ namespace Saleslogix.SData.Client.Framework
                                                     _request.ContentType = contentType;
                                                 }
                                             }
+                                            TraceRequest(_request);
                                             getResponse();
                                         }
                                         catch (Exception ex)
@@ -270,6 +281,7 @@ namespace Saleslogix.SData.Client.Framework
                         }
                         else
                         {
+                            TraceRequest(_request);
                             getResponse();
                         }
                     };
@@ -283,6 +295,7 @@ namespace Saleslogix.SData.Client.Framework
                                 try
                                 {
                                     response = _request.EndGetResponse(async);
+                                    TraceResponse(response);
                                 }
                                 catch (WebException webEx)
                                 {
@@ -540,6 +553,20 @@ namespace Saleslogix.SData.Client.Framework
             }
 
             return contentType != null ? MediaTypeNames.GetMediaType(contentType.Value) : null;
+        }
+
+        private static void TraceRequest(WebRequest request)
+        {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+            Trace.TraceData(TraceEventType.Information, 0, request);
+#endif
+        }
+
+        private static void TraceResponse(WebResponse response)
+        {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+            Trace.TraceData(TraceEventType.Information, 1, response);
+#endif
         }
 
         #region Nested type: AsyncResult
