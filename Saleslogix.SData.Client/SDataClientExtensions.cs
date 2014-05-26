@@ -275,37 +275,61 @@ namespace Saleslogix.SData.Client
             var attr = callExpr.Method.GetCustomAttribute<SDataServiceOperationAttribute>();
             var namingScheme = client.NamingScheme ?? NamingScheme.Default;
             var request = new SDataResource();
-            object instance;
-
-            if (callExpr.Object != null)
-            {
-                if (attr == null || string.IsNullOrEmpty(attr.InstancePropertyName))
-                {
-                    throw new SDataClientException("Instance methods must be decorated with SDataServiceOperation attribute with InstancePropertyName specified");
-                }
-
-                instance = Expression.Lambda(callExpr.Object).Compile().DynamicInvoke();
-                request[attr.InstancePropertyName] = instance;
-            }
-            else
-            {
-                instance = null;
-            }
-            foreach (var pair in callExpr.Method.GetParameters().Zip(callExpr.Arguments, (param, arg) => new {param, arg}))
-            {
-                request[namingScheme.GetName(pair.param)] = Expression.Lambda(pair.arg).Compile().DynamicInvoke();
-            }
+            var instance = callExpr.Object != null ? Expression.Lambda(callExpr.Object).Compile().DynamicInvoke() : null;
 
             if (path == null)
             {
-                path = SDataPathAttribute.GetPath(callExpr.Method) ??
-                       SDataPathAttribute.GetPath(instance != null ? instance.GetType() : callExpr.Method.DeclaringType);
+                path = SDataPathAttribute.GetPath(instance != null ? instance.GetType() : callExpr.Method.DeclaringType);
             }
+
+            if (instance != null)
+            {
+                if (attr == null || attr.PassInstanceBy == InstancePassingConvention.Selector)
+                {
+                    if (path == null)
+                    {
+                        throw new SDataClientException("Path must be specified when passing instance context by selector");
+                    }
+                    var key = ContentHelper.GetProtocolValue<string>(instance, SDataProtocolProperty.Key);
+                    if (string.IsNullOrEmpty(key))
+                    {
+                        throw new SDataClientException("Unable to extract resource key from instance");
+                    }
+                    path += string.Format("({0})", SDataUri.FormatConstant(key));
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(attr.InstancePropertyName))
+                    {
+                        throw new SDataClientException("Instance property name must be specified when passing instance context by key property or object property");
+                    }
+
+                    if (attr.PassInstanceBy == InstancePassingConvention.KeyProperty)
+                    {
+                        var key = ContentHelper.GetProtocolValue<string>(instance, SDataProtocolProperty.Key);
+                        if (string.IsNullOrEmpty(key))
+                        {
+                            throw new SDataClientException("Unable to extract resource key from instance");
+                        }
+                        request[attr.InstancePropertyName] = key;
+                    }
+                    else if (attr.PassInstanceBy == InstancePassingConvention.ObjectProperty)
+                    {
+                        request[attr.InstancePropertyName] = instance;
+                    }
+                }
+            }
+
             if (path != null)
             {
                 path += "/";
             }
             path += "$service/" + namingScheme.GetName(callExpr.Method);
+
+            foreach (var pair in callExpr.Method.GetParameters().Zip(callExpr.Arguments, (param, arg) => new {param, arg}))
+            {
+                request[namingScheme.GetName(pair.param)] = Expression.Lambda(pair.arg).Compile().DynamicInvoke();
+            }
 
             var xmlLocalName = attr != null ? attr.XmlLocalName : null;
             var xmlNamespace = attr != null ? attr.XmlNamespace : null;

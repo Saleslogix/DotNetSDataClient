@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.Serialization;
 using Saleslogix.SData.Client;
 
 namespace SlxFileBrowser.Model
@@ -8,11 +7,6 @@ namespace SlxFileBrowser.Model
     [SDataPath("libraryDirectories")]
     public class LibraryDirectory
     {
-        [IgnoreDataMember]
-        [Browsable(false)]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public string Id { get; set; }
-
         [SDataProtocolProperty]
         [Category("System")]
         public string Key { get; set; }

@@ -244,8 +244,6 @@ namespace Saleslogix.SData.Client.Framework
             }
         }
 
-        #region Query Arguments
-
         /// <summary>
         /// Gets or sets the expression to use when sorting,
         /// </summary>
@@ -320,11 +318,9 @@ namespace Saleslogix.SData.Client.Framework
             get
             {
                 var count = this[QueryArgNames.Count];
-
                 if (count != null)
                 {
                     long result;
-
                     if (long.TryParse(count, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
                     {
                         return result;
@@ -345,11 +341,9 @@ namespace Saleslogix.SData.Client.Framework
             get
             {
                 var startIndex = this[QueryArgNames.StartIndex];
-
                 if (startIndex != null)
                 {
                     long result;
-
                     if (long.TryParse(startIndex, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
                     {
                         return result;
@@ -379,21 +373,17 @@ namespace Saleslogix.SData.Client.Framework
         {
             get
             {
-                CheckParseQuery();
-
                 var formatType = this[QueryArgNames.Format];
-
                 if (formatType != null)
                 {
                     MediaType value;
-
                     if (MediaTypeNames.TryGetShortMediaType(formatType, out value))
                     {
                         return value;
                     }
                 }
 
-                return HasSelector ? MediaType.AtomEntry : MediaType.Atom;
+                return null;
             }
             set { this[QueryArgNames.Format] = value != null ? MediaTypeNames.GetShortMediaType(value.Value) : null; }
         }
@@ -408,13 +398,10 @@ namespace Saleslogix.SData.Client.Framework
         {
             get
             {
-                // Parse to an int
                 var precedence = this[QueryArgNames.Precedence];
-
                 if (!string.IsNullOrEmpty(precedence))
                 {
                     int result;
-
                     if (int.TryParse(precedence, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
                     {
                         return result;
@@ -445,11 +432,9 @@ namespace Saleslogix.SData.Client.Framework
             get
             {
                 var includeSchema = this[QueryArgNames.IncludeSchema];
-
                 if (!string.IsNullOrEmpty(includeSchema))
                 {
                     bool result;
-
                     if (bool.TryParse(includeSchema, out result))
                     {
                         return result;
@@ -507,18 +492,16 @@ namespace Saleslogix.SData.Client.Framework
             get
             {
                 var returnDelta = this[QueryArgNames.ReturnDelta];
-
                 if (!string.IsNullOrEmpty(returnDelta))
                 {
                     bool result;
-
                     if (bool.TryParse(returnDelta, out result))
                     {
                         return result;
                     }
                 }
 
-                return false;
+                return null;
             }
             set { this[QueryArgNames.ReturnDelta] = value != null ? value.ToString().ToLowerInvariant() : null; }
         }
@@ -549,14 +532,20 @@ namespace Saleslogix.SData.Client.Framework
         {
             get
             {
-                var value = this[QueryArgNames.RunStamp];
-                W3CDateTime dateTime;
-                return value != null && W3CDateTime.TryParse(value, out dateTime) ? dateTime.DateTime : (DateTime?) null;
+                var dateTime = this[QueryArgNames.RunStamp];
+                if (!string.IsNullOrEmpty(dateTime))
+                {
+                    W3CDateTime result;
+                    if (W3CDateTime.TryParse(dateTime, out result))
+                    {
+                        return result.DateTime;
+                    }
+                }
+
+                return null;
             }
             set { this[QueryArgNames.RunStamp] = value != null ? new W3CDateTime(value.Value).ToString() : null; }
         }
-
-        #endregion
 
         #endregion
 

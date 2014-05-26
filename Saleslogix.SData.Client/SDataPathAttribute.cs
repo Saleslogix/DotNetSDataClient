@@ -6,20 +6,13 @@ using Saleslogix.SData.Client.Utilities;
 
 namespace Saleslogix.SData.Client
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Class)]
     public class SDataPathAttribute : Attribute
     {
         public static string GetPath(Type type)
         {
             Guard.ArgumentNotNull(type, "type");
             var attr = type.GetTypeInfo().GetCustomAttribute<SDataPathAttribute>();
-            return attr != null ? attr.Path : null;
-        }
-
-        public static string GetPath(MethodInfo method)
-        {
-            Guard.ArgumentNotNull(method, "method");
-            var attr = method.GetCustomAttribute<SDataPathAttribute>();
             return attr != null ? attr.Path : null;
         }
 
