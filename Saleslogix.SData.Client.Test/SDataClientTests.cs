@@ -153,8 +153,8 @@ namespace Saleslogix.SData.Client.Test
             Assert.That(resources[0].Url, Is.Null);
             Assert.That(new SDataUri(resources[1].Url).LastPathSegment.Selector, Is.EqualTo("selector2"));
             Assert.That(requestMock.Object.ContentType, Is.EqualTo(MediaType.ImageTiff));
-            Assert.That(resources[0].ETag, Is.EqualTo("etag1"));
-            Assert.That(resources[1].ETag, Is.EqualTo("etag2"));
+            Assert.That(resources[0].IfMatch, Is.EqualTo("etag1"));
+            Assert.That(resources[1].IfMatch, Is.EqualTo("etag2"));
             Assert.That(requestMock.Object.Form["hello1"], Is.EqualTo("world1"));
             Assert.That(requestMock.Object.Form["hello2"], Is.EqualTo("world2"));
             Assert.That(requestMock.Object.Files[0], Is.EqualTo(file1));

@@ -387,7 +387,7 @@ namespace Saleslogix.SData.Client
 
                 if (parms.ETag != null)
                 {
-                    resource.ETag = parms.ETag;
+                    resource.IfMatch = parms.ETag;
                 }
 
                 resources.Add(resource);
