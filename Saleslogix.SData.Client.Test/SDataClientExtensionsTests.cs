@@ -446,19 +446,19 @@ namespace Saleslogix.SData.Client.Test
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
         [Test]
-        public void ResultPropertyName_Test()
+        public void CallService_ResultPropertyName_Test()
         {
             var clientMock = new Mock<ISDataClient>();
             var resultsMock = new Mock<ISDataResults<SDataResource>>();
             resultsMock.Setup(x => x.Content).Returns(new SDataResource {{"response", new SDataResource {{"value", "world"}, {"another", "dummy"}}}});
             clientMock.Setup(x => x.Execute<SDataResource>(It.IsAny<SDataParameters>()))
                 .Returns(resultsMock.Object);
-            var result = clientMock.Object.CallService(() => ResultPropertyName_Object.Service());
+            var result = clientMock.Object.CallService(() => CallService_ResultPropertyName_Object.Service());
 
             Assert.That(result, Is.EqualTo("world"));
         }
 
-        private static class ResultPropertyName_Object
+        private static class CallService_ResultPropertyName_Object
         {
             [SDataServiceOperation(ResultPropertyName = "value")]
             public static string Service()
@@ -468,36 +468,36 @@ namespace Saleslogix.SData.Client.Test
         }
 
         [Test]
-        public void ComplexResult_Flat_Test()
+        public void CallService_ComplexResult_Flat_Test()
         {
             var clientMock = new Mock<ISDataClient>();
             var resultsMock = new Mock<ISDataResults<SDataResource>>();
             resultsMock.Setup(x => x.Content).Returns(new SDataResource {{"response", new SDataResource {{"value", new SDataResource {{"Name", "Joe"}}}}}});
             clientMock.Setup(x => x.Execute<SDataResource>(It.IsAny<SDataParameters>()))
                 .Returns(resultsMock.Object);
-            var result = clientMock.Object.CallService(() => ComplexResult_Object.Service());
+            var result = clientMock.Object.CallService(() => CallService_ComplexResult_Object.Service());
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Name, Is.EqualTo("Joe"));
         }
 
         [Test]
-        public void ComplexResult_Nested_Test()
+        public void CallService_ComplexResult_Nested_Test()
         {
             var clientMock = new Mock<ISDataClient>();
             var resultsMock = new Mock<ISDataResults<SDataResource>>();
             resultsMock.Setup(x => x.Content).Returns(new SDataResource {{"response", new SDataResource {{"Name", "Joe"}}}});
             clientMock.Setup(x => x.Execute<SDataResource>(It.IsAny<SDataParameters>()))
                 .Returns(resultsMock.Object);
-            var result = clientMock.Object.CallService(() => ComplexResult_Object.Service());
+            var result = clientMock.Object.CallService(() => CallService_ComplexResult_Object.Service());
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Name, Is.EqualTo("Joe"));
         }
 
-        private class ComplexResult_Object
+        private class CallService_ComplexResult_Object
         {
-            public static ComplexResult_Object Service()
+            public static CallService_ComplexResult_Object Service()
             {
                 throw new NotSupportedException();
             }

@@ -99,5 +99,27 @@ namespace Saleslogix.SData.Client.Test
             Assert.That(changes.Count, Is.EqualTo(1));
             Assert.That(changes["Address"], Is.EqualTo(new Dictionary<string, object> {{"City", "Sydney"}, {"State", "VIC"}}));
         }
+
+        [Test]
+        public void ChangeTracking_Retain_Key_And_ETag_Test()
+        {
+            var nested = new SDataResource {{"Country", "Australia"}, {"City", "Melbourne"}};
+            nested.Key = "address1";
+            nested.ETag = "aaa1";
+            var resource = new SDataResource {{"FirstName", "Joe"}, {"Address", nested}};
+            resource.Key = "contact1";
+            resource.ETag = "ccc1";
+            resource.AcceptChanges();
+            resource["FirstName"] = "Joanne";
+            nested["City"] = "Sydney";
+            var changes = (SDataResource) resource.GetChanges();
+            Assert.That(changes, Is.Not.EqualTo(resource));
+            Assert.That(changes.Key, Is.EqualTo("contact1"));
+            Assert.That(changes.ETag, Is.EqualTo("ccc1"));
+            changes = (SDataResource) changes["Address"];
+            Assert.That(changes, Is.Not.EqualTo(nested));
+            Assert.That(changes.Key, Is.EqualTo("address1"));
+            Assert.That(changes.ETag, Is.EqualTo("aaa1"));
+        }
     }
 }
