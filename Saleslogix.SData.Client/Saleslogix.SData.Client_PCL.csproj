@@ -15,26 +15,28 @@
     <TargetFrameworkProfile>Profile147</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\DotNetSDataClient.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Portable\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;PCL</DefineConstants>
+    <OutputPath>..\bin\Debug\Portable\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Portable\Saleslogix.SData.Client.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Debug\Portable\Saleslogix.SData.Client.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Portable\</OutputPath>
+    <OutputPath>..\bin\Release\Portable\</OutputPath>
     <DefineConstants>TRACE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Portable\Saleslogix.SData.Client.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Release\Portable\Saleslogix.SData.Client.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>

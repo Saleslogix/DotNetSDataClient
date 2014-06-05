@@ -12,26 +12,28 @@
     <AssemblyName>Saleslogix.SData.Client</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\DotNetSDataClient.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Net20\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET_2_0;SIMPLE_JSON_NO_LINQ_EXPRESSION</DefineConstants>
+    <OutputPath>..\bin\Debug\Net20\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NET_2_0;SIMPLE_JSON_NO_LINQ_EXPRESSION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Net20\Saleslogix.SData.Client.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Debug\Net20\Saleslogix.SData.Client.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Net20\</OutputPath>
+    <OutputPath>..\bin\Release\Net20\</OutputPath>
     <DefineConstants>TRACE;NET_2_0;SIMPLE_JSON_NO_LINQ_EXPRESSION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Net20\Saleslogix.SData.Client.xml</DocumentationFile>
+    <DocumentationFile>..\bin\Release\Net20\Saleslogix.SData.Client.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
