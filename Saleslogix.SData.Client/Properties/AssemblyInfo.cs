@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 // associated with an assembly.
 
 [assembly: AssemblyTitle("Saleslogix.SData.Client")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Saleslogix SData client library for .NET")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SalesLogix NA, LLC")]
 [assembly: AssemblyProduct("Saleslogix.SData.Client")]
@@ -25,8 +25,8 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("2.0.0.1531")]
-[assembly: AssemblyFileVersion("2.0.0.1531")]
+[assembly: AssemblyVersion("2.0.0.1532")]
+[assembly: AssemblyFileVersion("2.0.0.1532")]
 [assembly: NeutralResourcesLanguage("en-US")]
 [assembly: AssemblyInformationalVersion("2.0")]
 [assembly: InternalsVisibleTo("Saleslogix.SData.Client.Test, PublicKey=" +

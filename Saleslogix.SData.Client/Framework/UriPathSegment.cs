@@ -82,7 +82,8 @@ namespace Saleslogix.SData.Client.Framework
         /// <param name="segment">The text and selector for the segment.</param>
         public UriPathSegment(string segment)
         {
-            Segment = segment;
+            _segment = segment;
+            _requiresParse = true;
         }
 
         /// <summary>
@@ -93,8 +94,9 @@ namespace Saleslogix.SData.Client.Framework
         /// <param name="selector">The selector for the segment.</param>
         public UriPathSegment(string text, string selector)
         {
-            Text = text;
-            Selector = selector;
+            _text = text;
+            _selector = selector;
+            _requiresRebuild = true;
         }
 
         /// <summary>

@@ -38,10 +38,7 @@ namespace Saleslogix.SData.Client.Content
                 }
 
                 memory.Seek(0, SeekOrigin.Begin);
-                using (var reader = new StreamReader(memory))
-                {
-                    return reader.ReadToEnd();
-                }
+                return new StreamReader(memory).ReadToEnd();
             }
         }
 

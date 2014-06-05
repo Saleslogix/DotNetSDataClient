@@ -6,7 +6,7 @@ namespace Saleslogix.SData.Client.Test
     [TestFixture]
     public class SDataResourceTests
     {
-#if !NET_2_0
+#if !NET_2_0 && !NET_3_5
         [Test]
         public void Dynamic_Get_Property_Test()
         {

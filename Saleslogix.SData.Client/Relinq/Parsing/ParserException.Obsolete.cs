@@ -19,6 +19,7 @@ using System;
 namespace Remotion.Linq.Parsing
 {
   [Obsolete ("Infrastructure uses NotSupportedException instead. (Version 1.15.12.0)", true)]
+  [Serializable]
   internal abstract class ParserException : Exception
   {
     private ParserException ()
