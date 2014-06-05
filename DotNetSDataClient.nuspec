@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>DotNetSDataClient</id>
+    <version>1.0</version>
+    <authors>Nathan Baulch</authors>
+    <owners>SalesLogix NA, LLC</owners>
+    <licenseUrl>https://raw.githubusercontent.com/Saleslogix/DotNetSDataClient/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Saleslogix/DotNetSDataClient/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Saleslogix SData client library for .NET</description>
+    <language>en-US</language>
+    <tags>Saleslogix SData REST HTTP JSON Atom</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\Net20\*" target="lib\net20" />
+    <file src="bin\Release\Net35\*" target="lib\net35-client" />
+    <file src="bin\Release\Net40\*" target="lib\net40-client" />
+    <file src="bin\Release\NetFX\*" target="lib\netcore45" />
+    <file src="bin\Release\Portable\*" target="lib\portable-net40+sl5+wp8+win8" />
+    <file src="bin\Release\Silverlight\*" target="lib\sl5" />
+  </files>
+</package>
