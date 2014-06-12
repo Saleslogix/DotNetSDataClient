@@ -528,23 +528,23 @@ namespace Saleslogix.SData.Client.Framework
         /// <summary>
         /// The timestamp at which the synchronization run was started.
         /// </summary>
-        public DateTime? RunStamp
+        public DateTimeOffset? RunStamp
         {
             get
             {
                 var dateTime = this[QueryArgNames.RunStamp];
                 if (!string.IsNullOrEmpty(dateTime))
                 {
-                    W3CDateTime result;
-                    if (W3CDateTime.TryParse(dateTime, out result))
+                    DateTimeOffset result;
+                    if (DateTimeOffset.TryParse(dateTime, out result))
                     {
-                        return result.DateTime;
+                        return result;
                     }
                 }
 
                 return null;
             }
-            set { this[QueryArgNames.RunStamp] = value != null ? new W3CDateTime(value.Value).ToString() : null; }
+            set { this[QueryArgNames.RunStamp] = value != null ? value.Value.ToString("o") : null; }
         }
 
         #endregion

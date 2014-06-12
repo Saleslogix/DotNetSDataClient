@@ -13,8 +13,8 @@ namespace Saleslogix.SData.Client
         MediaType? ContentType { get; }
         string ETag { get; }
         string Location { get; }
-        DateTime? Expires { get; }
-        DateTime? RetryAfter { get; }
+        DateTimeOffset? Expires { get; }
+        DateTimeOffset? RetryAfter { get; }
         IDictionary<string, string> Form { get; }
         IList<AttachedFile> Files { get; }
     }

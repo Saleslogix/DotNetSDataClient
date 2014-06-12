@@ -272,7 +272,7 @@ world
 
             var response = new SDataResponse(responseMock.Object, null);
 
-            Assert.That(response.Expires, Is.EqualTo(new DateTime(2014, 12, 1, 16, 17, 18, DateTimeKind.Utc)));
+            Assert.That(response.Expires, Is.EqualTo(new DateTimeOffset(2014, 12, 1, 16, 17, 18, TimeSpan.Zero)));
         }
 
         [Test]
@@ -286,7 +286,7 @@ world
 
             var response = new SDataResponse(responseMock.Object, null);
 
-            Assert.That(response.RetryAfter, Is.EqualTo(new DateTime(2014, 12, 1, 16, 17, 18, DateTimeKind.Utc)));
+            Assert.That(response.RetryAfter, Is.EqualTo(new DateTimeOffset(2014, 12, 1, 16, 17, 18, TimeSpan.Zero)));
         }
 
         [Test]
@@ -298,9 +298,9 @@ world
             headers["Retry-After"] = "120";
             responseMock.Setup(x => x.Headers).Returns(headers);
 
-            var before = DateTime.UtcNow;
+            var before = DateTimeOffset.UtcNow;
             var response = new SDataResponse(responseMock.Object, null);
-            var after = DateTime.UtcNow;
+            var after = DateTimeOffset.UtcNow;
 
             Assert.That(response.RetryAfter, Is.GreaterThanOrEqualTo(before.AddSeconds(120)));
             Assert.That(response.RetryAfter, Is.LessThanOrEqualTo(after.AddSeconds(120)));

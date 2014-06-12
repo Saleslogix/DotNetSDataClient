@@ -20,8 +20,8 @@ namespace Saleslogix.SData.Client.Framework
         private readonly MediaType? _contentType;
         private readonly string _eTag;
         private readonly string _location;
-        private readonly DateTime? _expires;
-        private readonly DateTime? _retryAfter;
+        private readonly DateTimeOffset? _expires;
+        private readonly DateTimeOffset? _retryAfter;
         private readonly object _content;
         private readonly IDictionary<string, string> _form;
         private readonly IList<AttachedFile> _files;
@@ -30,8 +30,8 @@ namespace Saleslogix.SData.Client.Framework
             MediaType? contentType,
             string eTag,
             string location,
-            DateTime? expires,
-            DateTime? retryAfter,
+            DateTimeOffset? expires,
+            DateTimeOffset? retryAfter,
             object content,
             IDictionary<string, string> form,
             IList<AttachedFile> files)
@@ -62,21 +62,21 @@ namespace Saleslogix.SData.Client.Framework
             _location = response.Headers["Location"] ?? redirectLocation;
 
             var header = response.Headers["Expires"];
-            DateTime date;
-            if (DateTime.TryParse(header, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out date))
+            DateTimeOffset date;
+            if (DateTimeOffset.TryParse(header, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out date))
             {
                 _expires = date;
             }
 
             header = response.Headers["Retry-After"];
             int num;
-            if (DateTime.TryParse(header, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out date))
+            if (DateTimeOffset.TryParse(header, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out date))
             {
                 _retryAfter = date;
             }
             else if (int.TryParse(header, NumberStyles.Any, CultureInfo.InvariantCulture, out num))
             {
-                _retryAfter = DateTime.UtcNow.AddSeconds(num);
+                _retryAfter = DateTimeOffset.UtcNow.AddSeconds(num);
             }
 
             _form = new Dictionary<string, string>();
@@ -203,7 +203,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <summary>
         /// The response expiry date.
         /// </summary>
-        public DateTime? Expires
+        public DateTimeOffset? Expires
         {
             get { return _expires; }
         }
@@ -211,7 +211,7 @@ namespace Saleslogix.SData.Client.Framework
         /// <summary>
         /// The response location.
         /// </summary>
-        public DateTime? RetryAfter
+        public DateTimeOffset? RetryAfter
         {
             get { return _retryAfter; }
         }

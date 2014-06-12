@@ -71,7 +71,6 @@
     <Compile Include="Framework\SDataUriTests.cs" />
     <Compile Include="Framework\UriFormatterTests.cs" />
     <Compile Include="Framework\UriPathSegmentTests.cs" />
-    <Compile Include="Framework\W3CDateTimeTests.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Linq\PropertyPathExtractionVisitorTests.cs" />
     <Compile Include="Linq\SDataExpressionBuilderVisitorTests.cs" />

@@ -60,7 +60,6 @@
     <Compile Include="Framework\SDataUriTests.cs" />
     <Compile Include="Framework\UriFormatterTests.cs" />
     <Compile Include="Framework\UriPathSegmentTests.cs" />
-    <Compile Include="Framework\W3CDateTimeTests.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Metadata\SDataSchemaTests.cs" />
     <Compile Include="Mime\MimeMessageTests.cs" />

@@ -14,8 +14,8 @@ namespace Saleslogix.SData.Client
         private readonly MediaType? _contentType;
         private readonly string _eTag;
         private readonly string _location;
-        private readonly DateTime? _expires;
-        private readonly DateTime? _retryAfter;
+        private readonly DateTimeOffset? _expires;
+        private readonly DateTimeOffset? _retryAfter;
         private readonly IDictionary<string, string> _form;
         private readonly IList<AttachedFile> _files;
 
@@ -50,8 +50,8 @@ namespace Saleslogix.SData.Client
                               MediaType? contentType,
                               string eTag,
                               string location,
-                              DateTime? expires,
-                              DateTime? retryAfter,
+                              DateTimeOffset? expires,
+                              DateTimeOffset? retryAfter,
                               IDictionary<string, string> form,
                               IList<AttachedFile> files)
         {
@@ -85,12 +85,12 @@ namespace Saleslogix.SData.Client
             get { return _location; }
         }
 
-        public DateTime? Expires
+        public DateTimeOffset? Expires
         {
             get { return _expires; }
         }
 
-        public DateTime? RetryAfter
+        public DateTimeOffset? RetryAfter
         {
             get { return _retryAfter; }
         }
@@ -114,8 +114,8 @@ namespace Saleslogix.SData.Client
                               MediaType? contentType,
                               string eTag,
                               string location,
-                              DateTime? expires,
-                              DateTime? retryAfter,
+                              DateTimeOffset? expires,
+                              DateTimeOffset? retryAfter,
                               IDictionary<string, string> form,
                               IList<AttachedFile> files,
                               T content)
