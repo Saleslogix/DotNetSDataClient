@@ -141,6 +141,7 @@
     <Compile Include="NamingScheme.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDataBatch.cs" />
+    <Compile Include="SDataBatchExtensions.cs" />
     <Compile Include="SDataClient.cs" />
     <Compile Include="SDataClientException.cs" />
     <Compile Include="SDataClientExtensions.cs" />

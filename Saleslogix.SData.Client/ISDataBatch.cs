@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Saleslogix.SData.Client.Framework;
 
 #if !NET_2_0 && !NET_3_5
 using System;
@@ -11,15 +12,9 @@ namespace Saleslogix.SData.Client
     public interface ISDataBatch<T>
     {
 #if NET_2_0 || NET_3_5
-        void Get(string key);
-        void Post(T content);
-        void Put(T content);
-        void Delete(T content);
+        void Add(HttpMethod method, object content);
 #else
-        Lazy<T> Get(string key);
-        Lazy<T> Post(T content);
-        Lazy<T> Put(T content);
-        Lazy<T> Delete(T content);
+        Lazy<T> Add(HttpMethod method, object content);
 #endif
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT

@@ -329,6 +329,7 @@
     <Compile Include="Relinq\Utilities\ReSharperAnnotations\StringFormatMethodAttribute.cs" />
     <Compile Include="Relinq\Utilities\ReSharperAnnotations\UsedImplicitlyAttribute.cs" />
     <Compile Include="SDataBatch.cs" />
+    <Compile Include="SDataBatchExtensions.cs" />
     <Compile Include="SDataClient.cs" />
     <Compile Include="SDataClientException.cs" />
     <Compile Include="SDataClientExtensions.cs" />

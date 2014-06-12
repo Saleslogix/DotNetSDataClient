@@ -27,77 +27,7 @@ namespace Saleslogix.SData.Client
             _options = options ?? new SDataPayloadOptions();
         }
 
-#if NET_2_0 || NET_3_5
-        public void Get(string key)
-        {
-            Guard.ArgumentNotNullOrEmptyString(key, "key");
-            Add(HttpMethod.Get, new SDataResource {Key = key});
-        }
-
-        public void Post(T content)
-        {
-            Add(HttpMethod.Post, content);
-        }
-
-        public void Put(T content)
-        {
-            Add(HttpMethod.Put, content);
-        }
-
-        public void Delete(T content)
-        {
-            Add(HttpMethod.Delete, content);
-        }
-#else
-        public Lazy<T> Get(string key)
-        {
-            Guard.ArgumentNotNullOrEmptyString(key, "key");
-            return Add(HttpMethod.Get, new SDataResource {Key = key});
-        }
-
-        public Lazy<T> Post(T content)
-        {
-            return Add(HttpMethod.Post, content);
-        }
-
-        public Lazy<T> Put(T content)
-        {
-            return Add(HttpMethod.Put, content);
-        }
-
-        public Lazy<T> Delete(T content)
-        {
-            return Add(HttpMethod.Delete, content);
-        }
-#endif
-
-#if !PCL && !NETFX_CORE && !SILVERLIGHT
-        public IList<T> Commit()
-        {
-            EnsureNotCommitted();
-
-            _results = _client.ExecuteBatch<T>(_items).Content;
-            Interlocked.Exchange(ref _state, 2);
-            return _results;
-        }
-#endif
-
-#if !NET_2_0 && !NET_3_5
-        public Task<IList<T>> CommitAsync(CancellationToken cancel = default(CancellationToken))
-        {
-            EnsureNotCommitted();
-
-            return _client.ExecuteBatchAsync<T>(_items, cancel)
-                .ContinueWith(task =>
-                {
-                    _results = task.Result.Content;
-                    Interlocked.Exchange(ref _state, 2);
-                    return _results;
-                }, cancel);
-        }
-#endif
-
-        private
+        public
 #if NET_2_0 || NET_3_5
             void
 #else
@@ -106,7 +36,14 @@ namespace Saleslogix.SData.Client
             Add(HttpMethod method, object content)
         {
             Guard.ArgumentNotNull(content, "content");
-            EnsureNotCommitted();
+            if (_state == 1)
+            {
+                throw new InvalidOperationException("Commit in progress");
+            }
+            if (_state == 2)
+            {
+                throw new InvalidOperationException("Batch has been committed");
+            }
 
             var parms = new SDataParameters
                 {
@@ -143,12 +80,46 @@ namespace Saleslogix.SData.Client
 #endif
         }
 
-        private void EnsureNotCommitted()
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+        public IList<T> Commit()
         {
-            if (_state != 0)
+            var state = Interlocked.CompareExchange(ref _state, 1, 0);
+            if (state == 1)
+            {
+                throw new InvalidOperationException("Commit already in progress");
+            }
+            if (state == 2)
             {
                 throw new InvalidOperationException("Batch has already been committed");
             }
+
+            _results = _client.ExecuteBatch<T>(_items).Content;
+            Interlocked.Exchange(ref _state, 2);
+            return _results;
         }
+#endif
+
+#if !NET_2_0 && !NET_3_5
+        public Task<IList<T>> CommitAsync(CancellationToken cancel = default(CancellationToken))
+        {
+            var state = Interlocked.CompareExchange(ref _state, 1, 0);
+            if (state == 1)
+            {
+                throw new InvalidOperationException("Commit already in progress");
+            }
+            if (state == 2)
+            {
+                throw new InvalidOperationException("Batch has already been committed");
+            }
+
+            return _client.ExecuteBatchAsync<T>(_items, cancel)
+                .ContinueWith(task =>
+                {
+                    _results = task.Result.Content;
+                    Interlocked.Exchange(ref _state, 2);
+                    return _results;
+                }, cancel);
+        }
+#endif
     }
 }
