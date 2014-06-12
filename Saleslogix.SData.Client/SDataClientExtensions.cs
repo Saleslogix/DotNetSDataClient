@@ -281,7 +281,8 @@ namespace Saleslogix.SData.Client
 
             if (instance != null)
             {
-                if (attr == null || attr.PassInstanceBy == InstancePassingConvention.Selector)
+                if (attr == null || attr.PassInstanceBy == InstancePassingConvention.Selector ||
+                    (attr.PassInstanceBy == InstancePassingConvention.Default && string.IsNullOrEmpty(attr.InstancePropertyName)))
                 {
                     if (path == null)
                     {
@@ -293,6 +294,11 @@ namespace Saleslogix.SData.Client
                         throw new SDataClientException("Unable to extract resource key from instance");
                     }
                     path += string.Format("({0})", SDataUri.FormatConstant(key));
+                }
+                else if (attr.PassInstanceBy == InstancePassingConvention.Default)
+                {
+                    var key = ContentHelper.GetProtocolValue<string>(instance, SDataProtocolProperty.Key);
+                    request[attr.InstancePropertyName] = !string.IsNullOrEmpty(key) ? key : instance;
                 }
                 else
                 {

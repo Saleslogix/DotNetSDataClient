@@ -235,35 +235,35 @@ namespace Saleslogix.SData.Client
             {
                 if (parms.StartIndex != null)
                 {
-                    throw new SDataClientException("StartIndex not supported in batch requests");
+                    throw new NotSupportedException("StartIndex not supported in batch requests");
                 }
                 if (parms.Count != null)
                 {
-                    throw new SDataClientException("Count not supported in batch requests");
+                    throw new NotSupportedException("Count not supported in batch requests");
                 }
                 if (parms.Where != null)
                 {
-                    throw new SDataClientException("Where not supported in batch requests");
+                    throw new NotSupportedException("Where not supported in batch requests");
                 }
                 if (parms.OrderBy != null)
                 {
-                    throw new SDataClientException("OrderBy not supported in batch requests");
+                    throw new NotSupportedException("OrderBy not supported in batch requests");
                 }
                 if (parms.Search != null)
                 {
-                    throw new SDataClientException("Search not supported in batch requests");
+                    throw new NotSupportedException("Search not supported in batch requests");
                 }
                 if (parms.TrackingId != null)
                 {
-                    throw new SDataClientException("TrackingId not supported in batch requests");
+                    throw new NotSupportedException("TrackingId not supported in batch requests");
                 }
                 if (parms.IncludeSchema != null)
                 {
-                    throw new SDataClientException("IncludeSchema not supported in batch requests");
+                    throw new NotSupportedException("IncludeSchema not supported in batch requests");
                 }
                 if (parms.ReturnDelta != null)
                 {
-                    throw new SDataClientException("ReturnDelta not supported in batch requests");
+                    throw new NotSupportedException("ReturnDelta not supported in batch requests");
                 }
                 if (parms.Path != path)
                 {

@@ -425,7 +425,6 @@ namespace Saleslogix.SData.Client.Test
                 throw new NotSupportedException();
             }
 
-            [SDataServiceOperation(InstancePropertyName = "entity")]
             public string InstanceFuncBySelector(string arg)
             {
                 throw new NotSupportedException();

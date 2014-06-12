@@ -15,6 +15,7 @@ namespace Saleslogix.SData.Client
 
     public enum InstancePassingConvention
     {
+        Default,
         Selector,
         KeyProperty,
         ObjectProperty
