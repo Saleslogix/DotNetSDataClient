@@ -73,11 +73,6 @@ namespace Saleslogix.SData.Client.Framework
         public HttpMethod Method { get; set; }
 
         /// <summary>
-        /// Gets or sets the selector for the request.
-        /// </summary>
-        public string Selector { get; set; }
-
-        /// <summary>
         /// Gets or sets the input resource for the request.
         /// </summary>
         public object Content { get; set; }
@@ -371,11 +366,6 @@ namespace Saleslogix.SData.Client.Framework
 
         private WebRequest CreateRequest(string uri)
         {
-            if (Selector != null)
-            {
-                uri = new SDataUri(Uri) {LastPathSegment = {Selector = Selector}}.ToString();
-            }
-
             var request = WebRequest.Create(uri);
             if (UseHttpMethodOverride && Method != HttpMethod.Get && Method != HttpMethod.Post)
             {

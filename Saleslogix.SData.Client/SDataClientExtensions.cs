@@ -59,8 +59,7 @@ namespace Saleslogix.SData.Client
             }
             return new SDataParameters
                 {
-                    Path = path,
-                    Selector = key != null ? SDataUri.FormatConstant(key) : null,
+                    Path = path + (key != null ? string.Format("({0})", SDataUri.FormatConstant(key)) : null),
                     Include = options.Include,
                     Select = options.Select,
                     Precedence = options.Precedence
@@ -151,8 +150,7 @@ namespace Saleslogix.SData.Client
             return new SDataParameters
                 {
                     Method = HttpMethod.Put,
-                    Path = path,
-                    Selector = GetSelector(content),
+                    Path = path + GetSelector(content),
                     Content = content,
                     ETag = GetETag(content),
                     Include = options.Include,
@@ -196,8 +194,7 @@ namespace Saleslogix.SData.Client
             return new SDataParameters
                 {
                     Method = HttpMethod.Delete,
-                    Path = path,
-                    Selector = GetSelector(content),
+                    Path = path + GetSelector(content),
                     ETag = GetETag(content)
                 };
         }
@@ -227,7 +224,7 @@ namespace Saleslogix.SData.Client
                 throw new SDataClientException("Unable to extract resource key from content");
             }
 
-            return SDataUri.FormatConstant(key);
+            return string.Format("({0})", SDataUri.FormatConstant(key));
         }
 
         private static string GetETag(object content)

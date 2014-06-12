@@ -14,7 +14,6 @@ namespace Saleslogix.SData.Client
 
         public MediaType[] Accept { get; set; }
         public HttpMethod Method { get; set; }
-        public string Selector { get; set; }
         public object Content { get; set; }
         public MediaType? ContentType { get; set; }
         public string ETag { get; set; }

@@ -197,7 +197,6 @@ namespace Saleslogix.SData.Client
             }
 
             var request = CreateRequest(uri, parms.Method, content);
-            request.Selector = parms.Selector;
             request.ContentType = parms.ContentType ?? Format;
             request.ETag = parms.ETag;
             foreach (var item in parms.Form)
@@ -332,8 +331,6 @@ namespace Saleslogix.SData.Client
                     extensionArgs[arg.Key] = arg.Value;
                 }
 
-                var selector = parms.Selector;
-
                 SDataResource resource;
                 if (parms.Content == null)
                 {
@@ -360,17 +357,12 @@ namespace Saleslogix.SData.Client
                     {
                         throw new SDataClientException("Only resources can be submitted in batch requests");
                     }
-
-                    if (selector == null && resource.Key != null)
-                    {
-                        selector = SDataUri.FormatConstant(resource.Key);
-                    }
                 }
 
                 resource.HttpMethod = parms.Method;
                 if (parms.Method != HttpMethod.Post)
                 {
-                    if (selector == null)
+                    if (resource.Key == null)
                     {
                         throw new SDataClientException("A selector must be specified for GET, PUT and DELETE batch requests");
                     }
@@ -380,7 +372,7 @@ namespace Saleslogix.SData.Client
                     {
                         itemUri.AppendPath(path);
                     }
-                    itemUri.LastPathSegment.Selector = selector;
+                    itemUri.LastPathSegment.Selector = SDataUri.FormatConstant(resource.Key);
                     resource.Id = itemUri.ToString();
                     resource.Url = itemUri.Uri;
                 }

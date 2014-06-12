@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
+using Saleslogix.SData.Client.Utilities;
 
 #if !NET_2_0 && !NET_3_5
 using System.Threading.Tasks;
@@ -29,42 +30,44 @@ namespace Saleslogix.SData.Client
 #if NET_2_0 || NET_3_5
         public void Get(string key)
         {
-            Add(HttpMethod.Get, key, null);
+            Guard.ArgumentNotNullOrEmptyString(key, "key");
+            Add(HttpMethod.Get, new SDataResource {Key = key});
         }
 
         public void Post(T content)
         {
-            Add(HttpMethod.Post, null, content);
+            Add(HttpMethod.Post, content);
         }
 
         public void Put(T content)
         {
-            Add(HttpMethod.Put, null, content);
+            Add(HttpMethod.Put, content);
         }
 
         public void Delete(T content)
         {
-            Add(HttpMethod.Delete, null, content);
+            Add(HttpMethod.Delete, content);
         }
 #else
         public Lazy<T> Get(string key)
         {
-            return Add(HttpMethod.Get, key, null);
+            Guard.ArgumentNotNullOrEmptyString(key, "key");
+            return Add(HttpMethod.Get, new SDataResource {Key = key});
         }
 
         public Lazy<T> Post(T content)
         {
-            return Add(HttpMethod.Post, null, content);
+            return Add(HttpMethod.Post, content);
         }
 
         public Lazy<T> Put(T content)
         {
-            return Add(HttpMethod.Put, null, content);
+            return Add(HttpMethod.Put, content);
         }
 
         public Lazy<T> Delete(T content)
         {
-            return Add(HttpMethod.Delete, null, content);
+            return Add(HttpMethod.Delete, content);
         }
 #endif
 
@@ -100,34 +103,23 @@ namespace Saleslogix.SData.Client
 #else
             Lazy<T>
 #endif
-            Add(HttpMethod method, string key, object content)
+            Add(HttpMethod method, object content)
         {
+            Guard.ArgumentNotNull(content, "content");
             EnsureNotCommitted();
 
             var parms = new SDataParameters
                 {
                     Method = method,
                     Path = _path,
+                    Content = content,
                     Include = _options.Include,
                     Select = _options.Select,
                     Precedence = _options.Precedence
                 };
-            if (key != null)
+            if (method == HttpMethod.Put || method == HttpMethod.Delete)
             {
-                parms.Selector = SDataUri.FormatConstant(key);
-            }
-            else if (content != null)
-            {
-                if (method != HttpMethod.Post)
-                {
-                    parms.Selector = GetSelector(content);
-                    parms.ETag = GetETag(content);
-                }
-
-                if (method != HttpMethod.Delete)
-                {
-                    parms.Content = content;
-                }
+                parms.ETag = ContentHelper.GetProtocolValue<string>(content, SDataProtocolProperty.ETag);
             }
 
 #if !NET_2_0 && !NET_3_5
@@ -149,22 +141,6 @@ namespace Saleslogix.SData.Client
                 return _results[index];
             });
 #endif
-        }
-
-        private static string GetSelector(object content)
-        {
-            var key = ContentHelper.GetProtocolValue<string>(content, SDataProtocolProperty.Key);
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new SDataClientException("Unable to extract resource key from content");
-            }
-
-            return SDataUri.FormatConstant(key);
-        }
-
-        private static string GetETag(object content)
-        {
-            return ContentHelper.GetProtocolValue<string>(content, SDataProtocolProperty.ETag);
         }
 
         private void EnsureNotCommitted()

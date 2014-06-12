@@ -44,7 +44,6 @@ namespace Saleslogix.SData.Client.Test
                     ExtensionArgs = {{"foo", "bar"}},
                     Method = HttpMethod.Put,
                     Content = content,
-                    Selector = "selector",
                     ContentType = MediaType.ImageTiff,
                     ETag = "etag",
                     Form = {{"hello", "world"}},
@@ -72,7 +71,6 @@ namespace Saleslogix.SData.Client.Test
             Assert.That(requestUri["_foo"], Is.EqualTo("bar"));
             Assert.That(requestMock.Object.Method, Is.EqualTo(HttpMethod.Put));
             Assert.That(requestMock.Object.Content, Is.EqualTo(content));
-            Assert.That(requestMock.Object.Selector, Is.EqualTo("selector"));
             Assert.That(requestMock.Object.ContentType, Is.EqualTo(MediaType.ImageTiff));
             Assert.That(requestMock.Object.ETag, Is.EqualTo("etag"));
             Assert.That(requestMock.Object.Form["hello"], Is.EqualTo("world"));
@@ -106,7 +104,6 @@ namespace Saleslogix.SData.Client.Test
                     ExtensionArgs = {{"foo1", "bar1"}},
                     Method = HttpMethod.Post,
                     Content = new object(),
-                    Selector = "selector1",
                     ContentType = MediaType.ImageTiff,
                     ETag = "etag1",
                     Form = {{"hello1", "world1"}},
@@ -114,6 +111,8 @@ namespace Saleslogix.SData.Client.Test
                     Accept = new[] {MediaType.ImageJpeg}
                 };
             var file2 = new AttachedFile(null, null, null);
+            var resource2 = new SDataResource {Key = "key2"};
+            resource2["foo"] = "bar";
             var params2 = new SDataParameters
                 {
                     Include = "include2",
@@ -125,8 +124,7 @@ namespace Saleslogix.SData.Client.Test
                     Path = "path",
                     ExtensionArgs = {{"foo2", "bar2"}},
                     Method = HttpMethod.Put,
-                    Content = new object(),
-                    Selector = "selector2",
+                    Content = resource2,
                     ContentType = MediaType.ImageTiff,
                     ETag = "etag2",
                     Form = {{"hello2", "world2"}},
@@ -151,7 +149,7 @@ namespace Saleslogix.SData.Client.Test
             Assert.That(resources[0].HttpMethod, Is.EqualTo(HttpMethod.Post));
             Assert.That(resources[1].HttpMethod, Is.EqualTo(HttpMethod.Put));
             Assert.That(resources[0].Url, Is.Null);
-            Assert.That(new SDataUri(resources[1].Url).LastPathSegment.Selector, Is.EqualTo("selector2"));
+            Assert.That(new SDataUri(resources[1].Url).LastPathSegment.Selector, Is.EqualTo("'key2'"));
             Assert.That(requestMock.Object.ContentType, Is.EqualTo(MediaType.ImageTiff));
             Assert.That(resources[0].IfMatch, Is.EqualTo("etag1"));
             Assert.That(resources[1].IfMatch, Is.EqualTo("etag2"));
