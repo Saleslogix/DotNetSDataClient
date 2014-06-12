@@ -25,7 +25,7 @@ namespace Saleslogix.SData.Client
     public class SDataClient : ISDataClient
     {
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        public static readonly TraceSource Trace = new TraceSource("SDataClient");
+        public readonly TraceSource Trace = new TraceSource("SDataClient");
 #endif
 
         private readonly Func<string, SDataRequest> _requestFactory;
@@ -513,14 +513,14 @@ namespace Saleslogix.SData.Client
             return SDataResults.FromResponse(response, content);
         }
 
-        private static void TraceRequest(SDataRequest request)
+        private void TraceRequest(SDataRequest request)
         {
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
             Trace.TraceData(TraceEventType.Information, 0, request);
 #endif
         }
 
-        private static void TraceResponse(SDataResponse response)
+        private void TraceResponse(SDataResponse response)
         {
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
             Trace.TraceData(TraceEventType.Information, 1, response);

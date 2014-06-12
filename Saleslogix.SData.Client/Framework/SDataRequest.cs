@@ -25,7 +25,7 @@ namespace Saleslogix.SData.Client.Framework
     public class SDataRequest
     {
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        public static readonly TraceSource Trace = new TraceSource("SDataRequest");
+        public readonly TraceSource Trace = new TraceSource("SDataRequest");
 #endif
 
         private IDictionary<string, string> _form;
@@ -545,14 +545,14 @@ namespace Saleslogix.SData.Client.Framework
             return contentType != null ? MediaTypeNames.GetMediaType(contentType.Value) : null;
         }
 
-        private static void TraceRequest(WebRequest request)
+        private void TraceRequest(WebRequest request)
         {
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
             Trace.TraceData(TraceEventType.Information, 0, request);
 #endif
         }
 
-        private static void TraceResponse(WebResponse response)
+        private void TraceResponse(WebResponse response)
         {
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
             Trace.TraceData(TraceEventType.Information, 1, response);

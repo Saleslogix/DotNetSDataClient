@@ -22,7 +22,6 @@ namespace SlxFileBrowser
         {
             InitializeComponent();
 
-            SDataRequest.Trace.Switch.Level = SourceLevels.All;
             _imageList.Images.Add(ShellUtils.GetDriveIcon());
             _imageList.Images.Add(ShellUtils.GetFolderIcon());
             _serverUrlText.Text = Settings.Default.ServerUrl;
@@ -47,10 +46,13 @@ namespace SlxFileBrowser
             var client = new SDataClient(_serverUrlText.Text)
                 {
                     Credentials = _credentials,
-                    NamingScheme = NamingScheme.CamelCase
+                    NamingScheme = NamingScheme.CamelCase,
+                    Trace =
+                        {
+                            Switch = {Level = SourceLevels.Information},
+                            Listeners = {new TextBoxTraceListener(_logText, _serverUrlText.Text.Length) {Filter = new EventTypeFilter(SourceLevels.All)}}
+                        }
                 };
-            SDataRequest.Trace.Listeners.Clear();
-            SDataRequest.Trace.Listeners.Add(new TextBoxTraceListener(_logText, client.Uri.Length) {Filter = new EventTypeFilter(SourceLevels.All)});
             Settings.Default.Save();
             _treeView.Nodes.Clear();
             AddDriveNode(_treeView.Nodes, new SDataDriveInfo(client, _formModeCheck.Checked));
@@ -605,19 +607,19 @@ namespace SlxFileBrowser
 
                 if (id == 0)
                 {
-                    var request = (WebRequest) data;
+                    var request = (SDataRequest) data;
                     if (_lastId == 0)
                     {
                         message = Environment.NewLine;
                     }
                     message += string.Format("{0:hh\\:mm\\:ss} {1,6} {2}",
                         DateTime.Now.TimeOfDay,
-                        request.Method,
-                        request.RequestUri.ToString().Substring(_urlOffset));
+                        request.Method.ToString().ToUpper(),
+                        request.Uri.Substring(_urlOffset));
                 }
                 else
                 {
-                    var response = data as HttpWebResponse;
+                    var response = data as SDataResponse;
                     if (response != null)
                     {
                         message = string.Format(" -> ({0}) {1}",
