@@ -19,6 +19,7 @@ namespace Saleslogix.SData.Client.Framework
     [Serializable]
     public class SDataException : WebException
     {
+        private readonly object _content;
         private readonly Diagnoses _diagnoses;
         private readonly HttpStatusCode? _statusCode;
 
@@ -42,23 +43,22 @@ namespace Saleslogix.SData.Client.Framework
                 var handler = ContentManager.GetHandler(contentType);
                 if (handler != null)
                 {
-                    object obj;
                     using (var responseStream = Response.GetResponseStream())
                     {
-                        obj = handler.ReadFrom(responseStream);
+                        _content = handler.ReadFrom(responseStream);
                     }
 
-                    if (ContentHelper.IsDictionary(obj))
+                    if (ContentHelper.IsDictionary(_content))
                     {
-                        var diagnosis = ContentHelper.Deserialize<Diagnosis>(obj);
+                        var diagnosis = ContentHelper.Deserialize<Diagnosis>(_content);
                         if (diagnosis != null)
                         {
                             _diagnoses = new Diagnoses {diagnosis};
                         }
                     }
-                    else if (ContentHelper.IsCollection(obj))
+                    else if (ContentHelper.IsCollection(_content))
                     {
-                        var diagnoses = ContentHelper.Deserialize<Diagnoses>(obj);
+                        var diagnoses = ContentHelper.Deserialize<Diagnoses>(_content);
                         if (diagnoses != null)
                         {
                             _diagnoses = diagnoses;
@@ -81,6 +81,7 @@ namespace Saleslogix.SData.Client.Framework
         protected SDataException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
+            _content = info.GetValue("Content", typeof (object));
             _diagnoses = (Diagnoses) info.GetValue("Diagnoses", typeof (Diagnoses));
             _statusCode = (HttpStatusCode?) info.GetValue("StatusCode", typeof (HttpStatusCode?));
         }
@@ -89,10 +90,16 @@ namespace Saleslogix.SData.Client.Framework
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
+            info.AddValue("Content", _content);
             info.AddValue("Diagnoses", _diagnoses);
             info.AddValue("StatusCode", _statusCode);
         }
 #endif
+
+        public object Content
+        {
+            get { return _content; }
+        }
 
         /// <summary>
         /// Gets the collection of diagnoses responsible for the exception.
@@ -117,9 +124,10 @@ namespace Saleslogix.SData.Client.Framework
         {
             get
             {
-                return _diagnoses != null
-                           ? string.Join(Environment.NewLine, _diagnoses.Select(diagnosis => diagnosis.Message).ToArray())
-                           : base.Message;
+                var message = _diagnoses != null
+                    ? string.Join(Environment.NewLine, _diagnoses.Select(diagnosis => diagnosis.Message).ToArray())
+                    : null;
+                return !string.IsNullOrEmpty(message) ? message : base.Message;
             }
         }
 
