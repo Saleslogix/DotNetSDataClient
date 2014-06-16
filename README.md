@@ -49,8 +49,10 @@ Copyright 2013 Swiftpage ACT! LLC. All rights reserved.
 
 Links
 -----
-* [Documentation](http://developer.saleslogix.com/DotNetSDataClient/)
+* [Documentation wiki](https://github.com/Saleslogix/DotNetSDataClient/wiki)
+* [NuGet project page](https://www.nuget.org/packages/DotNetSDataClient/)
 * [Issue tracker](https://github.com/Saleslogix/DotNetSDataClient/issues)
 * [Saleslogix support forums](http://community.saleslogix.com/t5/Developer-Web-Discussions/bd-p/dev_web)
+* [Saleslogix SData endpoints whitepaper](http://developer.saleslogix.com/DotNetSDataClient/whitepaper/)
 * [SData specification](http://interop.sage.com/daisy/sdata/Introduction.html)
 * [Download latest source](https://github.com/Saleslogix/DotNetSDataClient/zipball/master)

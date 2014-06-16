@@ -640,7 +640,7 @@ namespace Saleslogix.SData.Client.Content
 
             private static ReflectionUtils.GetDelegate GetGetter(ReflectionUtils.GetDelegate baseGetter, MemberInfo memberInfo, Type memberType)
             {
-                if (memberType != typeof (string) && !memberType.GetTypeInfo().IsValueType)
+                if (IsObject(memberType))
                 {
                     string xmlLocalName = null;
                     string xmlNamespace = null;
@@ -755,7 +755,7 @@ namespace Saleslogix.SData.Client.Content
 
         #endregion
 
-        #region Nested type: XmlMetadataSurrogate
+        #region Nested type: MetadataSurrogate
 
         private class MetadataSurrogate
         {

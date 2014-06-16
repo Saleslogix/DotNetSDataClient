@@ -4,6 +4,7 @@ using System;
 
 namespace Saleslogix.SData.Client.Content
 {
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class JsonSimpleArrayAttribute : Attribute
     {
     }
