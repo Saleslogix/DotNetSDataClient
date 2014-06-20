@@ -623,6 +623,23 @@ namespace Saleslogix.SData.Client.Content
                 return result;
             }
 
+            internal override ReflectionUtils.ConstructorDelegate ContructorDelegateFactory(Type key)
+            {
+                if (!key.IsArray && !key.GetTypeInfo().IsInterface && ReflectionUtils.IsAssignableFrom(typeof (IList), key))
+                {
+                    ReflectionUtils.ConstructorDelegate ctor = ReflectionUtils.GetContructor(key, ArrayConstructorParameterTypes);
+                    if (ctor != null)
+                    {
+                        return ctor;
+                    }
+#if NET_2_0
+                    ctor = base.ContructorDelegateFactory(key);
+                    return args => ctor(new object[0]);
+#endif
+                }
+                return base.ContructorDelegateFactory(key);
+            }
+
             internal override IDictionary<string, ReflectionUtils.GetDelegate> GetterValueFactory(Type type)
             {
                 var result = new Dictionary<string, ReflectionUtils.GetDelegate>();
