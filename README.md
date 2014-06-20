@@ -45,7 +45,7 @@ License
 -------
 Swiftpage Partner Source License, full text available [here](https://raw.githubusercontent.com/Saleslogix/DotNetSDataClient/master/LICENSE).
 
-Copyright 2013 Swiftpage ACT! LLC. All rights reserved.
+Copyright 2014 Swiftpage ACT! LLC. All rights reserved.
 
 Links
 -----

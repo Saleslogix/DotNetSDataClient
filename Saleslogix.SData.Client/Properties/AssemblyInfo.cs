@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SalesLogix NA, LLC")]
 [assembly: AssemblyProduct("Saleslogix.SData.Client")]
-[assembly: AssemblyCopyright("Copyright (c) 1997-2013, SalesLogix NA, LLC. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright (c) 1997-2014, SalesLogix NA, LLC. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
