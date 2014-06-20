@@ -11,7 +11,7 @@ namespace Saleslogix.SData.Client.Test.ExtensionsJson
         [Test]
         public void Nested_And_Unnested_Resource_Diagnoses_Test()
         {
-            const string xml = @"
+            const string json = @"
                 {
                   ""$diagnoses"":[
                     {
@@ -34,7 +34,7 @@ namespace Saleslogix.SData.Client.Test.ExtensionsJson
                     }
                   ]
                 }";
-            var feed = Helpers.ReadJson<SDataCollection<SDataResource>>(xml);
+            var feed = Helpers.ReadJson<SDataCollection<SDataResource>>(json);
 
             var diagnoses = feed.Diagnoses;
             Assert.That(diagnoses.Count, Is.EqualTo(2));

@@ -12,7 +12,7 @@ namespace Saleslogix.SData.Client.Test.ExtensionsJson
         [Test]
         public void Typical_Feed()
         {
-            const string xml = @"
+            const string json = @"
                 {
                   ""$syncMode"":""catchUp"",
                   ""$digest"":{
@@ -34,7 +34,7 @@ namespace Saleslogix.SData.Client.Test.ExtensionsJson
                   },
                   ""$resources"":[]
                 }";
-            var feed = Helpers.ReadJson<SDataCollection<SDataResource>>(xml);
+            var feed = Helpers.ReadJson<SDataCollection<SDataResource>>(json);
 
             var syncMode = feed.SyncMode;
             Assert.That(syncMode, Is.EqualTo(SyncMode.CatchUp));

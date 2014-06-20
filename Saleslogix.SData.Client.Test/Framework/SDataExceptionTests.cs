@@ -7,7 +7,7 @@ using Saleslogix.SData.Client.Framework;
 using System.Runtime.Serialization.Formatters.Binary;
 #endif
 
-#if !NET_2_0
+#if !NET_2_0 && !NET_3_5
 using System.Collections.Generic;
 using Moq;
 using Saleslogix.SData.Client.Content;
@@ -20,7 +20,7 @@ namespace Saleslogix.SData.Client.Test.Framework
     [TestFixture]
     public class SDataExceptionTests
     {
-#if !NET_2_0
+#if !NET_2_0 && !NET_3_5
         [Test]
         public void Diagnoses_Test()
         {
@@ -100,7 +100,7 @@ namespace Saleslogix.SData.Client.Test.Framework
         }
 #endif
 
-#if !NETFX_CORE && !SILVERLIGHT
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
         [Test]
         public void Binary_Serialization_Test()
         {
