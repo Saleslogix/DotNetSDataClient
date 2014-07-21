@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Xml.Serialization;
@@ -377,6 +378,19 @@ namespace Saleslogix.SData.Client.Framework
                 request.Method = Method.ToString().ToUpperInvariant();
             }
 
+#if PCL
+            try
+            {
+                var preAuthProp = request.GetType().GetProperty("PreAuthenticate");
+                if (preAuthProp != null && preAuthProp.CanWrite)
+                {
+                    preAuthProp.SetValue(request, true, null);
+                }
+            }
+            catch
+            {
+            }
+#endif
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
             request.Timeout = Timeout;
             request.PreAuthenticate = true;
