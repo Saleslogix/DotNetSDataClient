@@ -81,6 +81,14 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
+        public void Read_Text_Containing_DateTime_Test()
+        {
+            const string json = @"{""Description"":""before /Date(1371283200000)/ after""}";
+            var resource = Helpers.ReadJson<SDataResource>(json);
+            Assert.That(resource["Description"], Is.EqualTo("before /Date(1371283200000)/ after"));
+        }
+
+        [Test]
         public void Write_DateTime_Test()
         {
             var resource = new SDataResource {SyncState = new SyncState {Stamp = new DateTime(2013, 6, 15, 8, 0, 0)}};

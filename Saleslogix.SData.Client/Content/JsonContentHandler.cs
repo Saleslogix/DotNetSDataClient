@@ -17,7 +17,7 @@ namespace Saleslogix.SData.Client.Content
     public class JsonContentHandler : IContentHandler
     {
         private static readonly Regex _microsoftDateFormat = new Regex(
-            @"\\?/Date\((-?\d+)(-|\+)?([0-9]{4})?\)\\?/",
+            @"^\\?/Date\((-?\d+)(-|\+)?([0-9]{4})?\)\\?/$",
             RegexOptions.IgnoreCase |
             RegexOptions.CultureInvariant |
             RegexOptions.IgnorePatternWhitespace
