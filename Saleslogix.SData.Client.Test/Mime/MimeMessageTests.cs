@@ -43,11 +43,11 @@ namespace Saleslogix.SData.Client.Test.Mime
                 result = reader.ReadToEnd();
             }
 
-            const string expected = @"--abc123
-Content-Length: 10
-
-plain text
---abc123--";
+            const string expected = "--abc123\r\n" +
+                                    "Content-Length: 10\r\n" +
+                                    "\r\n" +
+                                    "plain text\r\n" +
+                                    "--abc123--";
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -67,11 +67,11 @@ plain text
                 result = reader.ReadToEnd();
             }
 
-            var expected = @"--abc123
-Content-Length: 256
-
-" + Encoding.UTF8.GetString(bytes) + @"
---abc123--";
+            var expected = "--abc123\r\n" +
+                           "Content-Length: 256\r\n" +
+                           "\r\n" +
+                           Encoding.UTF8.GetString(bytes) + "\r\n" +
+                           "--abc123--";
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -97,14 +97,14 @@ Content-Length: 256
                 result = reader.ReadToEnd();
             }
 
-            const string expected = @"--abc123
-Content-Type: plain/xml
-Content-Length: 20
-Content-Transfer-Encoding: binary
-Content-Disposition: attachment
-
-
---abc123--";
+            const string expected = "--abc123\r\n" +
+                                    "Content-Type: plain/xml\r\n" +
+                                    "Content-Length: 20\r\n" +
+                                    "Content-Transfer-Encoding: binary\r\n" +
+                                    "Content-Disposition: attachment\r\n" +
+                                    "\r\n" +
+                                    "\r\n" +
+                                    "--abc123--";
             Assert.That(result, Is.EqualTo(expected));
         }
 
@@ -155,11 +155,11 @@ Content-Disposition: attachment
         [Test]
         public void Parse_Single_Plain_Text_Test()
         {
-            const string data = @"--abc123
-Content-Length: 10
-
-plain text
---abc123--";
+            const string data = "--abc123\r\n" +
+                                "Content-Length: 10\r\n" +
+                                "\r\n" +
+                                "plain text\r\n" +
+                                "--abc123--";
             MimeMessage message;
 
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(data)))

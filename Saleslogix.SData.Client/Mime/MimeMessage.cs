@@ -169,7 +169,7 @@ namespace Saleslogix.SData.Client.Mime
         /// <param name="stream">The destination stream to write to.</param>
         public void WriteTo(Stream stream)
         {
-            var writer = new StreamWriter(stream);
+            var writer = new StreamWriter(stream) {NewLine = "\r\n"};
 
             foreach (var part in this)
             {
