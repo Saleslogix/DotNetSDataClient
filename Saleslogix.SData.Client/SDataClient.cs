@@ -55,6 +55,7 @@ namespace Saleslogix.SData.Client
         public IWebProxy Proxy { get; set; }
 #endif
         public ICredentials Credentials { get; set; }
+        public IAuthenticator Authenticator { get; set; }
         public INamingScheme NamingScheme { get; set; }
         public MediaType? Format { get; set; }
         public string Language { get; set; }
@@ -441,6 +442,7 @@ namespace Saleslogix.SData.Client
             request.Content = content;
             request.UserName = UserName;
             request.Password = Password;
+            request.Authenticator = Authenticator;
             request.Credentials = Credentials;
             request.NamingScheme = NamingScheme;
             request.Cookies = _cookies;

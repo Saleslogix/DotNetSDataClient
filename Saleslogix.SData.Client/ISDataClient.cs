@@ -24,6 +24,7 @@ namespace Saleslogix.SData.Client
         IWebProxy Proxy { get; set; }
 #endif
         ICredentials Credentials { get; set; }
+        IAuthenticator Authenticator { get; set; }
         INamingScheme NamingScheme { get; set; }
         MediaType? Format { get; set; }
         string Language { get; set; }

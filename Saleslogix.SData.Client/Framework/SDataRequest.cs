@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Xml.Serialization;
@@ -155,6 +154,8 @@ namespace Saleslogix.SData.Client.Framework
         /// Gets or sets the cookies associated with this request.
         /// </summary>
         public CookieContainer Cookies { get; set; }
+
+        public IAuthenticator Authenticator { get; set; }
 
         /// <summary>
         /// Gets of sets the credentials associated with this request.
@@ -432,7 +433,11 @@ namespace Saleslogix.SData.Client.Framework
                 request.Headers[HttpRequestHeader.AcceptLanguage] = AcceptLanguage;
             }
 
-            if (Credentials != null)
+            if (Authenticator != null)
+            {
+                Authenticator.Authenticate(request);
+            }
+            else if (Credentials != null)
             {
                 request.Credentials = Credentials;
             }
@@ -440,12 +445,10 @@ namespace Saleslogix.SData.Client.Framework
             {
                 request.Credentials = new NetworkCredential(UserName, Password);
             }
-#if !PCL && !SILVERLIGHT
             else
             {
-                request.Credentials = CredentialCache.DefaultCredentials;
+                request.UseDefaultCredentials = true;
             }
-#endif
 
             if (ETag != null)
             {

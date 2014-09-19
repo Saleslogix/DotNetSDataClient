@@ -125,6 +125,7 @@
     <Compile Include="Framework\Digest.cs" />
     <Compile Include="Framework\DigestEntry.cs" />
     <Compile Include="Framework\HttpMethod.cs" />
+    <Compile Include="Framework\IAuthenticator.cs" />
     <Compile Include="Framework\MailBnfHelper.cs" />
     <Compile Include="Framework\MediaType.cs" />
     <Compile Include="Framework\MediaTypeNames.cs" />
