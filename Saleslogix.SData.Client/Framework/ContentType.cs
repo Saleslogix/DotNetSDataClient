@@ -101,9 +101,9 @@ namespace Saleslogix.SData.Client.Framework
             return _type;
         }
 
-        public override bool Equals(object rparam)
+        public override bool Equals(object obj)
         {
-            var type = rparam as ContentType;
+            var type = obj as ContentType;
             return type != null && string.Equals(_type, type._type, StringComparison.OrdinalIgnoreCase);
         }
 

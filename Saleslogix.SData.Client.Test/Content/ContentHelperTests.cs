@@ -511,14 +511,14 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
-        public void Deserialize_Empty_Collection_Inferrence_Workaround_Test()
+        public void Deserialize_Empty_Collection_Inference_Workaround_Test()
         {
             var value = new SDataResource {{"Items", new SDataResource()}};
-            var result = ContentHelper.Deserialize<Deserialize_Empty_Collection_Inferrence_Workaround_Object>(value);
+            var result = ContentHelper.Deserialize<Deserialize_Empty_Collection_Inference_Workaround_Object>(value);
             Assert.That(result.Items, Is.Not.Null);
         }
 
-        private class Deserialize_Empty_Collection_Inferrence_Workaround_Object
+        private class Deserialize_Empty_Collection_Inference_Workaround_Object
         {
             public IList<object> Items { get; set; }
         }

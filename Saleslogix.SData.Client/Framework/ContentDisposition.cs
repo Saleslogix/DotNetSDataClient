@@ -91,9 +91,9 @@ namespace Saleslogix.SData.Client.Framework
             return _disposition;
         }
 
-        public override bool Equals(object rparam)
+        public override bool Equals(object obj)
         {
-            var disposition = rparam as ContentDisposition;
+            var disposition = obj as ContentDisposition;
             return disposition != null && string.Equals(_disposition, disposition._disposition, StringComparison.OrdinalIgnoreCase);
         }
 

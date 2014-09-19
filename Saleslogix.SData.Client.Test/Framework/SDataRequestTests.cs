@@ -133,7 +133,7 @@ namespace Saleslogix.SData.Client.Test.Framework
         }
 
         [Test]
-        public void Retry_Attmpts_Test()
+        public void Retry_Attempts_Test()
         {
             var requestMock = new Mock<HttpWebRequest> {CallBase = true};
             var responseMock = new Mock<HttpWebResponse>();
@@ -201,7 +201,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             var text = Encoding.UTF8.GetString(content.ToArray());
 
             Assert.That(webRequest.ContentType, Is.StringStarting("multipart/related;"));
-            Assert.That(text, Is.StringContaining("attachment; filename=hello.txt"));
+            Assert.That(text, Is.StringContaining("attachment; filename=\"hello.txt\""));
             Assert.That(text, Is.StringContaining("world"));
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
@@ -280,7 +280,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(text, Is.StringContaining("main content"));
             Assert.That(text, Is.StringContaining("inline; name=id"));
             Assert.That(text, Is.StringContaining("123"));
-            Assert.That(text, Is.StringContaining("attachment; filename=hello.txt"));
+            Assert.That(text, Is.StringContaining("attachment; filename=\"hello.txt\""));
             Assert.That(text, Is.StringContaining("world"));
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
@@ -407,7 +407,7 @@ namespace Saleslogix.SData.Client.Test.Framework
         }
 
         [Test]
-        public void Async_Retry_Attmpts_Test()
+        public void Async_Retry_Attempts_Test()
         {
             var requestMock = new Mock<HttpWebRequest> {CallBase = true};
             var responseMock = new Mock<HttpWebResponse>();
@@ -481,7 +481,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             var text = Encoding.UTF8.GetString(content.ToArray());
 
             Assert.That(webRequest.ContentType, Is.StringStarting("multipart/related;"));
-            Assert.That(text, Is.StringContaining("attachment; filename=hello.txt"));
+            Assert.That(text, Is.StringContaining("attachment; filename=\"hello.txt\""));
             Assert.That(text, Is.StringContaining("world"));
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
@@ -536,7 +536,7 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(text, Is.StringContaining("main content"));
             Assert.That(text, Is.StringContaining("inline; name=id"));
             Assert.That(text, Is.StringContaining("123"));
-            Assert.That(text, Is.StringContaining("attachment; filename=hello.txt"));
+            Assert.That(text, Is.StringContaining("attachment; filename=\"hello.txt\""));
             Assert.That(text, Is.StringContaining("world"));
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }

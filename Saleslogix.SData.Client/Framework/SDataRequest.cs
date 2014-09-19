@@ -528,21 +528,11 @@ namespace Saleslogix.SData.Client.Framework
                     foreach (var file in Files)
                     {
                         var contentDisposition = "attachment";
-                        var fileName = file.FileName;
-                        if (fileName != null)
+                        if (file.FileName != null)
                         {
-                            if (Encoding.UTF8.GetByteCount(fileName) == fileName.Length)
-                            {
-                                if (fileName.Contains(" "))
-                                {
-                                    fileName = string.Format("\"{0}\"", fileName.Replace("\"", "\\\""));
-                                }
-                                contentDisposition += "; filename=" + fileName;
-                            }
-                            else
-                            {
-                                contentDisposition += "; filename*=" + string.Format("{0}''{1}", Encoding.UTF8.WebName, System.Uri.EscapeDataString(fileName));
-                            }
+                            contentDisposition += Encoding.UTF8.GetByteCount(file.FileName) == file.FileName.Length
+                                ? "; filename=" + string.Format("\"{0}\"", file.FileName.Replace("\"", "\\\""))
+                                : "; filename*=" + string.Format("{0}''{1}", Encoding.UTF8.WebName, System.Uri.EscapeDataString(file.FileName));
                         }
 
                         var part = new MimePart(file.Stream)
