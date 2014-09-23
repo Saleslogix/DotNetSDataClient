@@ -149,7 +149,7 @@ namespace Saleslogix.SData.Client.Test
             Assert.That(resources[0].HttpMethod, Is.EqualTo(HttpMethod.Post));
             Assert.That(resources[1].HttpMethod, Is.EqualTo(HttpMethod.Put));
             Assert.That(resources[0].Url, Is.Null);
-            Assert.That(new SDataUri(resources[1].Url).LastPathSegment.Selector, Is.EqualTo("'key2'"));
+            Assert.That(resources[1].Url, Is.EqualTo(new Uri("test://dummy/path('key2')?include=include2&select=select2&precedence=2")));
             Assert.That(requestMock.Object.ContentType, Is.EqualTo(MediaType.ImageTiff));
             Assert.That(resources[0].IfMatch, Is.EqualTo("etag1"));
             Assert.That(resources[1].IfMatch, Is.EqualTo("etag2"));

@@ -368,7 +368,12 @@ namespace Saleslogix.SData.Client
                         throw new SDataClientException("A selector must be specified for GET, PUT and DELETE batch requests");
                     }
 
-                    var itemUri = new SDataUri(Uri);
+                    var itemUri = new SDataUri(Uri)
+                        {
+                            Include = parms.Include,
+                            Select = parms.Select,
+                            Precedence = parms.Precedence
+                        };
                     if (path != null)
                     {
                         itemUri.AppendPath(path);
