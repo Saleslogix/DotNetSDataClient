@@ -576,6 +576,58 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
+        public void Deserialize_Simple_Types_From_Null_Test()
+        {
+            var value = new SDataResource
+                {
+                    {"SByteProp", null},
+                    {"ShortProp", null},
+                    {"IntProp", null},
+                    {"LongProp", null},
+                    {"ByteProp", null},
+                    {"UShortProp", null},
+                    {"UIntProp", null},
+                    {"ULongProp", null},
+                    {"FloatProp", null},
+                    {"DoubleProp", null},
+                    {"BoolProp", null},
+                    {"CharProp", null},
+                    {"DecimalProp", null},
+                    {"DateTimeProp", null},
+                    {"EnumProp", null},
+                    {"StringProp", null},
+                    {"DateTimeOffsetProp", null},
+                    {"GuidProp", null},
+                    {"TimeSpanProp", null},
+                    {"VersionProp", null},
+                    {"UriProp", null},
+                    {"ByteArrayProp", null}
+                };
+            var result = ContentHelper.Deserialize<Simple_Types_Object>(value);
+            Assert.That(result.SByteProp, Is.EqualTo(0));
+            Assert.That(result.ShortProp, Is.EqualTo(0));
+            Assert.That(result.IntProp, Is.EqualTo(0));
+            Assert.That(result.LongProp, Is.EqualTo(0));
+            Assert.That(result.ByteProp, Is.EqualTo(0));
+            Assert.That(result.UShortProp, Is.EqualTo(0));
+            Assert.That(result.UIntProp, Is.EqualTo(0));
+            Assert.That(result.ULongProp, Is.EqualTo(0));
+            Assert.That(result.FloatProp, Is.EqualTo(0));
+            Assert.That(result.DoubleProp, Is.EqualTo(0));
+            Assert.That(result.BoolProp, Is.False);
+            Assert.That(result.CharProp, Is.EqualTo('\0'));
+            Assert.That(result.DecimalProp, Is.EqualTo(0));
+            Assert.That(result.DateTimeProp, Is.EqualTo(DateTime.MinValue));
+            Assert.That(result.EnumProp, Is.EqualTo(DayOfWeek.Sunday));
+            Assert.That(result.StringProp, Is.EqualTo(null));
+            Assert.That(result.DateTimeOffsetProp, Is.EqualTo(DateTimeOffset.MinValue));
+            Assert.That(result.GuidProp, Is.EqualTo(Guid.Empty));
+            Assert.That(result.TimeSpanProp, Is.EqualTo(TimeSpan.Zero));
+            Assert.That(result.VersionProp, Is.EqualTo(null));
+            Assert.That(result.UriProp, Is.EqualTo(null));
+        }
+
+        [Test]
         public void Serialize_Simple_Types_Test()
         {
             var value = new Simple_Types_Object

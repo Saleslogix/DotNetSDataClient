@@ -496,7 +496,7 @@ namespace Saleslogix.SData.Client.Content
                 if (value == null)
                 {
                     return type.GetTypeInfo().IsValueType && !ReflectionUtils.IsNullableType(type)
-                        ? ConstructorCache[type]()
+                        ? Activator.CreateInstance(type)
                         : null;
                 }
 
