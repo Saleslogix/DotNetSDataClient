@@ -100,7 +100,7 @@ namespace Saleslogix.SData.Client.Content
                 resource.SyncState = ContentHelper.Deserialize<SyncState>(value);
             }
 
-            foreach (var item in obj.Where(item => !item.Key.StartsWith("$")))
+            foreach (var item in obj.Where(item => !item.Key.StartsWith("$", StringComparison.Ordinal)))
             {
                 resource[item.Key] = ReadObject(item.Value);
             }
@@ -152,7 +152,7 @@ namespace Saleslogix.SData.Client.Content
             foreach (var pair in obj)
             {
                 var str = pair.Value as string;
-                if (pair.Key.StartsWith("$") && str != null)
+                if (pair.Key.StartsWith("$", StringComparison.Ordinal) && str != null)
                 {
                     var name = pair.Key.Substring(1);
                     Uri uri;

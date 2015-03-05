@@ -90,7 +90,7 @@ namespace SlxFileBrowser.FileSystem
                 foreach (var prop in typeof (LibraryDocument).GetProperties())
                 {
                     var name = _client.NamingScheme.GetName(prop);
-                    if (!name.StartsWith("$") && !new[] {"createDate", "createUser", "modifyDate", "modifyUser"}.Contains(name))
+                    if (!name.StartsWith("$", StringComparison.Ordinal) && !new[] {"createDate", "createUser", "modifyDate", "modifyUser"}.Contains(name, StringComparer.Ordinal))
                     {
                         var value = prop.GetValue(_document, null);
                         if (value != null)

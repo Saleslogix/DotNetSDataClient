@@ -337,7 +337,7 @@ namespace Saleslogix.SData.Client.Framework
             {
                 CheckParsePath();
 
-                if (value != null && value.StartsWith(PathSegmentPrefix))
+                if (value != null && value.StartsWith(PathSegmentPrefix, StringComparison.Ordinal))
                 {
                     _pathInternal = value.Substring(PathSegmentPrefix.Length);
                 }
@@ -808,7 +808,7 @@ namespace Saleslogix.SData.Client.Framework
             CheckRebuildPath();
             if (!string.IsNullOrEmpty(_pathInternal))
             {
-                if (!_pathInternal.StartsWith(PathSegmentPrefix))
+                if (!_pathInternal.StartsWith(PathSegmentPrefix, StringComparison.Ordinal))
                 {
                     uri.Append(PathSegmentPrefix);
                 }
@@ -826,7 +826,7 @@ namespace Saleslogix.SData.Client.Framework
             // http://<host><:port>/<path><?query><#fragment>
             if (!string.IsNullOrEmpty(_fragment))
             {
-                if (!_fragment.StartsWith(FragmentPrefix))
+                if (!_fragment.StartsWith(FragmentPrefix, StringComparison.Ordinal))
                 {
                     uri.Append(FragmentPrefix);
                 }
@@ -876,20 +876,20 @@ namespace Saleslogix.SData.Client.Framework
                 _host = _uri.Host;
 
                 var path = Uri.UnescapeDataString(_uri.AbsolutePath);
-                if (path.StartsWith(PathSegmentPrefix))
+                if (path.StartsWith(PathSegmentPrefix, StringComparison.Ordinal))
                 {
                     path = path.Substring(PathSegmentPrefix.Length);
                 }
                 _pathInternal = path;
 
                 _fragment = _uri.Fragment;
-                if (_fragment.StartsWith(FragmentPrefix))
+                if (_fragment.StartsWith(FragmentPrefix, StringComparison.Ordinal))
                 {
                     _fragment = _fragment.Substring(FragmentPrefix.Length);
                 }
 
                 _query = _uri.Query;
-                if (_query.StartsWith(QueryPrefix))
+                if (_query.StartsWith(QueryPrefix, StringComparison.Ordinal))
                 {
                     _query = _query.Substring(QueryPrefix.Length);
                 }
@@ -1058,7 +1058,7 @@ namespace Saleslogix.SData.Client.Framework
 
             if (!string.IsNullOrEmpty(_query))
             {
-                if (_query.StartsWith(QueryPrefix))
+                if (_query.StartsWith(QueryPrefix, StringComparison.Ordinal))
                 {
                     _query = _query.Substring(QueryPrefix.Length);
                 }

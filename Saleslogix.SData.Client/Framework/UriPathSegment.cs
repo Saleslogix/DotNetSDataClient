@@ -286,7 +286,7 @@ namespace Saleslogix.SData.Client.Framework
         {
             Guard.ArgumentNotNullOrEmptyString(segment, "segment");
 
-            if (segment.StartsWith(UriFormatter.PathSegmentPrefix))
+            if (segment.StartsWith(UriFormatter.PathSegmentPrefix, StringComparison.Ordinal))
             {
                 return segment.Substring(UriFormatter.PathSegmentPrefix.Length);
             }
@@ -310,7 +310,7 @@ namespace Saleslogix.SData.Client.Framework
             Guard.ArgumentNotNull(path, "path");
             Guard.ArgumentNotNullOrEmptyString(segment, "segment");
 
-            if (segment.StartsWith(UriFormatter.PathSegmentPrefix))
+            if (segment.StartsWith(UriFormatter.PathSegmentPrefix, StringComparison.Ordinal))
             {
                 path.Length = 0;
                 path.Append(segment.Substring(UriFormatter.PathSegmentPrefix.Length));

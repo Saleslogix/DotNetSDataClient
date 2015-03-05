@@ -417,7 +417,7 @@ namespace Saleslogix.SData.Client.Content
                         value = surrogate.Value;
                     }
 
-                    if (item.Key.StartsWith("$"))
+                    if (item.Key.StartsWith("$", StringComparison.Ordinal))
                     {
                         if (infoCreated)
                         {

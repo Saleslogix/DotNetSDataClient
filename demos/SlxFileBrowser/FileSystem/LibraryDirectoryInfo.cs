@@ -104,7 +104,7 @@ namespace SlxFileBrowser.FileSystem
 
         public IDirectoryInfo CreateSubdirectory(string path)
         {
-            if (!path.Contains("\\"))
+            if (path.IndexOf("\\", StringComparison.Ordinal) < 0)
             {
                 var subDir = new LibraryDirectory
                     {

@@ -90,7 +90,7 @@ namespace SlxFileBrowser.FileSystem
                 foreach (var prop in typeof (Attachment).GetProperties())
                 {
                     var name = _client.NamingScheme.GetName(prop);
-                    if (!name.StartsWith("$") && !new[] {"physicalFileName", "fileExists", "fileSize", "createDate", "createUser", "modifyDate", "modifyUser"}.Contains(name))
+                    if (!name.StartsWith("$", StringComparison.Ordinal) && !new[] {"physicalFileName", "fileExists", "fileSize", "createDate", "createUser", "modifyDate", "modifyUser"}.Contains(name, StringComparer.Ordinal))
                     {
                         var value = prop.GetValue(_attachment, null);
                         if (value != null)

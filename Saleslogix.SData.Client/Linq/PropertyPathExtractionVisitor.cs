@@ -174,7 +174,7 @@ namespace Saleslogix.SData.Client.Linq
         {
             if (_parts.Count > 0)
             {
-                if (!_includeProtocolProps && _parts[0].StartsWith("$"))
+                if (!_includeProtocolProps && _parts[0].StartsWith("$", StringComparison.Ordinal))
                 {
                     _parts.RemoveAt(0);
                 }
