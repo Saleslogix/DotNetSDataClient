@@ -379,7 +379,7 @@ namespace Saleslogix.SData.Client
                         itemUri.AppendPath(path);
                     }
                     itemUri.LastPathSegment.Selector = SDataUri.FormatConstant(resource.Key);
-                    resource.Id = itemUri.ToString();
+                    resource.Id = itemUri.AbsoluteUri;
                     resource.Url = itemUri.Uri;
                 }
 
@@ -442,7 +442,7 @@ namespace Saleslogix.SData.Client
 
         private SDataRequest CreateRequest(SDataUri uri, HttpMethod method, object content)
         {
-            var request = _requestFactory(uri.ToString());
+            var request = _requestFactory(uri.AbsoluteUri);
             request.Method = method;
             request.Content = content;
             request.UserName = UserName;

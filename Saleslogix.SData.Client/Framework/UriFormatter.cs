@@ -240,7 +240,52 @@ namespace Saleslogix.SData.Client.Framework
                 _uri = value;
                 _requiresParseUri = true;
                 _requiresRebuildUri = false;
+
+                // force query parse if unescaped characters found in new URI's query
+                if (value != null)
+                {
+                    var query = value.Query;
+                    if (query.StartsWith(QueryPrefix, StringComparison.Ordinal))
+                    {
+                        query = query.Substring(QueryPrefix.Length);
+                    }
+                    var hasEquals = false;
+                    foreach (var c in query)
+                    {
+                        if ((c < '0' || c > 'z' ||
+                             (c > '9' && c < 'A') ||
+                             (c > 'Z' && c < 'a')) &&
+                            c != '!' && c != '\'' && c != '(' && c != ')' && c != '*' &&
+                            c != '-' && c != '.' && c != '_' && c != '~')
+                        {
+                            if (c == '&')
+                            {
+                                hasEquals = false;
+                            }
+                            else if (c == '=' && !hasEquals)
+                            {
+                                hasEquals = true;
+                            }
+                            else
+                            {
+                                _query = query;
+                                OnParseQuery();
+                                _requiresRebuildQuery = true;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
+        }
+
+        /// <summary>
+        /// Gets the absolute URI for the <see cref="Uri"/>.
+        /// </summary>
+        /// <value>The absolute URI for the <see cref="Uri"/>.</value>
+        public string AbsoluteUri
+        {
+            get { return Uri.AbsoluteUri; }
         }
 
         /// <summary>
@@ -1058,11 +1103,6 @@ namespace Saleslogix.SData.Client.Framework
 
             if (!string.IsNullOrEmpty(_query))
             {
-                if (_query.StartsWith(QueryPrefix, StringComparison.Ordinal))
-                {
-                    _query = _query.Substring(QueryPrefix.Length);
-                }
-
                 foreach (var arg in _query.Split(new[] {QueryArgPrefix}, StringSplitOptions.RemoveEmptyEntries))
                 {
                     var pos = arg.IndexOf(QueryArgValuePrefix, StringComparison.Ordinal);

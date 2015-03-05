@@ -172,5 +172,53 @@ namespace Saleslogix.SData.Client.Test.Framework
             uri["hello"] = "world";
             Assert.That(uri.ToString(), Is.EqualTo("http://localhost:3333/sdata/aw/dynamic/-/accounts?hello=world"));
         }
+
+        [Test]
+        public void Duplicate_QueryPrefix_Test()
+        {
+            var uri = new UriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?format=html");
+            Assert.That(uri.ToString(), Is.Not.Contains("??"));
+        }
+
+        [Test]
+        public void Escape_Data_Chars_In_Constructor_Uri_Test()
+        {
+            var uri = new UriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?test=foo:bar");
+            Assert.That(uri.AbsoluteUri, Is.Not.Contains("foo:bar"));
+            Assert.That(uri["test"], Is.EqualTo("foo:bar"));
+        }
+
+        [Test]
+        public void Escape_Second_Equals_Char_In_Constructor_Uri_Test()
+        {
+            var uri = new UriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?test=foo=bar");
+            Assert.That(uri.AbsoluteUri, Is.Not.Contains("foo=bar"));
+            Assert.That(uri["test"], Is.EqualTo("foo=bar"));
+        }
+
+        [Test]
+        public void Only_Parse_If_Data_Chars_In_Constructor_Uri_Test()
+        {
+            var uri = new TrackedUriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?test=foo&hello=world");
+            Assert.That(uri.QueryParsed, Is.False);
+            uri = new TrackedUriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?test=foo:bar&hello=world");
+            Assert.That(uri.QueryParsed, Is.True);
+        }
+
+        private class TrackedUriFormatter : UriFormatter
+        {
+            public TrackedUriFormatter(string uri)
+                : base(uri)
+            {
+            }
+
+            public bool QueryParsed { get; set; }
+
+            protected override void OnParseQuery()
+            {
+                QueryParsed = true;
+                base.OnParseQuery();
+            }
+        }
     }
 }
