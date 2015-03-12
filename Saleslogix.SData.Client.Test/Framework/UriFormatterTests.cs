@@ -205,6 +205,13 @@ namespace Saleslogix.SData.Client.Test.Framework
             Assert.That(uri.QueryParsed, Is.True);
         }
 
+        [Test]
+        public void Only_Parse_If_Percent_Not_Escape_In_Constructor_Uri_Test()
+        {
+            var uri = new TrackedUriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts?test=foo%30bar&hello=world");
+            Assert.That(uri.QueryParsed, Is.False);
+        }
+
         private class TrackedUriFormatter : UriFormatter
         {
             public TrackedUriFormatter(string uri)
@@ -219,6 +226,13 @@ namespace Saleslogix.SData.Client.Test.Framework
                 QueryParsed = true;
                 base.OnParseQuery();
             }
+        }
+
+        [Test]
+        public void DirectPath_Retained_When_Uri_Auto_Escaped_Test()
+        {
+            var uri = new TrackedUriFormatter("http://localhost:3333/sdata/aw/dynamic/-/accounts('abc123')/address?test=foo:bar");
+            Assert.That(uri.DirectPath, Is.EqualTo("sdata/aw/dynamic/-/accounts/address"));
         }
     }
 }

@@ -249,31 +249,11 @@ namespace Saleslogix.SData.Client.Framework
                     {
                         query = query.Substring(QueryPrefix.Length);
                     }
-                    var hasEquals = false;
-                    foreach (var c in query)
+                    if (!IsQueryEscaped(query))
                     {
-                        if ((c < '0' || c > 'z' ||
-                             (c > '9' && c < 'A') ||
-                             (c > 'Z' && c < 'a')) &&
-                            c != '!' && c != '\'' && c != '(' && c != ')' && c != '*' &&
-                            c != '-' && c != '.' && c != '_' && c != '~')
-                        {
-                            if (c == '&')
-                            {
-                                hasEquals = false;
-                            }
-                            else if (c == '=' && !hasEquals)
-                            {
-                                hasEquals = true;
-                            }
-                            else
-                            {
-                                _query = query;
-                                OnParseQuery();
-                                _requiresRebuildQuery = true;
-                                break;
-                            }
-                        }
+                        _query = query;
+                        OnParseQuery();
+                        _requiresRebuildQuery = true;
                     }
                 }
             }
@@ -405,10 +385,8 @@ namespace Saleslogix.SData.Client.Framework
         {
             get
             {
-                if (_requiresRebuildPath || _directPath == null)
+                if (_directPath == null)
                 {
-                    CheckRebuildPath();
-
                     var path = new StringBuilder();
 
                     foreach (var segment in PathSegments)
@@ -576,32 +554,8 @@ namespace Saleslogix.SData.Client.Framework
         /// <param name="value">The value of the argument.</param>
         public string this[string name]
         {
-            get
-            {
-                CheckParseQuery();
-
-                string value;
-                QueryArgs.TryGetValue(name, out value);
-                return value;
-            }
-            set
-            {
-                CheckParseQuery();
-
-                if (value == null)
-                {
-                    if (_queryArgs != null)
-                    {
-                        _queryArgs.Remove(name);
-                    }
-                }
-                else
-                {
-                    QueryArgs[name] = value;
-                }
-
-                _requiresRebuildUri = true;
-            }
+            get { return QueryArgs[name]; }
+            set { QueryArgs[name] = value; }
         }
 
         /// <summary>
@@ -1113,6 +1067,73 @@ namespace Saleslogix.SData.Client.Framework
             }
         }
 
+        private static bool IsQueryEscaped(string query)
+        {
+            var hex = 0;
+            var hasEquals = false;
+
+            foreach (var c in query)
+            {
+                switch (hex)
+                {
+                    case 1:
+                        if (c < '0' || c > '7')
+                        {
+                            return false;
+                        }
+                        hex = 2;
+                        break;
+                    case 2:
+                        if (c < '0' || c > 'f' ||
+                            (c > '9' && c < 'A') ||
+                            (c > 'F' && c < 'a'))
+                        {
+                            return false;
+                        }
+                        hex = 0;
+                        break;
+                    default:
+                        switch (c)
+                        {
+                            case '%':
+                                hex = 1;
+                                break;
+                            case '&':
+                                hasEquals = false;
+                                break;
+                            case '=':
+                                if (hasEquals)
+                                {
+                                    return false;
+                                }
+                                hasEquals = true;
+                                break;
+                            case '!':
+                            case '\'':
+                            case '(':
+                            case ')':
+                            case '*':
+                            case '-':
+                            case '.':
+                            case '_':
+                            case '~':
+                                break;
+                            default:
+                                if (c < '0' || c > 'z' ||
+                                    (c > '9' && c < 'A') ||
+                                    (c > 'Z' && c < 'a'))
+                                {
+                                    return false;
+                                }
+                                break;
+                        }
+                        break;
+                }
+            }
+
+            return hex == 0;
+        }
+
         #endregion
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
@@ -1162,12 +1183,21 @@ namespace Saleslogix.SData.Client.Framework
                 get
                 {
                     _uri.CheckParseQuery();
-                    return this[key];
+                    string value;
+                    TryGetValue(key, out value);
+                    return value;
                 }
                 set
                 {
                     _uri.CheckParseQuery();
-                    this[key] = value;
+                    if (value == null)
+                    {
+                        Remove(key);
+                    }
+                    else
+                    {
+                        this[key] = value;
+                    }
                     _uri.RequiresRebuildQuery = true;
                 }
             }
