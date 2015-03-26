@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 using Remotion.Linq.Parsing.ExpressionTreeVisitors;
@@ -14,7 +15,7 @@ namespace Saleslogix.SData.Client.Test.Linq
     [TestFixture]
     public class SDataExpressionBuilderVisitorTests
     {
-        private static readonly ExpressionTransformerRegistry _tranformationProvider = ExpressionTransformerRegistry.CreateDefault();
+        private static readonly ExpressionTransformerRegistry _transformationProvider = ExpressionTransformerRegistry.CreateDefault();
 
         #region Constants
 
@@ -548,6 +549,18 @@ namespace Saleslogix.SData.Client.Test.Linq
             AssertObject((Contact c) => c.Key, "$key");
         }
 
+        [Test]
+        public void Contains_Array_Test()
+        {
+            AssertObject((Contact c) => new[] {"John", "Jane"}.Contains(c.LastName), "(LastName in ('John','Jane'))");
+        }
+
+        [Test]
+        public void Contains_List_Test()
+        {
+            AssertObject((Contact c) => new List<string> {"John", "Jane"}.Contains(c.LastName), "(LastName in ('John','Jane'))");
+        }
+
         private static void AssertSimple<T>(Expression<Func<T>> lambda, string expected)
         {
             AssertLambda(lambda, expected);
@@ -562,7 +575,7 @@ namespace Saleslogix.SData.Client.Test.Linq
         {
             var expression = lambda.Body;
             expression = PartialEvaluatingExpressionTreeVisitor.EvaluateIndependentSubtrees(expression);
-            expression = TransformingExpressionTreeVisitor.Transform(expression, _tranformationProvider);
+            expression = TransformingExpressionTreeVisitor.Transform(expression, _transformationProvider);
             var result = SDataExpressionBuilderVisitor.BuildExpression(expression);
             Assert.That(result, Is.EqualTo(expected));
         }

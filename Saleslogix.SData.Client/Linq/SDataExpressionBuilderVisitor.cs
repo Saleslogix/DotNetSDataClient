@@ -3,10 +3,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Parsing;
+using Remotion.Linq.Parsing.Structure;
+using Remotion.Linq.Parsing.Structure.IntermediateModel;
+using Remotion.Linq.Parsing.Structure.NodeTypeProviders;
 using Saleslogix.SData.Client.Framework;
 
 namespace Saleslogix.SData.Client.Linq
@@ -125,6 +129,35 @@ namespace Saleslogix.SData.Client.Linq
                         Append(expression.Object, ".");
                     }
                     Append((string) ((ConstantExpression) arg).Value);
+                    return expression;
+                }
+            }
+            else if (new INodeTypeProvider[]
+                {
+                    MethodNameBasedNodeTypeRegistry.CreateFromTypes(new[] {typeof (ContainsExpressionNode)}),
+                    MethodInfoBasedNodeTypeRegistry.CreateFromTypes(new[] {typeof (ContainsExpressionNode)})
+                }.Any(provider => provider.IsRegistered(method)))
+            {
+                Expression source;
+                Expression target;
+                if (expression.Object != null)
+                {
+                    source = expression.Object;
+                    target = expression.Arguments[0];
+                }
+                else
+                {
+                    source = expression.Arguments[0];
+                    target = expression.Arguments[1];
+                }
+                var constExpr = source as ConstantExpression;
+                if (constExpr != null)
+                {
+                    if (!(constExpr.Value is Array))
+                    {
+                        source = Expression.Constant(((IEnumerable) constExpr.Value).Cast<object>().ToArray());
+                    }
+                    Append("(", target, " in ", source, ")");
                     return expression;
                 }
             }
