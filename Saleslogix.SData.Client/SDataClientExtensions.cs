@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 1997-2014, SalesLogix NA, LLC. All rights reserved.
 
+using System.Collections.Generic;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 using Saleslogix.SData.Client.Utilities;
@@ -20,6 +21,102 @@ namespace Saleslogix.SData.Client
 {
     public static class SDataClientExtensions
     {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+        public static IEnumerable<SDataResource> Enumerate(this ISDataClient client, string path, SDataEnumerateOptions options = null)
+        {
+            return Enumerate<SDataResource>(client, path, options);
+        }
+
+        public static IEnumerable<T> Enumerate<T>(this ISDataClient client, string path, T prototype, SDataEnumerateOptions options = null)
+        {
+            return Enumerate<T>(client, path, options);
+        }
+
+        public static IEnumerable<T> Enumerate<T>(this ISDataClient client, string path = null, SDataEnumerateOptions options = null)
+        {
+            var parms = GetEnumerateParameters(client, GetPath<T>(path), options);
+
+            while (true)
+            {
+                var collection = client.Execute<SDataCollection<T>>(parms).Content;
+                if (collection.Count == 0)
+                {
+                    break;
+                }
+
+                foreach (var item in collection)
+                {
+                    yield return item;
+                }
+
+                parms.StartIndex = (parms.StartIndex ?? 1) + collection.Count;
+                if (collection.TotalResults != null && parms.StartIndex > collection.TotalResults)
+                {
+                    break;
+                }
+            }
+        }
+#endif
+
+#if !NET_2_0 && !NET_3_5
+        public static Task<IEnumerable<SDataResource>> EnumerateAsync(this ISDataClient client, string path = null, SDataEnumerateOptions options = null, CancellationToken cancel = default(CancellationToken))
+        {
+            return EnumerateAsync<SDataResource>(client, path, options, cancel);
+        }
+
+        public static Task<IEnumerable<T>> EnumerateAsync<T>(this ISDataClient client, string path, T prototype, SDataEnumerateOptions options = null, CancellationToken cancel = default(CancellationToken))
+        {
+            return EnumerateAsync<T>(client, path, options, cancel);
+        }
+
+        public static Task<IEnumerable<T>> EnumerateAsync<T>(this ISDataClient client, string path = null, SDataEnumerateOptions options = null, CancellationToken cancel = default(CancellationToken))
+        {
+            var parms = GetEnumerateParameters(client, GetPath<T>(path), options);
+            var items = new List<T>();
+            Func<Task<ISDataResults<SDataCollection<T>>>> loop = null;
+            loop =
+                () => client.ExecuteAsync<SDataCollection<T>>(parms, cancel)
+                    .ContinueWith(
+                        task =>
+                        {
+                            var collection = task.Result.Content;
+                            if (collection.Count == 0)
+                            {
+                                return task;
+                            }
+
+                            items.AddRange(collection);
+                            parms.StartIndex = (parms.StartIndex ?? 1) + collection.Count;
+                            if (collection.TotalResults != null && parms.StartIndex > collection.TotalResults)
+                            {
+                                return task;
+                            }
+
+                            return loop();
+                        }, cancel)
+                    .Unwrap();
+            return loop().ContinueWith(task => (IEnumerable<T>) items, cancel);
+        }
+#endif
+
+        private static SDataParameters GetEnumerateParameters(ISDataClient client, string path, SDataEnumerateOptions options)
+        {
+            Guard.ArgumentNotNull(client, "client");
+            if (options == null)
+            {
+                options = new SDataEnumerateOptions();
+            }
+            return new SDataParameters
+                {
+                    Path = path,
+                    Where = options.Where,
+                    OrderBy = options.OrderBy,
+                    Include = options.Include,
+                    Select = options.Select,
+                    Precedence = options.Precedence
+                };
+        }
+
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
         public static SDataResource Get(this ISDataClient client, string key, string path, SDataPayloadOptions options = null)
         {

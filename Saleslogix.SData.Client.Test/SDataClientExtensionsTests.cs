@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Moq;
 using NUnit.Framework;
 using Saleslogix.SData.Client.Framework;
+using Saleslogix.SData.Client.Test.Model;
+
 #if !NET_2_0 && !NET_3_5
 using System.Threading;
 using System.Threading.Tasks;
-
 #endif
 
 // ReSharper disable InconsistentNaming
@@ -15,6 +18,120 @@ namespace Saleslogix.SData.Client.Test
     [TestFixture]
     public class SDataClientExtensionsTests
     {
+#if !PCL && !NETFX_CORE && !SILVERLIGHT
+        [Test]
+        public void Enumerate_Empty_Test()
+        {
+            var page = CreateCollection(Enumerable.Empty<Contact>(), 0);
+            var client = CreateClient(null, page);
+            var result = client.Enumerate<Contact>("dummy");
+
+            Assert.That(result, Is.Empty);
+        }
+
+        [Test]
+        public void Enumerate_Normal_Test()
+        {
+            var page1 = CreateCollection(Enumerable.Range(0, 3).Select(i => new Contact()), 6);
+            var page2 = CreateCollection(Enumerable.Range(0, 3).Select(i => new Contact()), 6);
+            var client = CreateClient(null, page1, page2);
+            var result = client.Enumerate<Contact>("dummy");
+
+            Assert.That(result, Is.EquivalentTo(page1.Concat(page2)));
+        }
+
+        private static ISDataClient CreateClient<T>(ICollection<SDataParameters> parmsList, params T[] responseDataSequence)
+        {
+            var clientMock = new Mock<ISDataClient>();
+            var responses = new Queue<ISDataResults<T>>(
+                responseDataSequence.Select(
+                    data =>
+                        {
+                            var responseMock = new Mock<ISDataResults<T>>();
+                            responseMock.Setup(x => x.Content).Returns(data);
+                            return responseMock.Object;
+                        }));
+            clientMock.Setup(x => x.Execute<T>(It.IsAny<SDataParameters>()))
+                      .Returns(responses.Dequeue)
+                      .Callback((SDataParameters parms) =>
+                                    {
+                                        if (parmsList != null)
+                                        {
+                                            parmsList.Add(parms);
+                                        }
+                                    });
+            return clientMock.Object;
+        }
+#endif
+
+#if !NET_2_0 && !NET_3_5
+        [Test]
+        public void EnumerateAsync_Empty_Test()
+        {
+            var page = CreateCollection(Enumerable.Empty<Contact>(), 0);
+            var client = CreateClientAsync(null, page);
+            var result = client.EnumerateAsync<Contact>("dummy").Result;
+
+            Assert.That(result, Is.Empty);
+        }
+
+        [Test]
+        public void EnumerateAsync_Normal_Test()
+        {
+            var page1 = CreateCollection(Enumerable.Range(0, 3).Select(i => new Contact()), 6);
+            var page2 = CreateCollection(Enumerable.Range(0, 3).Select(i => new Contact()), 6);
+            var client = CreateClientAsync(null, page1, page2);
+            var result = client.EnumerateAsync<Contact>("dummy").Result;
+
+            Assert.That(result, Is.EquivalentTo(page1.Concat(page2)));
+        }
+
+        private static ISDataClient CreateClientAsync<T>(ICollection<SDataParameters> parmsList, params T[] responseDataSequence)
+        {
+            var clientMock = new Mock<ISDataClient>();
+            var responses = new Queue<Task<ISDataResults<T>>>(
+                responseDataSequence.Select(
+                    data =>
+                        {
+                            var responseMock = new Mock<ISDataResults<T>>();
+                            responseMock.Setup(x => x.Content).Returns(data);
+                            var taskSource = new TaskCompletionSource<ISDataResults<T>>();
+                            taskSource.SetResult(responseMock.Object);
+                            return taskSource.Task;
+                        }));
+            clientMock.Setup(x => x.ExecuteAsync<T>(It.IsAny<SDataParameters>(), CancellationToken.None))
+                      .Returns(responses.Dequeue)
+                      .Callback((SDataParameters parms, CancellationToken cancel) =>
+                                    {
+                                        if (parmsList != null)
+                                        {
+                                            parmsList.Add(parms);
+                                        }
+                                    });
+            return clientMock.Object;
+        }
+#endif
+
+        private static SDataCollection<T> CreateCollection<T>(IEnumerable<T> collection, int? totalResults)
+        {
+            var list = new SDataCollection<T>();
+
+            if (collection != null)
+            {
+                foreach (var item in collection)
+                {
+                    list.Add(item);
+                }
+            }
+
+            if (totalResults != null)
+            {
+                ((ISDataProtocolObject) list).Info = new SDataProtocolInfo {TotalResults = totalResults};
+            }
+
+            return list;
+        }
+
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
         [Test]
         public void CallService_Static_Action_Test()

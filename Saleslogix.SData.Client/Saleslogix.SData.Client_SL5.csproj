@@ -335,6 +335,7 @@
     <Compile Include="SDataClientException.cs" />
     <Compile Include="SDataClientExtensions.cs" />
     <Compile Include="SDataCollection.cs" />
+    <Compile Include="SDataEnumerateOptions.cs" />
     <Compile Include="SDataLink.cs" />
     <Compile Include="SDataParameters.cs" />
     <Compile Include="SDataPathAttribute.cs" />
