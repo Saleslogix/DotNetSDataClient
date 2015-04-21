@@ -63,7 +63,7 @@ namespace Saleslogix.SData.Client
         public bool DifferentialUpdate { get; set; }
 
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-        public ISDataResults Execute(SDataParameters parms)
+        public virtual ISDataResults Execute(SDataParameters parms)
         {
             var request = CreateRequest(parms, true);
             var response = request.GetResponse();
@@ -71,13 +71,13 @@ namespace Saleslogix.SData.Client
             return SDataResults.FromResponse(response);
         }
 
-        public ISDataResults<T> Execute<T>(SDataParameters parms)
+        public virtual ISDataResults<T> Execute<T>(SDataParameters parms)
         {
             var request = CreateRequest(parms, false);
             return CreateResults<T>(request.GetResponse());
         }
 
-        public ISDataResults<IList<T>> ExecuteBatch<T>(IList<SDataParameters> items)
+        public virtual ISDataResults<IList<T>> ExecuteBatch<T>(IList<SDataParameters> items)
         {
             var request = CreateBatchRequest(items);
             return CreateResults<IList<T>>(request.GetResponse());
@@ -85,19 +85,19 @@ namespace Saleslogix.SData.Client
 #endif
 
 #if !NET_2_0 && !NET_3_5
-        public Task<ISDataResults> ExecuteAsync(SDataParameters parms, CancellationToken cancel = default(CancellationToken))
+        public virtual Task<ISDataResults> ExecuteAsync(SDataParameters parms, CancellationToken cancel = default(CancellationToken))
         {
             var request = CreateRequest(parms, true);
             return ExecuteAsync(request, SDataResults.FromResponse, cancel);
         }
 
-        public Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel = default(CancellationToken))
+        public virtual Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel = default(CancellationToken))
         {
             var request = CreateRequest(parms, false);
             return ExecuteAsync(request, CreateResults<T>, cancel);
         }
 
-        public Task<ISDataResults<IList<T>>> ExecuteBatchAsync<T>(IList<SDataParameters> items, CancellationToken cancel = new CancellationToken())
+        public virtual Task<ISDataResults<IList<T>>> ExecuteBatchAsync<T>(IList<SDataParameters> items, CancellationToken cancel = new CancellationToken())
         {
             var request = CreateBatchRequest(items);
             return ExecuteAsync(request, CreateResults<IList<T>>, cancel);

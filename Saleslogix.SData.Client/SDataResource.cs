@@ -434,7 +434,6 @@ namespace Saleslogix.SData.Client
         #endregion
 
 #if !NET_2_0 && !NET_3_5
-
         #region DynamicObject Members
 
         public override IEnumerable<string> GetDynamicMemberNames()
@@ -489,7 +488,6 @@ namespace Saleslogix.SData.Client
         }
 
         #endregion
-
 #endif
     }
 }
