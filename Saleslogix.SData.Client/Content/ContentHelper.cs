@@ -401,10 +401,10 @@ namespace Saleslogix.SData.Client.Content
                             info.XmlLocalName = xmlAttr.TypeName;
                             info.XmlNamespace = xmlAttr.Namespace;
                         }
-                        else
-                        {
-                            info.XmlLocalName = type.Name;
-                        }
+                    }
+                    if (string.IsNullOrEmpty(info.XmlLocalName))
+                    {
+                        info.XmlLocalName = type.Name;
                     }
                 }
 

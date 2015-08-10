@@ -101,7 +101,7 @@ namespace Saleslogix.SData.Client.Test
         }
 
         [Test]
-        public void ChangeTracking_Retain_Key_And_ETag_Test()
+        public void ChangeTracking_Retain_Protocol_Info_Test()
         {
             var nested = new SDataResource {{"Country", "Australia"}, {"City", "Melbourne"}};
             nested.Key = "address1";
@@ -109,6 +109,8 @@ namespace Saleslogix.SData.Client.Test
             var resource = new SDataResource {{"FirstName", "Joe"}, {"Address", nested}};
             resource.Key = "contact1";
             resource.ETag = "ccc1";
+            resource.XmlNamespace = "ns";
+            resource.XmlLocalName = "contact";
             resource.AcceptChanges();
             resource["FirstName"] = "Joanne";
             nested["City"] = "Sydney";
@@ -116,6 +118,8 @@ namespace Saleslogix.SData.Client.Test
             Assert.That(changes, Is.Not.EqualTo(resource));
             Assert.That(changes.Key, Is.EqualTo("contact1"));
             Assert.That(changes.ETag, Is.EqualTo("ccc1"));
+            Assert.That(changes.XmlNamespace, Is.EqualTo("ns"));
+            Assert.That(changes.XmlLocalName, Is.EqualTo("contact"));
             changes = (SDataResource) changes["Address"];
             Assert.That(changes, Is.Not.EqualTo(nested));
             Assert.That(changes.Key, Is.EqualTo("address1"));

@@ -459,7 +459,7 @@ namespace Saleslogix.SData.Client.Content
             return feed;
         }
 
-        private static XElement WriteEntry(IEnumerable<KeyValuePair<string, object>> resource, INamingScheme namingScheme)
+        private static XElement WriteEntry(ICollection<KeyValuePair<string, object>> resource, INamingScheme namingScheme)
         {
             var entry = new XElement(_atomNs + "entry");
 
@@ -467,6 +467,11 @@ namespace Saleslogix.SData.Client.Content
             var info = prot != null ? prot.Info : null;
             if (info != null)
             {
+                if (string.IsNullOrEmpty(info.XmlLocalName) && resource.Count > 0)
+                {
+                    throw new SDataClientException("XML local name must be specified when writing ATOM content");
+                }
+
                 WriteElementValue(entry, _atomNs + "id", info.Id);
                 WriteElementValue(entry, _atomNs + "title", info.Title);
                 WriteElementValue(entry, _atomNs + "updated", info.Updated);

@@ -261,7 +261,13 @@ namespace Saleslogix.SData.Client
                 })
                 .Where(item => item != null)
                 .ToDictionary(item => item.Key, item => item.value);
-            return changes.Count > 0 ? new SDataResource(changes) {Key = Key, ETag = ETag} : null;
+            if (changes.Count == 0)
+            {
+                return null;
+            }
+            var resource = new SDataResource(changes);
+            ((ISDataProtocolObject) resource).Info = _info;
+            return resource;
         }
 
         public void AcceptChanges()

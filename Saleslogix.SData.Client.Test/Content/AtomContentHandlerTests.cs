@@ -509,5 +509,12 @@ namespace Saleslogix.SData.Client.Test.Content
             Assert.That(nodes[2].SelectSingleNode("@type").Value, Is.EqualTo("application/atom+xml"));
             Assert.That(nodes[2].SelectSingleNode("@title").Value, Is.EqualTo("Service"));
         }
+
+        [Test]
+        public void Write_Missing_XmlLocalName_Test()
+        {
+            var resource = new SDataResource {{"LastName", "Smith"}};
+            Assert.That(() => Helpers.WriteAtom(resource), Throws.TypeOf<SDataClientException>());
+        }
     }
 }

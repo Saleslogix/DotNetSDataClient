@@ -268,7 +268,14 @@ namespace Saleslogix.SData.Client
                     .Where(item => item != null)
                     .ToList();
             }
-            return changes.Count > 0 ? new SDataCollection<object>(changes) {DeleteMissing = deleteMissing} : null;
+            if (changes.Count == 0)
+            {
+                return null;
+            }
+            var collection = new SDataCollection<object>(changes);
+            ((ISDataProtocolObject) collection).Info = _info;
+            collection.DeleteMissing = deleteMissing;
+            return collection;
         }
 
         public void AcceptChanges()
