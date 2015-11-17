@@ -70,25 +70,34 @@ namespace Saleslogix.SData.Client.Content
 
         private static SDataResource ReadResource(IDictionary<string, object> obj)
         {
+            HttpStatusCode? httpStatus;
+            try
+            {
+                httpStatus = (HttpStatusCode?)ReadProtocolValue<long?>(obj, "httpStatus");
+            }
+            catch (FormatException)
+            {
+                httpStatus = ReadProtocolValue<HttpStatusCode>(obj, "httpStatus");
+            }
             var resource = new SDataResource
-                {
-                    Id = ReadProtocolValue<string>(obj, "id"),
-                    Title = ReadProtocolValue<string>(obj, "title"),
-                    Updated = ReadProtocolValue<DateTimeOffset?>(obj, "updated"),
-                    HttpMethod = ReadProtocolValue<HttpMethod?>(obj, "httpMethod"),
-                    HttpStatus = (HttpStatusCode?) ReadProtocolValue<long?>(obj, "httpStatus"),
-                    HttpMessage = ReadProtocolValue<string>(obj, "httpMessage"),
-                    Location = ReadProtocolValue<string>(obj, "location"),
-                    ETag = ReadProtocolValue<string>(obj, "etag"),
-                    IfMatch = ReadProtocolValue<string>(obj, "ifMatch"),
-                    Url = ReadProtocolValue<Uri>(obj, "url"),
-                    Key = ReadProtocolValue<string>(obj, "key"),
-                    Uuid = ReadProtocolValue<Guid?>(obj, "uuid"),
-                    Lookup = ReadProtocolValue<string>(obj, "lookup"),
-                    Descriptor = ReadProtocolValue<string>(obj, "descriptor"),
-                    Links = ReadLinks(obj),
-                    IsDeleted = ReadProtocolValue<bool?>(obj, "isDeleted")
-                };
+            {
+                Id = ReadProtocolValue<string>(obj, "id"),
+                Title = ReadProtocolValue<string>(obj, "title"),
+                Updated = ReadProtocolValue<DateTimeOffset?>(obj, "updated"),
+                HttpMethod = ReadProtocolValue<HttpMethod?>(obj, "httpMethod"),
+                HttpStatus = httpStatus,
+                HttpMessage = ReadProtocolValue<string>(obj, "httpMessage"),
+                Location = ReadProtocolValue<string>(obj, "location"),
+                ETag = ReadProtocolValue<string>(obj, "etag"),
+                IfMatch = ReadProtocolValue<string>(obj, "ifMatch"),
+                Url = ReadProtocolValue<Uri>(obj, "url"),
+                Key = ReadProtocolValue<string>(obj, "key"),
+                Uuid = ReadProtocolValue<Guid?>(obj, "uuid"),
+                Lookup = ReadProtocolValue<string>(obj, "lookup"),
+                Descriptor = ReadProtocolValue<string>(obj, "descriptor"),
+                Links = ReadLinks(obj),
+                IsDeleted = ReadProtocolValue<bool?>(obj, "isDeleted")
+            };
 
             object value;
             if (obj.TryGetValue("$diagnoses", out value))
