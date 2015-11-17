@@ -6,7 +6,7 @@ namespace Saleslogix.SData.Client
 {
     public interface INamingScheme
     {
-        string GetName(MemberInfo member);
+        string GetName(MemberInfo member, bool includeProtocolProps = true);
         string GetName(ParameterInfo param);
     }
 }

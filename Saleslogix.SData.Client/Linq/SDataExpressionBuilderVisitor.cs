@@ -216,7 +216,7 @@ namespace Saleslogix.SData.Client.Linq
                 Append(expression.Expression, ".");
             }
 
-            Append(_namingScheme.GetName(expression.Member));
+            Append(_namingScheme.GetName(expression.Member, false));
             return expression;
         }
 
