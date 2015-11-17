@@ -70,13 +70,22 @@ namespace Saleslogix.SData.Client.Content
 
         private static SDataResource ReadResource(IDictionary<string, object> obj)
         {
+            HttpStatusCode? httpStatus;
+            try
+            {
+                httpStatus = (HttpStatusCode?) ReadProtocolValue<long?>(obj, "httpStatus");
+            }
+            catch (FormatException)
+            {
+                httpStatus = ReadProtocolValue<HttpStatusCode>(obj, "httpStatus");
+            }
             var resource = new SDataResource
                 {
                     Id = ReadProtocolValue<string>(obj, "id"),
                     Title = ReadProtocolValue<string>(obj, "title"),
                     Updated = ReadProtocolValue<DateTimeOffset?>(obj, "updated"),
                     HttpMethod = ReadProtocolValue<HttpMethod?>(obj, "httpMethod"),
-                    HttpStatus = (HttpStatusCode?) ReadProtocolValue<long?>(obj, "httpStatus"),
+                    HttpStatus = httpStatus,
                     HttpMessage = ReadProtocolValue<string>(obj, "httpMessage"),
                     Location = ReadProtocolValue<string>(obj, "location"),
                     ETag = ReadProtocolValue<string>(obj, "etag"),
