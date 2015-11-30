@@ -36,19 +36,22 @@ namespace Saleslogix.SData.Client
                 _transform = transform;
             }
 
-            public string GetName(MemberInfo member)
+            public string GetName(MemberInfo member, bool includeProtocolProps = true)
             {
                 Guard.ArgumentNotNull(member, "member");
 
-                var protocolAttr = member.GetCustomAttribute<SDataProtocolPropertyAttribute>();
-                if (protocolAttr != null)
+                if (includeProtocolProps)
                 {
-                    var name = protocolAttr.Value != null ? protocolAttr.Value.ToString() : member.Name;
-                    if (char.IsUpper(name[0]))
+                    var protocolAttr = member.GetCustomAttribute<SDataProtocolPropertyAttribute>();
+                    if (protocolAttr != null)
                     {
-                        name = char.ToLowerInvariant(name[0]) + name.Substring(1);
+                        var name = protocolAttr.Value != null ? protocolAttr.Value.ToString() : member.Name;
+                        if (char.IsUpper(name[0]))
+                        {
+                            name = char.ToLowerInvariant(name[0]) + name.Substring(1);
+                        }
+                        return "$" + name;
                     }
-                    return "$" + name;
                 }
 
 #if !NET_2_0

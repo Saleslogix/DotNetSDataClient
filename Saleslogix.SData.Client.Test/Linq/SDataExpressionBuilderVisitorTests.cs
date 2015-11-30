@@ -546,7 +546,8 @@ namespace Saleslogix.SData.Client.Test.Linq
         [Test]
         public void Property_ProtocolProperty_Test()
         {
-            AssertObject((Contact c) => c.Key, "$key");
+            // ensure the protocol properties are kept as literal when building a query
+            AssertObject((Contact c) => c.Key, "Key");
         }
 
         [Test]
