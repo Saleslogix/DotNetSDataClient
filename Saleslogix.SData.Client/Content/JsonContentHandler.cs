@@ -76,7 +76,7 @@ namespace Saleslogix.SData.Client.Content
                     Title = ReadProtocolValue<string>(obj, "title"),
                     Updated = ReadProtocolValue<DateTimeOffset?>(obj, "updated"),
                     HttpMethod = ReadProtocolValue<HttpMethod?>(obj, "httpMethod"),
-                    HttpStatus = (HttpStatusCode?) ReadProtocolValue<long?>(obj, "httpStatus"),
+                    HttpStatus = ReadProtocolValue<HttpStatusCode?>(obj, "httpStatus"),
                     HttpMessage = ReadProtocolValue<string>(obj, "httpMessage"),
                     Location = ReadProtocolValue<string>(obj, "location"),
                     ETag = ReadProtocolValue<string>(obj, "etag"),
@@ -198,6 +198,10 @@ namespace Saleslogix.SData.Client.Content
                 if (str != null)
                 {
                     value = EnumEx.Parse(type, str);
+                }
+                else
+                {
+                    value = Enum.ToObject(type, value);
                 }
             }
 

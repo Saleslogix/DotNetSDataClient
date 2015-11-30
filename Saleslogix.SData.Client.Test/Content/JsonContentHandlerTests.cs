@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using NUnit.Framework;
 using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
@@ -86,6 +87,22 @@ namespace Saleslogix.SData.Client.Test.Content
             const string json = @"{""Description"":""before /Date(1371283200000)/ after""}";
             var resource = Helpers.ReadJson<SDataResource>(json);
             Assert.That(resource["Description"], Is.EqualTo("before /Date(1371283200000)/ after"));
+        }
+
+        [Test]
+        public void Read_Enum_Number_Test()
+        {
+            const string json = @"{""$httpStatus"":200}";
+            var resource = Helpers.ReadJson<SDataResource>(json);
+            Assert.That(resource.HttpStatus, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [Test]
+        public void Read_Enum_String_Test()
+        {
+            const string json = @"{""$httpStatus"":""OK""}";
+            var resource = Helpers.ReadJson<SDataResource>(json);
+            Assert.That(resource.HttpStatus, Is.EqualTo(HttpStatusCode.OK));
         }
 
         [Test]
