@@ -75,7 +75,7 @@ namespace Saleslogix.SData.Client.Content
                     Id = ReadProtocolValue<string>(obj, "id"),
                     Title = ReadProtocolValue<string>(obj, "title"),
                     Updated = ReadProtocolValue<DateTimeOffset?>(obj, "updated"),
-                    HttpMethod = ReadProtocolValue<HttpMethod?>(obj, "httpMethod"),
+                    HttpMethod = ReadProtocolValue<HttpMethod?>(obj, "httpMethod", true),
                     HttpStatus = ReadProtocolValue<HttpStatusCode?>(obj, "httpStatus"),
                     HttpMessage = ReadProtocolValue<string>(obj, "httpMessage"),
                     Location = ReadProtocolValue<string>(obj, "location"),
@@ -166,7 +166,7 @@ namespace Saleslogix.SData.Client.Content
             return links;
         }
 
-        private static T ReadProtocolValue<T>(IDictionary<string, object> obj, string name)
+        private static T ReadProtocolValue<T>(IDictionary<string, object> obj, string name, bool ignoreCase = false)
         {
             object value;
             if (!obj.TryGetValue("$" + name, out value))
@@ -197,7 +197,7 @@ namespace Saleslogix.SData.Client.Content
                 var str = value as string;
                 if (str != null)
                 {
-                    value = EnumEx.Parse(type, str);
+                    value = EnumEx.Parse(type, str, ignoreCase);
                 }
                 else
                 {
@@ -363,7 +363,7 @@ namespace Saleslogix.SData.Client.Content
                 WriteProtocolValue(obj, "location", info.Location);
                 WriteProtocolValue(obj, "etag", info.ETag);
                 WriteProtocolValue(obj, "ifMatch", info.IfMatch);
-                WriteProtocolValue(obj, "httpMethod", info.HttpMethod);
+                WriteProtocolValue(obj, "httpMethod", info.HttpMethod != null ? EnumEx.Format(info.HttpMethod).ToUpperInvariant() : null);
                 WriteProtocolValue(obj, "httpStatus", (int?) info.HttpStatus);
                 WriteProtocolValue(obj, "httpMessage", info.HttpMessage);
                 WriteProtocolValue(obj, "key", info.Key);

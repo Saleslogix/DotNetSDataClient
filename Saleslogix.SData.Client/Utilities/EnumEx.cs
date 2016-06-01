@@ -16,26 +16,23 @@ namespace Saleslogix.SData.Client.Utilities
             return GetEnumData(item.GetType()).Format(item);
         }
 
-        public static object Parse(Type type, string value)
+        public static string Format<T>(T item)
+        {
+            Guard.ArgumentNotNull(item, "item");
+
+            return EnumData<T>.Format(item);
+        }
+
+        public static object Parse(Type type, string value, bool ignoreCase = false)
         {
             Guard.ArgumentNotNull(type, "type");
 
-            return GetEnumData(type).Parse(value);
+            return GetEnumData(type).Parse(value, ignoreCase);
         }
 
-        public static T Parse<T>(string value)
-        {
-            return EnumData<T>.Parse(value, false);
-        }
-
-        public static T Parse<T>(string value, bool ignoreCase)
+        public static T Parse<T>(string value, bool ignoreCase = false)
         {
             return EnumData<T>.Parse(value, ignoreCase);
-        }
-
-        public static T Parse<T>(string value, bool ignoreCase, T defaultValue)
-        {
-            return EnumData<T>.Parse(value, ignoreCase, defaultValue);
         }
 
         private static IEnumData GetEnumData(Type type)
@@ -48,7 +45,7 @@ namespace Saleslogix.SData.Client.Utilities
         private interface IEnumData
         {
             string Format(object item);
-            object Parse(string value);
+            object Parse(string value, bool ignoreCase);
         }
 
         #endregion
@@ -78,11 +75,23 @@ namespace Saleslogix.SData.Client.Utilities
                 }
             }
 
+            public static string Format(T item)
+            {
+                string value;
+
+                if (!_xmlNames.TryGetValue(item, out value))
+                {
+                    value = item.ToString();
+                }
+
+                return value;
+            }
+
             public static T Parse(string value, bool ignoreCase)
             {
                 foreach (var pair in _xmlNames)
                 {
-                    if (string.Equals(pair.Value, value, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(pair.Value, value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
                     {
                         return pair.Key;
                     }
@@ -91,51 +100,16 @@ namespace Saleslogix.SData.Client.Utilities
                 return (T) Enum.Parse(typeof (T), value, ignoreCase);
             }
 
-            public static T Parse(string value, bool ignoreCase, T defaultValue)
-            {
-                foreach (var pair in _xmlNames)
-                {
-                    if (string.Equals(pair.Value, value, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return pair.Key;
-                    }
-                }
-
-                try
-                {
-                    return (T) Enum.Parse(typeof (T), value, ignoreCase);
-                }
-                catch (FormatException)
-                {
-                    return defaultValue;
-                }
-            }
-
             #region IEnumData Members
 
             string IEnumData.Format(object item)
             {
-                string value;
-
-                if (!_xmlNames.TryGetValue((T) item, out value))
-                {
-                    value = item.ToString();
-                }
-
-                return value;
+                return Format((T) item);
             }
 
-            object IEnumData.Parse(string value)
+            object IEnumData.Parse(string value, bool ignoreCase)
             {
-                foreach (var pair in _xmlNames)
-                {
-                    if (pair.Value == value)
-                    {
-                        return pair.Key;
-                    }
-                }
-
-                return Enum.Parse(typeof (T), value, false);
+                return Parse(value, ignoreCase);
             }
 
             #endregion

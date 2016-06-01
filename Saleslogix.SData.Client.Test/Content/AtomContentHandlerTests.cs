@@ -83,6 +83,17 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
+        public void Read_HttpMethod_Test()
+        {
+            const string xml = @"
+                    <atom:entry xmlns:atom=""http://www.w3.org/2005/Atom"">
+                      <http:httpMethod xmlns:http=""http://schemas.sage.com/sdata/http/2008/1"">POST</http:httpMethod>
+                    </atom:entry>";
+            var resource = Helpers.ReadAtom<SDataResource>(xml);
+            Assert.That(resource.HttpMethod, Is.EqualTo(HttpMethod.Post));
+        }
+
+        [Test]
         public void Write_DateTime_Test()
         {
             var resource = new SDataResource {SyncState = new SyncState {Stamp = new DateTime(2013, 6, 15, 8, 0, 0)}};
@@ -515,6 +526,19 @@ namespace Saleslogix.SData.Client.Test.Content
         {
             var resource = new SDataResource {{"LastName", "Smith"}};
             Assert.That(() => Helpers.WriteAtom(resource), Throws.TypeOf<SDataClientException>());
+        }
+
+        [Test]
+        public void Write_HttpMethod_Test()
+        {
+            var resource = new SDataResource {HttpMethod = HttpMethod.Post};
+            var nav = Helpers.WriteAtom(resource);
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
+            mgr.AddNamespace("http", "http://schemas.sage.com/sdata/http/2008/1");
+            var node = nav.SelectSingleNode("atom:entry/http:httpMethod", mgr);
+            Assert.That(node, Is.Not.Null);
+            Assert.That(node.Value, Is.EqualTo("POST"));
         }
     }
 }

@@ -106,6 +106,14 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
+        public void Read_HttpMethod_Test()
+        {
+            const string json = @"{""$httpMethod"":""POST""}";
+            var resource = Helpers.ReadJson<SDataResource>(json);
+            Assert.That(resource.HttpMethod, Is.EqualTo(HttpMethod.Post));
+        }
+
+        [Test]
         public void Write_DateTime_Test()
         {
             var resource = new SDataResource {SyncState = new SyncState {Stamp = new DateTime(2013, 6, 15, 8, 0, 0)}};
@@ -334,6 +342,14 @@ namespace Saleslogix.SData.Client.Test.Content
             Assert.That(obj["$schema"], Is.EqualTo("http://dummy/$schema"));
             Assert.That(obj["$template"], Is.EqualTo("http://dummy/$template"));
             Assert.That(obj["$service"], Is.EqualTo("http://dummy/$service"));
+        }
+
+        [Test]
+        public void Write_HttpMethod_Test()
+        {
+            var resource = new SDataResource {HttpMethod = HttpMethod.Post};
+            var obj = Helpers.WriteJson(resource);
+            Assert.That(obj["$httpMethod"], Is.EqualTo("POST"));
         }
     }
 }

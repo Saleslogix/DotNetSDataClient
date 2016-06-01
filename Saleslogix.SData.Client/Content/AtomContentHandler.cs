@@ -161,7 +161,7 @@ namespace Saleslogix.SData.Client.Content
                 resource.Updated = ReadElementValue<DateTimeOffset?>(entry, _atomNs + "updated");
                 resource.Schema = ReadElementValue<string>(entry, _sDataNs + "schema");
                 resource.Links = ReadLinks(entry);
-                resource.HttpMethod = ReadElementValue<HttpMethod?>(entry, _httpNs + "httpMethod");
+                resource.HttpMethod = ReadElementValue<HttpMethod?>(entry, _httpNs + "httpMethod", true);
                 resource.HttpStatus = (HttpStatusCode?) ReadElementValue<int?>(entry, _httpNs + "httpStatus");
                 resource.HttpMessage = ReadElementValue<string>(entry, _httpNs + "httpMessage");
                 resource.Location = ReadElementValue<string>(entry, _httpNs + "location");
@@ -330,7 +330,7 @@ namespace Saleslogix.SData.Client.Content
                 .ToList();
         }
 
-        private static T ReadElementValue<T>(XContainer container, XName name)
+        private static T ReadElementValue<T>(XContainer container, XName name, bool ignoreCase = false)
         {
             var element = container.Element(name);
             if (element == null)
@@ -338,7 +338,7 @@ namespace Saleslogix.SData.Client.Content
                 return default(T);
             }
 
-            return ReadValue<T>(element.Value);
+            return ReadValue<T>(element.Value, ignoreCase);
         }
 
         private static T ReadAttributeValue<T>(XElement element, XName name)
@@ -352,7 +352,7 @@ namespace Saleslogix.SData.Client.Content
             return ReadValue<T>(attr.Value);
         }
 
-        private static T ReadValue<T>(string value)
+        private static T ReadValue<T>(string value, bool ignoreCase = false)
         {
             var type = typeof (T);
             if (type == typeof (Uri))
@@ -363,7 +363,7 @@ namespace Saleslogix.SData.Client.Content
             type = Nullable.GetUnderlyingType(type) ?? type;
             if (type.GetTypeInfo().IsEnum)
             {
-                return (T) EnumEx.Parse(type, value);
+                return (T) EnumEx.Parse(type, value, ignoreCase);
             }
 
             return XmlConvertEx.FromString<T>(value);
@@ -475,7 +475,7 @@ namespace Saleslogix.SData.Client.Content
                 WriteElementValue(entry, _atomNs + "id", info.Id);
                 WriteElementValue(entry, _atomNs + "title", info.Title);
                 WriteElementValue(entry, _atomNs + "updated", info.Updated);
-                WriteElementValue(entry, _httpNs + "httpMethod", info.HttpMethod);
+                WriteElementValue(entry, _httpNs + "httpMethod", info.HttpMethod != null ? EnumEx.Format(info.HttpMethod).ToUpperInvariant() : null);
                 WriteElementValue(entry, _httpNs + "httpStatus", (int?) info.HttpStatus);
                 WriteElementValue(entry, _httpNs + "httpMessage", info.HttpMessage);
                 WriteElementValue(entry, _httpNs + "location", info.Location);
