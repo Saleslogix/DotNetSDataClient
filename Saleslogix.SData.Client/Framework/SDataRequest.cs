@@ -50,6 +50,7 @@ namespace Saleslogix.SData.Client.Framework
             TimeoutRetryAttempts = 1;
             Method = method;
             Content = content;
+            MaxGetUriLength = 2000;
         }
 
         /// <summary>
@@ -151,6 +152,12 @@ namespace Saleslogix.SData.Client.Framework
         public bool UseHttpMethodOverride { get; set; }
 
         /// <summary>
+        /// Gets or sets the maximum length for a GET request URI before
+        /// HTTP method override should be used.
+        /// </summary>
+        public int MaxGetUriLength { get; set; }
+
+        /// <summary>
         /// Gets or sets the cookies associated with this request.
         /// </summary>
         public CookieContainer Cookies { get; set; }
@@ -178,22 +185,19 @@ namespace Saleslogix.SData.Client.Framework
             var uri = Uri;
             string location = null;
             var attempts = TimeoutRetryAttempts;
-            var hasContent = Content != null || Form.Count > 0 || Files.Count > 0;
 
             try
             {
                 while (true)
                 {
-                    _request = CreateRequest(uri);
-                    if (hasContent)
+                    MediaType? contentType;
+                    object content;
+                    _request = CreateRequest(uri, out contentType, out content);
+                    if (content != null || Form.Count > 0 || Files.Count > 0)
                     {
                         using (var stream = _request.GetRequestStream())
                         {
-                            var contentType = WriteRequestContent(stream);
-                            if (contentType != null)
-                            {
-                                _request.ContentType = contentType;
-                            }
+                            WriteRequestContent(contentType, content, stream);
                         }
                     }
 
@@ -243,14 +247,15 @@ namespace Saleslogix.SData.Client.Framework
             var uri = Uri;
             string location = null;
             var attempts = TimeoutRetryAttempts;
-            var hasContent = Content != null || Form.Count > 0 || Files.Count > 0;
             var result = new AsyncResult<SDataResponse>(callback, state);
             Action getResponse = null;
             Action loop =
                 () =>
                     {
-                        _request = CreateRequest(uri);
-                        if (hasContent)
+                        MediaType? contentType;
+                        object content;
+                        _request = CreateRequest(uri, out contentType, out content);
+                        if (content != null || Form.Count > 0 || Files.Count > 0)
                         {
                             _request.BeginGetRequestStream(
                                 async =>
@@ -259,11 +264,7 @@ namespace Saleslogix.SData.Client.Framework
                                         {
                                             using (var stream = _request.EndGetRequestStream(async))
                                             {
-                                                var contentType = WriteRequestContent(stream);
-                                                if (contentType != null)
-                                                {
-                                                    _request.ContentType = contentType;
-                                                }
+                                                WriteRequestContent(contentType, content, stream);
                                             }
                                             TraceRequest(_request);
                                             getResponse();
@@ -366,10 +367,25 @@ namespace Saleslogix.SData.Client.Framework
             }
         }
 
-        private WebRequest CreateRequest(string uri)
+        private WebRequest CreateRequest(string uri, out MediaType? contentType, out object content)
         {
+            bool methodOverride;
+            if (Method == HttpMethod.Get && uri.Length > MaxGetUriLength)
+            {
+                methodOverride = true;
+                contentType = MediaType.Text;
+                content = uri;
+                uri = new SDataUri(uri) {Query = null}.ToString();
+            }
+            else
+            {
+                methodOverride = (UseHttpMethodOverride && Method != HttpMethod.Get && Method != HttpMethod.Post);
+                contentType = ContentType;
+                content = Content;
+            }
+
             var request = WebRequest.Create(uri);
-            if (UseHttpMethodOverride && Method != HttpMethod.Get && Method != HttpMethod.Post)
+            if (methodOverride)
             {
                 request.Method = "POST";
                 request.Headers["X-HTTP-Method-Override"] = Method.ToString().ToUpperInvariant();
@@ -461,37 +477,36 @@ namespace Saleslogix.SData.Client.Framework
             return request;
         }
 
-        private string WriteRequestContent(Stream stream)
+        private void WriteRequestContent(MediaType? contentType, object content, Stream stream)
         {
             var isMultipart = Form.Count > 0 || Files.Count > 0;
             var requestStream = isMultipart ? new MemoryStream() : stream;
-            var contentType = ContentType;
 
             if (contentType == null)
             {
-                if (ContentHelper.IsDictionary(Content))
+                if (ContentHelper.IsDictionary(content))
                 {
                     contentType = MediaType.AtomEntry;
                 }
-                else if (ContentHelper.IsCollection(Content))
+                else if (ContentHelper.IsCollection(content))
                 {
                     contentType = MediaType.Atom;
                 }
-                else if (Content is IXmlSerializable)
+                else if (content is IXmlSerializable)
                 {
                     contentType = MediaType.Xml;
                 }
-                else if (Content is string)
+                else if (content is string)
                 {
                     contentType = MediaType.Text;
                 }
-                else if (ContentHelper.IsObject(Content))
+                else if (ContentHelper.IsObject(content))
                 {
                     contentType = MediaType.AtomEntry;
                 }
             }
 
-            if (contentType != null && Content != null)
+            if (contentType != null && content != null)
             {
                 var handler = ContentManager.GetHandler(contentType.Value);
                 if (handler == null)
@@ -499,7 +514,7 @@ namespace Saleslogix.SData.Client.Framework
                     throw new NotSupportedException(string.Format("Content type '{0}' not supported", contentType));
                 }
 
-                handler.WriteTo(Content, requestStream, NamingScheme);
+                handler.WriteTo(content, requestStream, NamingScheme);
             }
 
             if (isMultipart)
@@ -545,11 +560,13 @@ namespace Saleslogix.SData.Client.Framework
                     }
 
                     multipart.WriteTo(stream);
-                    return string.Format("multipart/{0}; boundary={1}", (Files.Count > 0 ? "related" : "form-data"), multipart.Boundary);
+                    _request.ContentType = string.Format("multipart/{0}; boundary={1}", (Files.Count > 0 ? "related" : "form-data"), multipart.Boundary);
                 }
             }
-
-            return contentType != null ? MediaTypeNames.GetMediaType(contentType.Value) : null;
+            else if (contentType != null)
+            {
+                _request.ContentType = MediaTypeNames.GetMediaType(contentType.Value);
+            }
         }
 
         private void TraceRequest(WebRequest request)

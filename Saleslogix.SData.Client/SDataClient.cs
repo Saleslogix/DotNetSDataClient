@@ -42,6 +42,7 @@ namespace Saleslogix.SData.Client
             _requestFactory = requestFactory;
             Format = MediaType.Json;
             DifferentialUpdate = true;
+            MaxGetUriLength = 2000;
         }
 
         public string Uri { get; set; }
@@ -51,6 +52,7 @@ namespace Saleslogix.SData.Client
         public int? Timeout { get; set; }
         public int? TimeoutRetryAttempts { get; set; }
         public bool UseHttpMethodOverride { get; set; }
+        public int MaxGetUriLength { get; set; }
 #if !PCL && !SILVERLIGHT
         public IWebProxy Proxy { get; set; }
 #endif
@@ -452,6 +454,7 @@ namespace Saleslogix.SData.Client
             request.NamingScheme = NamingScheme;
             request.Cookies = _cookies;
             request.UseHttpMethodOverride = UseHttpMethodOverride;
+            request.MaxGetUriLength = MaxGetUriLength;
 #if !PCL && !SILVERLIGHT
             request.Proxy = Proxy;
 #endif

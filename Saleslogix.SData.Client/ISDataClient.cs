@@ -20,6 +20,7 @@ namespace Saleslogix.SData.Client
         int? Timeout { get; set; }
         int? TimeoutRetryAttempts { get; set; }
         bool UseHttpMethodOverride { get; set; }
+        int MaxGetUriLength { get; set; }
 #if !PCL && !SILVERLIGHT
         IWebProxy Proxy { get; set; }
 #endif

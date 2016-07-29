@@ -26,12 +26,11 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("2.0")]
-[assembly: AssemblyFileVersion("2.0.1.1557")]
+[assembly: AssemblyFileVersion("2.0.1.1558")]
 [assembly: NeutralResourcesLanguage("en-US")]
 [assembly: AssemblyInformationalVersion("2.0")]
 [assembly: InternalsVisibleTo("Saleslogix.SData.Client.Test, PublicKey=" +
-                              "00240000048000009400000006020000002400005253413100040000010001004f6d7cc2aca5bf" +
-                              "a8d454d328b17b843b6e660947a1b16f179307ff46cba02baef4670c51eba6a98e724b95e43719" +
-                              "ba64860cfbc229fc25234cfcfdf25f65df85eb8b0c6bad0aa6fa5b9bf945ef5062aa131ba5939d" +
-                              "170c2a059860a64281f71cd8662f816f1fe0e7263c701408a55c30923ee0620ab622ec7f6fbf73" +
-                              "dfb01894")]
+                              "00240000048000009400000006020000002400005253413100040000010001004f6d7cc2aca5bfa8" +
+                              "d454d328b17b843b6e660947a1b16f179307ff46cba02baef4670c51eba6a98e724b95e43719ba64" +
+                              "860cfbc229fc25234cfcfdf25f65df85eb8b0c6bad0aa6fa5b9bf945ef5062aa131ba5939d170c2a" +
+                              "059860a64281f71cd8662f816f1fe0e7263c701408a55c30923ee0620ab622ec7f6fbf73dfb01894")]
