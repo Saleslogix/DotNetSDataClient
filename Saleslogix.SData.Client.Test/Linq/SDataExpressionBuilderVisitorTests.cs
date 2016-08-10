@@ -97,6 +97,12 @@ namespace Saleslogix.SData.Client.Test.Linq
             AssertSimple(() => new[] {"Active", "Retired"}, "('Active','Retired')");
         }
 
+        [Test]
+        public void Constant_Object_Test()
+        {
+            AssertSimple(() => new Contact {Key = "abc123"}, "'abc123'");
+        }
+
         #endregion
 
         #region Operators
@@ -547,6 +553,18 @@ namespace Saleslogix.SData.Client.Test.Linq
         public void Property_ProtocolProperty_Test()
         {
             AssertObject((Contact c) => c.Key, "$key");
+        }
+
+        [Test]
+        public void Property_Object_Test()
+        {
+            AssertObject((Contact c) => c, "$key");
+        }
+
+        [Test]
+        public void Property_Nested_Object_Test()
+        {
+            AssertObject((Contact c) => c.Address, "Address.$key");
         }
 
         [Test]

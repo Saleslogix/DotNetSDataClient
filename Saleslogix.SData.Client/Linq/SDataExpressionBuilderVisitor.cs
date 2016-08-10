@@ -11,6 +11,7 @@ using Remotion.Linq.Parsing;
 using Remotion.Linq.Parsing.Structure;
 using Remotion.Linq.Parsing.Structure.IntermediateModel;
 using Remotion.Linq.Parsing.Structure.NodeTypeProviders;
+using Saleslogix.SData.Client.Content;
 using Saleslogix.SData.Client.Framework;
 
 namespace Saleslogix.SData.Client.Linq
@@ -89,6 +90,7 @@ namespace Saleslogix.SData.Client.Linq
 
         private readonly INamingScheme _namingScheme;
         private readonly StringBuilder _builder = new StringBuilder();
+        private int _memberLevel;
 
         private SDataExpressionBuilderVisitor(INamingScheme namingScheme)
         {
@@ -109,7 +111,13 @@ namespace Saleslogix.SData.Client.Linq
 
         protected override Expression VisitConstantExpression(ConstantExpression expression)
         {
-            Append(SDataUri.FormatConstant(expression.Value));
+            var value = expression.Value;
+            if (ContentHelper.IsObject(value) && !ContentHelper.IsCollection(value))
+            {
+                value = ContentHelper.GetProtocolValue<string>(value, SDataProtocolProperty.Key);
+            }
+
+            Append(SDataUri.FormatConstant(value));
             return expression;
         }
 
@@ -213,10 +221,18 @@ namespace Saleslogix.SData.Client.Linq
             if (!(expression.Expression is QuerySourceReferenceExpression ||
                   expression.Expression is ParameterExpression))
             {
+                _memberLevel++;
                 Append(expression.Expression, ".");
+                _memberLevel--;
             }
 
             Append(_namingScheme.GetName(expression.Member));
+
+            if (_memberLevel == 0 && ContentHelper.IsObject(expression.Type))
+            {
+                Append(".$key");
+            }
+
             return expression;
         }
 
@@ -235,6 +251,12 @@ namespace Saleslogix.SData.Client.Linq
                 default:
                     throw new NotSupportedException(string.Format("Unary expression type '{0}' not supported", expression.NodeType));
             }
+        }
+
+        protected override Expression VisitParameterExpression(ParameterExpression expression)
+        {
+            Append("$key");
+            return expression;
         }
 
         protected override Exception CreateUnhandledItemException<T>(T unhandledItem, string visitMethod)
