@@ -36,17 +36,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saleslogix.SData.Client_PCL
 		{5C3BE940-20AD-4287-8118-14F4FBB07496} = {5C3BE940-20AD-4287-8118-14F4FBB07496}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saleslogix.SData.Client_SL5", "Saleslogix.SData.Client\Saleslogix.SData.Client_SL5.csproj", "{4E4091C1-7099-4136-A8F7-2EDB27CC4DB6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{0F05ED59-0037-4316-8137-9742C3D3C74A} = {0F05ED59-0037-4316-8137-9742C3D3C74A}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saleslogix.SData.Client.Test_2_0", "Saleslogix.SData.Client.Test\Saleslogix.SData.Client.Test_2_0.csproj", "{67908AD0-7889-4410-A577-37AA8C0A7814}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saleslogix.SData.Client.Test_SL5", "Saleslogix.SData.Client.Test\Saleslogix.SData.Client.Test_SL5.csproj", "{C1AA65BF-0AFE-43D9-B3F1-B3E8C42F4F26}"
-	ProjectSection(ProjectDependencies) = postProject
-		{54482AFA-A025-4D06-8360-74BEC4A84584} = {54482AFA-A025-4D06-8360-74BEC4A84584}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saleslogix.SData.Client.Test_PCL", "Saleslogix.SData.Client.Test\Saleslogix.SData.Client.Test_PCL.csproj", "{54482AFA-A025-4D06-8360-74BEC4A84584}"
 	ProjectSection(ProjectDependencies) = postProject
