@@ -508,14 +508,14 @@ namespace Saleslogix.SData.Client.Content
                 if (info.XmlLocalName != null)
                 {
                     var name = XName.Get(info.XmlLocalName, info.XmlNamespace ?? string.Empty);
-                    entry.Add(new XElement(_sDataNs + "payload", WriteResource(name, resource, namingScheme)));
+                    entry.Add(new XElement(_sDataNs + "payload", WriteResource(name, resource, namingScheme, false)));
                 }
             }
 
             return entry;
         }
 
-        private static XElement WriteResource(XName name, IEnumerable<KeyValuePair<string, object>> resource, INamingScheme namingScheme)
+        private static XElement WriteResource(XName name, IEnumerable<KeyValuePair<string, object>> resource, INamingScheme namingScheme, bool postMode)
         {
             var payload = new XElement(name);
 
@@ -524,6 +524,16 @@ namespace Saleslogix.SData.Client.Content
             if (info != null)
             {
                 WriteAttributeValue(payload, _sDataNs + "key", info.Key);
+
+                if (postMode || info.HttpMethod == HttpMethod.Post)
+                {
+                    if (info.Key != null)
+                    {
+                        return payload;
+                    }
+                    postMode = true;
+                }
+
                 WriteAttributeValue(payload, _sDataNs + "uri", info.Url != null ? info.Url.AbsoluteUri : null);
                 WriteAttributeValue(payload, _sDataNs + "uuid", info.Uuid);
                 WriteAttributeValue(payload, _sDataNs + "lookup", info.Lookup);
@@ -531,13 +541,13 @@ namespace Saleslogix.SData.Client.Content
                 WriteAttributeValue(payload, _sDataNs + "isDeleted", info.IsDeleted);
             }
 
-            payload.Add(resource.Select(item => WriteItem(name.Namespace + item.Key, item.Value, namingScheme)));
+            payload.Add(resource.Select(item => WriteItem(name.Namespace + item.Key, item.Value, namingScheme, postMode)));
             return payload;
         }
 
-        private static object WriteItem(XName name, object value, INamingScheme namingScheme)
+        private static object WriteItem(XName name, object value, INamingScheme namingScheme, bool postMode)
         {
-            var obj = WriteObject(name, value, namingScheme);
+            var obj = WriteObject(name, value, namingScheme, postMode);
             if (obj != null)
             {
                 return obj;
@@ -545,7 +555,7 @@ namespace Saleslogix.SData.Client.Content
 
             if (ContentHelper.IsObject(value))
             {
-                obj = WriteObject(name, ContentHelper.Serialize(value, namingScheme), namingScheme);
+                obj = WriteObject(name, ContentHelper.Serialize(value, namingScheme), namingScheme, postMode);
                 if (obj != null)
                 {
                     return obj;
@@ -555,7 +565,7 @@ namespace Saleslogix.SData.Client.Content
             return new XElement(name, value);
         }
 
-        private static object WriteObject(XName name, object value, INamingScheme namingScheme)
+        private static object WriteObject(XName name, object value, INamingScheme namingScheme, bool postMode)
         {
             if (value == null)
             {
@@ -575,25 +585,25 @@ namespace Saleslogix.SData.Client.Content
                 var itemName = info != null && info.XmlNamespace != null
                     ? XName.Get(name.LocalName, prot.Info.XmlNamespace)
                     : name;
-                return WriteResource(itemName, resource, namingScheme);
+                return WriteResource(itemName, resource, namingScheme, postMode);
             }
 
             var resources = ContentHelper.AsDictionaries(value);
             if (resources != null)
             {
-                return WriteResourceCollection(name, resources, namingScheme);
+                return WriteResourceCollection(name, resources, namingScheme, postMode);
             }
 
             var items = ContentHelper.AsCollection(value);
             if (items != null)
             {
-                return WriteSimpleCollection(name, items, namingScheme);
+                return WriteSimpleCollection(name, items, namingScheme, postMode);
             }
 
             return null;
         }
 
-        private static object WriteResourceCollection(XName name, IEnumerable<IDictionary<string, object>> resources, INamingScheme namingScheme)
+        private static object WriteResourceCollection(XName name, IEnumerable<IDictionary<string, object>> resources, INamingScheme namingScheme, bool postMode)
         {
             var element = new XElement(name);
             var prot = resources as ISDataProtocolObject;
@@ -606,7 +616,7 @@ namespace Saleslogix.SData.Client.Content
                                                     var itemInfo = itemProt != null ? itemProt.Info : null;
                                                     var itemName = XName.Get(localName ?? (itemInfo != null ? itemInfo.XmlLocalName : null) ?? item.GetType().Name,
                                                                              xmlNs ?? (itemInfo != null ? itemInfo.XmlNamespace : null) ?? name.NamespaceName);
-                                                    return WriteResource(itemName, item, namingScheme);
+                                                    return WriteResource(itemName, item, namingScheme, postMode);
                                                 });
 
             if (info != null)
@@ -624,7 +634,7 @@ namespace Saleslogix.SData.Client.Content
             return element;
         }
 
-        private static object WriteSimpleCollection(XName name, IEnumerable<object> items, INamingScheme namingScheme)
+        private static object WriteSimpleCollection(XName name, IEnumerable<object> items, INamingScheme namingScheme, bool postMode)
         {
             var element = new XElement(name);
             var prot = items as ISDataProtocolObject;
@@ -637,7 +647,7 @@ namespace Saleslogix.SData.Client.Content
                                              var itemInfo = itemProt != null ? itemProt.Info : null;
                                              var itemName = XName.Get(localName ?? (itemInfo != null ? itemInfo.XmlLocalName : null) ?? item.GetType().Name,
                                                                       xmlNs ?? (itemInfo != null ? itemInfo.XmlNamespace : null) ?? name.NamespaceName);
-                                             return WriteItem(itemName, item, namingScheme);
+                                             return WriteItem(itemName, item, namingScheme, postMode);
                                          }));
             return element;
         }

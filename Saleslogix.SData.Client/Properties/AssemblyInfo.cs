@@ -26,7 +26,7 @@ using System.Runtime.CompilerServices;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("2.0")]
-[assembly: AssemblyFileVersion("2.0.1.1559")]
+[assembly: AssemblyFileVersion("2.0.1.1560")]
 [assembly: NeutralResourcesLanguage("en-US")]
 [assembly: AssemblyInformationalVersion("2.0")]
 [assembly: InternalsVisibleTo("Saleslogix.SData.Client.Test, PublicKey=" +

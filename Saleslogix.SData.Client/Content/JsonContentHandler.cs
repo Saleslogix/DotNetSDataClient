@@ -287,16 +287,16 @@ namespace Saleslogix.SData.Client.Content
                 namingScheme = NamingScheme.Default;
             }
 
-            var root = WriteItem(obj, true, namingScheme) ?? WriteItem(ContentHelper.Serialize(obj, namingScheme), true, namingScheme);
+            var root = WriteItem(obj, true, namingScheme, false) ?? WriteItem(ContentHelper.Serialize(obj, namingScheme), true, namingScheme, false);
             var json = SimpleJson.SimpleJson.SerializeObject(root, _serializerStrategy);
             var writer = new StreamWriter(stream);
             writer.Write(json);
             writer.Flush();
         }
 
-        private static object WriteItem(object obj, bool isRoot, INamingScheme namingScheme)
+        private static object WriteItem(object obj, bool isRoot, INamingScheme namingScheme, bool postMode)
         {
-            var jsonObj = WriteObject(obj, isRoot, namingScheme);
+            var jsonObj = WriteObject(obj, isRoot, namingScheme, postMode);
             if (jsonObj != null)
             {
                 return jsonObj;
@@ -304,7 +304,7 @@ namespace Saleslogix.SData.Client.Content
 
             if (ContentHelper.IsObject(obj))
             {
-                jsonObj = WriteObject(ContentHelper.Serialize(obj, namingScheme), isRoot, namingScheme);
+                jsonObj = WriteObject(ContentHelper.Serialize(obj, namingScheme), isRoot, namingScheme, postMode);
                 if (jsonObj != null)
                 {
                     return jsonObj;
@@ -314,12 +314,12 @@ namespace Saleslogix.SData.Client.Content
             return obj;
         }
 
-        private static object WriteObject(object obj, bool isRoot, INamingScheme namingScheme)
+        private static object WriteObject(object obj, bool isRoot, INamingScheme namingScheme, bool postMode)
         {
             var resource = ContentHelper.AsDictionary(obj);
             if (resource != null)
             {
-                return WriteResource(resource, namingScheme);
+                return WriteResource(resource, namingScheme, postMode);
             }
 
             var resources = ContentHelper.AsDictionaries(obj);
@@ -329,12 +329,12 @@ namespace Saleslogix.SData.Client.Content
                 if (prot != null && prot.Info != null && prot.Info.JsonIsSimpleArray)
                 {
 #if NET_2_0 || NET_3_5
-                    return WriteSimpleCollection(resources.Cast<object>(), namingScheme);
+                    return WriteSimpleCollection(resources.Cast<object>(), namingScheme, postMode);
 #else
-                    return WriteSimpleCollection(resources, namingScheme);
+                    return WriteSimpleCollection(resources, namingScheme, postMode);
 #endif
                 }
-                return WriteResourceCollection(resources, namingScheme);
+                return WriteResourceCollection(resources, namingScheme, postMode);
             }
 
             if (!isRoot)
@@ -342,14 +342,14 @@ namespace Saleslogix.SData.Client.Content
                 var items = ContentHelper.AsCollection(obj);
                 if (items != null)
                 {
-                    return WriteSimpleCollection(items, namingScheme);
+                    return WriteSimpleCollection(items, namingScheme, postMode);
                 }
             }
 
             return null;
         }
 
-        private static IDictionary<string, object> WriteResource(IEnumerable<KeyValuePair<string, object>> resource, INamingScheme namingScheme)
+        private static IDictionary<string, object> WriteResource(IDictionary<string, object> resource, INamingScheme namingScheme, bool postMode)
         {
             var obj = new Dictionary<string, object>();
 
@@ -357,6 +357,17 @@ namespace Saleslogix.SData.Client.Content
             var info = prot != null ? prot.Info : null;
             if (info != null)
             {
+                WriteProtocolValue(obj, "key", info.Key);
+
+                if (postMode || info.HttpMethod == HttpMethod.Post)
+                {
+                    if (info.Key != null)
+                    {
+                        return obj;
+                    }
+                    postMode = true;
+                }
+
                 WriteProtocolValue(obj, "id", info.Id);
                 WriteProtocolValue(obj, "title", info.Title);
                 WriteProtocolValue(obj, "updated", info.Updated);
@@ -366,7 +377,6 @@ namespace Saleslogix.SData.Client.Content
                 WriteProtocolValue(obj, "httpMethod", info.HttpMethod != null ? EnumEx.Format(info.HttpMethod).ToUpperInvariant() : null);
                 WriteProtocolValue(obj, "httpStatus", (int?) info.HttpStatus);
                 WriteProtocolValue(obj, "httpMessage", info.HttpMessage);
-                WriteProtocolValue(obj, "key", info.Key);
                 WriteProtocolValue(obj, "url", info.Url != null ? info.Url.AbsoluteUri : null);
                 WriteProtocolValue(obj, "uuid", info.Uuid);
                 WriteProtocolValue(obj, "lookup", info.Lookup);
@@ -389,13 +399,13 @@ namespace Saleslogix.SData.Client.Content
 
             foreach (var item in resource)
             {
-                obj[item.Key] = WriteItem(item.Value, false, namingScheme);
+                obj[item.Key] = WriteItem(item.Value, false, namingScheme, postMode);
             }
 
             return obj;
         }
 
-        private static IDictionary<string, object> WriteResourceCollection(IEnumerable<IDictionary<string, object>> collection, INamingScheme namingScheme)
+        private static IDictionary<string, object> WriteResourceCollection(IEnumerable<IDictionary<string, object>> collection, INamingScheme namingScheme, bool postMode)
         {
             var obj = new Dictionary<string, object>();
 
@@ -427,13 +437,13 @@ namespace Saleslogix.SData.Client.Content
                 }
             }
 
-            obj["$resources"] = collection.Select(item => (object) WriteResource(item, namingScheme)).ToList();
+            obj["$resources"] = collection.Select(item => (object) WriteResource(item, namingScheme, postMode)).ToList();
             return obj;
         }
 
-        private static ICollection<object> WriteSimpleCollection(IEnumerable<object> items, INamingScheme namingScheme)
+        private static ICollection<object> WriteSimpleCollection(IEnumerable<object> items, INamingScheme namingScheme, bool postMode)
         {
-            return items.Select(item => WriteItem(item, false, namingScheme)).ToArray();
+            return items.Select(item => WriteItem(item, false, namingScheme, postMode)).ToArray();
         }
 
         private static void WriteLinks(IDictionary<string, object> obj, IEnumerable<SDataLink> links)

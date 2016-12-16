@@ -241,7 +241,7 @@ namespace Saleslogix.SData.Client.Content
             return getters.TryGetValue(prop, out getter) ? (T) getter(obj) : default(T);
         }
 
-        public static void SetProtocolValue(object obj, SDataProtocolProperty prop, object value)
+        public static bool SetProtocolValue(object obj, SDataProtocolProperty prop, object value)
         {
             Guard.ArgumentNotNull(obj, "obj");
 
@@ -249,6 +249,7 @@ namespace Saleslogix.SData.Client.Content
             if (prot != null)
             {
                 prot.Info.SetValue(prop, value);
+                return true;
             }
 
             var setters = _setProtocolValueCache[obj.GetType()];
@@ -256,7 +257,10 @@ namespace Saleslogix.SData.Client.Content
             if (setters.TryGetValue(prop, out setter))
             {
                 setter(obj, value);
+                return true;
             }
+
+            return false;
         }
 
         private static IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate> ProtocolValueGetterFactory(Type type)

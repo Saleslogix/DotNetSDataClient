@@ -351,5 +351,26 @@ namespace Saleslogix.SData.Client.Test.Content
             var obj = Helpers.WriteJson(resource);
             Assert.That(obj["$httpMethod"], Is.EqualTo("POST"));
         }
+
+        [Test]
+        public void Write_PostMode_Test()
+        {
+            var resource = new SDataResource {{"LastName", "Smith"}};
+            resource.Key = "key";
+            resource.HttpMethod = HttpMethod.Post;
+            var obj = Helpers.WriteJson(resource);
+            Assert.That(obj.ContainsKey("LastName"), Is.False);
+        }
+
+        [Test]
+        public void Write_PostMode_Nested_Test()
+        {
+            var resource = new SDataResource {{"LastName", "Smith"}};
+            resource.Key = "key";
+            resource = new SDataResource {{"Contact", resource}};
+            resource.HttpMethod = HttpMethod.Post;
+            var obj = Helpers.WriteJson(resource);
+            Assert.That(((IDictionary<string, object>) obj["Contact"]).ContainsKey("LastName"), Is.False);
+        }
     }
 }

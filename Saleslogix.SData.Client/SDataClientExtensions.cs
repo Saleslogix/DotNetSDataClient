@@ -209,11 +209,19 @@ namespace Saleslogix.SData.Client
             {
                 options = new SDataPayloadOptions();
             }
+
+            var resource = ContentHelper.Serialize(content, client.NamingScheme) as SDataResource;
+            if (resource == null)
+            {
+                throw new SDataClientException("Only resources can be posted");
+            }
+            resource.HttpMethod = HttpMethod.Post;
+
             return new SDataParameters
                 {
                     Method = HttpMethod.Post,
                     Path = path,
-                    Content = content,
+                    Content = resource,
                     Include = options.Include,
                     Select = options.Select,
                     Precedence = options.Precedence

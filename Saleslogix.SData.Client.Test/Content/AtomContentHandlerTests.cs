@@ -540,5 +540,34 @@ namespace Saleslogix.SData.Client.Test.Content
             Assert.That(node, Is.Not.Null);
             Assert.That(node.Value, Is.EqualTo("POST"));
         }
+
+        [Test]
+        public void Write_PostMode_Test()
+        {
+            var resource = new SDataResource("test") {{"LastName", "Smith"}};
+            resource.Key = "key";
+            resource.HttpMethod = HttpMethod.Post;
+            var nav = Helpers.WriteAtom(resource);
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
+            mgr.AddNamespace("sdata", "http://schemas.sage.com/sdata/2008/1");
+            var node = nav.SelectSingleNode("atom:entry/sdata:payload/test/LastName", mgr);
+            Assert.That(node, Is.Null);
+        }
+
+        [Test]
+        public void Write_PostMode_Nested_Test()
+        {
+            var resource = new SDataResource {{"LastName", "Smith"}};
+            resource.Key = "key";
+            resource = new SDataResource("test") {{"Contact", resource}};
+            resource.HttpMethod = HttpMethod.Post;
+            var nav = Helpers.WriteAtom(resource);
+            var mgr = new XmlNamespaceManager(nav.NameTable);
+            mgr.AddNamespace("atom", "http://www.w3.org/2005/Atom");
+            mgr.AddNamespace("sdata", "http://schemas.sage.com/sdata/2008/1");
+            var node = nav.SelectSingleNode("atom:entry/sdata:payload/test/Contact/LastName", mgr);
+            Assert.That(node, Is.Null);
+        }
     }
 }
