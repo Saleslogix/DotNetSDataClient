@@ -751,5 +751,36 @@ namespace Saleslogix.SData.Client.Test.Content
                 set { throw new NotSupportedException(); }
             }
         }
+
+        [Test]
+        public void Serialize_Empty_Collection_String_Test()
+        {
+            var value = new {items = new List<string>()};
+            var result = (IDictionary<string, object>) ContentHelper.Serialize(value);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result["items"], Is.InstanceOf<SDataCollection<string>>());
+        }
+
+        [Test]
+        public void Serialize_Empty_Collection_Object_Test()
+        {
+            var value = new {items = new List<object>()};
+            var result = (IDictionary<string, object>) ContentHelper.Serialize(value);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result["items"], Is.InstanceOf<SDataCollection<object>>());
+        }
+
+        [Test]
+        public void Serialize_Empty_Collection_Resource_Test()
+        {
+            var value = new {items = new List<Serialize_Empty_Collection_Resource_Object>()};
+            var result = (IDictionary<string, object>) ContentHelper.Serialize(value);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result["items"], Is.InstanceOf<SDataCollection<SDataResource>>());
+        }
+
+        private class Serialize_Empty_Collection_Resource_Object
+        {
+        }
     }
 }

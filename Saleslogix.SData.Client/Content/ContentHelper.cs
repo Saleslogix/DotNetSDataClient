@@ -17,7 +17,7 @@ using System.Runtime.Serialization;
 
 namespace Saleslogix.SData.Client.Content
 {
-    internal static class ContentHelper
+    public static class ContentHelper
     {
         private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>> _getProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.GetDelegate>>(ProtocolValueGetterFactory);
         private static readonly IDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>> _setProtocolValueCache = new ReflectionUtils.ThreadSafeDictionary<Type, IDictionary<SDataProtocolProperty, ReflectionUtils.SetDelegate>>(ProtocolValueSetterFactory);
@@ -484,7 +484,22 @@ namespace Saleslogix.SData.Client.Content
                     results.Add(result);
                 }
 
-                output = ToTypedCollection(results);
+                if (results.Count == 0)
+                {
+                    var itemType = input.GetType().GetInterfaces()
+                                       .Where(iface => iface.GetTypeInfo().IsGenericType && iface.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+                                       .Select(iface => iface.GetGenericArguments()[0])
+                                       .FirstOrDefault() ?? typeof (object);
+                    if (itemType != typeof (object) && IsObject(itemType))
+                    {
+                        itemType = typeof (SDataResource);
+                    }
+                    output = Activator.CreateInstance(typeof (SDataCollection<>).MakeGenericType(itemType));
+                }
+                else
+                {
+                    output = ToTypedCollection(results);
+                }
 
                 var prot = input as ISDataProtocolObject;
                 if (prot != null)
