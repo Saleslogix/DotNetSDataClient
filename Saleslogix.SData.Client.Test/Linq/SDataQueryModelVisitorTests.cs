@@ -367,6 +367,34 @@ namespace Saleslogix.SData.Client.Test.Linq
         }
 
         [Test]
+        public void ResultOperator_Fetch_Descriptor_Test()
+        {
+            var builder = new QueryModelBuilder();
+            builder.AddClause(new MainFromClause("x", typeof(Contact), Expression.Constant(null)));
+            builder.AddClause(new SelectClause(Expression.Constant(null)));
+            builder.AddResultOperator(new FetchResultOperator(GetExpression((Contact c) => c.Descriptor)));
+
+            var visitor = new SDataQueryModelVisitor();
+            visitor.VisitQueryModel(builder.Build());
+
+            Assert.That(visitor.Include, Is.EqualTo("$descriptors"));
+        }
+
+        [Test]
+        public void ResultOperator_Fetch_Permissions_Test()
+        {
+            var builder = new QueryModelBuilder();
+            builder.AddClause(new MainFromClause("x", typeof(Contact), Expression.Constant(null)));
+            builder.AddClause(new SelectClause(Expression.Constant(null)));
+            builder.AddResultOperator(new FetchResultOperator(GetExpression((Contact c) => c.Permissions)));
+
+            var visitor = new SDataQueryModelVisitor();
+            visitor.VisitQueryModel(builder.Build());
+
+            Assert.That(visitor.Include, Is.EqualTo("$permissions"));
+        }
+
+        [Test]
         public void ResultOperator_WithPrecedence_Test()
         {
             var builder = new QueryModelBuilder();

@@ -7,6 +7,10 @@ namespace Saleslogix.SData.Client.Test.Model
     {
         [SDataProtocolProperty]
         public string Key { get; set; }
+        [SDataProtocolProperty]
+        public string Descriptor { get; set; }
+        [SDataProtocolProperty]
+        public IList<SDataPermission> Permissions { get; set; }
         public ContactCivility? Civility { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

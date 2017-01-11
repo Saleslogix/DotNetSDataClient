@@ -174,9 +174,17 @@ namespace Saleslogix.SData.Client.Linq
         {
             if (_parts.Count > 0)
             {
-                if (!_includeProtocolProps && _parts[0].StartsWith("$", StringComparison.Ordinal))
+                if (!_includeProtocolProps)
                 {
-                    _parts.RemoveAt(0);
+                    if (!_selectMode && _parts.Count == 1 && _parts[0] == "$descriptor")
+                    {
+                        _parts[0] += "s";
+                    }
+                    else if (_parts[0].StartsWith("$", StringComparison.Ordinal) &&
+                             !(!_selectMode && _parts.Count == 1 && _parts[0] == "$permissions"))
+                    {
+                        _parts.RemoveAt(0);
+                    }
                 }
 
                 if (_parts.Count > 0)
