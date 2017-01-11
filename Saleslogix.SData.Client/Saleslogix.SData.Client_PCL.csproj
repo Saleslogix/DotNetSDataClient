@@ -319,6 +319,7 @@
     <Compile Include="SDataParameters.cs" />
     <Compile Include="SDataPathAttribute.cs" />
     <Compile Include="SDataPayloadOptions.cs" />
+    <Compile Include="SDataPermission.cs" />
     <Compile Include="SDataProtocolInfo.cs" />
     <Compile Include="SDataProtocolProperty.cs" />
     <Compile Include="SDataProtocolPropertyAttribute.cs" />

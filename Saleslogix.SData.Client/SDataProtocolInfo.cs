@@ -33,6 +33,7 @@ namespace Saleslogix.SData.Client
         public Guid? Uuid { get; set; }
         public string Lookup { get; set; }
         public string Descriptor { get; set; }
+        public IList<SDataPermission> Permissions { get; set; }
 
         //SDATA: top level resources
         public HttpMethod? HttpMethod { get; set; }
@@ -97,6 +98,8 @@ namespace Saleslogix.SData.Client
                     return Lookup;
                 case SDataProtocolProperty.Descriptor:
                     return Descriptor;
+                case SDataProtocolProperty.Permissions:
+                    return Permissions;
                 case SDataProtocolProperty.HttpMethod:
                     return HttpMethod;
                 case SDataProtocolProperty.HttpStatus:
@@ -169,6 +172,9 @@ namespace Saleslogix.SData.Client
                     break;
                 case SDataProtocolProperty.Descriptor:
                     Descriptor = value != null ? Convert.ToString(value) : null;
+                    break;
+                case SDataProtocolProperty.Permissions:
+                    Permissions = (IList<SDataPermission>) value;
                     break;
                 case SDataProtocolProperty.HttpMethod:
                     HttpMethod = (HttpMethod?) value;

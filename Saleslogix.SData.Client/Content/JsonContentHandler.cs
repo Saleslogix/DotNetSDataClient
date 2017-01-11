@@ -99,6 +99,10 @@ namespace Saleslogix.SData.Client.Content
             {
                 resource.SyncState = ContentHelper.Deserialize<SyncState>(value);
             }
+            if (obj.TryGetValue("$permissions", out value))
+            {
+                resource.Permissions = ContentHelper.Deserialize<IList<SDataPermission>>(value, NamingScheme.CamelCase);
+            }
 
             foreach (var item in obj.Where(item => !item.Key.StartsWith("$", StringComparison.Ordinal)))
             {
@@ -384,16 +388,19 @@ namespace Saleslogix.SData.Client.Content
                 WriteLinks(obj, info.Links);
                 WriteProtocolValue(obj, "isDeleted", info.IsDeleted);
 
-                var diagnoses = info.Diagnoses;
-                if (diagnoses != null && diagnoses.Count > 0)
+                if (info.Diagnoses != null && info.Diagnoses.Count > 0)
                 {
-                    obj["$diagnoses"] = ContentHelper.Serialize(diagnoses, namingScheme);
+                    obj["$diagnoses"] = ContentHelper.Serialize(info.Diagnoses);
                 }
 
-                var syncState = info.SyncState;
-                if (syncState != null)
+                if (info.SyncState != null)
                 {
-                    obj["$syncState"] = ContentHelper.Serialize(syncState, namingScheme);
+                    obj["$syncState"] = ContentHelper.Serialize(info.SyncState);
+                }
+
+                if (info.Permissions != null)
+                {
+                    obj["$permissions"] = ContentHelper.Serialize(info.Permissions, NamingScheme.CamelCase);
                 }
             }
 
@@ -427,13 +434,13 @@ namespace Saleslogix.SData.Client.Content
                 var diagnoses = info.Diagnoses;
                 if (diagnoses != null && diagnoses.Count > 0)
                 {
-                    obj["$diagnoses"] = ContentHelper.Serialize(diagnoses, namingScheme);
+                    obj["$diagnoses"] = ContentHelper.Serialize(diagnoses);
                 }
 
                 var syncDigest = info.SyncDigest;
                 if (syncDigest != null)
                 {
-                    obj["$digest"] = ContentHelper.Serialize(syncDigest, namingScheme);
+                    obj["$digest"] = ContentHelper.Serialize(syncDigest);
                 }
             }
 

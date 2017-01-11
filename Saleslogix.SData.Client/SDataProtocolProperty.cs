@@ -27,6 +27,7 @@ namespace Saleslogix.SData.Client
         Uuid,
         Lookup,
         Descriptor,
+        Permissions,
 
         //SDATA: top level resources
         HttpMethod,

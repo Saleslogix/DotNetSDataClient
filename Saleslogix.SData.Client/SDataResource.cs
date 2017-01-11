@@ -137,6 +137,13 @@ namespace Saleslogix.SData.Client
         }
 
         [SDataProtocolProperty]
+        public IList<SDataPermission> Permissions
+        {
+            get { return _info.Permissions; }
+            set { _info.Permissions = value; }
+        }
+
+        [SDataProtocolProperty]
         public HttpMethod? HttpMethod
         {
             get { return _info.HttpMethod; }

@@ -114,6 +114,17 @@ namespace Saleslogix.SData.Client.Test.Content
         }
 
         [Test]
+        public void Read_Permissions_Test()
+        {
+            const string json = @"{""$permissions"":[{""name"":""foo"",""access"":""bar""}]}";
+            var resource = Helpers.ReadJson<SDataResource>(json);
+            Assert.That(resource.Permissions, Is.Not.Empty);
+            var permission = resource.Permissions[0];
+            Assert.That(permission.Name, Is.EqualTo("foo"));
+            Assert.That(permission.Access, Is.EqualTo("bar"));
+        }
+
+        [Test]
         public void Write_DateTime_Test()
         {
             var resource = new SDataResource {SyncState = new SyncState {Stamp = new DateTime(2013, 6, 15, 8, 0, 0)}};
@@ -246,6 +257,29 @@ namespace Saleslogix.SData.Client.Test.Content
             Assert.That(obj["$syncState"], Is.InstanceOf<IDictionary<string, object>>());
             var syncState = (IDictionary<string, object>) obj["$syncState"];
             Assert.That(syncState["tick"], Is.EqualTo(123));
+        }
+
+        [Test]
+        public void Write_Resource_Permissions_Test()
+        {
+            var resource = new SDataResource
+                {
+                    Permissions = new[]
+                        {
+                            new SDataPermission
+                                {
+                                    Name = "foo",
+                                    Access = "bar"
+                                }
+                        }
+                };
+            var obj = Helpers.WriteJson(resource);
+            Assert.That(obj["$permissions"], Is.InstanceOf<IList<object>>());
+            var items = (IList<object>) obj["$permissions"];
+            Assert.That(items, Is.Not.Empty);
+            var item = (IDictionary<string, object>) items[0];
+            Assert.That(item["name"], Is.EqualTo("foo"));
+            Assert.That(item["access"], Is.EqualTo("bar"));
         }
 
         [Test]
