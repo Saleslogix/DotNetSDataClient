@@ -215,6 +215,12 @@ namespace Saleslogix.SData.Client.Framework
                             attempts--;
                             continue;
                         }
+                        if (ex.Status == WebExceptionStatus.ProtocolError &&
+                            ((HttpWebResponse) ex.Response).StatusCode == HttpStatusCode.Unauthorized &&
+                            Authenticator != null && Authenticator.Unauthorized(ex.Response) == UnauthorizedAction.Retry)
+                        {
+                            continue;
+                        }
                         throw new SDataException(ex);
                     }
 
