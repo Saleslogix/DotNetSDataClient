@@ -29,7 +29,6 @@ namespace Saleslogix.SData.Client
 #endif
 
         private readonly Func<string, SDataRequest> _requestFactory;
-        private readonly CookieContainer _cookies = new CookieContainer();
 
         public SDataClient(string uri)
             : this(uri, targetUri => new SDataRequest(targetUri))
@@ -44,6 +43,10 @@ namespace Saleslogix.SData.Client
             DifferentialUpdate = true;
             MaxGetUriLength = 2000;
         }
+
+        //private readonly CookieContainer _cookies = new CookieContainer();
+        private CookieContainer _cookies = new CookieContainer();
+        public CookieContainer Cookies { get { return _cookies; } set { _cookies = value; } }
 
         public string Uri { get; set; }
         public string UserName { get; set; }
@@ -141,22 +144,22 @@ namespace Saleslogix.SData.Client
             Guard.ArgumentNotNull(parms, "parms");
 
             var uri = new SDataUri(Uri)
-                          {
-                              StartIndex = parms.StartIndex,
-                              Count = parms.Count,
-                              Where = parms.Where,
-                              OrderBy = parms.OrderBy,
-                              Search = parms.Search,
-                              Include = parms.Include,
-                              Select = parms.Select,
-                              Precedence = parms.Precedence,
-                              IncludeSchema = parms.IncludeSchema,
-                              ReturnDelta = parms.ReturnDelta,
-                              TrackingId = parms.TrackingId,
-                              Format = parms.Format,
-                              Language = parms.Language,
-                              Version = parms.Version
-                          };
+            {
+                StartIndex = parms.StartIndex,
+                Count = parms.Count,
+                Where = parms.Where,
+                OrderBy = parms.OrderBy,
+                Search = parms.Search,
+                Include = parms.Include,
+                Select = parms.Select,
+                Precedence = parms.Precedence,
+                IncludeSchema = parms.IncludeSchema,
+                ReturnDelta = parms.ReturnDelta,
+                TrackingId = parms.TrackingId,
+                Format = parms.Format,
+                Language = parms.Language,
+                Version = parms.Version
+            };
             if (parms.Method != HttpMethod.Delete)
             {
                 if (uri.Precedence == null && responseContentIgnored)
@@ -371,11 +374,11 @@ namespace Saleslogix.SData.Client
                     }
 
                     var itemUri = new SDataUri(Uri)
-                        {
-                            Include = parms.Include,
-                            Select = parms.Select,
-                            Precedence = parms.Precedence
-                        };
+                    {
+                        Include = parms.Include,
+                        Select = parms.Select,
+                        Precedence = parms.Precedence
+                    };
                     if (path != null)
                     {
                         itemUri.AppendPath(path);
@@ -394,12 +397,12 @@ namespace Saleslogix.SData.Client
             }
 
             var uri = new SDataUri(Uri)
-                {
-                    Precedence = precedence,
-                    Format = format ?? Format,
-                    Language = language ?? Language,
-                    Version = version ?? Version
-                };
+            {
+                Precedence = precedence,
+                Format = format ?? Format,
+                Language = language ?? Language,
+                Version = version ?? Version
+            };
             if (path != null)
             {
                 uri.AppendPath(path);
@@ -477,7 +480,7 @@ namespace Saleslogix.SData.Client
             TraceResponse(response);
 
             object obj = null;
-            if (typeof (T) == typeof (byte[]))
+            if (typeof(T) == typeof(byte[]))
             {
                 var str = response.Content as string;
                 if (str != null)
@@ -485,7 +488,7 @@ namespace Saleslogix.SData.Client
                     obj = Encoding.UTF8.GetBytes(str);
                 }
             }
-            else if (typeof (T) == typeof (string))
+            else if (typeof(T) == typeof(string))
             {
                 var data = response.Content as byte[];
                 if (data != null)
@@ -494,7 +497,7 @@ namespace Saleslogix.SData.Client
                 }
             }
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-            else if (typeof (T) == typeof (SDataSchema))
+            else if (typeof(T) == typeof(SDataSchema))
             {
                 var str = response.Content as string;
                 if (str != null)
@@ -509,7 +512,7 @@ namespace Saleslogix.SData.Client
             T content;
             if (obj != null)
             {
-                content = (T) obj;
+                content = (T)obj;
             }
             else
             {

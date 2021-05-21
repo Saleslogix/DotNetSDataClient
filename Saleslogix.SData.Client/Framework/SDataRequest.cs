@@ -215,11 +215,22 @@ namespace Saleslogix.SData.Client.Framework
                             attempts--;
                             continue;
                         }
-                        if (ex.Status == WebExceptionStatus.ProtocolError &&
-                            ((HttpWebResponse) ex.Response).StatusCode == HttpStatusCode.Unauthorized &&
-                            Authenticator != null && Authenticator.Unauthorized(ex.Response) == UnauthorizedAction.Retry)
+                        if (ex.Status == WebExceptionStatus.ProtocolError && Authenticator != null)
                         {
-                            continue;
+                            if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.Unauthorized)
+                            {
+                                //401
+                                if (Authenticator.Unauthorized(ex.Response) == UnauthorizedAction.Retry) continue;
+                            }
+                            else if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.Forbidden)
+                            {
+                                IAuthenticator2 vAuthenticator2 = Authenticator as IAuthenticator2;
+                                if (vAuthenticator2 != null)
+                                {
+                                    //403
+                                    if (vAuthenticator2.Forbidden(ex.Response) == UnauthorizedAction.Retry) continue;
+                                }
+                            }
                         }
                         throw new SDataException(ex);
                     }
@@ -257,87 +268,87 @@ namespace Saleslogix.SData.Client.Framework
             Action getResponse = null;
             Action loop =
                 () =>
+                {
+                    MediaType? contentType;
+                    object content;
+                    _request = CreateRequest(uri, out contentType, out content);
+                    if (content != null || Form.Count > 0 || Files.Count > 0)
                     {
-                        MediaType? contentType;
-                        object content;
-                        _request = CreateRequest(uri, out contentType, out content);
-                        if (content != null || Form.Count > 0 || Files.Count > 0)
-                        {
-                            _request.BeginGetRequestStream(
-                                async =>
-                                    {
-                                        try
-                                        {
-                                            using (var stream = _request.EndGetRequestStream(async))
-                                            {
-                                                WriteRequestContent(contentType, content, stream);
-                                            }
-                                            TraceRequest(_request);
-                                            getResponse();
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            result.Failure(ex, async.CompletedSynchronously);
-                                            _request = null;
-                                            Interlocked.Exchange(ref _state, 0);
-                                        }
-                                    }, null);
-                        }
-                        else
-                        {
-                            TraceRequest(_request);
-                            getResponse();
-                        }
-                    };
-            getResponse =
-                () => _request.BeginGetResponse(
-                    async =>
-                        {
-                            try
+                        _request.BeginGetRequestStream(
+                            async =>
                             {
-                                WebResponse response;
                                 try
                                 {
-                                    response = _request.EndGetResponse(async);
-                                    TraceResponse(response);
-                                }
-                                catch (WebException webEx)
-                                {
-#if PCL || NETFX_CORE || SILVERLIGHT
-                                    if (attempts > 0)
-#else
-                                    if (webEx.Status == WebExceptionStatus.Timeout && attempts > 0)
-#endif
+                                    using (var stream = _request.EndGetRequestStream(async))
                                     {
-                                        attempts--;
-                                        loop();
-                                        return;
+                                        WriteRequestContent(contentType, content, stream);
                                     }
-                                    throw new SDataException(webEx);
+                                    TraceRequest(_request);
+                                    getResponse();
                                 }
-
-                                var httpResponse = response as HttpWebResponse;
-                                var statusCode = httpResponse != null ? httpResponse.StatusCode : 0;
-
-                                if (statusCode != HttpStatusCode.Found)
+                                catch (Exception ex)
                                 {
-                                    result.Success(new SDataResponse(response, location), async.CompletedSynchronously);
+                                    result.Failure(ex, async.CompletedSynchronously);
                                     _request = null;
                                     Interlocked.Exchange(ref _state, 0);
                                 }
-                                else
-                                {
-                                    uri = location = response.Headers["Location"];
-                                    loop();
-                                }
-                            }
-                            catch (Exception ex)
+                            }, null);
+                    }
+                    else
+                    {
+                        TraceRequest(_request);
+                        getResponse();
+                    }
+                };
+            getResponse =
+                () => _request.BeginGetResponse(
+                    async =>
+                    {
+                        try
+                        {
+                            WebResponse response;
+                            try
                             {
-                                result.Failure(ex, async.CompletedSynchronously);
+                                response = _request.EndGetResponse(async);
+                                TraceResponse(response);
+                            }
+                            catch (WebException webEx)
+                            {
+#if PCL || NETFX_CORE || SILVERLIGHT
+                                    if (attempts > 0)
+#else
+                                if (webEx.Status == WebExceptionStatus.Timeout && attempts > 0)
+#endif
+                                {
+                                    attempts--;
+                                    loop();
+                                    return;
+                                }
+                                throw new SDataException(webEx);
+                            }
+
+                            var httpResponse = response as HttpWebResponse;
+                            var statusCode = httpResponse != null ? httpResponse.StatusCode : 0;
+
+                            if (statusCode != HttpStatusCode.Found)
+                            {
+                                result.Success(new SDataResponse(response, location), async.CompletedSynchronously);
                                 _request = null;
                                 Interlocked.Exchange(ref _state, 0);
                             }
-                        }, null);
+                            else
+                            {
+                                uri = location = response.Headers["Location"];
+                                loop();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            result.Failure(ex, async.CompletedSynchronously);
+                            _request = null;
+                            Interlocked.Exchange(ref _state, 0);
+                        }
+                    }, null);
             try
             {
                 loop();
@@ -356,7 +367,7 @@ namespace Saleslogix.SData.Client.Framework
             Guard.ArgumentIsType<AsyncResult<SDataResponse>>(asyncResult, "asyncResult");
             try
             {
-                return ((AsyncResult<SDataResponse>) asyncResult).End();
+                return ((AsyncResult<SDataResponse>)asyncResult).End();
             }
             finally
             {
@@ -381,7 +392,7 @@ namespace Saleslogix.SData.Client.Framework
                 methodOverride = true;
                 contentType = MediaType.Text;
                 content = uri;
-                uri = new SDataUri(uri) {Query = null}.ToString();
+                uri = new SDataUri(uri) { Query = null }.ToString();
             }
             else
             {
@@ -531,18 +542,18 @@ namespace Saleslogix.SData.Client.Framework
                 {
                     if (contentType != null)
                     {
-                        var part = new MimePart(requestStream) {ContentType = MediaTypeNames.GetMediaType(contentType.Value)};
+                        var part = new MimePart(requestStream) { ContentType = MediaTypeNames.GetMediaType(contentType.Value) };
                         multipart.Add(part);
                     }
 
                     foreach (var data in Form)
                     {
                         var part = new MimePart(new MemoryStream(Encoding.UTF8.GetBytes(data.Value)))
-                                       {
-                                           ContentType = MediaTypeNames.TextMediaType,
-                                           ContentTransferEncoding = "binary",
-                                           ContentDisposition = "inline; name=" + data.Key
-                                       };
+                        {
+                            ContentType = MediaTypeNames.TextMediaType,
+                            ContentTransferEncoding = "binary",
+                            ContentDisposition = "inline; name=" + data.Key
+                        };
                         multipart.Add(part);
                     }
 
@@ -557,11 +568,11 @@ namespace Saleslogix.SData.Client.Framework
                         }
 
                         var part = new MimePart(file.Stream)
-                                       {
-                                           ContentType = file.ContentType ?? "application/octet-stream",
-                                           ContentTransferEncoding = "binary",
-                                           ContentDisposition = contentDisposition
-                                       };
+                        {
+                            ContentType = file.ContentType ?? "application/octet-stream",
+                            ContentTransferEncoding = "binary",
+                            ContentDisposition = contentDisposition
+                        };
                         multipart.Add(part);
                     }
 

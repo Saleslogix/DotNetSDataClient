@@ -42,5 +42,6 @@ namespace Saleslogix.SData.Client
         Task<ISDataResults<T>> ExecuteAsync<T>(SDataParameters parms, CancellationToken cancel = default(CancellationToken));
         Task<ISDataResults<IList<T>>> ExecuteBatchAsync<T>(IList<SDataParameters> items, CancellationToken cancel = default(CancellationToken));
 #endif
+        CookieContainer Cookies { get; set; }
     }
 }

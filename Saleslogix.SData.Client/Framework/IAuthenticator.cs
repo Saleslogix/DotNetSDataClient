@@ -7,7 +7,14 @@ namespace Saleslogix.SData.Client.Framework
     public interface IAuthenticator
     {
         void Authenticate(WebRequest request);
+        ///invoked in response to 401
         UnauthorizedAction Unauthorized(WebResponse response);
+    }
+
+    public interface IAuthenticator2 : IAuthenticator
+    {
+        ///invoked in response to 403
+        UnauthorizedAction Forbidden(WebResponse response);
     }
 
     public enum UnauthorizedAction
