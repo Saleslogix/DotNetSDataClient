@@ -12,13 +12,15 @@ jobs:
     needs: build_job
     runs-on: windows-2019
     steps:
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v1
+    - uses: actions/checkout@v4
+    - uses: nuget/setup-nuget@v1
+
     - name: download release
       uses: actions/download-artifact@v4
       with:
         name: release
         path: dist\release
+        
     - name: nuspec pack
       shell: pwsh
       run: |
