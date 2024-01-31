@@ -25,6 +25,7 @@ obj/
 [Bb]in
 [Dd]ebug*/
 [Rr]elease*/
+dist//
 
 #Tooling
 _ReSharper*/
@@ -38,3 +39,4 @@ Thumbs.db
 
 #VIM junk
 *.swp
+.vs/

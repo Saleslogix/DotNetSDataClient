@@ -20,21 +20,21 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\Net35\</OutputPath>
+    <OutputPath>..\dist\Debug\Net35\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NET_3_5</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\Debug\Net35\Saleslogix.SData.Client.xml</DocumentationFile>
+    <DocumentationFile>..\dist\Debug\Net35\Saleslogix.SData.Client.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\Release\Net35\</OutputPath>
+    <OutputPath>..\dist\Release\Net35\</OutputPath>
     <DefineConstants>TRACE;NET_3_5</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\Release\Net35\Saleslogix.SData.Client.xml</DocumentationFile>
+    <DocumentationFile>..\dist\Release\Net35\Saleslogix.SData.Client.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
