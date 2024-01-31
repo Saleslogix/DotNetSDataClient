@@ -113,7 +113,6 @@ namespace System.Linq
 }
 #endif
 
-#if !NETFX_CORE
 namespace System.Reflection
 {
     using Collections.Generic;
@@ -121,10 +120,12 @@ namespace System.Reflection
 
     internal static class IntrospectionExtensions
     {
+        #if !NET48
         public static Type GetTypeInfo(this Type type)
         {
             return type;
         }
+        #endif
 
         public static Type AsType(this Type type)
         {
@@ -134,6 +135,7 @@ namespace System.Reflection
 
     internal static class RuntimeReflectionExtensions
     {
+        #if !NET48
         public static MethodInfo GetMethodInfo(this Delegate del)
         {
             Guard.ArgumentNotNull(del, "del");
@@ -159,8 +161,10 @@ namespace System.Reflection
         {
             return type.GetField(name);
         }
+        #endif
     }
 
+    #if !NET48
     internal static class CustomAttributeExtensions
     {
         public static T GetCustomAttribute<T>(this MemberInfo element) where T : Attribute
@@ -178,8 +182,8 @@ namespace System.Reflection
             return Attribute.IsDefined(element, attributeType);
         }
     }
+    #endif
 }
-#endif
 
 #if !NETFX_CORE && !SILVERLIGHT
 namespace System.Reflection

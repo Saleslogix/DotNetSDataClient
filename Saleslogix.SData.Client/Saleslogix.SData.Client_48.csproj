@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
-    <ProjectGuid>{0F05ED59-0037-4316-8137-9742C3D3C74A}</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A1A43E15-7A71-4E99-B287-04ED341860D4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Saleslogix.SData.Client</RootNamespace>
     <AssemblyName>Saleslogix.SData.Client</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile147</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\DotNetSDataClient.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
@@ -22,25 +21,31 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\dist\Debug\Portable\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;PCL</DefineConstants>
+    <OutputPath>..\dist\Debug\Net48\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET48</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\dist\Debug\Portable\Saleslogix.SData.Client.XML</DocumentationFile>
+    <DocumentationFile>..\dist\Debug\Net48\Saleslogix.SData.Client.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\dist\Release\Portable\</OutputPath>
-    <DefineConstants>TRACE;PCL</DefineConstants>
+    <OutputPath>..\dist\Release\Net48\</OutputPath>
+    <DefineConstants>TRACE;NET48</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\dist\Release\Portable\Saleslogix.SData.Client.XML</DocumentationFile>
+    <DocumentationFile>..\dist\Release\Net48\Saleslogix.SData.Client.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Content\AtomContentHandler.cs" />
@@ -120,6 +125,36 @@
     <Compile Include="Linq\WithExtensionArgResultOperator.cs" />
     <Compile Include="Linq\WithPrecedenceExpressionNode.cs" />
     <Compile Include="Linq\WithPrecedenceResultOperator.cs" />
+    <Compile Include="Metadata\BatchingMode.cs" />
+    <Compile Include="Metadata\CollectionDebugView.cs" />
+    <Compile Include="Metadata\ComplianceLevel.cs" />
+    <Compile Include="Metadata\InvocationMode.cs" />
+    <Compile Include="Metadata\KeyedCollection.cs" />
+    <Compile Include="Metadata\KeyedEnumerable.cs" />
+    <Compile Include="Metadata\KeyedObjectCollection.cs" />
+    <Compile Include="Metadata\RelationshipType.cs" />
+    <Compile Include="Metadata\SDataSchema.cs" />
+    <Compile Include="Metadata\SDataSchemaChoiceItem.cs" />
+    <Compile Include="Metadata\SDataSchemaChoiceType.cs" />
+    <Compile Include="Metadata\SDataSchemaComplexType.cs" />
+    <Compile Include="Metadata\SDataSchemaDocumentation.cs" />
+    <Compile Include="Metadata\SDataSchemaEnumItem.cs" />
+    <Compile Include="Metadata\SDataSchemaEnumType.cs" />
+    <Compile Include="Metadata\SDataSchemaItem.cs" />
+    <Compile Include="Metadata\SDataSchemaNamedQueryType.cs" />
+    <Compile Include="Metadata\SDataSchemaObject.cs" />
+    <Compile Include="Metadata\SDataSchemaProperty.cs" />
+    <Compile Include="Metadata\SDataSchemaRelationshipProperty.cs" />
+    <Compile Include="Metadata\SDataSchemaResourceType.cs" />
+    <Compile Include="Metadata\SDataSchemaServiceOperationType.cs" />
+    <Compile Include="Metadata\SDataSchemaSet.cs" />
+    <Compile Include="Metadata\SDataSchemaSimpleType.cs" />
+    <Compile Include="Metadata\SDataSchemaTopLevelType.cs" />
+    <Compile Include="Metadata\SDataSchemaType.cs" />
+    <Compile Include="Metadata\SDataSchemaTypeReference.cs" />
+    <Compile Include="Metadata\SDataSchemaValueProperty.cs" />
+    <Compile Include="Metadata\SDataSchemaValueType.cs" />
+    <Compile Include="Mime\MimeHelper.cs" />
     <Compile Include="Mime\MimeMessage.cs" />
     <Compile Include="Mime\MimePart.cs" />
     <Compile Include="NamingScheme.cs" />
@@ -314,6 +349,7 @@
     <Compile Include="SDataClientException.cs" />
     <Compile Include="SDataClientExtensions.cs" />
     <Compile Include="SDataCollection.cs" />
+    <Compile Include="SDataCollectionTypeConverter.cs" />
     <Compile Include="SDataEnumerateOptions.cs" />
     <Compile Include="SDataLink.cs" />
     <Compile Include="SDataParameters.cs" />
@@ -324,6 +360,7 @@
     <Compile Include="SDataProtocolProperty.cs" />
     <Compile Include="SDataProtocolPropertyAttribute.cs" />
     <Compile Include="SDataResource.cs" />
+    <Compile Include="SDataResourceTypeDescriptionProvider.cs" />
     <Compile Include="SDataResults.cs" />
     <Compile Include="SDataServiceOperationAttribute.cs" />
     <Compile Include="SDataServiceParameterAttribute.cs" />
@@ -333,7 +370,7 @@
     <Compile Include="Utilities\Guard.cs" />
     <Compile Include="Utilities\XmlConvertEx.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

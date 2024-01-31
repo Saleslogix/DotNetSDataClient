@@ -13,12 +13,10 @@ function Test-ExitCode
   }
 }
 
-$configuration = "Debug"
 $propertyFlags = "WarningLevel=1;TreatWarningsAsErrors=true"
 
 if($Debug -ne $true){
   # Release configuration flags
-  $configuration = "Release"
   $propertyFlags = "Configuration=Release;WarningLevel=0;TreatWarningsAsErrors=false"
 }
 
