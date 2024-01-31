@@ -22,7 +22,9 @@ namespace Saleslogix.SData.Client.Mime
         /// Find the MIME type of a local file using its file extension and the first few kilobytes of its content.
         /// </summary>
         /// <param name="filePath">The local file path.</param>
+        #if !NETCOREAPP
         [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        #endif
         public static string FindMimeType(string filePath)
         {
             try
@@ -47,7 +49,9 @@ namespace Saleslogix.SData.Client.Mime
         /// Find the MIME type of a sample of raw file data.
         /// </summary>
         /// <param name="data">The raw file data.</param>
+        #if !NETCOREAPP
         [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        #endif
         public static string FindMimeType(byte[] data)
         {
             try
@@ -116,7 +120,9 @@ namespace Saleslogix.SData.Client.Mime
             return KnownTypes.TryGetValue(extension, out mimeType);
         }
 
+        #if !NETCOREAPP
         [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        #endif
         private static bool TryFindByContent(string filePath, out string mimeType)
         {
             var file = new FileInfo(filePath);
@@ -150,7 +156,9 @@ namespace Saleslogix.SData.Client.Mime
             return true;
         }
 
+        #if !NETCOREAPP
         [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        #endif
         private static bool TryFindByData(byte[] data, out string mimeType)
         {
             IntPtr outPtr;

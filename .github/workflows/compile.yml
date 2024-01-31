@@ -8,10 +8,9 @@ jobs:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v4
+    - uses: microsoft/setup-msbuild@v1.3.3
+    - uses: actions/setup-dotnet@v3
 
-    - name: setup-msbuild
-      uses: microsoft/setup-msbuild@v1.3.3
-    
     - name: debug build
       shell: pwsh
       run: |

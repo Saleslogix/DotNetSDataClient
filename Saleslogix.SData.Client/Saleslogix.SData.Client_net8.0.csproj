@@ -1,51 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{590B03D1-FC26-4AFD-98F8-421E6E8DDBA8}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Saleslogix.SData.Client</RootNamespace>
-    <AssemblyName>Saleslogix.SData.Client</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\DotNetSDataClient.snk</AssemblyOriginatorKeyFile>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Saleslogix.SData.Client_net8._0</RootNamespace>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <BaseIntermediateOutputPath>objnet\</BaseIntermediateOutputPath>
+    <BaseOutputPath>..\dist\</BaseOutputPath>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\dist\Debug\Net35\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NET_3_5</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\dist\Debug\Net35\Saleslogix.SData.Client.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\dist\Release\Net35\</OutputPath>
-    <DefineConstants>TRACE;NET_3_5</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\dist\Release\Net35\Saleslogix.SData.Client.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
+
   <ItemGroup>
     <Compile Include="Content\AtomContentHandler.cs" />
     <Compile Include="Content\ContentHelper.cs" />
@@ -85,10 +53,25 @@
     <Compile Include="ISDataClient.cs" />
     <Compile Include="ISDataProtocolObject.cs" />
     <Compile Include="ISDataResults.cs" />
+    <Compile Include="Linq\AllAsyncExpressionNode.cs" />
+    <Compile Include="Linq\AllAsyncResultOperator.cs" />
+    <Compile Include="Linq\AnyAsyncExpressionNode.cs" />
+    <Compile Include="Linq\AnyAsyncResultOperator.cs" />
+    <Compile Include="Linq\CountAsyncExpressionNode.cs" />
+    <Compile Include="Linq\CountAsyncResultOperator.cs" />
+    <Compile Include="Linq\ElementAtAsyncExpressionNode.cs" />
+    <Compile Include="Linq\ElementAtAsyncResultOperator.cs" />
     <Compile Include="Linq\ElementAtExpressionNode.cs" />
     <Compile Include="Linq\ElementAtResultOperator.cs" />
     <Compile Include="Linq\FetchExpressionNode.cs" />
     <Compile Include="Linq\FetchResultOperator.cs" />
+    <Compile Include="Linq\FirstAsyncExpressionNode.cs" />
+    <Compile Include="Linq\FirstAsyncResultOperator.cs" />
+    <Compile Include="Linq\IAsyncQueryExecutor.cs" />
+    <Compile Include="Linq\LastAsyncExpressionNode.cs" />
+    <Compile Include="Linq\LastAsyncResultOperator.cs" />
+    <Compile Include="Linq\LongCountAsyncExpressionNode.cs" />
+    <Compile Include="Linq\LongCountAsyncResultOperator.cs" />
     <Compile Include="Linq\PropertyPathExtractionVisitor.cs" />
     <Compile Include="Linq\SDataClientExtensions.cs" />
     <Compile Include="Linq\SDataExpressionBuilderVisitor.cs" />
@@ -98,6 +81,13 @@
     <Compile Include="Linq\SDataQueryableExtensions.cs" />
     <Compile Include="Linq\SDataQueryExecutor.cs" />
     <Compile Include="Linq\SDataQueryModelVisitor.cs" />
+    <Compile Include="Linq\SingleAsyncExpressionNode.cs" />
+    <Compile Include="Linq\SingleAsyncResultOperator.cs" />
+    <Compile Include="Linq\StreamedAsyncCollectionInfo.cs" />
+    <Compile Include="Linq\StreamedAsyncScalarInfo.cs" />
+    <Compile Include="Linq\StreamedAsyncSingleInfo.cs" />
+    <Compile Include="Linq\ToCollectionAsyncExpressionNode.cs" />
+    <Compile Include="Linq\ToCollectionAsyncResultOperator.cs" />
     <Compile Include="Linq\WithExtensionArgExpressionNode.cs" />
     <Compile Include="Linq\WithExtensionArgResultOperator.cs" />
     <Compile Include="Linq\WithPrecedenceExpressionNode.cs" />
@@ -347,12 +337,5 @@
     <Compile Include="Utilities\Guard.cs" />
     <Compile Include="Utilities\XmlConvertEx.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

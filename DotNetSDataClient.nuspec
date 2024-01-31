@@ -19,8 +19,9 @@
   </metadata>
   <files>
     <file src="LICENSE.md" target="" />
-    <file src="dist\Release\Net35\Saleslogix.Sdata.Client.*" target="lib\net35" />
     <file src="dist\Release\Net40\Saleslogix.Sdata.Client.*" target="lib\net40" />
+    <file src="dist\Release\Net452\Saleslogix.Sdata.Client.*" target="lib\net452" />
     <file src="dist\Release\Net48\Saleslogix.Sdata.Client.*" target="lib\net48" />
+    <file src="dist\Release\net8.0\Saleslogix.Sdata.Client.*" target="lib\net8.0" />
   </files>
 </package>

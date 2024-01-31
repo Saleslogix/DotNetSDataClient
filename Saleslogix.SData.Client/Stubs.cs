@@ -120,7 +120,7 @@ namespace System.Reflection
 
     internal static class IntrospectionExtensions
     {
-        #if !NET48
+        #if NET_4_0
         public static Type GetTypeInfo(this Type type)
         {
             return type;
@@ -135,7 +135,7 @@ namespace System.Reflection
 
     internal static class RuntimeReflectionExtensions
     {
-        #if !NET48
+        #if NET_4_0
         public static MethodInfo GetMethodInfo(this Delegate del)
         {
             Guard.ArgumentNotNull(del, "del");
@@ -164,7 +164,7 @@ namespace System.Reflection
         #endif
     }
 
-    #if !NET48
+    #if NET_4_0
     internal static class CustomAttributeExtensions
     {
         public static T GetCustomAttribute<T>(this MemberInfo element) where T : Attribute
