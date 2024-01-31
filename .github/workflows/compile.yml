@@ -1,4 +1,4 @@
-name: SData client library build
+name: compile
 
 on:
   workflow_call:
