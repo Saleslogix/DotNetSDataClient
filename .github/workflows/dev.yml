@@ -8,4 +8,4 @@ on:
 
 jobs:
   build_job:
-    uses: ./github/workflows/compile.yml
+    uses: ./.github/workflows/compile.yml
