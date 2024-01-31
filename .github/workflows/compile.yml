@@ -1,10 +1,7 @@
 name: SData client library build
 
 on:
-  push:
-    branches: [ "master", "develop" ]
-  pull_request:
-    branches: [ "master", "develop" ]
+  workflow_call:
 
 jobs:
   build:
@@ -28,16 +25,16 @@ jobs:
       run: |
         .\Build.ps1 -Debug $false
 
-    # TODO: Don't use a fixed version here
-    # TODO: Move to a different workflow - We don't want a nuget package for every push to master/develop
-    - name: nuspec
-      shell: pwsh
-      run: |
-        nuget pack .\DotNetSDataClient.nuspec -properties version=2.1 -OutputDirectory dist\nuget
-
-    - name: store artifacts
-      uses: actions/upload-artifact@v2
+    - name: store release artifacts
+      uses: actions/upload-artifact@v4
       with:
-        name: nuget
-        path: dist\nuget
+        name: release
+        path: dist\Release
+        if-no-files-found: error
 
+    - name: store debug artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug
+        path: dist\Debug
+        if-no-files-found: error

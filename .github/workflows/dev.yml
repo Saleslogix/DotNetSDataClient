@@ -1,0 +1,11 @@
+name: release build
+
+on:
+  push:
+    branches: ['master', 'develop']
+  pull_request:
+    branches: ['master', 'develop']
+
+jobs:
+  build_job:
+    uses: ./github/workflows/compile.yml
