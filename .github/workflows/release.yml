@@ -27,7 +27,7 @@ jobs:
     - name: nuspec pack
       shell: pwsh
       run: |
-        nuget pack .\DotNetSDataClient.nuspec -properties version=$env:GITHUB_REF_NAME -OutputDirectory dist\nuget
+        nuget pack .\DotNetSDataClient.nuspec -properties version="$env:GITHUB_REF_NAME" -OutputDirectory dist\nuget
     - name: store artifacts
       uses: actions/upload-artifact@v4
       with:
