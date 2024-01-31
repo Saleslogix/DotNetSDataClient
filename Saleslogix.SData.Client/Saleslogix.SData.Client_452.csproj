@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A1A43E15-7A71-4E99-B287-04ED341860D4}</ProjectGuid>
+    <ProjectGuid>{E6CFD34D-762D-47BC-AF2D-B47ED6020D2A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Saleslogix.SData.Client</RootNamespace>
