@@ -12,8 +12,9 @@
     <language>en-US</language>
     <tags>Saleslogix SData REST HTTP JSON Atom</tags>
     <dependencies>
-      <group targetFramework=".NETFramework3.5" />
       <group targetFramework=".NETFramework4.0" />
+      <group targetFramework=".NETFramework4.5.2" />
+      <group targetFramework=".NETFramework4.7.2" />
       <group targetFramework=".NETFramework4.8" />
     </dependencies>
   </metadata>
@@ -21,6 +22,7 @@
     <file src="LICENSE.md" target="" />
     <file src="dist\Release\Net40\Saleslogix.Sdata.Client.*" target="lib\net40" />
     <file src="dist\Release\Net452\Saleslogix.Sdata.Client.*" target="lib\net452" />
+    <file src="dist\Release\Net472\Saleslogix.Sdata.Client.*" target="lib\net472" />
     <file src="dist\Release\Net48\Saleslogix.Sdata.Client.*" target="lib\net48" />
     <file src="dist\Release\net8.0\Saleslogix.Sdata.Client.*" target="lib\net8.0" />
   </files>
