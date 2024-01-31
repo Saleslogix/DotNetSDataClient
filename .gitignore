@@ -25,7 +25,7 @@ obj/
 [Bb]in
 [Dd]ebug*/
 [Rr]elease*/
-dist//
+dist/
 
 #Tooling
 _ReSharper*/

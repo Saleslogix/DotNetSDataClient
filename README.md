@@ -5,7 +5,7 @@ DotNetSDataClient is a multi-platform .NET client library that simplifies consum
 
 Features
 --------
-* Support for .NET 2.0, .NET 3.5, .NET 4.0, Windows 8, Windows Phone 8, Silverlight 5
+* Support for .NET 3.5, .NET 4.0, and .NET 4.8
 * Read and write content in JSON and Atom format
 * A LINQ provider supporting all the common operators except grouping and aggregation
 * Serialization to and from POCOs, anonymous types, dictionaries and dynamic (DLR) objects
