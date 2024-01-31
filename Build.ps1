@@ -29,4 +29,4 @@ Test-ExitCode -Message "Error building ${framework_solution}"
 
 
 $standard_solution = "DotNetSDataClient.Standard.sln"
-& dotnet build $standard_solution --configuration "${standard_configuration}" --nologo
+& dotnet build $standard_solution --configuration "${standard_configuration}" --nologo --property WarningLevel=0 -v q
