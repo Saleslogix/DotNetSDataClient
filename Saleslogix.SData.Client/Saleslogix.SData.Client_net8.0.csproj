@@ -5,13 +5,20 @@
     <RootNamespace>Saleslogix.SData.Client_net8._0</RootNamespace>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <BaseIntermediateOutputPath>objnet\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\dist\</BaseOutputPath>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
 
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;NU1302;NU1803</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;NU1302;NU1803</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -317,6 +324,7 @@
     <Compile Include="SDataClientExtensions.cs" />
     <Compile Include="SDataCollection.cs" />
     <Compile Include="SDataCollectionTypeConverter.cs" />
+    <Compile Include="SDataConstants.cs" />
     <Compile Include="SDataEnumerateOptions.cs" />
     <Compile Include="SDataLink.cs" />
     <Compile Include="SDataParameters.cs" />

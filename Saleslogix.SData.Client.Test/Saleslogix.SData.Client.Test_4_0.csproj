@@ -40,6 +40,38 @@
     <Reference Include="nunit.framework">
       <HintPath>..\dependencies\NUnit\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="NUnit.VisualStudio.TestAdapter">
+      <HintPath>..\dependencies\NUnitTestAdapter\NUnit.VisualStudio.TestAdapter.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="nunit.core">
+      <HintPath>..\dependencies\NUnitTestAdapter\nunit.core.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>..\dependencies\NUnitTestAdapter\nunit.core.interfaces.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="nunit.util">
+      <HintPath>..\dependencies\NUnitTestAdapter\nunit.util.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\dependencies\NUnitTestAdapter\Mono.Cecil.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\dependencies\NUnitTestAdapter\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\dependencies\NUnitTestAdapter\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\dependencies\NUnitTestAdapter\Mono.Cecil.Rocks.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -100,11 +132,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

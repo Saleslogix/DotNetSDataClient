@@ -22,6 +22,7 @@
 *.sdf
 ipch/
 obj/
+objnet/
 [Bb]in
 [Dd]ebug*/
 [Rr]elease*/
@@ -32,6 +33,10 @@ _ReSharper*/
 *.resharper.user
 [Tt]est[Rr]esult*
 *.ReSharper
+
+#NuGet
+packages/
+*.nupkg
 
 #OS junk files
 Thumbs.db

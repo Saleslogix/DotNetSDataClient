@@ -51,7 +51,14 @@ namespace Saleslogix.SData.Client
         public string Uri { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        public string UserAgent { get; set; }
+
+        private string _userAgent = SDataConstants.UserAgent;
+        public string UserAgent
+        {
+            get => _userAgent;
+            set => _userAgent = value;
+        }
+
         public int? Timeout { get; set; }
         public int? TimeoutRetryAttempts { get; set; }
         public bool UseHttpMethodOverride { get; set; }
@@ -462,7 +469,7 @@ namespace Saleslogix.SData.Client
             request.Proxy = Proxy;
 #endif
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-            request.UserAgent = UserAgent;
+            request.UserAgent = !string.IsNullOrWhiteSpace(UserAgent) ? UserAgent : SDataConstants.UserAgent;
             if (Timeout != null)
             {
                 request.Timeout = Timeout.Value;
