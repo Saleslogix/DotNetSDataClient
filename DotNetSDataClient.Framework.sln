@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlxFileBrowser", "demos\Slx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlxJobScheduler", "demos\SlxJobScheduler\SlxJobScheduler.csproj", "{5CC2002C-8D4A-47F3-847C-3C8EAF485C36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saleslogix.SData.Client.Test_4_0", "Saleslogix.SData.Client.Test\Saleslogix.SData.Client.Test_4_0.csproj", "{92C27580-82D9-46FC-8E4A-9B75E6FF6C2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saleslogix.SData.Client.Test_452", "Saleslogix.SData.Client.Test\Saleslogix.SData.Client.Test_452.csproj", "{92C27580-82D9-46FC-8E4A-9B75E6FF6C2B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FEECA9B9-980E-470F-81BA-C56ABD8D520E} = {FEECA9B9-980E-470F-81BA-C56ABD8D520E}
 	EndProjectSection

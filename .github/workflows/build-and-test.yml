@@ -29,7 +29,7 @@ jobs:
         run: nuget install NUnit.Runners -Version 2.7.1 -OutputDirectory packages -Source https://api.nuget.org/v3/index.json
 
       - name: Run tests
-        run: packages/NUnit.Runners.2.7.1/tools/nunit-console.exe dist/Debug/Net40/Saleslogix.SData.Client.Test.dll /nologo /result=test-results.xml
+        run: packages/NUnit.Runners.2.7.1/tools/nunit-console.exe dist/Debug/Net452/Saleslogix.SData.Client.Test.dll /nologo /result=test-results.xml
 
       - name: Upload test results
         if: always()
