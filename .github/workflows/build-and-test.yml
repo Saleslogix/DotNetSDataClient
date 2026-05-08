@@ -8,25 +8,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-framework:
-    name: Build .NET Framework & Run Tests
-    runs-on: windows-latest
+  build:
+    uses: ./.github/workflows/compile.yml
+
+  test:
+    name: Run Tests
+    needs: build
+    runs-on: windows-2019
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
 
-      - name: Install .NET Framework 4.5.2 targeting pack
-        run: choco install netfx-4.5.2-devpack -y --no-progress
-
-      - name: Build Framework solution
-        run: msbuild DotNetSDataClient.Framework.sln /t:Rebuild /p:Configuration=Debug /verbosity:minimal
+      - name: Download debug build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: debug
+          path: dist/Debug
 
       - name: Install NUnit console runner
         run: nuget install NUnit.Runners -Version 2.7.1 -OutputDirectory packages -Source https://api.nuget.org/v3/index.json
@@ -40,19 +41,3 @@ jobs:
         with:
           name: test-results
           path: test-results.xml
-
-  build-standard:
-    name: Build .NET Standard/8
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
-
-      - name: Build Standard solution
-        run: dotnet build DotNetSDataClient.Standard.sln -c Debug --verbosity minimal
