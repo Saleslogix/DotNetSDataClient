@@ -44,7 +44,7 @@ namespace Saleslogix.SData.Client.Framework
         {
             Uri = uri;
 #if !PCL && !NETFX_CORE && !SILVERLIGHT
-            UserAgent = "DotNetSDataClient";
+            UserAgent = SDataConstants.UserAgent;
             Timeout = 120000;
 #endif
             TimeoutRetryAttempts = 1;
@@ -444,11 +444,7 @@ namespace Saleslogix.SData.Client.Framework
                 httpRequest.ReadWriteTimeout = Timeout;
                 httpRequest.KeepAlive = false;
                 httpRequest.ProtocolVersion = HttpVersion.Version10;
-
-                if (UserAgent != null)
-                {
-                    httpRequest.UserAgent = UserAgent;
-                }
+                httpRequest.UserAgent = !string.IsNullOrWhiteSpace(UserAgent) ? UserAgent : SDataConstants.UserAgent;
 #endif
                 if (Accept != null)
                 {

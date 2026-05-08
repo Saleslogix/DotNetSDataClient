@@ -10,6 +10,127 @@ namespace Saleslogix.SData.Client.Test
     [TestFixture]
     public class SDataClientTests
     {
+        #region UserAgent Tests
+
+        [Test]
+        public void UserAgent_NotSet_UsesDefault()
+        {
+            // When UserAgent is not set at all, the default should be used.
+            SDataRequest capturedRequest = null;
+            var requestMock = new Mock<SDataRequest>(null, null, null);
+            requestMock.SetupAllProperties();
+            requestMock.Setup(x => x.GetResponse()).Returns(new SDataResponse(HttpStatusCode.OK, null, null, null, null, null, null, null, null));
+            var requestFactory = new Func<string, SDataRequest>(uri =>
+            {
+                capturedRequest = requestMock.Object;
+                return capturedRequest;
+            });
+
+            var client = new SDataClient("test://dummy", requestFactory);
+            // Do NOT set client.UserAgent - leave it at default
+            client.Execute(new SDataParameters { Path = "test" });
+
+            Assert.That(capturedRequest.UserAgent, Is.EqualTo(SDataConstants.UserAgent));
+        }
+
+        [Test]
+        public void UserAgent_SetToNull_FallsBackToDefault()
+        {
+            // When UserAgent is explicitly set to null, the default should be used.
+            SDataRequest capturedRequest = null;
+            var requestMock = new Mock<SDataRequest>(null, null, null);
+            requestMock.SetupAllProperties();
+            requestMock.Setup(x => x.GetResponse()).Returns(new SDataResponse(HttpStatusCode.OK, null, null, null, null, null, null, null, null));
+            var requestFactory = new Func<string, SDataRequest>(uri =>
+            {
+                capturedRequest = requestMock.Object;
+                return capturedRequest;
+            });
+
+            var client = new SDataClient("test://dummy", requestFactory);
+            client.UserAgent = null;
+            client.Execute(new SDataParameters { Path = "test" });
+
+            Assert.That(capturedRequest.UserAgent, Is.EqualTo(SDataConstants.UserAgent));
+        }
+
+        [Test]
+        public void UserAgent_SetToEmpty_FallsBackToDefault()
+        {
+            // When UserAgent is explicitly set to empty string, the default should be used.
+            SDataRequest capturedRequest = null;
+            var requestMock = new Mock<SDataRequest>(null, null, null);
+            requestMock.SetupAllProperties();
+            requestMock.Setup(x => x.GetResponse()).Returns(new SDataResponse(HttpStatusCode.OK, null, null, null, null, null, null, null, null));
+            var requestFactory = new Func<string, SDataRequest>(uri =>
+            {
+                capturedRequest = requestMock.Object;
+                return capturedRequest;
+            });
+
+            var client = new SDataClient("test://dummy", requestFactory);
+            client.UserAgent = "";
+            client.Execute(new SDataParameters { Path = "test" });
+
+            Assert.That(capturedRequest.UserAgent, Is.EqualTo(SDataConstants.UserAgent));
+        }
+
+        [Test]
+        public void UserAgent_SetToWhitespace_FallsBackToDefault()
+        {
+            // When UserAgent is explicitly set to whitespace, the default should be used.
+            SDataRequest capturedRequest = null;
+            var requestMock = new Mock<SDataRequest>(null, null, null);
+            requestMock.SetupAllProperties();
+            requestMock.Setup(x => x.GetResponse()).Returns(new SDataResponse(HttpStatusCode.OK, null, null, null, null, null, null, null, null));
+            var requestFactory = new Func<string, SDataRequest>(uri =>
+            {
+                capturedRequest = requestMock.Object;
+                return capturedRequest;
+            });
+
+            var client = new SDataClient("test://dummy", requestFactory);
+            client.UserAgent = "   ";
+            client.Execute(new SDataParameters { Path = "test" });
+
+            Assert.That(capturedRequest.UserAgent, Is.EqualTo(SDataConstants.UserAgent));
+        }
+
+        [Test]
+        public void UserAgent_SetToCustomValue_UsesCustomValue()
+        {
+            // When UserAgent is set to a custom value, that value should be used.
+            SDataRequest capturedRequest = null;
+            var requestMock = new Mock<SDataRequest>(null, null, null);
+            requestMock.SetupAllProperties();
+            requestMock.Setup(x => x.GetResponse()).Returns(new SDataResponse(HttpStatusCode.OK, null, null, null, null, null, null, null, null));
+            var requestFactory = new Func<string, SDataRequest>(uri =>
+            {
+                capturedRequest = requestMock.Object;
+                return capturedRequest;
+            });
+
+            var client = new SDataClient("test://dummy", requestFactory);
+            client.UserAgent = "MyCustomApp/1.0";
+            client.Execute(new SDataParameters { Path = "test" });
+
+            Assert.That(capturedRequest.UserAgent, Is.EqualTo("MyCustomApp/1.0"));
+        }
+
+        [Test]
+        public void UserAgent_InstanceIsolation_DoesNotAffectOtherInstances()
+        {
+            // Setting UserAgent on one instance should not affect another instance.
+            var client1 = new SDataClient("test://dummy1");
+            var client2 = new SDataClient("test://dummy2");
+
+            client1.UserAgent = "CustomAgent1";
+
+            Assert.That(client1.UserAgent, Is.EqualTo("CustomAgent1"));
+            Assert.That(client2.UserAgent, Is.EqualTo(SDataConstants.UserAgent));
+        }
+
+        #endregion
         [Test]
         public void Execute_Test()
         {

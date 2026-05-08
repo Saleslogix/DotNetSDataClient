@@ -350,6 +350,7 @@
     <Compile Include="SDataClientExtensions.cs" />
     <Compile Include="SDataCollection.cs" />
     <Compile Include="SDataCollectionTypeConverter.cs" />
+    <Compile Include="SDataConstants.cs" />
     <Compile Include="SDataEnumerateOptions.cs" />
     <Compile Include="SDataLink.cs" />
     <Compile Include="SDataParameters.cs" />

@@ -1,0 +1,16 @@
+<Project>
+
+  <!--
+    Redirect NuGet restore output and intermediate build files for the SDK-style
+    _net8.0 project to an isolated folder. This prevents the shared 'obj' folder
+    from containing NuGet artifacts (project.assets.json, etc.), which would
+    otherwise cause VS 2022 to run NuGet restore validation against the old-style
+    .NET Framework projects in this directory and fail with:
+      "Your project does not reference '.NETFramework,Version=...' framework"
+  -->
+  <PropertyGroup Condition="'$(MSBuildProjectFile)' == 'Saleslogix.SData.Client_net8.0.csproj'">
+    <BaseIntermediateOutputPath>objnet\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>$(MSBuildThisFileDirectory)objnet\</MSBuildProjectExtensionsPath>
+  </PropertyGroup>
+
+</Project>

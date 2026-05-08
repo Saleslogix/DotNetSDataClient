@@ -349,6 +349,7 @@
     <Compile Include="SDataClientExtensions.cs" />
     <Compile Include="SDataCollection.cs" />
     <Compile Include="SDataCollectionTypeConverter.cs" />
+    <Compile Include="SDataConstants.cs" />
     <Compile Include="SDataEnumerateOptions.cs" />
     <Compile Include="SDataLink.cs" />
     <Compile Include="SDataParameters.cs" />
@@ -370,6 +371,10 @@
     <Compile Include="Utilities\XmlConvertEx.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,19 +10,21 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Saleslogix.SData.Client.Test</RootNamespace>
     <AssemblyName>Saleslogix.SData.Client.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\DotNetSDataClient.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\dist\Debug\Net40\</OutputPath>
+    <OutputPath>..\dist\Debug\Net452\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NET_4_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +33,7 @@
     <DefineConstants>TRACE;NET_4_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -39,6 +42,38 @@
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\dependencies\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="NUnit.VisualStudio.TestAdapter">
+      <HintPath>..\dependencies\NUnitTestAdapter\NUnit.VisualStudio.TestAdapter.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="nunit.core">
+      <HintPath>..\dependencies\NUnitTestAdapter\nunit.core.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>..\dependencies\NUnitTestAdapter\nunit.core.interfaces.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="nunit.util">
+      <HintPath>..\dependencies\NUnitTestAdapter\nunit.util.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\dependencies\NUnitTestAdapter\Mono.Cecil.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\dependencies\NUnitTestAdapter\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\dependencies\NUnitTestAdapter\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\dependencies\NUnitTestAdapter\Mono.Cecil.Rocks.dll</HintPath>
+      <Private>true</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -94,17 +129,10 @@
     <Compile Include="SDataResourceTypeDescriptionProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Saleslogix.SData.Client\Saleslogix.SData.Client_4_0.csproj">
-      <Project>{FEECA9B9-980E-470F-81BA-C56ABD8D520E}</Project>
-      <Name>Saleslogix.SData.Client_4_0</Name>
+    <ProjectReference Include="..\Saleslogix.SData.Client\Saleslogix.SData.Client_452.csproj">
+      <Project>{e6cfd34d-762d-47bc-af2d-b47ed6020d2a}</Project>
+      <Name>Saleslogix.SData.Client_452</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

@@ -1,0 +1,43 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/compile.yml
+
+  test:
+    name: Run Tests
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Download debug build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: debug
+          path: dist/Debug
+
+      - name: Install NUnit console runner
+        run: nuget install NUnit.Runners -Version 2.7.1 -OutputDirectory packages -Source https://api.nuget.org/v3/index.json
+
+      - name: Run tests
+        run: packages/NUnit.Runners.2.7.1/tools/nunit-console.exe dist/Debug/Net452/Saleslogix.SData.Client.Test.dll /nologo /result=test-results.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.xml
